@@ -35,16 +35,28 @@ Revision history:
 #define _CATENA4410_H_
 
 #include <stdint.h>
+#include <Arduino.h>
 
 class Catena4410
 	{
 public:
 	typedef	uint8_t	UniqueID_buffer_t[128/8];
+	enum ANALOG_PINS
+		{
+		APIN_VBAT_SENSE = A7,
+		};
+	enum DIGITAL_PINS
+		{
+		PIN_ONE_WIRE = 0,
+		PIN_SHT10_CLK = 11,
+		PIN_SHT10_DATA = 10,
+		};
 
 	Catena4410();
 	void GetUniqueID(
 		UniqueID_buffer_t pIdBuffer
 		);
+	float ReadVbat(void);
 	void SafePrintf(
 		const char *fmt, ...
 		);
