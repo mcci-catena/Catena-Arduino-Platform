@@ -38,10 +38,14 @@ Revision history:
 #include <Arduino.h>
 #include "mcciadk_guid.h"
 
+typedef struct CATENA_PLATFORM_s  CATENA_PLATFORM;
+typedef struct CATENA_CPUID_TO_PLATFORM_s CATENA_CPUID_TO_PLATFORM;
+
 class Catena4410
 	{
 public:
 	typedef	uint8_t	UniqueID_buffer_t[128/8];
+	typedef	uint8_t	EUI64_buffer_t[64/8];
 	enum ANALOG_PINS
 		{
 		APIN_VBAT_SENSE = A7,
@@ -73,12 +77,17 @@ public:
 	void SafePrintf(
 		const char *fmt, ...
 		);
+	const CATENA_PLATFORM *GetPlatformForID(
+		const UniqueID_buffer_t pIdBuffer,
+		EUI64_buffer_t pSysEUI
+		);
 
+	static const CATENA_CPUID_TO_PLATFORM vCpuIdToPlatform[];
+	static const size_t nvCpuIdToPlatform;
 
 private:
 	};
 
-typedef struct CATENA_PLATFORM_s  CATENA_PLATFORM;
 struct CATENA_PLATFORM_s
 	{
 	MCCIADK_GUID		Guid;
@@ -86,10 +95,14 @@ struct CATENA_PLATFORM_s
 	uint32_t		Flags;
 	};
 
-//struct CATENA_CPUID_TO_PLATFORM_s
-//	{
-//	
-//	};
+
+struct CATENA_CPUID_TO_PLATFORM_s
+	{
+	Catena4410::UniqueID_buffer_t	CpuID;
+
+	const CATENA_PLATFORM		*pPlatform;
+	Catena4410::EUI64_buffer_t	SysEUI;
+	};
 
 /**** end of Catena4410.h ****/
 #endif /* _CATENA4410_H_ */

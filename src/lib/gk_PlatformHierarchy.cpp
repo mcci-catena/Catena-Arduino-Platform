@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#include "Catena4410.h"
+#include "catena_platforms.h"
 
 #include "catena4410_guids.h"
 
