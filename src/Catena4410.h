@@ -36,6 +36,7 @@ Revision history:
 
 #include <stdint.h>
 #include <Arduino.h>
+#include "mcciadk_guid.h"
 
 class Catena4410
 	{
@@ -51,6 +52,18 @@ public:
 		PIN_SHT10_CLK = 11,
 		PIN_SHT10_DATA = 10,
 		};
+	enum PLATFORM_FLAGS
+		{
+		fHasLoRa = 1 << 0,
+		fHasBLE = 1 << 1,
+		fHasWiFi = 1 << 2,
+		fHasTtnNycLoRa = 1 << 3,
+		fHasBme280 = 1 << 4,
+		fHasLux = 1 << 5,
+		fHasSoilProbe = 1 << 6,
+		fHasSolarPanel = 1 << 7,
+		fHasWaterOneWire = 1 << 8,
+		};
 
 	Catena4410();
 	void GetUniqueID(
@@ -61,10 +74,22 @@ public:
 		const char *fmt, ...
 		);
 
+
 private:
 	};
 
+typedef struct CATENA_PLATFORM_s  CATENA_PLATFORM;
+struct CATENA_PLATFORM_s
+	{
+	MCCIADK_GUID		Guid;
+	const CATENA_PLATFORM	*pParent;
+	uint32_t		Flags;
+	};
 
+//struct CATENA_CPUID_TO_PLATFORM_s
+//	{
+//	
+//	};
 
 /**** end of Catena4410.h ****/
 #endif /* _CATENA4410_H_ */
