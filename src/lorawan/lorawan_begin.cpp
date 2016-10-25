@@ -1,14 +1,14 @@
-/* GetUniqueID.cpp	Tue Oct 25 2016 02:20:03 tmm */
+/* begin.cpp	Tue Oct 25 2016 03:42:18 tmm */
 
 /*
 
-Module:  GetUniqueID.cpp
+Module:  begin.cpp
 
 Function:
-	Catena4410::GetUniqueID()
+	Catena4410::LoRaWAN::begin()
 
 Version:
-	V0.1.0	Tue Oct 25 2016 02:20:03 tmm	Edit level 2
+	V0.1.0	Tue Oct 25 2016 03:42:18 tmm	Edit level 1
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -26,12 +26,12 @@ Author:
 	Terry Moore, MCCI Corporation	October 2016
 
 Revision history:
-   0.1.0  Sat Oct 15 2016 22:35:27  tmm
+   0.1.0  Tue Oct 25 2016 03:42:18  tmm
 	Module created.
 
 */
 
-#include <CatenaSamd21.h>
+#include <Catena4410.h>
 
 /****************************************************************************\
 |
@@ -54,7 +54,6 @@ Revision history:
 \****************************************************************************/
 
 
-
 /****************************************************************************\
 |
 |	VARIABLES:
@@ -68,21 +67,7 @@ Revision history:
 |
 \****************************************************************************/
 
-void CatenaSamd21::GetUniqueID(
-	UniqueID_buffer_t pIdBuffer
-	)
+bool Catena4410::LoRaWAN::begin(void)
 	{
-	uint32_t const idWords[4] = { 0x80A00C, 0x80A040, 0x80A044, 0x80A048 };
-
-	for (unsigned i = 0; i < sizeof(idWords) / sizeof(idWords[0]); ++i)
-		{
-		uint32_t const * const pWord = (uint32_t *) idWords[i];
-		uint32_t idWord = *pWord;
-
-		for (unsigned j = 0; j < 4; ++j)
-			{
-			*pIdBuffer++ = (uint8_t) idWord;
-			idWord >>= 8;
-			}
-		}
+	return this->Arduino_LoRaWAN::begin();
 	}

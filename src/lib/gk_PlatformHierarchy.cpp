@@ -59,21 +59,21 @@ const CATENA_PLATFORM	gkPlatformFeatherM0 =
 	{
 	Guid: GUID_HW_FEATHER_M0(NATIVE),
 	pParent: NULL,
-	Flags: 0,
+	PlatformFlags: 0,
 	};
 
 const CATENA_PLATFORM	gkPlatformM0LoRa =
 	{
 	Guid: GUID_HW_FEATHER_M0_LORA(NATIVE),
 	pParent: &gkPlatformFeatherM0,
-	Flags:	Catena4410::fHasLoRa,
+	PlatformFlags:	Catena4410::fHasLoRa,
 	};
 
 const CATENA_PLATFORM	gkPlatformM0LoRaTtnNyc =
 	{
 	Guid: GUID_HW_FEATHER_M0_LORA_TTNNYC(NATIVE),
 	pParent: &gkPlatformM0LoRa,
-	Flags:	Catena4410::fHasLoRa | 
+	PlatformFlags:	Catena4410::fHasLoRa | 
 		Catena4410::fHasTtnNycLoRa,
 	};
 
@@ -81,7 +81,8 @@ const CATENA_PLATFORM gkPlatformCatena4410 =
 	{
 	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
-	Flags:	Catena4410::fHasLoRa |
+	PlatformFlags:	
+		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
 		Catena4410::fHasLux,
@@ -91,7 +92,8 @@ const CATENA_PLATFORM gkPlatformCatena4410_gh =
 	{
 	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	Flags:	Catena4410::fHasLoRa |
+	PlatformFlags:	
+		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
 		Catena4410::fHasLux |
@@ -103,7 +105,8 @@ const CATENA_PLATFORM gkPlatformCatena4410_mh =
 	{
 	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	Flags:	Catena4410::fHasLoRa |
+	PlatformFlags:	
+		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
 		Catena4410::fHasLux |
@@ -114,7 +117,8 @@ const CATENA_PLATFORM gkPlatformCatena4410_swh =
 	{
 	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	Flags:	Catena4410::fHasLoRa |
+	PlatformFlags:	
+		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
 		Catena4410::fHasLux |
@@ -125,7 +129,8 @@ const CATENA_PLATFORM gkPlatformCatena4410_pond =
 	{
 	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	Flags:	Catena4410::fHasLoRa |
+	PlatformFlags:	
+		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
 		Catena4410::fHasLux |

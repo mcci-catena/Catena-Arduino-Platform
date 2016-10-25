@@ -1,4 +1,4 @@
-/* Catena4410.h	Sat Oct 15 2016 22:15:02 tmm */
+/* Catena4410.h	Mon Oct 24 2016 23:40:17 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Arduino library header for Catena 4410
 
 Version:
-	V0.1.0	Sat Oct 15 2016 22:15:02 tmm	Edit level 1
+	V0.1.0	Mon Oct 24 2016 23:40:17 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -34,18 +34,15 @@ Revision history:
 #ifndef _CATENA4410_H_		/* prevent multiple includes */
 #define _CATENA4410_H_
 
-#include <stdint.h>
-#include <Arduino.h>
-#include "mcciadk_guid.h"
+#ifndef _CATENASAMD21_H_
+# include "CatenaSamd21.h"
+#endif
 
-typedef struct CATENA_PLATFORM_s  CATENA_PLATFORM;
-typedef struct CATENA_CPUID_TO_PLATFORM_s CATENA_CPUID_TO_PLATFORM;
+#include <Arduino_LoRaWAN.h>
 
-class Catena4410
+class Catena4410 : public CatenaSamd21
 	{
 public:
-	typedef	uint8_t	UniqueID_buffer_t[128/8];
-	typedef	uint8_t	EUI64_buffer_t[64/8];
 	enum ANALOG_PINS
 		{
 		APIN_VBAT_SENSE = A7,
@@ -55,8 +52,12 @@ public:
 		PIN_ONE_WIRE = 0,
 		PIN_SHT10_CLK = 11,
 		PIN_SHT10_DATA = 10,
+		PIN_SX1276_NSS = 8,
+		PIN_SX1276_NRESET = 4,
+		PIN_SX1276_DIO0 = 3,
+		PIN_SX1276_DIO1 = 6,
 		};
-	enum PLATFORM_FLAGS
+	enum PLATFORM_FLAGS : uint32_t
 		{
 		fHasLoRa = 1 << 0,
 		fHasBLE = 1 << 1,
@@ -68,41 +69,42 @@ public:
 		fHasSolarPanel = 1 << 7,
 		fHasWaterOneWire = 1 << 8,
 		};
-
+	
+	/*
+	|| Methods
+	*/
 	Catena4410();
-	void GetUniqueID(
-		UniqueID_buffer_t pIdBuffer
-		);
-	float ReadVbat(void);
-	void SafePrintf(
-		const char *fmt, ...
-		);
-	const CATENA_PLATFORM *GetPlatformForID(
-		const UniqueID_buffer_t pIdBuffer,
-		EUI64_buffer_t pSysEUI
-		);
 
-	static const CATENA_CPUID_TO_PLATFORM vCpuIdToPlatform[];
-	static const size_t nvCpuIdToPlatform;
+	float ReadVbat(void);
+
+	/*
+	|| LoRaWAN binding
+	*/
+	class LoRaWAN /* forward */;
 
 private:
+	const CATENA_PLATFORM *m_pPlatform;
 	};
 
-struct CATENA_PLATFORM_s
+/*
+|| The LoRaWAN class for the Catena4410
+*/
+class Catena4410::LoRaWAN : public Arduino_LoRaWAN
 	{
-	MCCIADK_GUID		Guid;
-	const CATENA_PLATFORM	*pParent;
-	uint32_t		Flags;
+public:
+	/*
+	|| the constructor.
+	*/
+	LoRaWAN();
+		
+	/*
+	|| the begin function loads data from the local
+	|| platform's stable storage and initializes
+	|| the connection. 
+	*/
+	bool begin(void);
 	};
 
-
-struct CATENA_CPUID_TO_PLATFORM_s
-	{
-	Catena4410::UniqueID_buffer_t	CpuID;
-
-	const CATENA_PLATFORM		*pPlatform;
-	Catena4410::EUI64_buffer_t	SysEUI;
-	};
 
 /**** end of Catena4410.h ****/
 #endif /* _CATENA4410_H_ */

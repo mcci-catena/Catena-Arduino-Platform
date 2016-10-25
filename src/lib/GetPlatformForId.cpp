@@ -1,14 +1,14 @@
-/* GetPlatformForID.cpp	Mon Oct 17 2016 04:16:14 tmm */
+/* GetPlatformForID.cpp	Tue Oct 25 2016 01:56:31 tmm */
 
 /*
 
 Module:  GetPlatformForID.cpp
 
 Function:
-	Catena4410::GetPlatformForId()
+	CatenaSamd21::GetPlatformForId()
 
 Version:
-	V0.1.0	Mon Oct 17 2016 04:16:14 tmm	Edit level 1
+	V0.1.0	Tue Oct 25 2016 01:56:31 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#include "Catena4410.h"
+#include "CatenaSamd21.h"
 
 /****************************************************************************\
 |
@@ -69,23 +69,52 @@ Revision history:
 \****************************************************************************/
 
 const CATENA_PLATFORM * 
-Catena4410::GetPlatformForID(
+CatenaSamd21::GetPlatformForID(
 	const UniqueID_buffer_t pIdBuffer,
 	EUI64_buffer_t pSysEui
 	)
 	{
-	
-	for (size_t i = 0; i < nvCpuIdToPlatform; ++i)
+	return this->GetPlatformForID(pIdBuffer, pSysEui, NULL);
+	}
+
+const CATENA_PLATFORM * 
+CatenaSamd21::GetPlatformForID(
+	const UniqueID_buffer_t pIdBuffer,
+	EUI64_buffer_t pSysEui,
+	uint32_t *pOperatingFlags
+	)
+	{
+	const CATENA_CPUID_TO_PLATFORM *pMap;
+
+	pMap = &vCpuIdToPlatform[0];
+	for (size_t i = 0; i < nvCpuIdToPlatform; ++i, ++pMap)
 		{
-		if (memcmp(vCpuIdToPlatform[i].CpuID, pIdBuffer, 
-			   sizeof(vCpuIdToPlatform[i].CpuID)) == 0)
+		if (memcmp(pMap->CpuID, pIdBuffer, 
+			   sizeof(pMap->CpuID)) == 0)
 			{
-			memcpy(pSysEui, vCpuIdToPlatform[i].SysEUI,
-				sizeof(vCpuIdToPlatform[i].SysEUI));
-			return vCpuIdToPlatform[i].pPlatform;
+			const CATENA_PLATFORM *pPlatform;
+
+			memcpy(pSysEui, pMap->SysEUI,
+				sizeof(pMap->SysEUI));
+
+			pPlatform = pMap->pPlatform;
+			if (pOperatingFlags)
+				{
+				uint32_t Flags;
+
+				Flags = pPlatform->OperatingFlags;
+				Flags &= ~pMap->OperatingFlagsClear;
+				Flags |= pMap->OperatingFlagsSet;
+
+				*pOperatingFlags = Flags;
+				}
+
+			return pPlatform;
 			}
 		}
 
 	memset(pSysEui, sizeof(EUI64_buffer_t), 0);
+	if (pOperatingFlags)
+		*pOperatingFlags = 0;
 	return (CATENA_PLATFORM *) NULL;
 	}

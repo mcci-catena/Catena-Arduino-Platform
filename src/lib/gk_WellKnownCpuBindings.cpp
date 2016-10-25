@@ -54,7 +54,7 @@ Revision history:
 |
 \****************************************************************************/
 
-const CATENA_CPUID_TO_PLATFORM Catena4410::vCpuIdToPlatform[] =
+const CATENA_CPUID_TO_PLATFORM CatenaSamd21::vCpuIdToPlatform[] =
     {
 	{ CpuID:  { 0x08, 0x3b, 0xaf, 0x31, 0x35, 0x50, 0x4d, 0x51, 
 		    0x20, 0x20, 0x20, 0x33, 0x1b, 0x1f, 0x11, 0xff },
@@ -75,8 +75,8 @@ const CATENA_CPUID_TO_PLATFORM Catena4410::vCpuIdToPlatform[] =
 	},
     };
 
-const size_t Catena4410::nvCpuIdToPlatform =
-		MCCIADK_LENOF(Catena4410::vCpuIdToPlatform);
+const size_t CatenaSamd21::nvCpuIdToPlatform =
+		MCCIADK_LENOF(CatenaSamd21::vCpuIdToPlatform);
 
 /****************************************************************************\
 |

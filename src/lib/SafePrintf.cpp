@@ -5,7 +5,7 @@
 Module:  SafePrintf.cpp
 
 Function:
-	Catena4410::SafePrintf()
+	CatenaBase::SafePrintf()
 
 Version:
 	V0.1.0	Sat Oct 15 2016 22:38:20 tmm	Edit level 1
@@ -31,9 +31,8 @@ Revision history:
 
 */
 
-#include "Catena4410.h"
+#include "CatenaBase.h"
 
-#include <Arduino.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -74,7 +73,7 @@ Revision history:
 
 
 void 
-Catena4410::SafePrintf(
+CatenaBase::SafePrintf(
 	const char *fmt, 
 	...
 	)
