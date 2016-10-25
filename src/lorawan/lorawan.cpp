@@ -33,6 +33,7 @@ Revision history:
 
 #include <Catena4410.h>
 
+#include <Arduino_LoRaWAN_lmic.h>
 #include <hal/hal.h>
 
 /****************************************************************************\
