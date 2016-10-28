@@ -95,10 +95,11 @@ public:
 		{
 		return this->m_pPlatform;
 		}
-	const inline uint32_t GetPlatformFlags(void)
+	inline uint32_t GetOperatingFlags(void)
 		{
 		return this->m_OperatingFlags;
 		}
+	inline uint32_t GetPlatformFlags(void);		
 
 	/*
 	|| Class-level information
@@ -117,6 +118,16 @@ struct CATENA_PLATFORM
 	uint32_t		PlatformFlags;
 	uint32_t		OperatingFlags;
 	};
+
+inline uint32_t CatenaSamd21::GetPlatformFlags(void)
+	{
+	const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
+
+	if (pPlatform != NULL)
+		return pPlatform->PlatformFlags;
+	else
+		return 0;
+	}
 
 struct CATENA_CPUID_TO_PLATFORM
 	{
