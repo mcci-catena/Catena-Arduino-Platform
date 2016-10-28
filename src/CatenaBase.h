@@ -52,7 +52,7 @@ public:
 		char	c[sizeof(EUI64_buffer_t) * 3 + 1];
 		};
 
-	enum class OPERATING_FLAGS : uint32_t
+	enum OPERATING_FLAGS : uint32_t
 		{
 		fUnattended = 1 << 0,
 		};
