@@ -90,10 +90,10 @@ bool CatenaSamd21::begin(
     /* NOTYET */
 
     /* get the CPU ID */
-    this->GetUniqueID(CpuID);
+    this->GetUniqueID(&CpuID);
     this->m_pPlatform = this->GetPlatformForID(
-                                CpuID,
-                                this->m_SysEUI,
+                                &CpuID,
+                                &this->m_SysEUI,
                                 &OperatingFlags
                                 );
     this->m_OperatingFlags =

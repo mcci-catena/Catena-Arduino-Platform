@@ -1,4 +1,4 @@
-/* SafePrintf.cpp	Sat Oct 15 2016 22:38:20 tmm */
+/* SafePrintf.cpp	Thu Oct 27 2016 23:20:33 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaBase::SafePrintf()
 
 Version:
-	V0.1.0	Sat Oct 15 2016 22:38:20 tmm	Edit level 1
+	V0.3.0	Thu Oct 27 2016 23:20:33 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -83,10 +83,9 @@ CatenaBase::SafePrintf(
 
 	char buf[128];
 	va_list ap;
-	int nc;
 
 	va_start(ap, fmt);
-	nc = vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
+	(void) vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
 	va_end(ap);
 
 	// in case we overflowed:

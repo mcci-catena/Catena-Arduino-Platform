@@ -69,11 +69,13 @@ Revision history:
 \****************************************************************************/
 
 void CatenaSamd21::GetUniqueID(
-	UniqueID_buffer_t pIdBuffer
+	UniqueID_buffer_t *pIdBuffer
 	)
 	{
 	uint32_t const idWords[4] = { 0x80A00C, 0x80A040, 0x80A044, 0x80A048 };
+	uint8_t *p;
 
+	p = pIdBuffer->b;
 	for (unsigned i = 0; i < sizeof(idWords) / sizeof(idWords[0]); ++i)
 		{
 		uint32_t const * const pWord = (uint32_t *) idWords[i];
@@ -81,7 +83,7 @@ void CatenaSamd21::GetUniqueID(
 
 		for (unsigned j = 0; j < 4; ++j)
 			{
-			*pIdBuffer++ = (uint8_t) idWord;
+			*p++ = (uint8_t) idWord;
 			idWord >>= 8;
 			}
 		}

@@ -1,4 +1,4 @@
-/* CatenaBase.h	Tue Oct 25 2016 01:58:25 tmm */
+/* CatenaBase.h	Thu Oct 27 2016 22:46:30 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class CatenaBase interfaces.
 
 Version:
-	V0.1.0	Tue Oct 25 2016 01:58:25 tmm	Edit level 1
+	V0.3.0	Thu Oct 27 2016 22:46:30 tmm	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -29,6 +29,9 @@ Revision history:
    0.1.0  Tue Oct 25 2016 01:58:25  tmm
 	Module created.
 
+   0.3.0  Thu Oct 27 2016 22:46:30  tmm
+	Change buffer types away from array, types are just not intuitive.
+
 */
 
 #ifndef _CATENABASE_H_		/* prevent multiple includes */
@@ -41,10 +44,13 @@ class CatenaBase
 	{
 public:
 	/* an EUI64 */
-	typedef	uint8_t	EUI64_buffer_t[64/8];
-	typedef char EUI64_string_t[
-			sizeof(EUI64_buffer_t) * 3 + 1
-			];
+	struct EUI64_buffer_t {
+		uint8_t	b[64/8];
+		};
+	struct EUI64_string_t
+		{
+		char	c[sizeof(EUI64_buffer_t) * 3 + 1];
+		};
 
 	enum class OPERATING_FLAGS : uint32_t
 		{

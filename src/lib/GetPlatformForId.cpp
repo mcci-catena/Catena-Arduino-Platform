@@ -1,4 +1,4 @@
-/* GetPlatformForID.cpp	Tue Oct 25 2016 01:56:31 tmm */
+/* GetPlatformForID.cpp	Thu Oct 27 2016 23:03:33 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaSamd21::GetPlatformForId()
 
 Version:
-	V0.1.0	Tue Oct 25 2016 01:56:31 tmm	Edit level 2
+	V0.3.0	Thu Oct 27 2016 23:03:33 tmm	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -70,8 +70,8 @@ Revision history:
 
 const CATENA_PLATFORM * 
 CatenaSamd21::GetPlatformForID(
-	const UniqueID_buffer_t pIdBuffer,
-	EUI64_buffer_t pSysEui
+	const UniqueID_buffer_t *pIdBuffer,
+	EUI64_buffer_t *pSysEui
 	)
 	{
 	return this->GetPlatformForID(pIdBuffer, pSysEui, NULL);
@@ -79,8 +79,8 @@ CatenaSamd21::GetPlatformForID(
 
 const CATENA_PLATFORM * 
 CatenaSamd21::GetPlatformForID(
-	const UniqueID_buffer_t pIdBuffer,
-	EUI64_buffer_t pSysEui,
+	const UniqueID_buffer_t *pIdBuffer,
+	EUI64_buffer_t *pSysEui,
 	uint32_t *pOperatingFlags
 	)
 	{
@@ -89,13 +89,13 @@ CatenaSamd21::GetPlatformForID(
 	pMap = &vCpuIdToPlatform[0];
 	for (size_t i = 0; i < nvCpuIdToPlatform; ++i, ++pMap)
 		{
-		if (memcmp(pMap->CpuID, pIdBuffer, 
-			   sizeof(pMap->CpuID)) == 0)
+		if (memcmp(pMap->CpuID.b, pIdBuffer->b, 
+			   sizeof(pMap->CpuID.b)) == 0)
 			{
 			const CATENA_PLATFORM *pPlatform;
 
-			memcpy(pSysEui, pMap->SysEUI,
-				sizeof(pMap->SysEUI));
+			memcpy(pSysEui->b, pMap->SysEUI.b,
+				sizeof(pMap->SysEUI.b));
 
 			pPlatform = pMap->pPlatform;
 			if (pOperatingFlags)
@@ -113,7 +113,7 @@ CatenaSamd21::GetPlatformForID(
 			}
 		}
 
-	memset(pSysEui, sizeof(EUI64_buffer_t), 0);
+	memset(pSysEui, sizeof(pSysEui->b), 0);
 	if (pOperatingFlags)
 		*pOperatingFlags = 0;
 	return (CATENA_PLATFORM *) NULL;

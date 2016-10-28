@@ -1,4 +1,4 @@
-/* CatenaSamd21.h	Tue Oct 25 2016 02:00:28 tmm */
+/* CatenaSamd21.h	Thu Oct 27 2016 22:53:12 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class CatenaSamd21
 
 Version:
-	V0.1.0	Tue Oct 25 2016 02:00:28 tmm	Edit level 1
+	V0.3.0	Thu Oct 27 2016 22:53:12 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -29,6 +29,9 @@ Revision history:
    0.1.0  Tue Oct 25 2016 02:00:28  tmm
 	Module created.
 
+   0.3.0  Thu Oct 27 2016 22:53:12  tmm
+	Eliminate array types.
+
 */
 
 #ifndef _CATENASAMD21_H_		/* prevent multiple includes */
@@ -40,21 +43,27 @@ Revision history:
 
 #include "mcciadk_guid.h"
 
-typedef struct CATENA_PLATFORM_s  CATENA_PLATFORM;
-typedef struct CATENA_CPUID_TO_PLATFORM_s CATENA_CPUID_TO_PLATFORM;
+/* forward references */
+struct CATENA_PLATFORM;
+struct CATENA_CPUID_TO_PLATFORM;
 
+/* the class for Samd21-based Catenas */
 class CatenaSamd21 : public CatenaBase
 	{
 public:	
 	/*
 	|| Types
 	*/
-	typedef	uint8_t	UniqueID_buffer_t[128/8];
+	struct	UniqueID_buffer_t
+		{ 
+		uint8_t b[128/8];
+		};
 
 	/* a buffer big enough to hold a stringified UniqueID_buffer_t */
-	typedef char UniqueID_string_t[
-			sizeof(UniqueID_buffer_t) * 3 + 1
-			];
+	struct UniqueID_string_t
+		{
+		char	c[sizeof(UniqueID_buffer_t) * 3 + 1];
+		};
 
 	/*
 	|| Methods
@@ -64,22 +73,22 @@ public:
 	bool begin(uint32_t uClearMask, uint32_t uSetMask);
 
 	const CATENA_PLATFORM *GetPlatformForID(
-		const UniqueID_buffer_t pIdBuffer,
-		EUI64_buffer_t pSysEUI
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI
 		);
 
 	const CATENA_PLATFORM *GetPlatformForID(
-		const UniqueID_buffer_t pIdBuffer,
-		EUI64_buffer_t pSysEUI,
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI,
 		uint32_t *pOperatingFlags
 		);
 
 	void GetUniqueID(
-		UniqueID_buffer_t pIdBuffer
+		UniqueID_buffer_t *pIdBuffer
 		);
 
 	char *GetUniqueIDstring(
-		UniqueID_string_t pIdStringBuffer
+		UniqueID_string_t *pIdStringBuffer
 		);
 
 	const inline CATENA_PLATFORM *GetPlatform(void)
@@ -101,7 +110,7 @@ private:
 	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
-struct CATENA_PLATFORM_s
+struct CATENA_PLATFORM
 	{
 	MCCIADK_GUID		Guid;
 	const CATENA_PLATFORM	*pParent;
@@ -109,7 +118,7 @@ struct CATENA_PLATFORM_s
 	uint32_t		OperatingFlags;
 	};
 
-struct CATENA_CPUID_TO_PLATFORM_s
+struct CATENA_CPUID_TO_PLATFORM
 	{
 	CatenaSamd21::UniqueID_buffer_t	CpuID;
 
