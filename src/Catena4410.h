@@ -38,7 +38,7 @@ Revision history:
 # include "CatenaSamd21.h"
 #endif
 
-#include <Arduino_LoRaWAN.h>
+#include <Arduino_LoRaWAN_ttn.h>
 
 class Catena4410 : public CatenaSamd21
 	{
@@ -87,9 +87,10 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena4410
+|| The LoRaWAN class for the Catena4410. For now, we assume The Things
+|| Network.
 */
-class Catena4410::LoRaWAN : public Arduino_LoRaWAN
+class Catena4410::LoRaWAN : public Arduino_LoRaWAN_ttn
 	{
 public:
 	/*
@@ -103,8 +104,26 @@ public:
 	|| the connection. 
 	*/
 	bool begin(void);
-	};
 
+protected:
+	/*
+	|| we have to provide these for the lower level
+	*/
+	ProvisioningStyle GetProvisioningStyle(void);
+
+	bool GetAbpProvisioningInfo(
+			AbpProvisioningInfo *pProvisioningInfo
+			);
+
+	bool GetOtaaProvisioningInfo(
+			OtaaProvisioningInfo *pProvisioningInfo
+			);
+
+private:
+	ProvisioningStyle	m_ProvisioningStyle;
+	AbpProvisioningInfo	m_AbpProvisioningInfo;
+	OtaaProvisioningInfo	m_OtaaProvisioningInfo;
+	};
 
 /**** end of Catena4410.h ****/
 #endif /* _CATENA4410_H_ */
