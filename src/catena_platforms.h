@@ -1,4 +1,4 @@
-/* catena_platforms.h	Mon Oct 17 2016 03:35:01 tmm */
+/* catena_platforms.h	Mon Oct 31 2016 13:52:28 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The global platform definitions.
 
 Version:
-	V0.1.0	Mon Oct 17 2016 03:35:01 tmm	Edit level 1
+	V0.3.0	Mon Oct 31 2016 13:52:28 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -29,6 +29,9 @@ Revision history:
    0.1.0  Mon Oct 17 2016 03:35:01  tmm
 	Module created.
 
+   0.3.0  Mon Oct 31 2016 13:52:28  tmm
+	Add anatolian platform.
+
 */
 
 #ifndef _CATENA_PLATFORMS_H_		/* prevent multiple includes */
@@ -41,6 +44,7 @@ extern const CATENA_PLATFORM	gkPlatformFeatherM0;
 extern const CATENA_PLATFORM	gkPlatformM0LoRa;
 extern const CATENA_PLATFORM	gkPlatformM0LoRaTtnNyc;
 extern const CATENA_PLATFORM	gkPlatformCatena4410;
+extern const CATENA_PLATFORM	gkPlatformCatena4410_anatolian;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_gh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_mh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_swh; 

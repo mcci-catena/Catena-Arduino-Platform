@@ -1,4 +1,4 @@
-/* gk_PlatformHierarchy.cpp	Mon Oct 17 2016 01:25:15 tmm */
+/* gk_PlatformHierarchy.cpp	Mon Oct 31 2016 13:49:37 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The hierarchy table.
 
 Version:
-	V0.1.0	Mon Oct 17 2016 01:25:15 tmm	Edit level 1
+	V0.3.0	Mon Oct 31 2016 13:49:37 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.1.0  Mon Oct 17 2016 01:25:15  tmm
 	Module created.
+
+   0.3.0  Mon Oct 31 2016 13:49:37  tmm
+	Add sensor for Anatolian project.
 
 */
 
@@ -90,7 +93,7 @@ const CATENA_PLATFORM gkPlatformCatena4410 =
 
 const CATENA_PLATFORM gkPlatformCatena4410_gh =
 	{
-	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
+	Guid: GUID_HW_CATENA_4410_GH(NATIVE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:	
 		Catena4410::fHasLoRa |
@@ -103,7 +106,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_gh =
 
 const CATENA_PLATFORM gkPlatformCatena4410_mh =
 	{
-	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
+	Guid: GUID_HW_CATENA_4410_MH(NATIVE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:	
 		Catena4410::fHasLoRa |
@@ -115,7 +118,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_mh =
 
 const CATENA_PLATFORM gkPlatformCatena4410_swh =
 	{
-	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
+	Guid: GUID_HW_CATENA_4410_SWH(NATIVE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:	
 		Catena4410::fHasLoRa |
@@ -127,7 +130,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_swh =
 
 const CATENA_PLATFORM gkPlatformCatena4410_pond =
 	{
-	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
+	Guid: GUID_HW_CATENA_4410_POND(NATIVE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:	
 		Catena4410::fHasLoRa |
@@ -135,6 +138,21 @@ const CATENA_PLATFORM gkPlatformCatena4410_pond =
 		Catena4410::fHasBme280 |
 		Catena4410::fHasLux |
 		Catena4410::fHasSoilProbe |
+		Catena4410::fHasSolarPanel |
+		Catena4410::fHasWaterOneWire,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4410_anatolian =
+	{
+	Guid: GUID_HW_CATENA_4410_ANATOLIAN(NATIVE),
+	pParent: &gkPlatformCatena4410,
+	PlatformFlags:	
+		Catena4410::fHasLoRa |
+		Catena4410::fHasTtnNycLoRa |
+		Catena4410::fHasBme280 |
+		Catena4410::fHasLux |
+		Catena4410::fHasSoilProbe |
+		Catena4410::fHasSolarPanel |
 		Catena4410::fHasWaterOneWire,
 	};
 

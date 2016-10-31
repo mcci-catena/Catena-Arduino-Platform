@@ -1,4 +1,4 @@
-/* catena4410_guids.h	Mon Oct 17 2016 01:15:25 tmm */
+/* catena4410_guids.h	Mon Oct 31 2016 14:40:06 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	GUIDs for the Catena4410 family.
 
 Version:
-	V0.1.0	Mon Oct 17 2016 01:15:25 tmm	Edit level 1
+	V0.3.0	Mon Oct 31 2016 14:40:06 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -67,6 +67,9 @@ Revision history:
 #define	GUID_HW_CATENA_4410_POND(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0xcc0889ad, 0x8db8, 0x485a, 0x9e, 0xdc, 0x1, 0xfc, 0x78, 0x46, 0xaf, 0xc4)
 
+// {E19FE1DD-6881-4EF0-AD01-C1B6E19EDA34}
+#define	GUID_HW_CATENA_4410_ANATOLIAN(f)	\
+	MCCIADK_GUID_GEN_INIT(f,  0xe19fe1dd, 0x6881, 0x4ef0, 0xad, 0x1, 0xc1, 0xb6, 0xe1, 0x9e, 0xda, 0x34)
 
 /**** end of catena4410_guids.h ****/
 #endif /* _CATENA4410_GUIDS_H_ */
