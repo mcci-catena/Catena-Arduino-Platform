@@ -27,7 +27,8 @@ Author:
 
 Revision history:
    0.1.0  Tue Oct 25 2016 03:42:18  tmm
-	Module created.
+	Module created. Note that since this lives in a library with
+	lib/begin.cpp, we must have a different file name.
 
 */
 
@@ -69,5 +70,8 @@ Revision history:
 
 bool Catena4410::LoRaWAN::begin(void)
 	{
-	return this->Arduino_LoRaWAN::begin();
+	/* first call the base begin */
+	if (! this->Arduino_LoRaWAN::begin())
+		return false;
+
 	}
