@@ -39,10 +39,9 @@ Revision history:
 |
 \****************************************************************************/
 
-#if 0
-extern const Arduino_LoRaWAN::ProvisioningTable gk_LoRaWAN_Keys
-        /* __attribute__((__weak__)) */;
-#endif
+#if 1
+
+#else
 
 static const Arduino_LoRaWAN::ProvisioningInfo
 skProvisioningInfo[] =
@@ -76,6 +75,7 @@ gk_LoRaWAN_Keys =
 	pInfo: skProvisioningInfo,
 	nInfo: MCCIADK_LENOF(skProvisioningInfo)
 	};
+#endif
 
 /****************************************************************************\
 |
@@ -96,7 +96,7 @@ Catena4410::GetProvisioningInfo(
         )
         {
         const Arduino_LoRaWAN::ProvisioningTable * const pTable =
-                &gk_LoRaWAN_Keys;
+                &Catena4410::gk_LoRaWAN_Keys;
 
         if (! pTable)
                 return NULL;
