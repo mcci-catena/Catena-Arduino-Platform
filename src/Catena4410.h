@@ -56,6 +56,7 @@ public:
 		PIN_SX1276_NRESET = 4,
 		PIN_SX1276_DIO0 = 3,
 		PIN_SX1276_DIO1 = 6,
+		PIN_STATUS_LED = 13,
 		};
 	enum PLATFORM_FLAGS : uint32_t
 		{
@@ -83,6 +84,7 @@ public:
 	class LoRaWAN /* forward */;
 
 private:
+	const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
 	const CATENA_PLATFORM *m_pPlatform;
 	};
 
@@ -93,6 +95,7 @@ private:
 class Catena4410::LoRaWAN : public Arduino_LoRaWAN_ttn
 	{
 public:
+
 	/*
 	|| the constructor.
 	*/
@@ -103,7 +106,7 @@ public:
 	|| platform's stable storage and initializes
 	|| the connection. 
 	*/
-	bool begin(void);
+	bool begin(Catena4410 *pCatena4410);
 
 protected:
 	/*
@@ -120,9 +123,8 @@ protected:
 			);
 
 private:
-	ProvisioningStyle	m_ProvisioningStyle;
-	AbpProvisioningInfo	m_AbpProvisioningInfo;
-	OtaaProvisioningInfo	m_OtaaProvisioningInfo;
+	Catena4410		*m_pCatena4410;
+	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
 /**** end of Catena4410.h ****/

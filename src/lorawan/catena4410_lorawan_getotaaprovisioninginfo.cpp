@@ -61,10 +61,26 @@ Catena4410::LoRaWAN::GetOtaaProvisioningInfo(
         Catena4410::LoRaWAN::OtaaProvisioningInfo *pInfo
         )
         {
-        if (pInfo)
+        Catena4410 * const pCatena = this->m_pCatena4410;
+        const ProvisioningInfo * const pInstance = pCatena->GetProvisioningInfo();
+
+        if (! pInstance || 
+            pInstance->Style != ProvisioningStyle::kOTAA)
                 {
-                memset(pInfo, 0, sizeof(*pInfo));
+                if (pInfo)
+                        {
+                        // ensure consistent behavior
+                        memset(pInfo, 0, sizeof(*pInfo));
+                        }
+        
+                return false;
                 }
         
-        return false;
+        // got instance data
+        if (pInfo)
+                {
+                *pInfo = pInstance->OtaaInfo;
+                }
+
+        return true;
         }

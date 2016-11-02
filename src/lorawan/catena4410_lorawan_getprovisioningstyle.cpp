@@ -64,5 +64,21 @@ Catena4410::LoRaWAN::GetProvisioningStyle(
         void
         )
         {
-        return Arduino_LoRaWAN::ProvisioningStyle::kNone;
+        Catena4410 * const pCatena = this->m_pCatena4410;
+        const ProvisioningInfo * const pInstance = pCatena->GetProvisioningInfo();
+
+        if (! pInstance)
+                {
+                ARDUINO_LORAWAN_PRINTF(
+                        LogVerbose,
+                        "%s: no provisioning info\n",
+                        __func__
+                        );
+
+                return Arduino_LoRaWAN::ProvisioningStyle::kNone;
+                }
+        else
+                {
+                return pInstance->Style;
+                }
         }

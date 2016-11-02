@@ -68,8 +68,14 @@ Revision history:
 |
 \****************************************************************************/
 
-bool Catena4410::LoRaWAN::begin(void)
+bool Catena4410::LoRaWAN::begin(
+	Catena4410 *pParent
+	)
 	{
+	this->m_pCatena4410 = pParent;
+	this->m_pPlatform = pParent->GetPlatform();
+	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
+
 	/* first call the base begin */
 	if (! this->Arduino_LoRaWAN::begin())
 		return false;

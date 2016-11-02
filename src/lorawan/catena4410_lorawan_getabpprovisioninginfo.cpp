@@ -61,10 +61,33 @@ Catena4410::LoRaWAN::GetAbpProvisioningInfo(
         Catena4410::LoRaWAN::AbpProvisioningInfo *pInfo
         )
         {
-        if (pInfo)
+        Catena4410 * const pCatena = this->m_pCatena4410;
+        const ProvisioningInfo * const pInstance = pCatena->GetProvisioningInfo();
+
+        if (! pInstance)
+                ARDUINO_LORAWAN_PRINTF(
+                        LogVerbose,
+                        "%s: no provisioning info\n",
+                        __func__
+                        );
+
+        if (! pInstance || 
+            pInstance->Style != ProvisioningStyle::kABP)
                 {
-                memset(pInfo, 0, sizeof(*pInfo));
+                if (pInfo)
+                        {
+                        // ensure consistent behavior
+                        memset(pInfo, 0, sizeof(*pInfo));
+                        }
+        
+                return false;
                 }
         
-        return false;
+        // got instance data
+        if (pInfo)
+                {
+                *pInfo = pInstance->AbpInfo;
+                }
+
+        return true;
         }
