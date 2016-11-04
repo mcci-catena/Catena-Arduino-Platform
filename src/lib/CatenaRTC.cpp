@@ -39,7 +39,7 @@ bool CatenaRTC::begin(bool fResetTime)
         return true;
 	}
 
-const uint8_t CatenaRTC::md[13] =
+const uint16_t CatenaRTC::md[13] =
         {
         0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
         };
@@ -66,7 +66,6 @@ CatenaRTC::GetTime(void)
 void CatenaRTC::SetAlarm(uint32_t delta)
         {
         CalendarTime now = GetTime();
-        uint8_t d;
 
         now.Advance(delta);
         SetAlarm(&now);
@@ -194,7 +193,6 @@ CatenaRTC::CalendarTime::Advance(
 	if (delta == 0)
 		return result;
 
-	uint8_t monMax;
 	uint8_t leapYear = (Year & 0x3) ? 0 : 1;
 	uint8_t firstDay = CatenaRTC::md[Month - 1];
 	uint8_t lastDay = CatenaRTC::md[Month];
@@ -211,7 +209,7 @@ CatenaRTC::CalendarTime::Advance(
 
 	// now we just propagate carry
 	++Day;
-	if (Day <= monMax)
+	if (Day <= lastDay)
 		return result;
 
 	Day = 1;

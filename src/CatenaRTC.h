@@ -77,7 +77,7 @@ public:
 
 private:
         volatile uint32_t m_Alarm;
-	static const uint8_t md[13];
+	static const uint16_t md[13];
         };
 
 
