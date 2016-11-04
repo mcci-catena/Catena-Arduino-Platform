@@ -33,6 +33,8 @@ Revision history:
 */
 
 #include <Catena4410.h>
+
+#include <mcciadk_baselib.h>
 
 /****************************************************************************\
 |
@@ -80,4 +82,9 @@ bool Catena4410::LoRaWAN::begin(
 	if (! this->Arduino_LoRaWAN::begin())
 		return false;
 
+        /* here's where we do any required post-processing */
+        /* (none at the moment) */
+
+        /* indicate success to the client */
+        return true;
 	}
