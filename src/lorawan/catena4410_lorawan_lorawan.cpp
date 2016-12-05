@@ -1,8 +1,8 @@
-/* lorawan.cpp	Tue Oct 25 2016 03:53:26 tmm */
+/* catena4410_lorawan_lorawan.cpp	Tue Oct 25 2016 03:53:26 tmm */
 
 /*
 
-Module:  lorawan.cpp
+Module:  catena4410_lorawan_lorawan.cpp
 
 Function:
 	Catena4410::LoRaWAN::LoRaWAN()
