@@ -49,6 +49,8 @@ extern const CATENA_PLATFORM	gkPlatformCatena4410_gh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_mh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_swh; 
 extern const CATENA_PLATFORM	gkPlatformCatena4410_pond;
+extern const CATENA_PLATFORM    gkPlatformFeatherM0Proto;
+extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
 
 /**** end of catena_platforms.h ****/
 #endif /* _CATENA_PLATFORMS_H_ */

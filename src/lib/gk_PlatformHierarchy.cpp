@@ -72,6 +72,22 @@ const CATENA_PLATFORM	gkPlatformM0LoRa =
 	PlatformFlags:	Catena4410::fHasLoRa,
 	};
 
+const CATENA_PLATFORM	gkPlatformFeatherM0Proto =
+	{
+	Guid: GUID_HW_FEATHER_M0_PROTO(NATIVE),
+	pParent: NULL,
+	PlatformFlags: 0,
+	};
+
+
+const CATENA_PLATFORM   gkPlatformFeatherM0ProtoWingLora =
+        {
+	Guid: GUID_HW_FEATHER_M0_PROTO_WINGLORA_TTNMCCI(NATIVE),
+	pParent: &gkPlatformFeatherM0Proto,
+	PlatformFlags:	CatenaSamd21::fHasLoRa |
+                        CatenaSamd21::fHasTtnMcciLoRa,
+        };
+
 const CATENA_PLATFORM	gkPlatformM0LoRaTtnNyc =
 	{
 	Guid: GUID_HW_FEATHER_M0_LORA_TTNNYC(NATIVE),
