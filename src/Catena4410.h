@@ -1,4 +1,4 @@
-/* Catena4410.h	Mon Oct 24 2016 23:40:17 tmm */
+/* Catena4410.h	Sun Dec  4 2016 20:01:55 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Arduino library header for Catena 4410
 
 Version:
-	V0.1.0	Mon Oct 24 2016 23:40:17 tmm	Edit level 2
+	V0.4.0	Sun Dec  4 2016 20:01:55 tmm	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -26,27 +26,26 @@ Author:
 	Terry Moore, MCCI Corporation	October 2016
 
 Revision history:
-   1.00a  Sat Oct 15 2016 22:12:56  tmm
+   0.1.0  Sat Oct 15 2016 22:12:56  tmm
 	Module created.
+
+   0.4.0  Sun Dec  4 2016 20:01:55  tmm
+	Refactor based on CatenaFeatherM0.
 
 */
 
 #ifndef _CATENA4410_H_		/* prevent multiple includes */
 #define _CATENA4410_H_
 
-#ifndef _CATENASAMD21_H_
-# include "CatenaSamd21.h"
+#ifndef _CATENAFEATHERM0_H_
+# include "CatenaFeatherM0.h"
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>
 
-class Catena4410 : public CatenaSamd21
+class Catena4410 : public CatenaFeatherM0
 	{
 public:
-	enum ANALOG_PINS
-		{
-		APIN_VBAT_SENSE = A7,
-		};
 	enum DIGITAL_PINS
 		{
 		PIN_ONE_WIRE = 0,
@@ -56,15 +55,12 @@ public:
 		PIN_SX1276_NRESET = 4,
 		PIN_SX1276_DIO0 = 3,
 		PIN_SX1276_DIO1 = 6,
-		PIN_STATUS_LED = 13,
 		};
 	
 	/*
 	|| Methods
 	*/
 	Catena4410();
-
-	float ReadVbat(void);
 
 	/*
 	|| LoRaWAN binding

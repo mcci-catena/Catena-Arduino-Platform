@@ -5,7 +5,7 @@
 Module:  ReadVbat.cpp
 
 Function:
-	Catena4410::ReadVbat()
+	CatenaFeatherM0::ReadVbat()
 
 Version:
 	V0.1.0	Sat Oct 15 2016 23:33:29 tmm	Edit level 1
@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#include "Catena4410.h"
+#include "CatenaFeatherM0.h"
 
 #include "Arduino.h"
 
@@ -71,9 +71,9 @@ Revision history:
 \****************************************************************************/
 
 float 
-Catena4410::ReadVbat(void)
+CatenaFeatherM0::ReadVbat(void)
 {
-  float rawVoltage = analogRead(Catena4410::APIN_VBAT_SENSE);
+  float rawVoltage = analogRead(CatenaFeatherM0::APIN_VBAT_SENSE);
   return rawVoltage * 2 * 3.3 / 1024;
 }
 
