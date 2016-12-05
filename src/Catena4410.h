@@ -67,9 +67,11 @@ public:
 	*/
 	class LoRaWAN /* forward */;
 
+protected:
+	using Super = CatenaFeatherM0;
+        virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
+
 private:
-	const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
-	const CATENA_PLATFORM *m_pPlatform;
         static const Arduino_LoRaWAN::ProvisioningTable gk_LoRaWAN_Keys
                 /* __attribute__((__weak__)) */;
 	};

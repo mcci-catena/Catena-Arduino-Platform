@@ -54,12 +54,11 @@ Revision history:
 \****************************************************************************/
 
 const Arduino_LoRaWAN::ProvisioningInfo *
-Catena4410::GetProvisioningInfo(
+CatenaFeatherM0::GetProvisioningInfo(
         void
         )
         {
-        const Arduino_LoRaWAN::ProvisioningTable * const pTable =
-                &Catena4410::gk_LoRaWAN_Keys;
+        const Arduino_LoRaWAN::ProvisioningTable * const pTable = this->GetLoRaWANkeys();
 
         const EUI64_buffer_t * const pSysEUI = this->GetSysEUI();
 

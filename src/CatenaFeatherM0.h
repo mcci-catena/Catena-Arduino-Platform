@@ -1,4 +1,3 @@
-/* CatenaFeatherM0.h	Sun Dec  4 2016 19:57:13 tmm */
 
 /*
 
@@ -40,6 +39,8 @@ Revision history:
 # include "CatenaSamd21.h"
 #endif
 
+#include <Arduino_LoRaWAN.h>
+
 class CatenaFeatherM0 : public CatenaSamd21
 	{
 public:
@@ -61,6 +62,13 @@ public:
 	float ReadVbat(void);
 
 protected:
+        // methods
+        virtual const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
+        virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const
+                { return nullptr; }
+
+        // instance data
+        const CATENA_PLATFORM *m_pPlatform;
 
 private:
 	};
