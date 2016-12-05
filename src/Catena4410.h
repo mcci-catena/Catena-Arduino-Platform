@@ -58,18 +58,6 @@ public:
 		PIN_SX1276_DIO1 = 6,
 		PIN_STATUS_LED = 13,
 		};
-	enum PLATFORM_FLAGS : uint32_t
-		{
-		fHasLoRa = 1 << 0,
-		fHasBLE = 1 << 1,
-		fHasWiFi = 1 << 2,
-		fHasTtnNycLoRa = 1 << 3,
-		fHasBme280 = 1 << 4,
-		fHasLux = 1 << 5,
-		fHasSoilProbe = 1 << 6,
-		fHasSolarPanel = 1 << 7,
-		fHasWaterOneWire = 1 << 8,
-		};
 	
 	/*
 	|| Methods

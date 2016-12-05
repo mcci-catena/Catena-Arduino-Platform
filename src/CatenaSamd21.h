@@ -65,6 +65,31 @@ public:
 		char	c[sizeof(UniqueID_buffer_t) * 3 + 1];
 		};
 
+        // flags that describe generic platform capabilities
+	enum PLATFORM_FLAGS : uint32_t
+		{
+                // platform has LoRa
+		fHasLoRa = 1 << 0,
+                // platform has Bluetooth LE
+		fHasBLE = 1 << 1,
+                // platform has Wi-Fi
+		fHasWiFi = 1 << 2,
+                // platform not only has LoRa, but it's wired according to TTN NYC standards
+		fHasTtnNycLoRa = 1 << 3,
+                // platform supports the BME280
+		fHasBme280 = 1 << 4,
+                // platform supports the Lux meter
+		fHasLux = 1 << 5,
+                // platform supports soil probe
+		fHasSoilProbe = 1 << 6,
+                // platform supports external solar panel
+		fHasSolarPanel = 1 << 7,
+                // platform supports one-wire temperature sensor
+		fHasWaterOneWire = 1 << 8,
+                // platform not only has LoRa, but it's wired per the MCCI RadioWing standard
+                fHasTtnMcciLoRa = 1 << 9,
+		};
+
 	/*
 	|| Methods
 	*/
