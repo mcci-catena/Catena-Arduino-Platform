@@ -47,9 +47,9 @@ public:
 		{
 		PIN_SX1276_NSS = 6,
 		PIN_SX1276_NRESET = 5,
-		PIN_SX1276_DIO0 = 11,
-		PIN_SX1276_DIO1 = 10,
-		PIN_SX1276_IRQ = 9,
+		PIN_SX1276_DIO0 = 12,    // pin assignment for DIO0 (aka IRQ)
+		PIN_SX1276_DIO1 = 11,
+		PIN_SX1276_DIO2 = 10,
 		};
 	
 	/*

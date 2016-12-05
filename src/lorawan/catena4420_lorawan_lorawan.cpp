@@ -63,9 +63,10 @@ static const Arduino_LoRaWAN::lmic_pinmap lmic_pins_4420 =
     .rxtx = Arduino_LoRaWAN::lmic_pinmap::LMIC_UNUSED_PIN,
     .rst = Catena4420::PIN_SX1276_NRESET,   // reset pin
 
-    .dio = {Catena4420::PIN_SX1276_DIO0,    // DIO0 is hardwired to GPIO3
-            Catena4420::PIN_SX1276_DIO1,    // DIO1 is jumpered to GPIO6
-            Arduino_LoRaWAN::lmic_pinmap::LMIC_UNUSED_PIN}, 
+    .dio = {Catena4420::PIN_SX1276_DIO0,    // DIO0 (IRQ) is D9
+            Catena4420::PIN_SX1276_DIO1,    // DIO1 is D11
+            Catena4420::PIN_SX1276_DIO2,    // DIO2 is D10
+            },
 };
 
 
