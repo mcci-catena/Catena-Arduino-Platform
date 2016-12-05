@@ -71,7 +71,7 @@ Revision history:
 \****************************************************************************/
 
 float 
-CatenaFeatherM0::ReadVbat(void)
+CatenaFeatherM0::ReadVbat(void) const
 {
   float rawVoltage = analogRead(CatenaFeatherM0::APIN_VBAT_SENSE);
   return rawVoltage * 2 * 3.3 / 1024;

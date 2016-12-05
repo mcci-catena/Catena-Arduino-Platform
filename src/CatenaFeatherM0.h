@@ -59,7 +59,7 @@ public:
 		};
 
 	// read the current battery voltage, in engineering units
-	float ReadVbat(void);
+	float ReadVbat(void) const;
 
 protected:
         // methods
