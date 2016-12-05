@@ -1,11 +1,11 @@
-/* catena4410_getlorawankeys.cpp	Sun Dec  4 2016 22:26:46 tmm */
+/* catena4420_getlorawankeys.cpp	Sun Dec  4 2016 22:26:46 tmm */
 
 /*
 
-Module:  catena4410_getlorawankeys.cpp
+Module:  catena4420_getlorawankeys.cpp
 
 Function:
-	Catena4410::GetLoRaWANkeys()
+	Catena4420::GetLoRaWANkeys()
 
 Version:
 	V0.4.0	Sun Dec  4 2016 22:26:46 tmm	Edit level 1
@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#include <Catena4410.h>
+#include <Catena4420.h>
 
 /****************************************************************************\
 |
@@ -69,9 +69,9 @@ Revision history:
 \****************************************************************************/
 
 const Arduino_LoRaWAN::ProvisioningTable *
-Catena4410::GetLoRaWANkeys(
+Catena4420::GetLoRaWANkeys(
 	void
 	) const
 	{
-	return &Catena4410::gk_LoRaWAN_Keys;
+	return &Catena4420::gk_LoRaWAN_Keys;
 	}

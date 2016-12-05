@@ -1,14 +1,14 @@
-/* Catena4410.h	Sun Dec  4 2016 20:01:55 tmm */
+/* Catena4420.h	Sun Dec  4 2016 23:45:17 tmm */
 
 /*
 
-Module:  Catena4410.h
+Module:  Catena4420.h
 
 Function:
-	Arduino library header for Catena 4410
+	class Catena4420 (Aduino header file)
 
 Version:
-	V0.4.0	Sun Dec  4 2016 20:01:55 tmm	Edit level 3
+	V0.4.0	Sun Dec  4 2016 23:45:17 tmm	Edit level 1
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -23,19 +23,16 @@ Copyright notice:
 	copied without the prior permission of MCCI Corporation.
  
 Author:
-	Terry Moore, MCCI Corporation	October 2016
+	Terry Moore, MCCI Corporation	December 2016
 
 Revision history:
-   0.1.0  Sat Oct 15 2016 22:12:56  tmm
+   0.4.0  Sun Dec  4 2016 23:45:17  tmm
 	Module created.
-
-   0.4.0  Sun Dec  4 2016 20:01:55  tmm
-	Refactor based on CatenaFeatherM0.
 
 */
 
-#ifndef _CATENA4410_H_		/* prevent multiple includes */
-#define _CATENA4410_H_
+#ifndef _CATENA4420_H_		/* prevent multiple includes */
+#define _CATENA4420_H_
 
 #ifndef _CATENAFEATHERM0_H_
 # include "CatenaFeatherM0.h"
@@ -43,24 +40,22 @@ Revision history:
 
 #include <Arduino_LoRaWAN_ttn.h>
 
-class Catena4410 : public CatenaFeatherM0
+class Catena4420 : public CatenaFeatherM0
 	{
 public:
 	enum DIGITAL_PINS
 		{
-		PIN_ONE_WIRE = 0,
-		PIN_SHT10_CLK = 11,
-		PIN_SHT10_DATA = 10,
-		PIN_SX1276_NSS = 8,
-		PIN_SX1276_NRESET = 4,
-		PIN_SX1276_DIO0 = 3,
-		PIN_SX1276_DIO1 = 6,
+		PIN_SX1276_NSS = 6,
+		PIN_SX1276_NRESET = 5,
+		PIN_SX1276_DIO0 = 11,
+		PIN_SX1276_DIO1 = 10,
+		PIN_SX1276_IRQ = 9,
 		};
 	
 	/*
 	|| Methods
 	*/
-	Catena4410();
+	Catena4420();
 
 	/*
 	|| LoRaWAN binding
@@ -80,42 +75,41 @@ private:
 || The LoRaWAN class for the Catena4410. For now, we assume The Things
 || Network.
 */
-class Catena4410::LoRaWAN : public Arduino_LoRaWAN_ttn
+class Catena4420::LoRaWAN : public CatenaFeatherM0::LoRaWAN
 	{
 public:
-        using Super = Arduino_LoRaWAN_ttn;
+        using Super = CatenaFeatherM0::LoRaWAN;
 
 	/*
 	|| the constructor.
 	*/
 	LoRaWAN();
         LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
-		
+
 	/*
 	|| the begin function loads data from the local
 	|| platform's stable storage and initializes
 	|| the connection. 
 	*/
-	bool begin(Catena4410 *pCatena4410);
+	// bool begin(CatenaFeatherM0 *pCatena4420);
 
 protected:
 	/*
-	|| we have to provide these for the lower level
+	|| we use the defaults
 	*/
-	ProvisioningStyle GetProvisioningStyle(void);
+	// ProvisioningStyle GetProvisioningStyle(void);
 
-	bool GetAbpProvisioningInfo(
-			AbpProvisioningInfo *pProvisioningInfo
-			);
+	// bool GetAbpProvisioningInfo(
+	//		AbpProvisioningInfo *pProvisioningInfo
+	//		);
 
-	bool GetOtaaProvisioningInfo(
-			OtaaProvisioningInfo *pProvisioningInfo
-			);
+	// bool GetOtaaProvisioningInfo(
+	//		OtaaProvisioningInfo *pProvisioningInfo
+	//		);
 
 private:
-	Catena4410		*m_pCatena4410;
-	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
-/**** end of Catena4410.h ****/
-#endif /* _CATENA4410_H_ */
+
+/**** end of Catena4420.h ****/
+#endif /* _CATENA4420_H_ */

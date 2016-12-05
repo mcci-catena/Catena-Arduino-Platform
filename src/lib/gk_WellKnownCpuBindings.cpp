@@ -164,8 +164,8 @@ const CATENA_CPUID_TO_PLATFORM CatenaSamd21::vCpuIdToPlatform[] =
                     0x20, 0x20, 0x20, 0x35, 0x20, 0x21, 0x10, 0xff },
 	  pPlatform: &gkPlatformFeatherM0ProtoWingLora,
 	  SysEUI: { 0x00, 0x02, 0xcc, 0x01, 0x00, 0x00, 0x00, 0x0c},
-          OperatingFlagsClear: 0,
-          OperatingFlagsSet: fUnattended,
+          OperatingFlagsClear: fUnattended,
+          OperatingFlagsSet: /* fUnattended */ 0,
 	},
 
     };

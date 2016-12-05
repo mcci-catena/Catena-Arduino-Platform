@@ -39,13 +39,16 @@ Revision history:
 # include "CatenaSamd21.h"
 #endif
 
-#include <Arduino_LoRaWAN.h>
+#include <Arduino_LoRaWAN_ttn.h>
 
 class CatenaFeatherM0 : public CatenaSamd21
 	{
 public:
 	CatenaFeatherM0() {};
 	~CatenaFeatherM0() {};
+
+	// forward reference
+	class LoRaWAN;
 
 	// all FeatherM0s put vbat on A7
 	enum ANALOG_PINS
@@ -71,6 +74,43 @@ protected:
         const CATENA_PLATFORM *m_pPlatform;
 
 private:
+	};
+
+class CatenaFeatherM0::LoRaWAN : public Arduino_LoRaWAN_ttn
+	{
+public:
+        using Super = Arduino_LoRaWAN_ttn;
+
+	/*
+	|| the constructor.
+	*/
+	LoRaWAN();
+        LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
+		
+	/*
+	|| the begin function loads data from the local
+	|| platform's stable storage and initializes
+	|| the connection. 
+	*/
+	virtual bool begin(CatenaFeatherM0 *pCatena);
+
+protected:
+	/*
+	|| we have to provide these for the lower level
+	*/
+	virtual ProvisioningStyle GetProvisioningStyle(void);
+
+	virtual bool GetAbpProvisioningInfo(
+			AbpProvisioningInfo *pProvisioningInfo
+			);
+
+	virtual bool GetOtaaProvisioningInfo(
+			OtaaProvisioningInfo *pProvisioningInfo
+			);
+
+private:
+	CatenaFeatherM0		*m_pCatena;
+	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
 /**** end of CatenaFeatherM0.h ****/
