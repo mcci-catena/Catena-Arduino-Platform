@@ -1,4 +1,4 @@
-/* gk_WellKnownCpuBindings.cpp	Mon Oct 31 2016 13:22:28 tmm */
+/* gk_WellKnownCpuBindings.cpp	Sun Dec  4 2016 23:11:21 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The table of well-known CPU-instance to platform bindings.
 
 Version:
-	V0.3.0	Mon Oct 31 2016 13:22:28 tmm	Edit level 2
+	V0.4.0	Sun Dec  4 2016 23:11:21 tmm	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.1.0  Mon Oct 17 2016 03:38:02  tmm
 	Module created.
+
+   0.4.0  Sun Dec  4 2016 23:11:21  tmm
+	Add new platform instance.
 
 */
 
@@ -58,7 +61,7 @@ Revision history:
 function _cpuid { 
         echo "$1" | 
         sed -e 's/^/0x/' -e 's/-/, 0x/g' | 
-        nawk '{ 
+        awk '{ 
                 $1 = "        { CpuID:  { " $1; 
                 $8 = $8 "\n\t\t   "; 
                 $16 = $16 " },"; 
@@ -153,6 +156,14 @@ const CATENA_CPUID_TO_PLATFORM CatenaSamd21::vCpuIdToPlatform[] =
 		    0x20, 0x20, 0x20, 0x33, 0x27, 0x1a, 0x13, 0xff },
 	  pPlatform: &gkPlatformCatena4410_anatolian,
 	  SysEUI: { 0x00, 0x02, 0xcc, 0x01, 0x00, 0x00, 0x00, 0x0b},
+          OperatingFlagsClear: 0,
+          OperatingFlagsSet: fUnattended,
+	},
+
+        { CpuID:  { 0xec, 0x26, 0xe8, 0x50, 0x35, 0x50, 0x4d, 0x51,
+                    0x20, 0x20, 0x20, 0x35, 0x20, 0x21, 0x10, 0xff },
+	  pPlatform: &gkPlatformFeatherM0ProtoWingLora,
+	  SysEUI: { 0x00, 0x02, 0xcc, 0x01, 0x00, 0x00, 0x00, 0x0c},
           OperatingFlagsClear: 0,
           OperatingFlagsSet: fUnattended,
 	},
