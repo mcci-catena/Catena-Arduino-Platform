@@ -1,4 +1,4 @@
-/* catenartc.cpp	Tue Nov  1 2016 23:41:10 tmm */
+/* catenartc.cpp	Thu Nov 10 1 2017 15:32:10 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaRTC class
 
 Version:
-	V0.3.0	Tue Nov  1 2016 23:41:10 tmm	Edit level 1
+	V0.3.0	Thu Nov 10 2016 23:41:10 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -21,7 +21,7 @@ Copyright notice:
 	
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	November 2016
 
@@ -29,9 +29,14 @@ Revision history:
    0.3.0  Tue Nov  1 2016 23:41:10  tmm
 	Module created.
 
+   0.3.0  Thu Nov 10 2016 23:41:10  tmm
+	Add debugging code. Disable all other interrupt sources during sleep
+	other than RTC (don't let Systick wake us up).
+
 */
 
 #include <CatenaRTC.H>
+#include <Arduino.h>
 
 bool CatenaRTC::begin(bool fResetTime)
 	{
@@ -45,7 +50,7 @@ const uint16_t CatenaRTC::md[13] =
         };
 
 
-CatenaRTC::CalendarTime 
+CatenaRTC::CalendarTime
 CatenaRTC::GetTime(void)
         {
         CalendarTime result;
@@ -94,6 +99,21 @@ void CatenaRTC::SleepForAlarm(
         CatenaRTC::SleepMode howSleep
         )
         {
+        uint32_t nWakes;
+        uint32_t nvic_iser_save;
+        uint32_t systick_ctrl_save;
+
+        // fetch the bits for other than the RC,
+        // and then disable all other sources.
+        nvic_iser_save = NVIC->ISER[0] & ~(1 << RTC_IRQn);
+        NVIC->ICER[0] = nvic_iser_save;
+
+        // fetch the current state of SysTick, then
+        // disable interrupts.
+        systick_ctrl_save = SysTick->CTRL;
+        SysTick->CTRL = systick_ctrl_save & ~SysTick_CTRL_ENABLE_Msk;
+
+        // turn off alarms, just in case, so we can safely init.
         this->disableAlarm();
         this->m_Alarm = false;
         s_pAlarm = &this->m_Alarm;
@@ -101,12 +121,14 @@ void CatenaRTC::SleepForAlarm(
         this->enableAlarm(how);
 
         /* we may want to try deep sleep, maybe not */
+        nWakes = 0;
         switch (howSleep)
                 {
                 default:
                 case SleepMode::IdleCpu:
                         while (! m_Alarm)
                                 {
+                                ++nWakes;
                                 PM->SLEEP.bit.IDLE = PM_SLEEP_IDLE_CPU_Val;
                                 SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
                                 __WFI();
@@ -116,6 +138,7 @@ void CatenaRTC::SleepForAlarm(
                 case SleepMode::IdleCpuAhb:
                         while (! m_Alarm)
                                 {
+                                ++nWakes;
                                 PM->SLEEP.bit.IDLE = PM_SLEEP_IDLE_AHB_Val;
                                 SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
                                 __WFI();
@@ -125,6 +148,7 @@ void CatenaRTC::SleepForAlarm(
                 case SleepMode::IdleCpuAhbApb:
                         while (! m_Alarm)
                                 {
+                                ++nWakes;
                                 PM->SLEEP.bit.IDLE = PM_SLEEP_IDLE_APB_Val;
                                 SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
                                 __WFI();
@@ -133,13 +157,49 @@ void CatenaRTC::SleepForAlarm(
 
                 case SleepMode::DeepSleep:
                         while (! m_Alarm)
+                                {
+                                ++nWakes;
                                 this->standbyMode();
+                                }
                         break;
                 }
         this->disableAlarm();
+
+        uint32_t systick_ctrl_post = SysTick->CTRL;
+        uint32_t nvic_iser_post = NVIC->ISER[0];
+
+        // restore the ISER bits.
+        SysTick->CTRL = systick_ctrl_save;
+        NVIC->ISER[0] = nvic_iser_save;
+
+#if 0
+        if (/* nWakes > 1 && */ Serial)
+                {
+                Serial.print("Alarm! "); Serial.print(nWakes-1);
+                Serial.print(" extra wakeups. NVIC_ISER: saved="); Serial.print(nvic_iser_save, HEX);
+                Serial.print(" current="); Serial.print(nvic_iser_post, HEX);
+                Serial.print(" SysTick.CTRL: saved ="); Serial.print(systick_ctrl_save, HEX);
+                Serial.print(" current="); Serial.println(systick_ctrl_post, HEX);
+
+                Serial.print("PORT_DIR="); Serial.print(PORT->Group[0].DIR.reg, HEX);
+                Serial.print(" PORT_IN="); Serial.print(PORT->Group[0].IN.reg, HEX);
+                uint32_t uIoEnables, uIoPullupEn, uIoPMuxEn;
+                uIoEnables = uIoPullupEn = uIoPMuxEn = 0;
+                for (uint32_t i = 0; i < 32; ++i)
+                        {
+                        uIoEnables |= (PORT->Group[0].PINCFG[i].bit.INEN << i);
+                        uIoPullupEn |= (PORT->Group[0].PINCFG[i].bit.PULLEN << i);
+                        uIoPMuxEn |= (PORT->Group[0].PINCFG[i].bit.PMUXEN << i);
+                        }
+                Serial.print(" PORT_INEN="); Serial.print(uIoEnables, HEX);
+                Serial.print(" PORT_PULLEN="); Serial.print(uIoPullupEn, HEX);
+                Serial.print(" PORT_PMUXEN="); Serial.print(uIoPMuxEn, HEX);
+                Serial.println("");
+                }
+#endif
         }
 
-/* 
+/*
 || assumes that we're only advancing by a day or so -- anything more
 || than a day is treated as a day.
 */
