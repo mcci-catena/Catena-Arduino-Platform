@@ -1,4 +1,4 @@
-/* catena4410_guids.h	Mon Oct 31 2016 14:40:06 tmm */
+/* catena4410_guids.h	Wed Mar  8 2017 17:25:02 tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	GUIDs for the Catena4410 family.
 
 Version:
-	V0.3.0	Mon Oct 31 2016 14:40:06 tmm	Edit level 2
+	V0.4.0	Wed Mar  8 2017 17:25:02 tmm	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.1.0  Mon Oct 17 2016 01:15:25  tmm
 	Module created.
+
+   0.4.0  Wed Mar  8 2017 17:25:02  tmm
+	Add Catena 4450 material.
 
 */
 
@@ -81,6 +84,14 @@ Revision history:
 // {E19FE1DD-6881-4EF0-AD01-C1B6E19EDA34}
 #define	GUID_HW_CATENA_4410_ANATOLIAN(f)	\
 	MCCIADK_GUID_GEN_INIT(f,  0xe19fe1dd, 0x6881, 0x4ef0, 0xad, 0x1, 0xc1, 0xb6, 0xe1, 0x9e, 0xda, 0x34)
+
+// {60480ACB-DC5D-4148-B6C9-ACA13449CF1D}
+#define GUID_HW_CATENA_4450_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x60480acb, 0xdc5d, 0x4148, 0xb6, 0xc9, 0xac, 0xa1, 0x34, 0x49, 0xcf, 0x1d)
+
+// {82BF2661-70CB-45AE-B620-CAF695478BC1}
+#define GUID_HW_CATENA_4450_M101(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x82bf2661, 0x70cb, 0x45ae, 0xb6, 0x20, 0xca, 0xf6, 0x95, 0x47, 0x8b, 0xc1)
 
 /**** end of catena4410_guids.h ****/
 #endif /* _CATENA4410_GUIDS_H_ */
