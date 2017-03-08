@@ -1,4 +1,4 @@
-/* catena_platforms.h	Mon Oct 31 2016 13:52:28 tmm */
+/* catena_platforms.h	Wed Mar  8 2017 18:11:46 tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	The global platform definitions.
 
 Version:
-	V0.3.0	Mon Oct 31 2016 13:52:28 tmm	Edit level 2
+	V0.4.0	Wed Mar  8 2017 18:11:46 tmm	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -32,6 +32,9 @@ Revision history:
    0.3.0  Mon Oct 31 2016 13:52:28  tmm
 	Add anatolian platform.
 
+   0.4.0  Wed Mar  8 2017 18:11:46  tmm
+	Add Catena 4450 platforms.
+
 */
 
 #ifndef _CATENA_PLATFORMS_H_		/* prevent multiple includes */
@@ -49,6 +52,8 @@ extern const CATENA_PLATFORM	gkPlatformCatena4410_gh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_mh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_swh; 
 extern const CATENA_PLATFORM	gkPlatformCatena4410_pond;
+extern const CATENA_PLATFORM	gkPlatformCatena4450;
+extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0Proto;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
 

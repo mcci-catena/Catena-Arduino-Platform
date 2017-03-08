@@ -1,4 +1,4 @@
-/* gk_PlatformHierarchy.cpp	Mon Oct 31 2016 13:49:37 tmm */
+/* gk_PlatformHierarchy.cpp	Wed Mar  8 2017 18:12:57 tmm */
 
 /*
 
@@ -8,17 +8,17 @@ Function:
 	The hierarchy table.
 
 Version:
-	V0.3.0	Mon Oct 31 2016 13:49:37 tmm	Edit level 2
+	V0.4.0	Wed Mar  8 2017 18:12:57 tmm	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
  
@@ -31,6 +31,9 @@ Revision history:
 
    0.3.0  Mon Oct 31 2016 13:49:37  tmm
 	Add sensor for Anatolian project.
+
+   0.4.0  Wed Mar  8 2017 18:12:57  tmm
+	Add platforms for Catena 4450.
 
 */
 
@@ -100,7 +103,7 @@ const CATENA_PLATFORM gkPlatformCatena4410 =
 	{
 	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
-	PlatformFlags:	
+	PlatformFlags:
 		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
@@ -111,7 +114,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_gh =
 	{
 	Guid: GUID_HW_CATENA_4410_GH(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	PlatformFlags:	
+	PlatformFlags:
 		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
@@ -124,7 +127,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_mh =
 	{
 	Guid: GUID_HW_CATENA_4410_MH(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	PlatformFlags:	
+	PlatformFlags:
 		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
@@ -136,7 +139,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_swh =
 	{
 	Guid: GUID_HW_CATENA_4410_SWH(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	PlatformFlags:	
+	PlatformFlags:
 		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
@@ -148,7 +151,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_pond =
 	{
 	Guid: GUID_HW_CATENA_4410_POND(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	PlatformFlags:	
+	PlatformFlags:
 		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
@@ -162,7 +165,7 @@ const CATENA_PLATFORM gkPlatformCatena4410_anatolian =
 	{
 	Guid: GUID_HW_CATENA_4410_ANATOLIAN(NATIVE),
 	pParent: &gkPlatformCatena4410,
-	PlatformFlags:	
+	PlatformFlags:
 		Catena4410::fHasLoRa |
 		Catena4410::fHasTtnNycLoRa |
 		Catena4410::fHasBme280 |
@@ -170,6 +173,33 @@ const CATENA_PLATFORM gkPlatformCatena4410_anatolian =
 		Catena4410::fHasSoilProbe |
 		Catena4410::fHasSolarPanel |
 		Catena4410::fHasWaterOneWire,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4450 =
+	{
+	Guid: GUID_HW_CATENA_4450_BASE(NATIVE),
+	pParent: &gkPlatformM0LoRaTtnNyc,
+	PlatformFlags:
+		Catena4410::fHasLoRa |
+		Catena4410::fHasTtnNycLoRa |
+		Catena4410::fHasBme280 |
+		Catena4410::fHasLuxRohm |
+		Catena4410::fHasFRAM |
+		Catena4410::fHasI2cMux,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4450_m101 =
+	{
+	Guid: GUID_HW_CATENA_4450_M101(NATIVE),
+	pParent: &gkPlatformCatena4450,
+	PlatformFlags:
+		Catena4410::fHasLoRa |
+		Catena4410::fHasTtnNycLoRa |
+		Catena4410::fHasBme280 |
+		Catena4410::fHasLuxRohm |
+		Catena4410::fHasFRAM |
+		Catena4410::fHasI2cMux |
+		Catena4410::fM101
 	};
 
 /****************************************************************************\
