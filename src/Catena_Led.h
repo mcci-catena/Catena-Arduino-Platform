@@ -30,7 +30,7 @@ Revision history:
 	Module created.
 
    0.5.0  Sat Mar 11 2017 13:55:14  tmm
-	Rename to follow naming convention.
+	Rename to follow naming convention, and add namespace.
 
 */
 
@@ -38,6 +38,8 @@ Revision history:
 #define _CATENA_LED_H_
 
 #include <type_traits>
+
+namespace McciCatena {
 
 // each bit is 128 ms
 enum class LedPattern:uint64_t
@@ -121,6 +123,7 @@ private:
         uint32_t        m_StartTime;
         };
 
+} /* end namespace McciCatena */
 
 /**** end of Catena_Led.h ****/
 #endif /* _CATENA_LED_H_ */

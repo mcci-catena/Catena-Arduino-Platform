@@ -36,7 +36,7 @@ Revision history:
 	Add Catena 4450 platforms.
 
    0.5.0  Sat Mar 11 2017 13:57:05  tmm
-	Revise to match naming standards.
+	Revise to match naming standards; add McciCatena namespace.
 
 */
 
@@ -45,6 +45,7 @@ Revision history:
 
 #include "Catena4410.h"
 
+namespace McciCatena {
 
 extern const CATENA_PLATFORM	gkPlatformFeatherM0;
 extern const CATENA_PLATFORM	gkPlatformM0LoRa;
@@ -59,6 +60,8 @@ extern const CATENA_PLATFORM	gkPlatformCatena4450;
 extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0Proto;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
+
+} /* namespace McciCatena */
 
 /**** end of Catena_Platforms.h ****/
 #endif /* _CATENA_PLATFORMS_H_ */

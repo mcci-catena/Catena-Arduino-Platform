@@ -5,7 +5,7 @@
 Module:  Catena_TxBuffer.h
 
 Function:
-	class TxBuffer_t;
+	namespace McciCatena, class TxBuffer_t;
 
 Version:
 	V0.5.0	Sat Mar 11 2017 14:01:23 tmm	Edit level 2
@@ -35,6 +35,8 @@ Revision history:
 #define _CATENA_TXBUFFER_H_
 
 #include <cstdint>
+
+namespace McciCatena {
 
 // build a transmit buffer
 class TxBuffer_t
@@ -191,6 +193,7 @@ enum    {
         FlagSoilTH = 1 << 5,
         };
 
+} /* namespace McciCatena */
 
 /**** end of Catena_TxBuffer.h ****/
 #endif /* _CATENA_TXBUFFER_H_ */

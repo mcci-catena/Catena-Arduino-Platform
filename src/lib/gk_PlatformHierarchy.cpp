@@ -43,6 +43,8 @@ Revision history:
 #include "Catena_Platforms.h"
 #include "Catena_Guids.h"
 
+namespace McciCatena {
+
 
 /****************************************************************************\
 |
@@ -219,3 +221,4 @@ const CATENA_PLATFORM gkPlatformCatena4450_m101 =
 \****************************************************************************/
 
 
+} /* namespace McciCatena */

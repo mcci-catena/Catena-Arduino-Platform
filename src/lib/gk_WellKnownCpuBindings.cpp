@@ -42,6 +42,8 @@ Revision history:
 
 #include "Catena4410.h"
 #include "Catena_Platforms.h"
+
+using namespace McciCatena;
 
 /****************************************************************************\
 |
