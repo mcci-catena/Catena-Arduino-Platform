@@ -1,4 +1,4 @@
-/* gk_PlatformHierarchy.cpp	Wed Mar  8 2017 18:12:57 tmm */
+/* gk_PlatformHierarchy.cpp	Sat Mar 11 2017 14:03:53 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The hierarchy table.
 
 Version:
-	V0.4.0	Wed Mar  8 2017 18:12:57 tmm	Edit level 3
+	V0.5.0	Sat Mar 11 2017 14:03:53 tmm	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -35,11 +35,14 @@ Revision history:
    0.4.0  Wed Mar  8 2017 18:12:57  tmm
 	Add platforms for Catena 4450.
 
+   0.5.0  Sat Mar 11 2017 14:03:53  tmm
+	Rename catena_platforms.h and catena4410_guids.h.
+
 */
 
-#include "catena_platforms.h"
+#include "Catena_Platforms.h"
+#include "Catena_Guids.h"
 
-#include "catena4410_guids.h"
 
 /****************************************************************************\
 |

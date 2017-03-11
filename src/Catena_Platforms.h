@@ -1,14 +1,14 @@
-/* catena_platforms.h	Wed Mar  8 2017 18:11:46 tmm */
+/* Catena_Platforms.h	Sat Mar 11 2017 13:57:05 tmm */
 
 /*
 
-Module:  catena_platforms.h
+Module:  Catena_Platforms.h
 
 Function:
 	The global platform definitions.
 
 Version:
-	V0.4.0	Wed Mar  8 2017 18:11:46 tmm	Edit level 3
+	V0.5.0	Sat Mar 11 2017 13:57:05 tmm	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -35,6 +35,9 @@ Revision history:
    0.4.0  Wed Mar  8 2017 18:11:46  tmm
 	Add Catena 4450 platforms.
 
+   0.5.0  Sat Mar 11 2017 13:57:05  tmm
+	Revise to match naming standards.
+
 */
 
 #ifndef _CATENA_PLATFORMS_H_		/* prevent multiple includes */
@@ -57,5 +60,5 @@ extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0Proto;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
 
-/**** end of catena_platforms.h ****/
+/**** end of Catena_Platforms.h ****/
 #endif /* _CATENA_PLATFORMS_H_ */

@@ -1,17 +1,17 @@
-/* catena_led.h	Sun Dec  4 2016 23:32:54 tmm */
+/* Catena_Led.h	Sat Mar 11 2017 13:55:14 tmm */
 
 /*
 
-Module:  catena_led.h
+Module:  Catena_Led.h
 
 Function:
 	Simple LED library.
 
 Version:
-	V0.4.0	Sun Dec  4 2016 23:32:54 tmm	Edit level 1
+	V0.5.0	Sat Mar 11 2017 13:55:14 tmm	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.4.0  Sun Dec  4 2016 23:32:54  tmm
 	Module created.
+
+   0.5.0  Sat Mar 11 2017 13:55:14  tmm
+	Rename to follow naming convention.
 
 */
 
@@ -119,5 +122,5 @@ private:
         };
 
 
-/**** end of catena_led.h ****/
+/**** end of Catena_Led.h ****/
 #endif /* _CATENA_LED_H_ */

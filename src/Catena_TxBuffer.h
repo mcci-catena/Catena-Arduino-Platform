@@ -1,17 +1,17 @@
-/* catena_txbuffer.h	Mon Dec  5 2016 00:02:11 tmm */
+/* Catena_TxBuffer.h	Sat Mar 11 2017 14:01:23 tmm */
 
 /*
 
-Module:  catena_txbuffer.h
+Module:  Catena_TxBuffer.h
 
 Function:
 	class TxBuffer_t;
 
 Version:
-	V0.4.0	Mon Dec  5 2016 00:02:11 tmm	Edit level 1
+	V0.5.0	Sat Mar 11 2017 14:01:23 tmm	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -192,5 +192,5 @@ enum    {
         };
 
 
-/**** end of catena_txbuffer.h ****/
+/**** end of Catena_TxBuffer.h ****/
 #endif /* _CATENA_TXBUFFER_H_ */

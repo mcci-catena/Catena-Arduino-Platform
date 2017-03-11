@@ -1,4 +1,4 @@
-/* gk_WellKnownCpuBindings.cpp	Wed Mar  8 2017 18:25:47 tmm */
+/* gk_WellKnownCpuBindings.cpp	Sat Mar 11 2017 14:06:00 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The table of well-known CPU-instance to platform bindings.
 
 Version:
-	V0.4.0	Wed Mar  8 2017 18:25:47 tmm	Edit level 4
+	V0.5.0	Sat Mar 11 2017 14:06:00 tmm	Edit level 5
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -35,10 +35,13 @@ Revision history:
    0.4.0  Wed Mar  8 2017 18:25:47  tmm
 	Add Catena 4450 instances.
 
+   0.5.0  Sat Mar 11 2017 14:06:00  tmm
+	Rename catena_platforms.h to follow naming spec.
+
 */
 
 #include "Catena4410.h"
-#include "catena_platforms.h"
+#include "Catena_Platforms.h"
 
 /****************************************************************************\
 |
