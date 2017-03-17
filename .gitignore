@@ -31,3 +31,4 @@
 # Backup and checkpoint files
 *.BAK
 *.CKP
+emacs.core
