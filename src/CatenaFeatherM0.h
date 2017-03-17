@@ -1,3 +1,4 @@
+/* CatenaFeatherM0.h	Sun Mar 12 2017 19:40:46 tmm */
 
 /*
 
@@ -7,10 +8,10 @@ Function:
 	Class CatenaFeatherM0
 
 Version:
-	V0.4.0	Sun Dec  4 2016 19:57:13 tmm	Edit level 1
+	V0.5.0	Sun Mar 12 2017 19:40:46 tmm	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -108,6 +109,10 @@ protected:
 			OtaaProvisioningInfo *pProvisioningInfo
 			);
 
+	//
+	// TODO(tmm@mcci.com) -- the following are not used but are always
+	// hanging around even when we have better ways to do things.
+	//
 private:
 	CatenaFeatherM0		*m_pCatena;
 	const CATENA_PLATFORM	*m_pPlatform;
