@@ -72,7 +72,7 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena4410. For now, we assume The Things
+|| The LoRaWAN class for the Catena4420. For now, we assume The Things
 || Network.
 */
 class Catena4420::LoRaWAN : public CatenaFeatherM0::LoRaWAN
