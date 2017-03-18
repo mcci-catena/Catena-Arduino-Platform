@@ -51,6 +51,7 @@ enum class LedPattern:uint64_t
         OneSixteenth = 0b10000000000000001,
         FastFlash = 0b1010101,
         TwoShort = 0b10000000000000001001,
+        ThreeShort = 0b10000000000001001001,
         FiftyFiftySlow = 0b100000000000000001111111111111111,
 
         Joining = TwoShort,
@@ -58,6 +59,7 @@ enum class LedPattern:uint64_t
         Sending = FiftyFiftySlow,
         WarmingUp = OneEigth,
         Settling = OneSixteenth,
+        NotProvisioned = ThreeShort,
         };
 
 class StatusLed
