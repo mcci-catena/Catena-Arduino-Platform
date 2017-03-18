@@ -46,6 +46,17 @@ Revision history:
 # include "mcciadk_guid.h"
 #endif
 
+#ifndef _ADAFRUIT_FRAM_I2C_H_
+# include <Adafruit_FRAM_I2C.h>
+#endif
+
+/****************************************************************************\
+|
+|	The contents
+|
+\****************************************************************************/
+
+
 namespace McciCatena {
 
 class FramStorage
@@ -249,22 +260,24 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 class Fram2k : public PersistentStorage
 	{
 public:
-	Fram2k(uint8_t uI2cAddr = 0x50): m_uI2cAddr(uI2cAddr) 
-                {};
+	Fram2k() {};
 	virtual ~Fram2k() {};
 
         // begin working with the FRAM
 	virtual bool begin();
 
-        // initialize the store... overwirte if instructed to do so.
-        virtual bool initialize(bool fForce = false);
+        // initialize the store: we use the base class.
+        // virtual bool initialize();
 
         // check the store
         virtual bool isValid();
 
+        // reset the store
+        virtual bool reset();
+
 protected:
 private:
-        uint8_t m_uI2cAddr; 
+	Adafruit_FRAM_I2C	m_hw;
 	};
 
 }; // namespace McciCatena

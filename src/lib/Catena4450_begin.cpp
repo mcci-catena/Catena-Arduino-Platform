@@ -57,7 +57,8 @@ bool Catena4450::begin()
 		return false;
 
 	// do initialization
-	// this->m_Fram.begin();
+	if (! this->m_Fram.begin())
+		return false;
 	
 	return true;
 	}

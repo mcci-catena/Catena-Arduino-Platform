@@ -59,39 +59,25 @@ public:
 	// start storage operations
 	virtual bool begin() = 0;
 
-	// initialize the store
-	virtual bool initialize(bool fForce = false) = 0;
+	// initialize the store (gently) - do not overwite store if valid
+	virtual bool initialize() 
+                {
+                if (this->isvalid())
+                        return false;
+                else
+                        return this->reset();
+                };
 
-	class cOBJECT;
+        // initialize the store (forcibly).
+        virtual bool reset() = 0;
 
-	// open an object
-	virtual bool openObject(
-			cOBJECT& Object, 
-			const MCCIADK_GUID_WIRE &Guid
-			) = 0;
+        // return the state of the store.
+        virtual bool isvalid() { return false; }
 
 private:
 	};
 
-
-class PersistentStorage::cOBJECT
-	{
-public:
-	// constructor
-	cOBJECT() {};
-	// destructor
-	virtual ~cOBJECT() {};
-
-	// neither copyable nor movable
-	cOBJECT(const cOBJECT&) = delete;
-	cOBJECT& operator=(const cOBJECT&) = delete;
-	cOBJECT(const cOBJECT&&) = delete;
-	cOBJECT& operator=(const cOBJECT&&) = delete;
-
-	// methods:
-	
-	};
-}
+} // namespace McciCatena
 
 /**** end of Catena_PersistentStorage.h ****/
 #endif /* _CATENA_OBJECT_H_ */

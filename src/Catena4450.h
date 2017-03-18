@@ -34,8 +34,14 @@ Revision history:
 #ifndef _CATENA4450_H_		/* prevent multiple includes */
 #define _CATENA4450_H_
 
+#pragma once
+
 #ifndef _CATENAFEATHERM0LORA_H_
 # include "CatenaFeatherM0LoRa.h"
+#endif
+
+#ifndef _CATENA_FRAM2K_H_
+# include "Catena_Fram2K.h"
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>
@@ -60,7 +66,10 @@ public:
 	
 protected:
 	using Super = CatenaFeatherM0LoRa;
-	
+
+private:
+	// the FRAM instance
+	McciCatena::Fram2k	m_Fram;
 	};
 
 /*
@@ -81,9 +90,16 @@ public:
 	bool begin(Catena4450 *pParent);
 
 protected:
+        virtual ProvisioningStyle GetProvisioningStyle(void);
+        virtual bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo*);
+        virtual bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo*);
+        virtual void NetSaveFCntUp(uint32_t uFCntUp);
+        virtual void NetSaveFCntDown(uint32_t uFCntDown);
+        virtual void NetSaveSessionInfo(const SessionInfo &Info, const uint8_t *pExtraInfo, size_t nExtraInfo);
 
 private:
 	Catena4450		*m_pCatena;
+
 	};
 
 /**** end of Catena4450.h ****/
