@@ -127,9 +127,9 @@ McciCatena::cCommandStream::poll(void)
 
 			int status = this->parseAndDispatch();
                         if (status == 0)
-                                this->printf("OK\n");
+                                this->printf("\rOK\n");
                         else
-                                this->printf("?%d\n", status);
+                                this->printf("\r?%d\n", status);
 			}
 		else
 			{
