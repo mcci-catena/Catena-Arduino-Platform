@@ -89,15 +89,18 @@ public:
 		return &this->m_SysEUI;
 		}
 
-        virtual bool begin() { this->m_PollingEngine.begin(); return true; };
+        virtual bool begin();
 
         // poll the engine
-        void poll(void) { this->m_PollingEngine.poll(); };
-        void registerObject(McciCatena::cPollableObject *pObject)
-                {
-                this->m_PollingEngine.registerObject(pObject);
-                }
+        void poll(void);
+        void registerObject(McciCatena::cPollableObject *pObject);
 
+	// command handling
+	void addCommands(McciCatena::cCommandStream::cDispatch &, void *);
+protected:
+	virtual void registerCommands(void);
+
+	// data objects
 protected:
 	EUI64_buffer_t m_SysEUI;
         McciCatena::cPollingEngine m_PollingEngine;

@@ -70,7 +70,20 @@ public:
 
 	virtual void poll(void);
 
-	typedef int (CommandFn)(cCommandStream *pThis, int argc, char **argv);
+	enum CommandStatus : int
+		{
+		kUnknown = -2,
+		kIoError = -1,
+		kSuccess = 0,
+		kError = 1,
+		};
+
+	typedef CommandStatus (CommandFn)(
+		cCommandStream *pThis,
+		void *pContext,
+		int argc, 
+		char **argv
+		);
 
 	struct cEntry
 		{
@@ -80,7 +93,7 @@ public:
 
 	class cDispatch;
 
-        void registerCommands(cDispatch *pDispatch);
+        void registerCommands(cDispatch *pDispatch, void *pContext);
         void printf(const char *pFmt, ...)
                 __attribute__((__format__(__printf__, 2, 3)));
                 /* format counts start with 2 for non-static C++ member fns */
@@ -169,6 +182,7 @@ private:
 	cDispatch *m_pLast = nullptr;
 	const cEntry *m_pEntries = nullptr;
 	unsigned m_nEntries = 0;
+	void *m_pContext;
 	};
 
 }; // namespace McciCatena

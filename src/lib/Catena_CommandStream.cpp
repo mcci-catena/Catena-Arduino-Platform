@@ -57,7 +57,8 @@ static cCommandStream::cDispatch sDefault(
 		sDefaultEntries, sizeof(sDefaultEntries)
 		);
 
-static int doEcho(cCommandStream *pThis, int argc, char**argv)
+static cCommandStream::CommandStatus
+doEcho(cCommandStream *pThis, void *pContext, int argc, char**argv)
         {
         for (int i = 1; i < argc; ++i)
                 {
@@ -67,7 +68,7 @@ static int doEcho(cCommandStream *pThis, int argc, char**argv)
                         (i < argc - 1) ? ' ' : '\n'
                         );
                 }
-        return 0;
+        return cCommandStream::kSuccess;
         }
 
 bool 
@@ -80,7 +81,7 @@ McciCatena::cCommandStream::begin(
 	this->m_pCatena = pCatena;
 	this->m_pCatena->registerObject(this);
 
-	this->registerCommands(&sDefault);
+	this->registerCommands(&sDefault, nullptr);
 
 	// launch a read
 	this->launchRead();
@@ -186,9 +187,12 @@ McciCatena::cCommandStream::parseAndDispatch()
 
 void
 McciCatena::cCommandStream::registerCommands(
-	cDispatch *pObject
+	cDispatch *pObject,
+        void *pContext
 	)
 	{
+        pObject->m_pContext = pContext;
+
 	auto const pHead = this->m_pHead;
 	if (pHead == nullptr)
 		{
@@ -234,10 +238,15 @@ McciCatena::cCommandStream::dispatch(
 				{
 				if (std::strcmp(pEntry->pName, pCommand) == 0)
 					{
-					int status;
-					status = pEntry->pDispatch(this, argc, argv);
+					CommandStatus status;
+					status = pEntry->pDispatch(
+							this,
+							pThis->m_pContext,
+							argc, 
+							argv
+							);
 
-					return (status >= 0) ? status : 1;
+					return (status >= 0) ? status : kError;
 					}
 				}
 

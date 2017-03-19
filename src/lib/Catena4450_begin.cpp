@@ -69,6 +69,9 @@ bool Catena4450::begin()
                 this
                 );
 
+        // register all commands in this stack
+        this->registerCommands();
+
         // start the FRAM
         if (!this->m_Fram.begin())
                 return false;

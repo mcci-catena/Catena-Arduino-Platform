@@ -165,6 +165,8 @@ public:
 	inline uint32_t GetPlatformFlags(void);		
 
 protected:
+	virtual void registerCommands(void);
+
 	// help for the command-processing framework.
         class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
 	        {
