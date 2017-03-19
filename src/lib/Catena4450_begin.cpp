@@ -65,7 +65,8 @@ bool Catena4450::begin()
 
         // set up the command line collector
 	this->m_Collector.begin(&Serial, &this->m_SerialReady);
-	
+        this->registerObject(&this->m_Collector);
+
 	return true;
 	}
 
