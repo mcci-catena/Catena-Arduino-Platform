@@ -56,6 +56,9 @@ namespace McciCatena {
 
 class Fram2k : public PersistentStorage
 	{
+protected:
+	using Super = PersistentStorage;
+
 public:
 	Fram2k() {};
 	virtual ~Fram2k() {};
@@ -63,8 +66,8 @@ public:
         // begin working with the FRAM
 	virtual bool begin();
 
-        // initialize the store: we use the base class.
-        // virtual bool initialize();
+        // initialize the store
+        virtual bool initialize();
 
         // check the store
         virtual bool isValid();

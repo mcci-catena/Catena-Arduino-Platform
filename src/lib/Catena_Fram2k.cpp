@@ -1,8 +1,8 @@
-/* fram2k.cpp	Fri Mar 17 2017 19:32:14 tmm */
+/* Catena_Fram2k.cpp	Fri Mar 17 2017 19:32:14 tmm */
 
 /*
 
-Module:  fram2k.cpp
+Module:  Catena_Fram2k.cpp
 
 Function:
 	The persistent-storage provider for the Fram on Catena
@@ -33,17 +33,27 @@ Revision history:
 
 #include "Catena_Fram2k.h"
 
+#include "Catena_FramStorage.h"
+
 using namespace McciCatena;
+
+/****************************************************************************\
+|
+|	the methods
+|
+\****************************************************************************/
+
 
 /*
 
-Name:	McciCatena::Fram2K::begin()
+Name:	McciCatena::Fram2k::begin()
 
 Function:
-	xxx
+	Prepare to use the FRAM
 
 Definition:
-	xxx
+	public: virtual
+	
 
 Description:
 	xxx
@@ -53,6 +63,7 @@ Returns:
 
 */
 
+/* virtual public */
 bool 
 McciCatena::Fram2k::begin()
 	{
@@ -70,6 +81,12 @@ McciCatena::Fram2k::isValid()
 
 bool
 McciCatena::Fram2k::reset()
+	{
+	return false;
+	}
+
+bool
+McciCatena::Fram2k::initialize()
 	{
 	return false;
 	}
