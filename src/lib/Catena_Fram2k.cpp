@@ -34,8 +34,18 @@ Revision history:
 #include "Catena_Fram2k.h"
 
 #include "Catena_FramStorage.h"
+#include "Catena_Guids_FramStorage.h"
+#include "Catena_Log.h"
 
 using namespace McciCatena;
+
+/****************************************************************************\
+|
+|	read-only data
+|
+\****************************************************************************/
+
+static const MCCIADK_GUID_WIRE skFramGuid = GUID_FRAM_CATENA_V1(WIRE);
 
 /****************************************************************************\
 |
@@ -72,10 +82,85 @@ McciCatena::cFram2k::begin()
 
 	return true;
 	}
+
+/*
+
+Name:	cFram2k::isValid()
+
+Function:
+	Check to see whether the FRAM looks valid
+
+Definition:
+	public: virtual bool cFram2k::isValid();
+
+Description:
+	We look for valid begin block, a series of intermediate blocks,
+	and an end block. Any problems ==> give up.
+
+Returns:
+	true for validity, false otherwise.
+
+*/
 
 bool 
 McciCatena::cFram2k::isValid()
 	{
+	cFramStorage::Object object;
+	size_t nRead;
+
+	nRead = this->m_hw.read(0, object.getBuffer(), object.getBufferSize());
+	
+	if (nRead != object.getBufferSize())
+		{
+		Log.printf(
+			Log.kError,
+			"read failed; expected 0x%x, got 0x%x\n",
+			object.getBufferSize(),
+			nRead
+			);
+			
+		return false;
+		}
+
+	// first object must be standard
+	if (! object.isStandard())
+		{
+		Log.printf(
+			Log.kError,
+			"first object not standard: %08x\n",
+			object.uSizeKey
+			);
+
+		return true;
+		}
+
+	if (! object.hasValidSize())
+		{
+		Log.printf(
+			Log.kError,
+			"first object size not valid: %08x\n",
+			object.uSizeKey
+			);
+		return false;
+		}
+
+	// check the guid
+	if (object.matchesGuid(skFramGuid))
+		{
+		Log.printf(
+			Log.kError,
+			"guid doesn't match FRAM guid\n"
+			);
+		return false;
+		}
+	if (object.getKey() != cFramStorage::kHeader)
+		{
+		Log.printf(
+			Log.kError,
+			"key is not kHeader: %02x\n",
+			object.getKey()
+			);
+		}
 	return false;
 	}
 

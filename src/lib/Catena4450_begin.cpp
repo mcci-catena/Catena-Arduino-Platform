@@ -82,7 +82,7 @@ bool Catena4450::begin()
 	if (! this->m_Fram.isValid())
 		{
 		Log.printf(
-			Log.kAlways, 
+			Log.kError, 
 			"FRAM contents are not valid, resetting\n"
 			);
 		this->m_Fram.initialize();

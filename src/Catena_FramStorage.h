@@ -5,7 +5,7 @@
 Module:  Catena_FramStorage.h
 
 Function:
-	class McciCatena::FramStorage
+	class McciCatena::cFramStorage
 
 Version:
 	V0.5.0	Sun Mar 19 2017 17:34:08 tmm	Edit level 1
@@ -35,6 +35,7 @@ Revision history:
 #define _CATENA_FRAMSTORAGE_H_
 
 #include <stdint.h>
+#include <cstring>
 
 #ifndef _MCCIADK_GUID_H_
 # include "mcciadk_guid.h"
@@ -42,8 +43,15 @@ Revision history:
 
 namespace McciCatena {
 
-class FramStorage
+class cFramStorage
 	{
+public:
+	enum StandardKeys : uint8_t
+		{
+		kHeader = 0,
+		kEnd = 0xFFu
+		};
+
         struct ObjectRaw
                 {
                 // the size and discriminator
@@ -66,17 +74,18 @@ class FramStorage
                 uint8_t		uVer2;	// second image of discriminator
                 uint8_t		uVer3;	// third image of discriminator
                 };
-        class Object;
 	static constexpr size_t kObjectQuantum = sizeof(uint32_t);
-	static constexpr size_t kObjectStandardSize = sizeof(ObjectRaw);
 	static constexpr size_t kObjectStandardClicks =
-				(kObjectStandardSize + kObjectQuantum - 1) /
+				(sizeof(ObjectRaw) + kObjectQuantum - 1) /
 					kObjectQuantum;
+	static constexpr size_t kObjectStandardSize = kObjectQuantum * kObjectStandardClicks;
+        class Object;
 	};
 
 
-struct FramStorage::Object : public FramStorage::ObjectRaw
+struct cFramStorage::Object : public cFramStorage::ObjectRaw
 	{
+public:
 	enum : uint32_t 
 		{
 		SIZE_MASK = 0xFFFFu,
@@ -149,6 +158,15 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 		{
 		return (this->uSizeKey & NONSTD_MASK) == 0;
 		}
+	uint16_t hasValidSize() const
+		{
+		uint16_t const objSize = this->getObjectSize();
+		if (! this->isStandard())
+			return objSize > 0;
+
+		// standard object... check the data size
+		return this->validDataSize(this->getDataSize());
+		}
 	uint16_t getDataSize() const
 		{
 		if (! this->isStandard())
@@ -156,7 +174,20 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 
 		return (uint16_t) getField(this->uSizeKey, DATASIZE_MASK);
 		}
-
+	bool matchesGuid(const MCCIADK_GUID_WIRE &guid) const
+		{
+		if (! this->isStandard())
+			return false;
+		else
+			return std::memcmp(&guid, &this->Guid, sizeof(guid)) == 0;
+		}
+	int getKey() const
+		{
+		if (! this->isStandard())
+			return -1;
+		else
+			return this->uKey;
+		}
 	uint16_t static neededClicks(size_t nBytes, bool fReplicated)
 		{
 		size_t nClicks;
@@ -171,7 +202,7 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 			return (uint16_t) nClicks + kObjectStandardClicks;
 		}
 
-	bool validDataSize(size_t nBytes)
+	bool validDataSize(size_t nBytes) const
 		{
 		if (! this->isStandard())
 			return false;
@@ -216,7 +247,7 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 		const uint16_t dataSize = this->getDataSize();
 		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
-		return sizeof(this) + i * dataClicks * kObjectQuantum;
+		return kObjectStandardSize + i * dataClicks * kObjectQuantum;
 		}
 
 
@@ -232,11 +263,21 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 		}
 
 	// set discriminator (only in local image, of cousre)
-	uint8_t getCurrent(uint8_t v)
+	uint8_t setCurrent(uint8_t v)
 		{
 		this->uVer1 = v;
 		this->uVer2 = v;
 		this->uVer3 = v;
+		}
+
+	static constexpr size_t getBufferSize()
+		{
+		return kObjectStandardSize;
+		}
+
+	uint8_t *getBuffer()
+		{
+		return (uint8_t *) &this->uSizeKey;
 		}
 	};
 

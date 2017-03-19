@@ -53,13 +53,27 @@ public:
 
 	enum DebugFlags : uint32_t
 		{
-		kAlways = 0,
+		kAlways		= 0u,
+		kFatal		= 0xFFFFFFFFu,
+
+		kError		= 0x00000001u,
+		kWarning	= 0x00000002u,
+		kTrace		= 0x00000004u,
+		kInfo		= 0x00000008u,
 		};
 
 	// initialize
-	bool begin(DebugFlags uDebugFlags = DebugFlags(0))
+	bool begin(DebugFlags uDebugFlags = kError)
 		{
 		this->m_uDebugFlags = uDebugFlags;
+		}
+
+	// check whether flags are enabled ... inline for speed
+	bool isenabled(DebugFlags uDebugFlags) const
+		{
+		return ((uDebugFlags & this->m_uDebugFlags) == 0 &&
+		         uDebugFlags != kAlways && 
+			 uDebugFlags != kFatal);
 		}
 
 	// log	

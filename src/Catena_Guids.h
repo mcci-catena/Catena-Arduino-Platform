@@ -1,14 +1,14 @@
-/* catena4410_guids.h	Wed Mar  8 2017 17:25:02 tmm */
+/* Catena_Guids.h	Sun Mar 19 2017 18:23:19 tmm */
 
 /*
 
-Module:  catena4410_guids.h
+Module:  Catena_Guids.h
 
 Function:
 	GUIDs for the Catena4410 family.
 
 Version:
-	V0.4.0	Wed Mar  8 2017 17:25:02 tmm	Edit level 3
+	V0.5.0	Sun Mar 19 2017 18:23:19 tmm	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -32,10 +32,23 @@ Revision history:
    0.4.0  Wed Mar  8 2017 17:25:02  tmm
 	Add Catena 4450 material.
 
+   0.5.0  Sun Mar 19 2017 18:23:19  tmm
+	Fix internal naming, and add storage FRAM guids.
+
 */
 
-#ifndef _CATENA4410_GUIDS_H_		/* prevent multiple includes */
-#define _CATENA4410_GUIDS_H_
+#ifndef _CATENA_GUIDS_H_		/* prevent multiple includes */
+#define _CATENA_GUIDS_H_
+
+#ifndef _MCCIADK_GUID_H_
+# include "mcciadk_guid.h"
+#endif
+
+/****************************************************************************\
+|
+|	Platform GUIDs
+|
+\****************************************************************************/
 
 // {2E6DFED4-F577-47D5-9137-B3E63976AE92}
 #define GUID_HW_FEATHER_M0(f)		\
@@ -93,5 +106,5 @@ Revision history:
 #define GUID_HW_CATENA_4450_M101(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0x82bf2661, 0x70cb, 0x45ae, 0xb6, 0x20, 0xca, 0xf6, 0x95, 0x47, 0x8b, 0xc1)
 
-/**** end of catena4410_guids.h ****/
-#endif /* _CATENA4410_GUIDS_H_ */
+/**** end of catena_guids.h ****/
+#endif /* _CATENA_GUIDS_H_ */

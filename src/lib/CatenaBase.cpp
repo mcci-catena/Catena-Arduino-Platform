@@ -32,12 +32,17 @@ Revision history:
 */
 
 #include "CatenaBase.h"
+
+#include "Catena_Log.h"
+
 using namespace McciCatena;
 
 bool
 CatenaBase::
 begin(void)
 	{
+	Log.begin(Log.kError);
+
 	this->m_PollingEngine.begin();
 	return true;
 	}
