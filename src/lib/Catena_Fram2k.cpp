@@ -46,7 +46,7 @@ using namespace McciCatena;
 
 /*
 
-Name:	McciCatena::Fram2k::begin()
+Name:	McciCatena::cFram2k::begin()
 
 Function:
 	Prepare to use the FRAM
@@ -65,7 +65,7 @@ Returns:
 
 /* virtual public */
 bool 
-McciCatena::Fram2k::begin()
+McciCatena::cFram2k::begin()
 	{
 	if (! this->m_hw.begin(0, &Wire))
 		return false;
@@ -74,19 +74,19 @@ McciCatena::Fram2k::begin()
 	}
 
 bool 
-McciCatena::Fram2k::isValid()
+McciCatena::cFram2k::isValid()
 	{
 	return false;
 	}
 
 bool
-McciCatena::Fram2k::reset()
+McciCatena::cFram2k::reset()
 	{
 	return false;
 	}
 
 bool
-McciCatena::Fram2k::initialize()
+McciCatena::cFram2k::initialize()
 	{
 	return false;
 	}

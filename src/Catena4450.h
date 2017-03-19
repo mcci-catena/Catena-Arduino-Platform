@@ -69,8 +69,7 @@ protected:
 
 private:
 	// the FRAM instance
-	McciCatena::Fram2k			m_Fram;
-
+	McciCatena::cFram2k			m_Fram;
 	};
 
 /*

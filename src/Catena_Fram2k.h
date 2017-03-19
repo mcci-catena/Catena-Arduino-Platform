@@ -5,7 +5,7 @@
 Module:  Catena_Fram2k.h
 
 Function:
-	Framework for Catena_Fram2k
+	class McciCatena::cFram2k
 
 Version:
 	V0.5.0	Sun Mar 12 2017 17:47:52 tmm	Edit level 1
@@ -54,14 +54,14 @@ Revision history:
 namespace McciCatena {
 
 
-class Fram2k : public PersistentStorage
+class cFram2k : public PersistentStorage
 	{
 protected:
 	using Super = PersistentStorage;
 
 public:
-	Fram2k() {};
-	virtual ~Fram2k() {};
+	cFram2k() {};
+	virtual ~cFram2k() {};
 
         // begin working with the FRAM
 	virtual bool begin();
