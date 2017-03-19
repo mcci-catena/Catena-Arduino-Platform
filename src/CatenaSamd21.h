@@ -171,10 +171,10 @@ protected:
         class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
 	        {
         public:
-	        virtual bool isReady() const
-		        {
-		        return (!! ::Serial);
-		        }
+		// return true if Serial is ready. Overridden because
+		// we actually can do !!Serial() only if Serial is a USB
+		// implementation.
+	        virtual bool isReady() const;
 	        };
 
 
@@ -190,7 +190,6 @@ private:
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM	*m_pPlatform;
 	};
-
 
 /*
 
