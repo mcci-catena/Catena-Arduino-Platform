@@ -119,11 +119,11 @@ McciCatena::cCommandStream::poll(void)
 			{
 			this->m_buffer[this->m_nRead - 1] = '\0';
 
-			Log.printf(
-				Log.kAlways,
-				"received: %s\n",
-				this->m_buffer
-				);
+			// Log.printf(
+			//	Log.kAlways,
+			//	"received: %s\n",
+			//	this->m_buffer
+			//	);
 
 			int status = this->parseAndDispatch();
                         if (status == 0)
@@ -218,7 +218,7 @@ McciCatena::cCommandStream::dispatch(
 		return 0;
 
 	const char * const pCommand = argv[0];
-        Log.printf(Log.kAlways, "dispatch: %s\n", pCommand);
+        // Log.printf(Log.kAlways, "dispatch: %s\n", pCommand);
 
 	auto const pHead = this->m_pHead;
 	if (pHead != nullptr)
