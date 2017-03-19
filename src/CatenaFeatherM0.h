@@ -45,8 +45,10 @@ Revision history:
 class CatenaFeatherM0 : public CatenaSamd21
 	{
 public:
-	CatenaFeatherM0() {};
-	~CatenaFeatherM0() {};
+        using Super = CatenaSamd21;
+
+        CatenaFeatherM0() {};
+	virtual ~CatenaFeatherM0() {};
 
 	// forward reference
 	class LoRaWAN;

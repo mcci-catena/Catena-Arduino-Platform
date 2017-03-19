@@ -39,6 +39,10 @@ Revision history:
 
 #include <type_traits>
 
+#ifndef _CATENA_POLLABLEINTERFACE_H_
+# include <Catena_PollableInterface.h>
+#endif
+
 namespace McciCatena {
 
 // each bit is 128 ms
@@ -62,7 +66,7 @@ enum class LedPattern:uint64_t
         NotProvisioned = ThreeShort,
         };
 
-class StatusLed
+class StatusLed : public cPollableObject
         {
 private:
         typedef std::underlying_type<LedPattern>::type LedPatternInt;
@@ -77,6 +81,8 @@ public:
                 m_Pattern = LedPattern::Off;
                 }
         
+        virtual void poll(void) { this->loop(); }
+
         void loop(void)
                 {
                 uint32_t delta;
@@ -91,21 +97,6 @@ public:
 
                         this->update();
                         }
-                }
-
-        void update(void)
-                {
-                if (m_Pattern == LedPattern::Off)
-                        {
-                        digitalWrite(m_Pin, LOW);
-                        return;
-                        }
-
-                if (m_Current <= 1)
-                        m_Current = static_cast<LedPatternInt>(m_Pattern);
-
-                digitalWrite(m_Pin, m_Current & 1);
-                m_Current >>= 1;
                 }
 
         LedPattern Set(LedPattern newPattern)
@@ -123,7 +114,23 @@ private:
         LedPattern      m_Pattern;
         LedPatternInt   m_Current;
         uint32_t        m_StartTime;
-        };
+
+        void update(void)
+                {
+                if (m_Pattern == LedPattern::Off)
+                        {
+                        digitalWrite(m_Pin, LOW);
+                        return;
+                        }
+
+                if (m_Current <= 1)
+                        m_Current = static_cast<LedPatternInt>(m_Pattern);
+
+                digitalWrite(m_Pin, m_Current & 1);
+
+                m_Current >>= 1;
+                }
+       };
 
 } /* end namespace McciCatena */
 

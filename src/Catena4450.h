@@ -66,9 +66,8 @@ public:
 	class LoRaWAN /* forward */;
 
 	// methods
-	bool begin();
-	virtual void poll();
-	
+	virtual bool begin();
+
 protected:
 	using Super = CatenaFeatherM0LoRa;
 
@@ -87,7 +86,7 @@ private:
 
 	// the line collector
 	McciCatena::cStreamLineCollector	m_Collector;
-
+        // the callback object (since we're on USB)
         cSerialReady                            m_SerialReady;
 	};
 

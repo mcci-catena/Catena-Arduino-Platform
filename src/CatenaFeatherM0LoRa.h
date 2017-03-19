@@ -48,7 +48,7 @@ public:
 	using Super = CatenaFeatherM0;
 
 	CatenaFeatherM0LoRa() {};
-	~CatenaFeatherM0LoRa() {};
+	virtual ~CatenaFeatherM0LoRa() {};
 
 	// forward reference
 	class LoRaWAN;
@@ -61,11 +61,6 @@ public:
 		PIN_SX1276_DIO1 = 6,
 		PIN_SX1276_DIO2 = 
 			Arduino_LoRaWAN::lmic_pinmap::LMIC_UNUSED_PIN,
-		};
-
-	bool begin()
-		{
-		return this->Super::begin();
 		};
 
 protected:

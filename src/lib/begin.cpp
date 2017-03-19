@@ -5,7 +5,7 @@
 Module:  begin.cpp
 
 Function:
-	Catena4410::begin().
+	CatenaSamd21::begin().
 
 Version:
 	V0.1.0	Tue Oct 25 2016 01:22:51 tmm	Edit level 1
@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#include <Catena4410.h>
+#include <CatenaSamd21.h>
 
 /****************************************************************************\
 |
@@ -87,7 +87,8 @@ bool CatenaSamd21::begin(
     uint32_t OperatingFlags;
 
     /* do the platform begin */
-    /* NOTYET */
+    if (! this->Super::begin())
+        return false;
 
     /* get the CPU ID */
     this->GetUniqueID(&CpuID);

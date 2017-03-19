@@ -46,9 +46,11 @@ Revision history:
 #include <stdint.h>
 #include <Arduino.h>
 
-class CatenaBase : public McciCatena::cPollableInterface
+class CatenaBase
 	{
 public:
+        virtual ~CatenaBase() {};
+
 	/* an EUI64 */
 	struct EUI64_buffer_t {
 		uint8_t	b[64/8];
@@ -72,11 +74,17 @@ public:
 		return &this->m_SysEUI;
 		}
 
-        // a placeholder for the protocol.
-        virtual void poll(void) {};
+        virtual bool begin() { this->m_PollingEngine.begin(); return true; };
+        // poll the engine
+        void poll(void) { this->m_PollingEngine.poll(); };
+        void registerObject(McciCatena::cPollableObject *pObject)
+                {
+                this->m_PollingEngine.registerObject(pObject);
+                }
 
 protected:
 	EUI64_buffer_t m_SysEUI;
+        McciCatena::cPollingEngine m_PollingEngine;
 	};
 
 /**** end of CatenaBase.h ****/

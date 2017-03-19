@@ -56,7 +56,7 @@ Revision history:
 
 namespace McciCatena {
 
-class cStreamLineCollector : public cPollableInterface
+class cStreamLineCollector : public cPollableObject
 	{
 public:
 	cStreamLineCollector() {};

@@ -54,6 +54,8 @@ struct CATENA_CPUID_TO_PLATFORM;
 class CatenaSamd21 : public CatenaBase
 	{
 public:	
+        using Super = CatenaBase;
+
 	/*
 	|| Types
 	*/
@@ -110,11 +112,13 @@ public:
 	/*
 	|| Methods
 	*/
-	bool begin(void);
+
+        // start the Samd21 level
+	virtual bool begin(void);
 	bool begin(uint32_t uOverrideMask);
 	bool begin(uint32_t uClearMask, uint32_t uSetMask);
 
-	// get the model number from flags. constexpr to allow for
+	// Get the model number from flags. constexpr to allow for
 	// most aggressive optimization.
 	static uint32_t constexpr PlatformFlags_GetModNumber(uint32_t flags)
 		{

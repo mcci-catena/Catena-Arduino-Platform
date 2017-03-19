@@ -59,7 +59,7 @@ bool Catena4450::begin()
 	if (! this->Super::begin())
 		return false;
 
-	// do initialization
+	// start the FRAM
 	if (! this->m_Fram.begin())
 		return false;
 
