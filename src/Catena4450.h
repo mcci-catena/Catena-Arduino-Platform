@@ -1,4 +1,4 @@
-/* Catena4450.h	Sun Mar 12 2017 18:16:07 tmm */
+/* Catena4450.h	Sun Mar 19 2017 15:50:15 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class Catena4450: CatenaBase Platform to represent a Catena 4450
 
 Version:
-	V0.5.0	Sun Mar 12 2017 18:16:07 tmm	Edit level 1
+	V0.5.0	Sun Mar 19 2017 15:50:15 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -67,21 +67,9 @@ public:
 protected:
 	using Super = CatenaFeatherM0LoRa;
 
-        class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
-	        {
-        public:
-	        virtual bool isReady() const
-		        {
-		        return (!! ::Serial);
-		        }
-	        };
-
 private:
 	// the FRAM instance
 	McciCatena::Fram2k			m_Fram;
-
-        // the callback object to use for commands (since we're on USB)
-        cSerialReady                            m_SerialReady;
 
 	};
 

@@ -1,4 +1,4 @@
-/* CatenaSamd21.h	Wed Mar  8 2017 17:29:54 tmm */
+/* CatenaSamd21.h	Sun Mar 19 2017 15:49:23 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class CatenaSamd21
 
 Version:
-	V0.4.0	Wed Mar  8 2017 17:29:54 tmm	Edit level 3
+	V0.5.0	Sun Mar 19 2017 15:49:23 tmm	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -34,6 +34,9 @@ Revision history:
 
    0.4.0  Wed Mar  8 2017 17:29:54  tmm
 	Add flags for new well-known sensors and mod-number provisions.
+
+   0.5.0  Sun Mar 19 2017 15:49:23  tmm
+	Refactor to add support for USB command-line processing.
 
 */
 
@@ -160,6 +163,21 @@ public:
 		return this->m_OperatingFlags;
 		}
 	inline uint32_t GetPlatformFlags(void);		
+
+protected:
+	// help for the command-processing framework.
+        class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
+	        {
+        public:
+	        virtual bool isReady() const
+		        {
+		        return (!! ::Serial);
+		        }
+	        };
+
+
+        // the callback object to use for commands (since we're on USB)
+        cSerialReady                            m_SerialReady;
 
 	/*
 	|| Class-level information
