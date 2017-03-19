@@ -33,7 +33,8 @@ Revision history:
 
 #include <Catena_StreamLineCollector.h>
 
-#include <Catena_Log.h>
+#include "Catena_Log.h"
+#include <cstdio>
 
 using namespace McciCatena;
 
@@ -262,3 +263,20 @@ McciCatena::cStreamLineCollector::readComplete(
                         );
                 }
 	}
+
+void
+McciCatena::cStreamLineCollector::vprintf(const char *pFmt, std::va_list ap)
+        {
+        char buf[128];
+
+	if (this->m_pStreamReady != nullptr &&
+	    ! this->m_pStreamReady->isReady())
+                {
+                // Log.printf(Log.kAlways, "%s: stream not ready\n", FUNCTION);
+		return;
+                }
+
+        vsnprintf(buf, sizeof(buf) - 1, pFmt, ap);
+        buf[sizeof(buf) - 1] = '\0';
+        this->m_pStream->print(buf);
+        }

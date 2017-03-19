@@ -50,6 +50,7 @@ namespace McciCatena {
 
 class cCommandStream;	// forward
 
+
 class cCommandStream : public cPollableObject
 	{
 public:
@@ -68,6 +69,21 @@ public:
 		);
 
 	virtual void poll(void);
+
+	typedef int (CommandFn)(cCommandStream *pThis, int argc, char **argv);
+
+	struct cEntry
+		{
+		const char *pName;
+		CommandFn *pDispatch;
+		};
+
+	class cDispatch;
+
+        void registerCommands(cDispatch *pDispatch);
+        void printf(const char *pFmt, ...)
+                __attribute__((__format__(__printf__, 2, 3)));
+                /* format counts start with 2 for non-static C++ member fns */
 
 protected:
 
@@ -96,6 +112,12 @@ private:
 		size_t nBuffer
 		);
 
+	// parse and dispatch the current command
+	int parseAndDispatch();
+
+        // dispatch a command
+        int dispatch(int argc, char **argv);
+
 	// the command buffer
 	uint8_t m_buffer[128];
 
@@ -106,11 +128,47 @@ private:
 	bool m_fReadComplete = false;	// is a read complete?
 	uint8_t m_ReadStatus;		// status of last read.
 
+	// the argument vector
+	char *(m_argv[sizeof(m_buffer)/4]);
+
 	// the collector
 	cStreamLineCollector *m_pCollector = nullptr;
 
 	// pointer to the owning Catena
 	CatenaBase *m_pCatena = nullptr;
+
+	// pointer to the dispatch tables
+	cDispatch *m_pHead = nullptr;
+	};
+
+class cCommandStream::cDispatch
+	{
+public:
+	cDispatch(
+		const cEntry *pEntries,
+		unsigned sizeofEntries
+		) 
+		{
+		this->m_pEntries = pEntries;
+		this->m_nEntries = sizeofEntries / sizeof(pEntries[0]);
+		};
+	~cDispatch() {};
+
+	// neither copyable nor movable.
+	cDispatch(const cDispatch&) = delete;
+	cDispatch& operator=(const cDispatch&) = delete;
+	cDispatch(const cDispatch&&) = delete;
+	cDispatch& operator=(const cDispatch&&) = delete;
+
+        // dispatch a command into this table.
+        int dispatch(int argc, char **argv);
+
+private:
+	friend class cCommandStream;
+	cDispatch *m_pNext = nullptr;
+	cDispatch *m_pLast = nullptr;
+	const cEntry *m_pEntries = nullptr;
+	unsigned m_nEntries = 0;
 	};
 
 }; // namespace McciCatena

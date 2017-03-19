@@ -45,6 +45,8 @@ Revision history:
 # include <Catena_PollableInterface.h>
 #endif
 
+#include <cstdarg>
+
 // now, back to reality
 #include "Stream.h"
 
@@ -117,6 +119,8 @@ public:
 		uint8_t *pBuffer,	// the buffer to fill
 		size_t nBuffer		// the buffer size
 		);
+
+        void vprintf(const char *pFmt, std::va_list ap);
 
 private:
 	// the stream we're working with
