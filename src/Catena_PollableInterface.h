@@ -52,7 +52,7 @@ class cPollingEngine; // forward reference
 
 class cPollableObject : public cPollableInterface
 	{
-public:	
+public:
         cPollableObject() {};
 
 	// neither copyable nor movable
