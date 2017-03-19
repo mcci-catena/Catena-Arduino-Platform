@@ -59,10 +59,6 @@ bool Catena4450::begin()
 	if (! this->Super::begin())
 		return false;
 
-	// start the FRAM
-	if (! this->m_Fram.begin())
-		return false;
-
         // set up the command line collector
 	this->m_Collector.begin(&Serial, &this->m_SerialReady);
         this->registerObject(&this->m_Collector);
@@ -72,6 +68,10 @@ bool Catena4450::begin()
                 &this->m_Collector,
                 this
                 );
+
+        // start the FRAM
+        if (!this->m_Fram.begin())
+                return false;
 
 	return true;
 	}
