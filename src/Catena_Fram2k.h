@@ -54,10 +54,10 @@ Revision history:
 namespace McciCatena {
 
 
-class cFram2k : public PersistentStorage
+class cFram2k : public cPersistentStorage
 	{
 protected:
-	using Super = PersistentStorage;
+	using Super = cPersistentStorage;
 
 public:
 	cFram2k() {};

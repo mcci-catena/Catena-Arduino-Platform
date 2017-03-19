@@ -42,19 +42,19 @@ Revision history:
 
 namespace McciCatena {
 
-class PersistentStorage
+class cPersistentStorage
 	{
 public:
 	// constructor
-	PersistentStorage() {};
+	cPersistentStorage() {};
 	// destructor
-	virtual ~PersistentStorage() {};
+	virtual ~cPersistentStorage() {};
 
 	// neither copyable nor movable
-	PersistentStorage(const PersistentStorage&) = delete;
-	PersistentStorage& operator=(const PersistentStorage&) = delete;
-	PersistentStorage(const PersistentStorage&&) = delete;
-	PersistentStorage& operator=(const PersistentStorage&&) = delete;
+	cPersistentStorage(const cPersistentStorage&) = delete;
+	cPersistentStorage& operator=(const cPersistentStorage&) = delete;
+	cPersistentStorage(const cPersistentStorage&&) = delete;
+	cPersistentStorage& operator=(const cPersistentStorage&&) = delete;
 
 	// start storage operations
 	virtual bool begin() = 0;
