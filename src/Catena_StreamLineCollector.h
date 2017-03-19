@@ -78,6 +78,7 @@ public:
 		kSuccess = 0,
 		kOverrun = 1,
 		kBusy = 2,
+                kIoError = 3,
 		};
 
 	class cStreamReady
@@ -91,13 +92,12 @@ public:
 		};
 
 	// the callback function:
-	using ReadCompleteCbFn = 
-		std::function<void(
+	typedef void (ReadCompleteCbFn)(
 				void* pCtx, 
 				ErrorCode uStatus, 
 				uint8_t *pBuffer,
 				size_t nBuffer
-				)>;
+				);
 	
 public:
 	// the poll method (makes this pollable)

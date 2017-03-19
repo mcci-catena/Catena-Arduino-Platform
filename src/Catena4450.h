@@ -48,6 +48,10 @@ Revision history:
 # include "Catena_StreamLineCollector.h"
 #endif
 
+#ifndef _CATENA_COMMANDSTREAM_H_
+# include "Catena_CommandStream.h"
+#endif
+
 #include <Arduino_LoRaWAN_ttn.h>
 
 class Catena4450 : public CatenaFeatherM0LoRa
@@ -74,7 +78,7 @@ protected:
         class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
 	        {
         public:
-	        virtual bool isReady()
+	        virtual bool isReady() const
 		        {
 		        return (!! ::Serial);
 		        }
@@ -88,6 +92,9 @@ private:
 	McciCatena::cStreamLineCollector	m_Collector;
         // the callback object (since we're on USB)
         cSerialReady                            m_SerialReady;
+
+        // the command processor
+        McciCatena::cCommandStream              m_CommandStream;
 	};
 
 /*

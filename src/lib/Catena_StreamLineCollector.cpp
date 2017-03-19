@@ -33,6 +33,8 @@ Revision history:
 
 #include <Catena_StreamLineCollector.h>
 
+#include <Catena_Log.h>
+
 using namespace McciCatena;
 
 /*
@@ -88,13 +90,12 @@ Function:
 	Launch an asynchronous read.
 
 Definition:
-	typedef std::function<void(
+	typedef void (cStreamLineCollector::ReadCompleteCbFn)(
 				void *pDoneCtx,
 				cStreamLineCollector::ErrorCode Status,
 				uint8_t *pBuffer,
 				size_t nBuffer
-				)>
-		cStreamLineCollector::ReadCompleteCbFn;
+				);
 
 	void cStreamLineCollector::readAsync(
 		ReadCompleteCbFn *pFn,	// the function to call on completion,
@@ -132,11 +133,21 @@ McciCatena::cStreamLineCollector::readAsync(
 	size_t nBuffer		// the buffer size
 	)
 	{
-	if (pFn == nullptr || ! *pFn)
+        static const char FUNCTION[] = "McciCatena::cStreamLineCollector::readAsync";
+
+	if (pFn == nullptr)
+                {
+                // Log.printf(Log.kAlways, "%s: pFn == null\n", FUNCTION);
 		return;
+                }
 
 	if (this->isBusy())
+                {
 		(*pFn)(pDoneCtx, ErrorCode::kBusy, pBuffer, nBuffer);
+                // Log.printf(Log.kAlways, "%s: busy\n", FUNCTION);
+                }
+
+        // Log.printf(Log.kAlways, "%s: launch read\n", FUNCTION);
 
 	this->m_pReadCompleteCbFn = pFn;
 	this->m_pReadCompleteCbCtx = pDoneCtx;
@@ -150,6 +161,8 @@ McciCatena::cStreamLineCollector::poll(
 	void
 	)
 	{
+        static const char FUNCTION[] = "McciCatena::cStreamLineCollector::poll";
+
 	// if the stream is not set, give up.
 	if (this->m_pStream == nullptr)
 		return;
@@ -159,9 +172,12 @@ McciCatena::cStreamLineCollector::poll(
 		return;
 
 	// if the stream is not connected, stop.
-	if (this->m_pStreamReady!= nullptr &&
+	if (this->m_pStreamReady != nullptr &&
 	    ! this->m_pStreamReady->isReady())
+                {
+                // Log.printf(Log.kAlways, "%s: stream not ready\n", FUNCTION);
 		return;
+                }
 	
 	// if there is no data available on the stream, give up
 	size_t const nAvail = this->m_pStream->available();
@@ -198,17 +214,32 @@ McciCatena::cStreamLineCollector::poll(
 	// otherwise we can issue a ReadUntil
 	else
 		{
-		size_t const nRead = this->m_pStream->readBytesUntil(
-						kEol,
-						this->m_pInsert,
-						nRemaining
-						);
+                // we can't use readBytesUntil because it doesn't return
+                // the terminator. read manually instead.
 
-		// advance pointers
-		this->m_pInsert += nRead;
+                // number read
+		size_t nRead;
+                ErrorCode status;
+                
+                status = ErrorCode::kBusy;
 
-		if (nRead > 0 && this->m_pInsert[-1] == kEol)
-			this->readComplete(ErrorCode::kSuccess);
+                for (nRead = 0; nRead < nRemaining; ++nRead)
+                        {
+                        int const c = this->m_pStream->read();
+                        if (c < 0)
+                                {
+                                status = ErrorCode::kIoError;
+                                break;
+                                }
+
+                        *this->m_pInsert++ = (uint8_t) c;
+
+                        if (c == kEol)
+                                status = ErrorCode::kSuccess;
+                        }
+
+                if (status != ErrorCode::kBusy)
+			this->readComplete(status);
 		}
 	}
 
@@ -217,5 +248,17 @@ McciCatena::cStreamLineCollector::readComplete(
 	ErrorCode uStatus
 	)
 	{
-	
+	ReadCompleteCbFn * const pDoneFn = this->m_pReadCompleteCbFn;
+
+        if (pDoneFn)
+                {
+                this->m_pReadCompleteCbFn = nullptr;
+
+                (*pDoneFn)(
+                        this->m_pReadCompleteCbCtx, 
+                        uStatus, 
+                        this->m_pBuffer, 
+                        this->m_pInsert - this->m_pBuffer
+                        );
+                }
 	}

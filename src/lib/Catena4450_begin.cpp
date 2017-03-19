@@ -67,6 +67,12 @@ bool Catena4450::begin()
 	this->m_Collector.begin(&Serial, &this->m_SerialReady);
         this->registerObject(&this->m_Collector);
 
+        // set up the command line processor
+        this->m_CommandStream.begin(
+                &this->m_Collector,
+                this
+                );
+
 	return true;
 	}
 
