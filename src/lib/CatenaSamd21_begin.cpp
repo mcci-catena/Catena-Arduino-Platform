@@ -1,17 +1,17 @@
-/* begin.cpp	Tue Oct 25 2016 01:22:51 tmm */
+/* CatenaSamd21_begin.cpp	Sat Mar 18 2017 23:14:48 tmm */
 
 /*
 
-Module:  begin.cpp
+Module:  CatenaSamd21_begin.cpp
 
 Function:
 	CatenaSamd21::begin().
 
 Version:
-	V0.1.0	Tue Oct 25 2016 01:22:51 tmm	Edit level 1
+	V0.5.0	Sat Mar 18 2017 23:14:48 tmm	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -29,9 +29,14 @@ Revision history:
    0.1.0  Tue Oct 25 2016 01:22:51  tmm
 	Module created.
 
+   0.5.0  Sat Mar 18 2017 23:14:48  tmm
+	Changed module name to match standards.
+
 */
 
 #include <CatenaSamd21.h>
+
+using namespace McciCatena;
 
 /****************************************************************************\
 |
@@ -67,6 +72,36 @@ Revision history:
 |	of objects.
 |
 \****************************************************************************/
+
+/*
+
+Name:	CatenaSamd21::begin()
+
+Function:
+	Start up the framework on Samd21-based Catenas.
+
+Definition:
+	bool CatenaSamd21::begin(void);
+
+	bool CatenaSamd21::begin(
+			uint32_t uOverride);
+
+	bool CatenaSamd21::begin(
+			uint32_t uClearMask,
+			uint32_t uSetMask
+			);
+
+Description:
+	These three forms of the SAMD21 startup code all set the operating
+	flags according to the masks, and initialize the Samd21-specific
+	fields of the Catena object according to platform data.
+
+	The super-class begin() is called before ours is called.
+
+Returns:
+	true if initialied correctly, false otherwise.
+
+*/
 
 bool CatenaSamd21::begin()
     {
