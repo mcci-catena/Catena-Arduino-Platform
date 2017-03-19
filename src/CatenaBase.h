@@ -1,4 +1,4 @@
-/* CatenaBase.h	Thu Oct 27 2016 22:46:30 tmm */
+/* CatenaBase.h	Sun Mar 19 2017 15:00:21 tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	class CatenaBase interfaces.
 
 Version:
-	V0.3.0	Thu Oct 27 2016 22:46:30 tmm	Edit level 3
+	V0.5.0	Sun Mar 19 2017 15:00:21 tmm	Edit level 4
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -32,6 +32,9 @@ Revision history:
    0.3.0  Thu Oct 27 2016 22:46:30  tmm
 	Change buffer types away from array, types are just not intuitive.
 
+   0.5.0  Sun Mar 19 2017 15:00:21  tmm
+	Major update for comamand support, etc.
+
 */
 
 #ifndef _CATENABASE_H_		/* prevent multiple includes */
@@ -45,6 +48,18 @@ Revision history:
 
 #include <stdint.h>
 #include <Arduino.h>
+
+#ifndef _CATENABASE_TYPES_H_
+# include "CatenaBase_types.h"
+#endif
+
+#ifndef _CATENA_STREAMLINECOLLECTOR_H_
+# include "Catena_StreamLineCollector.h"
+#endif
+
+#ifndef _CATENA_COMMANDSTREAM_H_
+# include "Catena_CommandStream.h"
+#endif
 
 class CatenaBase
 	{
@@ -75,6 +90,7 @@ public:
 		}
 
         virtual bool begin() { this->m_PollingEngine.begin(); return true; };
+
         // poll the engine
         void poll(void) { this->m_PollingEngine.poll(); };
         void registerObject(McciCatena::cPollableObject *pObject)
@@ -85,6 +101,12 @@ public:
 protected:
 	EUI64_buffer_t m_SysEUI;
         McciCatena::cPollingEngine m_PollingEngine;
+
+	// the line collector
+	McciCatena::cStreamLineCollector	m_Collector;
+
+        // the command processor
+        McciCatena::cCommandStream              m_CommandStream;
 	};
 
 /**** end of CatenaBase.h ****/

@@ -42,8 +42,8 @@ Revision history:
 # include "Catena_StreamLineCollector.h"
 #endif
 
-#ifndef _CATENABASE_H_
-# include "CatenaBase.h"
+#ifndef _CATENABASE_TYPES_H_
+# include "CatenaBase_types.h"
 #endif
 
 namespace McciCatena {

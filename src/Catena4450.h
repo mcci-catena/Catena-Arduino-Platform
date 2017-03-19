@@ -44,14 +44,6 @@ Revision history:
 # include "Catena_Fram2K.h"
 #endif
 
-#ifndef _CATENA_STREAMLINECOLLECTOR_H_
-# include "Catena_StreamLineCollector.h"
-#endif
-
-#ifndef _CATENA_COMMANDSTREAM_H_
-# include "Catena_CommandStream.h"
-#endif
-
 #include <Arduino_LoRaWAN_ttn.h>
 
 class Catena4450 : public CatenaFeatherM0LoRa
@@ -88,13 +80,9 @@ private:
 	// the FRAM instance
 	McciCatena::Fram2k			m_Fram;
 
-	// the line collector
-	McciCatena::cStreamLineCollector	m_Collector;
-        // the callback object (since we're on USB)
+        // the callback object to use for commands (since we're on USB)
         cSerialReady                            m_SerialReady;
 
-        // the command processor
-        McciCatena::cCommandStream              m_CommandStream;
 	};
 
 /*

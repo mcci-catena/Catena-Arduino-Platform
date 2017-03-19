@@ -33,6 +33,7 @@ Revision history:
 
 #include "Catena_CommandStream.h"
 
+#include "CatenaBase.h"
 #include "Catena_Log.h"
 #include <cstring>
 #include <cstdarg>
