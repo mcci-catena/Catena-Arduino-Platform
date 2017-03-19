@@ -79,7 +79,8 @@ protected:
 private:
 	};
 
-class CatenaFeatherM0::LoRaWAN : public Arduino_LoRaWAN_ttn
+class CatenaFeatherM0::LoRaWAN : public Arduino_LoRaWAN_ttn,
+                                 public McciCatena::cPollableObject
 	{
 public:
         using Super = Arduino_LoRaWAN_ttn;
@@ -96,6 +97,8 @@ public:
 	|| the connection. 
 	*/
 	virtual bool begin(CatenaFeatherM0 *pCatena);
+
+        virtual void poll() { this->Super::loop(); };
 
 protected:
 	/*
