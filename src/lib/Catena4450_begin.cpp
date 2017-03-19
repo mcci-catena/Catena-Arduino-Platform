@@ -31,7 +31,9 @@ Revision history:
 
 */
 
-#include <Catena4450.h>
+#include "Catena4450.h"
+
+#include "Catena_Log.h"
 
 using namespace McciCatena;
 
@@ -75,6 +77,16 @@ bool Catena4450::begin()
         // start the FRAM
         if (!this->m_Fram.begin())
                 return false;
+
+	// check whether the FRAM is valid
+	if (! this->m_Fram.isValid())
+		{
+		Log.printf(
+			Log.kAlways, 
+			"FRAM contents are not valid, resetting\n"
+			);
+		this->m_Fram.initialize();
+		}
 
 	return true;
 	}

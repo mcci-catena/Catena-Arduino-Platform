@@ -41,7 +41,7 @@ Revision history:
 #endif
 
 #ifndef _CATENA_FRAM2K_H_
-# include "Catena_Fram2K.h"
+# include "Catena_Fram2k.h"
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>

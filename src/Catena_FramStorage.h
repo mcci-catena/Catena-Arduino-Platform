@@ -1,14 +1,14 @@
-/* Catena_Fram2K.h	Sun Mar 12 2017 17:47:52 tmm */
+/* Catena_FramStorage.h	Sun Mar 19 2017 17:34:08 tmm */
 
 /*
 
-Module:  Catena_Fram2K.h
+Module:  Catena_FramStorage.h
 
 Function:
-	Framework for Catena_Fram2K
+	class McciCatena::FramStorage
 
 Version:
-	V0.5.0	Sun Mar 12 2017 17:47:52 tmm	Edit level 1
+	V0.5.0	Sun Mar 19 2017 17:34:08 tmm	Edit level 1
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -26,36 +26,19 @@ Author:
 	Terry Moore, MCCI Corporation	March 2017
 
 Revision history:
-   0.5.0  Sun Mar 12 2017 17:47:52  tmm
+   0.5.0  Sun Mar 19 2017 17:34:08  tmm
 	Module created.
 
 */
 
-#ifndef _CATENA_FRAM2K_H_		/* prevent multiple includes */
-#define _CATENA_FRAM2K_H_
-
-#pragma once
+#ifndef _CATENA_FRAMSTORAGE_H_		/* prevent multiple includes */
+#define _CATENA_FRAMSTORAGE_H_
 
 #include <stdint.h>
-
-#ifndef _CATENA_PERSISTENTSTORAGE_H_
-# include "Catena_PersistentStorage.h"
-#endif
 
 #ifndef _MCCIADK_GUID_H_
 # include "mcciadk_guid.h"
 #endif
-
-#ifndef _ADAFRUIT_FRAM_I2C_H_
-# include <Adafruit_FRAM_I2C.h>
-#endif
-
-/****************************************************************************\
-|
-|	The contents
-|
-\****************************************************************************/
-
 
 namespace McciCatena {
 
@@ -257,30 +240,7 @@ struct FramStorage::Object : public FramStorage::ObjectRaw
 		}
 	};
 
-class Fram2k : public PersistentStorage
-	{
-public:
-	Fram2k() {};
-	virtual ~Fram2k() {};
-
-        // begin working with the FRAM
-	virtual bool begin();
-
-        // initialize the store: we use the base class.
-        // virtual bool initialize();
-
-        // check the store
-        virtual bool isValid();
-
-        // reset the store
-        virtual bool reset();
-
-protected:
-private:
-	Adafruit_FRAM_I2C	m_hw;
-	};
-
 }; // namespace McciCatena
 
-/**** end of Catena_Fram2K.h ****/
-#endif /* _CATENA_FRAM2K_H_ */
+/**** end of Catena_FramStorage.h ****/
+#endif /* _CATENA_FRAMSTORAGE_H_ */
