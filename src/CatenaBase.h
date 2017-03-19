@@ -37,10 +37,16 @@ Revision history:
 #ifndef _CATENABASE_H_		/* prevent multiple includes */
 #define _CATENABASE_H_
 
+#pragma once
+
+#ifndef _CATENA_POLLABLEINTERFACE_H_
+# include <Catena_PollableInterface.h>
+#endif
+
 #include <stdint.h>
 #include <Arduino.h>
 
-class CatenaBase
+class CatenaBase : public McciCatena::cPollableInterface
 	{
 public:
 	/* an EUI64 */
@@ -65,6 +71,9 @@ public:
 		{
 		return &this->m_SysEUI;
 		}
+
+        // a placeholder for the protocol.
+        virtual void poll(void) {};
 
 protected:
 	EUI64_buffer_t m_SysEUI;

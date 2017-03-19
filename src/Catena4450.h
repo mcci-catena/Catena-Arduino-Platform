@@ -44,6 +44,10 @@ Revision history:
 # include "Catena_Fram2K.h"
 #endif
 
+#ifndef _CATENA_STREAMLINECOLLECTOR_H_
+# include "Catena_StreamLineCollector.h"
+#endif
+
 #include <Arduino_LoRaWAN_ttn.h>
 
 class Catena4450 : public CatenaFeatherM0LoRa
@@ -63,13 +67,28 @@ public:
 
 	// methods
 	bool begin();
+	virtual void poll();
 	
 protected:
 	using Super = CatenaFeatherM0LoRa;
 
+        class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
+	        {
+        public:
+	        virtual bool isReady()
+		        {
+		        return (!! ::Serial);
+		        }
+	        };
+
 private:
 	// the FRAM instance
-	McciCatena::Fram2k	m_Fram;
+	McciCatena::Fram2k			m_Fram;
+
+	// the line collector
+	McciCatena::cStreamLineCollector	m_Collector;
+
+        cSerialReady                            m_SerialReady;
 	};
 
 /*

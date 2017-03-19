@@ -32,6 +32,8 @@ Revision history:
 */
 
 #include <Catena4450.h>
+
+using namespace McciCatena;
 
 /*
 
@@ -51,6 +53,7 @@ Returns:
 
 */
 
+
 bool Catena4450::begin()
 	{
 	if (! this->Super::begin())
@@ -59,6 +62,10 @@ bool Catena4450::begin()
 	// do initialization
 	if (! this->m_Fram.begin())
 		return false;
+
+        // set up the command line collector
+	this->m_Collector.begin(&Serial, &this->m_SerialReady);
 	
 	return true;
 	}
+
