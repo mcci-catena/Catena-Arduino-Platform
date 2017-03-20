@@ -165,13 +165,18 @@ McciCatena::cFram2k::isValid()
 	}
 
 bool
-McciCatena::cFram2k::reset()
+McciCatena::cFram2k::initialize()
 	{
-	return false;
+	if (this->isValid())
+		return true;
+
+	return this->reset();
 	}
 
 bool
-McciCatena::cFram2k::initialize()
+McciCatena::cFram2k::reset()
 	{
+	// write header
 	return false;
 	}
+
