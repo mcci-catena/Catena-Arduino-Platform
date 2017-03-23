@@ -21,7 +21,7 @@ Copyright notice:
 	
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -62,19 +62,19 @@ Function:
 	Prepare to use the FRAM
 
 Definition:
-	public: virtual
+	public: virtual bool
+		McciCatena::cFram2k::begin()
 	
-
 Description:
-	xxx
+	Initialize an cFram2K object prior to operation.
 
 Returns:
-	xxx
+	true for success, false for failure.
 
 */
 
 /* virtual public */
-bool 
+bool
 McciCatena::cFram2k::begin()
 	{
 	if (! this->m_hw.begin(0, &Wire))
@@ -85,13 +85,13 @@ McciCatena::cFram2k::begin()
 
 /*
 
-Name:	cFram2k::isValid()
+Name:	McciCatena::cFram2k::isValid()
 
 Function:
 	Check to see whether the FRAM looks valid
 
 Definition:
-	public: virtual bool cFram2k::isValid();
+	public: virtual bool McciCatena::cFram2k::isValid();
 
 Description:
 	We look for valid begin block, a series of intermediate blocks,
@@ -102,7 +102,7 @@ Returns:
 
 */
 
-bool 
+bool
 McciCatena::cFram2k::isValid()
 	{
 	cFramStorage::Object object;
@@ -163,6 +163,25 @@ McciCatena::cFram2k::isValid()
 		}
 	return false;
 	}
+
+/*
+
+Name:	McciCatena::cFram2k::initialize()
+
+Function:
+	Initialize an uninitialized FRAM
+
+Definition:
+	public: bool McciCatena::cFram2k::initialize();
+
+Description:
+	This routine establishes the invariant that the FRAM is intialized.
+	It never overwrites an initialized and valid FRAM.
+
+Returns:
+	true if the FRAM is now initialized; false otherwise.
+
+*/
 
 bool
 McciCatena::cFram2k::initialize()
@@ -172,10 +191,32 @@ McciCatena::cFram2k::initialize()
 
 	return this->reset();
 	}
+
+/*
+
+Name:	McciCatena::cFram2k::reset()
+
+Function:
+	Reset the contents of the FRAM
+
+Definition:
+	public: bool McciCatena::cFram2k::reset();
+
+Description:
+	This function initailizes the header of the FRAM, and then re-reads
+	the header (which initializes the rest of the internal data
+	structures). Any information previously on the FRAM is lost.
+
+Returns:
+	true if all the I/O went properly, false if any failures.  After
+	failures, things are in an indeterminate state.
+
+*/
 
 bool
 McciCatena::cFram2k::reset()
 	{
+	// TODO(tmm@mcci.com) finish this.
 	// write header
 	return false;
 	}

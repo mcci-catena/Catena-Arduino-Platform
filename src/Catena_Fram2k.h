@@ -40,6 +40,10 @@ Revision history:
 # include "Catena_PersistentStorage.h"
 #endif
 
+#ifndef _CATENA_COMMANDSTREAM_H_
+# include "Catena_CommandStream.h"
+#endif
+
 #ifndef _ADAFRUIT_FRAM_I2C_H_
 # include <Adafruit_FRAM_I2C.h>
 #endif
@@ -74,6 +78,17 @@ public:
 
         // reset the store
         virtual bool reset();
+
+	// initialize the commands
+	bool addCommands();
+
+        // implement the dump command
+        static cCommandStream::CommandStatus doDump(
+                        cCommandStream *pThis,
+                        void *pContext,
+                        int argc,
+                        char **argv
+                        );
 
 protected:
 private:
