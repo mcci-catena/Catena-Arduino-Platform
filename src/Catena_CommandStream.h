@@ -159,7 +159,8 @@ class cCommandStream::cDispatch
 public:
 	cDispatch(
 		const cEntry *pEntries,
-		unsigned sizeofEntries
+		unsigned sizeofEntries,
+		const char *pGroupName = nullptr
 		) 
 		{
 		this->m_pEntries = pEntries;
@@ -177,11 +178,16 @@ public:
         int dispatch(int argc, char **argv);
 
 private:
+	// look up a command in this dispatch table, return pointer
+	// or nullptr.
+	const cEntry *search(const char *pCommand) const;
+
 	friend class cCommandStream;
 	cDispatch *m_pNext = nullptr;
 	cDispatch *m_pLast = nullptr;
 	const cEntry *m_pEntries = nullptr;
 	unsigned m_nEntries = 0;
+	const char *m_pGroupName = nullptr;
 	void *m_pContext;
 	};
 

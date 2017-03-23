@@ -229,25 +229,48 @@ McciCatena::cCommandStream::dispatch(
 	if (pHead != nullptr)
 		{
 		auto pThis = pHead;
+
+		// iterate over all command tables.		
 		do
 			{
-			auto pEntry = pThis->m_pEntries;
-			for (unsigned i = 0; 
-			     i < pThis->m_nEntries; 
-			     ++i, ++pEntry)
-				{
-				if (std::strcmp(pEntry->pName, pCommand) == 0)
-					{
-					CommandStatus status;
-					status = pEntry->pDispatch(
-							this,
-							pThis->m_pContext,
-							argc, 
-							argv
-							);
+			const char * const pGroupName = pThis->m_pGroupName;
+			CommandFn *pCommandFn;
+			const cEntry *pEntry;
 
-					return (status >= 0) ? status : kError;
+			if (pGroupName == nullptr)
+				{
+				pEntry = pThis->search(pCommand);
+				}
+			else
+				{
+				// need two words, and need to match first.
+				if (argc < 2 ||
+				    std::strcmp(pCommand, pGroupName) != 0
+				    )
+					// no luck.
+					pEntry = nullptr;
+				else
+					{
+					// first word matched, try second
+					pEntry = pThis->search(argv[1]);
+
+					// if it matches, consume first word
+					if (pEntry != nullptr)
+						++argv, --argc;
 					}
+				}
+
+			if (pEntry != nullptr)
+				{
+				CommandStatus status;
+				status = pEntry->pDispatch(
+						this,
+						pThis->m_pContext,
+						argc, 
+						argv
+						);
+
+				return (status >= 0) ? status : kError;
 				}
 
 			pThis = pThis->m_pNext;
@@ -256,6 +279,23 @@ McciCatena::cCommandStream::dispatch(
 
 	// if we get here, the command wasn't matched
 	return -1;
+	}
+
+const cCommandStream::cEntry * 
+McciCatena::cCommandStream::cDispatch::search(const char *pCommand) const
+	{
+	auto pEntry = this->m_pEntries;
+	for (unsigned i = 0; 
+	     i < this->m_nEntries; 
+	     ++i, ++pEntry)
+		{
+		if (std::strcmp(pEntry->pName, pCommand) == 0)
+			{
+			return pEntry;
+			}
+		}
+
+	return nullptr;
 	}
 
 void
