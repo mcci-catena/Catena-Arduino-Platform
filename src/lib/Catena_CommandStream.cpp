@@ -243,7 +243,9 @@ McciCatena::cCommandStream::dispatch(
 				}
 			else
 				{
-				// need two words, and need to match first.
+                                // Log.printf(Log.kAlways, "check group for: %s\n", pGroupName);
+
+                                // need two words, and need to match first word.
 				if (argc < 2 ||
 				    std::strcmp(pCommand, pGroupName) != 0
 				    )
@@ -263,7 +265,8 @@ McciCatena::cCommandStream::dispatch(
 			if (pEntry != nullptr)
 				{
 				CommandStatus status;
-				status = pEntry->pDispatch(
+                                // Log.printf(Log.kAlways, "dispatch %s\n", argv[0]);
+                                status = pEntry->pDispatch(
 						this,
 						pThis->m_pContext,
 						argc, 

@@ -45,7 +45,6 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-static cCommandStream::CommandFn doDump;
 
 /****************************************************************************\
 |
@@ -55,7 +54,7 @@ static cCommandStream::CommandFn doDump;
 
 static const cCommandStream::cEntry sDefaultEntries[] =
 	{
-	{ "dump", doDump },
+	{ "dump", cFram2k::doDump },
 	};
 
 static cCommandStream::cDispatch
@@ -148,7 +147,7 @@ McciCatena::cFram2k::doDump(
 		return status;
 
 	// get arg 1 as base; default is 0
-	status = getuint32(argc, argv, 1, uLength, 0);
+	status = getuint32(argc, argv, 1, uBase, 0);
 
 	if (status != cCommandStream::CommandStatus::kSuccess)
 		return status;

@@ -78,6 +78,9 @@ bool Catena4450::begin()
         if (!this->m_Fram.begin())
                 return false;
 
+        if (!this->m_Fram.addCommands())
+                return false;
+
 	// check whether the FRAM is valid
 	if (! this->m_Fram.isValid())
 		{

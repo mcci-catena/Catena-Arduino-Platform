@@ -165,6 +165,7 @@ public:
 		{
 		this->m_pEntries = pEntries;
 		this->m_nEntries = sizeofEntries / sizeof(pEntries[0]);
+                this->m_pGroupName = pGroupName;
 		};
 	~cDispatch() {};
 
