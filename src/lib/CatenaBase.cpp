@@ -37,9 +37,18 @@ Revision history:
 
 using namespace McciCatena;
 
+// the static pointer to the abstract view of the object.
+CatenaBase *CatenaBase::pCatenaBase;
+
+/* the constructor */
+CatenaBase::CatenaBase()
+	{
+	pCatenaBase = this;
+	}
+
+/* begin operating */
 bool
-CatenaBase::
-begin(void)
+CatenaBase::begin(void)
 	{
 	Log.begin(Log.kError);
 
@@ -47,6 +56,7 @@ begin(void)
 	return true;
 	}
 
+/* register a pollable object with the polling engine */
 void
 CatenaBase::registerObject(
 	McciCatena::cPollableObject *pObject
@@ -55,12 +65,14 @@ CatenaBase::registerObject(
 	this->m_PollingEngine.registerObject(pObject);
 	}
 
+/* poll all the registered objects */
 void
 CatenaBase::poll()
 	{ 
 	this->m_PollingEngine.poll();
 	}
 
+/* add a number of commands to the command table */
 void
 CatenaBase::addCommands(
 	cCommandStream::cDispatch &dispatch,
@@ -70,6 +82,7 @@ CatenaBase::addCommands(
 	this->m_CommandStream.registerCommands(&dispatch, pContext);
 	}
 
+/* register all the commands for this level and above */
 /* protected virtual */
 void
 CatenaBase::registerCommands(void)

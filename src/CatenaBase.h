@@ -64,6 +64,7 @@ Revision history:
 class CatenaBase
 	{
 public:
+	CatenaBase();
         virtual ~CatenaBase() {};
 
 	/* an EUI64 */
@@ -97,6 +98,20 @@ public:
 
 	// command handling
 	void addCommands(McciCatena::cCommandStream::cDispatch &, void *);
+
+/****************************************************************************\
+|
+|	The global CatenaBase pointer.
+|
+|	Code can't readily reference a global (like "gCatena") that is of
+|	a more specialized type than the one they know. So instead, we have
+|	a global pointer to the Catena, taken as a pointer to the most
+|	general object.  It's initialzed by the constructor.
+|
+\****************************************************************************/
+
+	static CatenaBase *pCatenaBase;
+
 protected:
 	virtual void registerCommands(void);
 
@@ -111,6 +126,14 @@ protected:
         // the command processor
         McciCatena::cCommandStream              m_CommandStream;
 	};
+
+
+namespace McciCatena {
+
+extern CatenaBase *gpCatenaBase;
+
+}; // end namespace McciCatena
+
 
 /**** end of CatenaBase.h ****/
 #endif /* _CATENABASE_H_ */
