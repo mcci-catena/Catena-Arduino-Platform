@@ -134,18 +134,21 @@ McciCatena::cFram2k::isValid()
 		return true;
 		}
 
-	if (! object.hasValidSize())
+	if (! object.hasValidSize() ||
+            object.getDataSize() != sizeof(uint32_t))
 		{
 		Log.printf(
 			Log.kError,
-			"first object size not valid: %08x\n",
-			object.uSizeKey
+			"first object size not valid: %08x objectSize(%u) dataSize(%u)\n",
+			object.uSizeKey,
+                        object.getObjectSize(),
+                        object.getDataSize()
 			);
 		return false;
 		}
 
 	// check the guid
-	if (object.matchesGuid(skFramGuid))
+	if (! object.matchesGuid(skFramGuid))
 		{
 		Log.printf(
 			Log.kError,
@@ -160,8 +163,52 @@ McciCatena::cFram2k::isValid()
 			"key is not kHeader: %02x\n",
 			object.getKey()
 			);
+                return false;
 		}
-	return false;
+
+        // get the end-of-storage pointer
+        uint32_t offsetOfEndPointer = 
+                object.offsetOfReplicant(
+                        object.getCurrent()
+                        );
+        if (offsetOfEndPointer == 0)
+                {
+		Log.printf(
+			Log.kError,
+			"couldn't find end pointer: uVer[%u %u %u]\n",
+                        object.uVer[0], object.uVer[1], object.uVer[2]
+			);
+                return false;
+                }
+
+        uint32_t endPointer;
+        nRead = this->m_hw.read(offsetOfEndPointer, (uint8_t *)&endPointer, sizeof(endPointer));
+        if (nRead != sizeof(endPointer))
+                {
+                Log.printf(
+                        Log.kError,
+                        "error reading end pointer offset %u\n nRead %u\n",
+                         (unsigned) offsetOfEndPointer,
+                         (unsigned) nRead
+                        );
+                return false;
+                }
+       
+       // check that endpointer is valid
+       if (endPointer % cFramStorage::kObjectQuantum != 0 ||
+           endPointer < object.getObjectSize())
+                {
+                Log.printf(
+                        Log.kError,
+                        "invalid end pointer %u\n",
+                        endPointer
+                        );
+                return false;
+                }
+
+        // TODO(tmm@mcci.com) cache the relevant offsets and
+        // variant selector.
+	return true;
 	}
 
 /*
@@ -216,8 +263,39 @@ Returns:
 bool
 McciCatena::cFram2k::reset()
 	{
-	// TODO(tmm@mcci.com) finish this.
-	// write header
-	return false;
+        cFramStorage::Object object;
+        uint32_t endPointer[2];
+        
+        // initialize the object header
+        object.initialize(
+                skFramGuid,
+                cFramStorage::kHeader,
+                sizeof(endPointer[0]),
+                /* replicated */ true
+                );
+
+        // make an image of two zero endpointers
+        endPointer[0] = 0;
+        endPointer[1] = object.getObjectSize();
+
+        // get the offset of the first replicant
+        unsigned const offsetEndPointer = object.offsetOfReplicant(0);
+
+        this->m_hw.write(offsetEndPointer, (uint8_t *)endPointer, sizeof(endPointer));
+
+        // now if we crash endPointer is invalid (offset is zero).
+        // write fresh header
+        this->m_hw.write(0, object.getBuffer(), object.getBufferSize());
+
+        // now update the replicant index
+        object.setCurrent(1);
+        this->m_hw.write(
+                0 + object.offsetOfDiscriminator(), 
+                object.getDiscriminatorBuffer(), 
+                object.getDiscriminatorBufferSize()
+                );
+
+        // finally, verify that the result looks good.
+	return this->isValid();
 	}
 

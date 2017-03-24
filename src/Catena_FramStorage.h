@@ -35,7 +35,6 @@ Revision history:
 #define _CATENA_FRAMSTORAGE_H_
 
 #include <stdint.h>
-#include <cstring>
 
 #ifndef _MCCIADK_GUID_H_
 # include "mcciadk_guid.h"
@@ -70,9 +69,8 @@ public:
                 // believe it, otherwise we think that either v1 or v2 was corrupted
                 // during write, and instead use v3.
 
-                uint8_t		uVer1;	// first image of discriminator
-                uint8_t		uVer2;	// second image of discriminator
-                uint8_t		uVer3;	// third image of discriminator
+		// the discriminator images.
+                uint8_t		uVer[3];
                 };
 	static constexpr size_t kObjectQuantum = sizeof(uint32_t);
 	static constexpr size_t kObjectStandardClicks =
@@ -105,6 +103,12 @@ public:
 		       (fv * (mask & (~mask + 1u)));
 		}
 
+	// get the maximum value for a field
+	static uint32_t constexpr getMaxValue(uint32_t mask)
+		{
+		return getField(mask, mask);
+		}
+
 	static uint32_t constexpr uSizeKey_GetSize(uint32_t uSizeKey)
 		{
 		return (uSizeKey & SIZE_MASK) * kObjectQuantum;
@@ -114,7 +118,9 @@ public:
 		{
 		return (nBytes + kObjectQuantum - 1) / kObjectQuantum;
 		}
-        static constexpr bool uSizeKey_SetClicks(uint32_t uSizeKey, uint32_t v)
+        static constexpr uint32_t uSizeKey_SetClicks(
+			uint32_t uSizeKey, uint32_t v
+			)
                 {
                 return (1 <= v && v <= SIZE_MASK) 
                         ? (uSizeKey & ~SIZE_MASK) | v
@@ -130,11 +136,11 @@ public:
                         );
 		}
 
-	bool getObjectSize(void) const
+	uint16_t getObjectSize(void) const
 		{
 		return uSizeKey_GetSize(this->uSizeKey);
 		}
-	bool getObjectClicks(void) const
+	uint16_t getObjectClicks(void) const
 		{
 		return this->uSizeKey & SIZE_MASK;
 		}
@@ -174,13 +180,24 @@ public:
 
 		return (uint16_t) getField(this->uSizeKey, DATASIZE_MASK);
 		}
-	bool matchesGuid(const MCCIADK_GUID_WIRE &guid) const
+
+	// set the data key size, clamping at max value.
+	static uint32_t constexpr uSizeKey_SetDataSize(
+		size_t oldSizeKey,
+		size_t nBytes
+		)
 		{
-		if (! this->isStandard())
-			return false;
-		else
-			return std::memcmp(&guid, &this->Guid, sizeof(guid)) == 0;
+		return setField(
+                        oldSizeKey, 
+                        nBytes <= getMaxValue(DATASIZE_MASK) ? nBytes 
+                                                             : getMaxValue(DATASIZE_MASK), 
+                        DATASIZE_MASK
+                        );
 		}
+
+        // compare this object's guid to another
+	bool matchesGuid(const MCCIADK_GUID_WIRE &guid) const;
+
 	int getKey() const
 		{
 		if (! this->isStandard())
@@ -239,9 +256,9 @@ public:
 
 	// offset to the i-th repliant from the base of this object.
 	// zero means error.
-	unsigned offsetToReplicant(unsigned i) const
+	uint32_t offsetOfReplicant(unsigned i) const
 		{
-		if (! this->isStandard())
+		if (! this->isStandard() || i > 1)
 			return 0;
 
 		const uint16_t dataSize = this->getDataSize();
@@ -254,22 +271,41 @@ public:
 	// get current discriminator; use voting algorigthm
 	uint8_t getCurrent() const
 		{
-		uint8_t const v1 = this->uVer1;
+		uint8_t const v1 = this->uVer[0];
 
-		if (v1 == this->uVer2)
+		if (v1 == this->uVer[1])
 			return v1;
 		else
-			return this->uVer3;
+			return this->uVer[2];
 		}
 
 	// set discriminator (only in local image, of cousre)
 	uint8_t setCurrent(uint8_t v)
 		{
-		this->uVer1 = v;
-		this->uVer2 = v;
-		this->uVer3 = v;
+		this->uVer[0] = v;
+		this->uVer[1] = v;
+		this->uVer[2] = v;
+		}
+	
+	// get the pointer to the vector of discriminators
+	uint8_t *getDiscriminatorBuffer()
+		{
+		return this->uVer;
 		}
 
+	// get the size of the vector of discriminators
+	size_t constexpr getDiscriminatorBufferSize()
+		{
+		return sizeof(this->uVer);
+		}
+
+	// get the offset of the vector of discriminators
+	static size_t constexpr offsetOfDiscriminator()
+		{
+		return offsetof(ObjectRaw, uVer);
+		}
+
+	// return the size of the object taken as a buffer
 	static constexpr size_t getBufferSize()
 		{
 		return kObjectStandardSize;
@@ -279,6 +315,16 @@ public:
 		{
 		return (uint8_t *) &this->uSizeKey;
 		}
+
+	// methods that are not in-line
+
+	// initialize a standard object image.
+	bool initialize(
+		const MCCIADK_GUID_WIRE &Guid,
+		uint8_t uKey,
+		size_t valueSizeInBytes,
+		bool fReplicated
+		);
 	};
 
 }; // namespace McciCatena
