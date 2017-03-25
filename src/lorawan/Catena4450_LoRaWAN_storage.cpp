@@ -38,19 +38,81 @@ Revision history:
 
 using namespace McciCatena;
 
+/*
+
+Name:	Catena4450::LoRaWAN::GetAbpProvisioningInfo()
+
+Function:
+	Get the ABP info (which is also what's saved after an OTAA Join)
+
+Definition:
+	public: virtual bool
+		Catena4450::LoRaWAN::GetAbpProvisioningInfo(
+		        Catena4450::LoRaWAN::AbpProvisioningInfo *pInfo
+		        ) override;
+
+Description:
+	This routine fills in an ABP info table with saved FRAM data:
+
+		NwkSkey (the network session key)
+		AppSkey (the app session key)
+		DevAddr (the assigned device address)
+		NwId	(the assigned network ID)
+		FCntUp	(the uplink frame count)
+		FCntDown (the downlink frame count)
+
+	(When provisioning a device for ABP, you'll want to reset the frame
+	counts, as these are maintained on uplink/downlink)
+
+Returns:
+	true if the data was filled in, false if not.
+
+*/
+
 bool
 Catena4450::LoRaWAN::GetAbpProvisioningInfo(
         Catena4450::LoRaWAN::AbpProvisioningInfo *pInfo
         )
         {
         Catena4450 * const pCatena = this->m_pCatena;
+	auto const pFram = pCatena->getFram();
+	cFram::Cursor framNwSKey(pFram),
+		      framAppSKey(pFram),
+		      framDevAddr(pFram),
+		      framNwId(pFram),
+		      framFCntUp(pFram),
+		      framFCntDown(pFram);
+		      
+	bool fResult;
 
-	Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+	fResult = false;
 
-	if (pInfo != nullptr)
-		memset(pInfo, 0, sizeof(pInfo));
+	if (framNwSKey.locate(cFramStorage::vItemDefs[cFramStorage::kNwSkey]) &&
+	    framAppSKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppSKey]) &&
+	    framDevAddr.locate(cFramStorage::vItemDefs[cFramStorage::kDevAddr]) &&
+	    framNwId.locate(cFramStorage::vItemDefs[cFramStorage::kNwId]) &&
+	    framFCntUp.locate(cFramStorage::vItemDefs[cFramStorage::kFCntUp]) &&
+	    framFCntDown.locate(cFramStorage::vItemDefs[cFramStorage::kFCntDown]))
+		fResult = true;
 
-	return false;
+	if (! fResult)
+		{
+		Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+
+		if (pInfo != nullptr)
+			memset(pInfo, 0, sizeof(pInfo));
+
+		return false;
+		}
+
+	framNwSKey.get(pInfo->NwkSkey, sizeof(pInfo->NwkSkey));
+	framAppSKey.get(pInfo->AppSkey, sizeof(pInfo->AppSkey));
+	framDevAddr.getuint32(pInfo->DevAddr);
+	framDevAddr.getuint32(pInfo->NwId);
+	framDevAddr.getuint32(pInfo->InitialSeqnoUp);
+	framDevAddr.getuint32(pInfo->InitialSeqnoDown);
+
+	return true;
 	}
 
 /*
@@ -64,7 +126,7 @@ Definition:
 	public: virtual bool
 		Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
 		        Catena4450::LoRaWAN::OtaaProvisioningInfo *pInfo
-		        );
+		        ) override;
 
 Description:
 	This routine fetches the OTAA provisioning info from FRAM if
@@ -144,6 +206,10 @@ Catena4450::LoRaWAN::GetProvisioningStyle(
 
         switch (uJoin)
                 {
+	/* 
+	|| we use 0 as the "none" indicator, because that's the default
+	|| value when writing out the key.
+	*/
         case 0:
                 return ProvisioningStyle::kNone;
 

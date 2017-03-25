@@ -95,14 +95,23 @@ class cFram::Cursor
 public:
 	Cursor(cFram *pFram) : m_pFram(pFram), m_offset(cFramStorage::kInvalidOffset) {};
 
+        // set up a cursor to match a standard item
 	bool locate(const cFramStorage::StandardItem);
+
+        // get a buffer
 	bool get(uint8_t *pBuffer, size_t nBuffer);
-	bool getuint32_t(uint32_t &v)
+
+        // get a uint32_t.
+	bool getuint32(uint32_t &v)
 		{
 		return this->get((uint8_t *)&v, sizeof(v));
 		}
+
+        // put a buffer
 	void put(const uint8_t *pBuffer, size_t nBuffer);
-	void putuint32_t(uint32_t &v)
+
+        // put a uint32_t
+	void putuint32(uint32_t &v)
 		{
 		return this->put((const uint8_t *)&v, sizeof(v));
 		}
