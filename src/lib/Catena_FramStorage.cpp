@@ -57,11 +57,11 @@ McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
         cFramStorage::StandardItem(kDevAddr, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kJoin, sizeof(uint8_t), /* number */ true),
         cFramStorage::StandardItem(kLoRaClass, sizeof(uint8_t), /* number */ true),
-        cFramStorage::StandardItem(kNwSkey, sizeof(uint8_t[16]), /* number */ false),
+        cFramStorage::StandardItem(kNwkSKey, sizeof(uint8_t[16]), /* number */ false),
         cFramStorage::StandardItem(kAppSKey, sizeof(uint8_t[16]), /* number */ false),
         cFramStorage::StandardItem(kFCntDown, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kFCntUp, sizeof(uint32_t), /* number */ true),
-        cFramStorage::StandardItem(kNwId, sizeof(uint32_t), /* number */ true),
+        cFramStorage::StandardItem(kNwkID, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kAppKey, sizeof(uint8_t[16]), /* number */ false),
         };
 

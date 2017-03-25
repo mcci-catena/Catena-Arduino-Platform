@@ -76,10 +76,10 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
         {
         Catena4450 * const pCatena = this->m_pCatena;
 	auto const pFram = pCatena->getFram();
-	cFram::Cursor framNwSKey(pFram),
+	cFram::Cursor framNwkSKey(pFram),
 		      framAppSKey(pFram),
 		      framDevAddr(pFram),
-		      framNwId(pFram),
+		      framNwkID(pFram),
 		      framFCntUp(pFram),
 		      framFCntDown(pFram);
 		      
@@ -87,10 +87,10 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 
 	fResult = false;
 
-	if (framNwSKey.locate(cFramStorage::vItemDefs[cFramStorage::kNwSkey]) &&
+	if (framNwkSKey.locate(cFramStorage::vItemDefs[cFramStorage::kNwkSKey]) &&
 	    framAppSKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppSKey]) &&
 	    framDevAddr.locate(cFramStorage::vItemDefs[cFramStorage::kDevAddr]) &&
-	    framNwId.locate(cFramStorage::vItemDefs[cFramStorage::kNwId]) &&
+	    framNwkID.locate(cFramStorage::vItemDefs[cFramStorage::kNwkID]) &&
 	    framFCntUp.locate(cFramStorage::vItemDefs[cFramStorage::kFCntUp]) &&
 	    framFCntDown.locate(cFramStorage::vItemDefs[cFramStorage::kFCntDown]))
 		fResult = true;
@@ -105,12 +105,12 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 		return false;
 		}
 
-	framNwSKey.get(pInfo->NwkSkey, sizeof(pInfo->NwkSkey));
-	framAppSKey.get(pInfo->AppSkey, sizeof(pInfo->AppSkey));
+	framNwkSKey.get(pInfo->NwkSKey, sizeof(pInfo->NwkSKey));
+	framAppSKey.get(pInfo->AppSKey, sizeof(pInfo->AppSKey));
 	framDevAddr.getuint32(pInfo->DevAddr);
-	framDevAddr.getuint32(pInfo->NwId);
-	framDevAddr.getuint32(pInfo->InitialSeqnoUp);
-	framDevAddr.getuint32(pInfo->InitialSeqnoDown);
+	framNwkID.getuint32(pInfo->NwkID);
+	framFCntUp.getuint32(pInfo->FCntUp);
+	framFCntDown.getuint32(pInfo->FCntDown);
 
 	return true;
 	}

@@ -55,11 +55,11 @@ public:
                 kDevAddr = 5,
                 kJoin = 6,
                 kLoRaClass = 7,
-                kNwSkey = 8,
+                kNwkSKey = 8,
                 kAppSKey = 9,
                 kFCntDown = 10,
                 kFCntUp = 11,
-                kNwId = 12,
+                kNwkID = 12,
                 kAppKey = 13,
                 kMAX
 		};
