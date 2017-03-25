@@ -36,8 +36,8 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENA_PERSISTENTSTORAGE_H_
-# include "Catena_PersistentStorage.h"
+#ifndef _CATENA_FRAM_H_
+# include "Catena_Fram.h"
 #endif
 
 #ifndef _CATENA_COMMANDSTREAM_H_
@@ -58,26 +58,41 @@ Revision history:
 namespace McciCatena {
 
 
-class cFram2k : public cPersistentStorage
+class cFram2k : public cFram
 	{
 protected:
-	using Super = cPersistentStorage;
+	using Super = cFram;
 
 public:
-	cFram2k() {};
+	cFram2k() { this->m_fReady = false; };
 	virtual ~cFram2k() {};
 
         // begin working with the FRAM
-	virtual bool begin();
+	virtual bool begin() override;
 
         // initialize the store
-        virtual bool initialize();
+        virtual bool initialize() override;
 
         // check the store
-        virtual bool isValid();
+        virtual bool isValid() override;
 
         // reset the store
-        virtual bool reset();
+        virtual bool reset() override;
+
+        // read from the store
+        virtual size_t read(
+                cFramStorage::Offset uOffset, uint8_t *pBuffer, size_t nBuffer
+                ) override;
+
+        // write to the store
+        virtual void write(
+                cFramStorage::Offset uOffset, const uint8_t *pBuffer, size_t nBuffer
+                ) override;
+
+        // return state of the FRAM system
+        virtual bool isReady() const override { return this->m_fReady; }
+
+        virtual void invalidate() override { this->m_fReady = false; }
 
 	// initialize the commands
 	bool addCommands();
@@ -93,6 +108,7 @@ public:
 protected:
 private:
 	Adafruit_FRAM_I2C	m_hw;
+        bool    m_fReady;
 	};
 
 }; // namespace McciCatena

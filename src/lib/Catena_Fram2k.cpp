@@ -34,7 +34,6 @@ Revision history:
 #include "Catena_Fram2k.h"
 
 #include "Catena_FramStorage.h"
-#include "Catena_Guids_FramStorage.h"
 #include "Catena_Log.h"
 
 using namespace McciCatena;
@@ -45,7 +44,6 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-static const MCCIADK_GUID_WIRE skFramGuid = GUID_FRAM_CATENA_V1(WIRE);
 
 /****************************************************************************\
 |
@@ -77,7 +75,8 @@ Returns:
 bool
 McciCatena::cFram2k::begin()
 	{
-	if (! this->m_hw.begin(0, &Wire))
+        if (! this->Super::begin() ||
+	    ! this->m_hw.begin(0, &Wire))
 		return false;
 
 	return true;
@@ -108,7 +107,11 @@ McciCatena::cFram2k::isValid()
 	cFramStorage::Object object;
 	size_t nRead;
 
-	nRead = this->m_hw.read(0, object.getBuffer(), object.getBufferSize());
+	// cache the answer
+	if (this->isReady())
+		return true;
+
+	nRead = this->read(0, object.getBuffer(), object.getBufferSize());
 	
 	if (nRead != object.getBufferSize())
 		{
@@ -131,7 +134,7 @@ McciCatena::cFram2k::isValid()
 			object.uSizeKey
 			);
 
-		return true;
+		return false;
 		}
 
 	if (! object.hasValidSize() ||
@@ -148,7 +151,7 @@ McciCatena::cFram2k::isValid()
 		}
 
 	// check the guid
-	if (! object.matchesGuid(skFramGuid))
+	if (! object.matchesGuid(cFramStorage::skFramGuid))
 		{
 		Log.printf(
 			Log.kError,
@@ -182,7 +185,7 @@ McciCatena::cFram2k::isValid()
                 }
 
         uint32_t endPointer;
-        nRead = this->m_hw.read(offsetOfEndPointer, (uint8_t *)&endPointer, sizeof(endPointer));
+        nRead = this->read(offsetOfEndPointer, (uint8_t *)&endPointer, sizeof(endPointer));
         if (nRead != sizeof(endPointer))
                 {
                 Log.printf(
@@ -206,8 +209,9 @@ McciCatena::cFram2k::isValid()
                 return false;
                 }
 
-        // TODO(tmm@mcci.com) cache the relevant offsets and
-        // variant selector.
+        // cache the relevant offsets and variant selectors.
+	this->m_fReady = true;
+        this->loadCache();
 	return true;
 	}
 
@@ -268,7 +272,7 @@ McciCatena::cFram2k::reset()
         
         // initialize the object header
         object.initialize(
-                skFramGuid,
+                cFramStorage::skFramGuid,
                 cFramStorage::kHeader,
                 sizeof(endPointer[0]),
                 /* replicated */ true
@@ -281,15 +285,15 @@ McciCatena::cFram2k::reset()
         // get the offset of the first replicant
         unsigned const offsetEndPointer = object.offsetOfReplicant(0);
 
-        this->m_hw.write(offsetEndPointer, (uint8_t *)endPointer, sizeof(endPointer));
+        this->write(offsetEndPointer, (uint8_t *)endPointer, sizeof(endPointer));
 
         // now if we crash endPointer is invalid (offset is zero).
         // write fresh header
-        this->m_hw.write(0, object.getBuffer(), object.getBufferSize());
+        this->write(0, object.getBuffer(), object.getBufferSize());
 
         // now update the replicant index
         object.setCurrent(1);
-        this->m_hw.write(
+        this->write(
                 0 + object.offsetOfDiscriminator(), 
                 object.getDiscriminatorBuffer(), 
                 object.getDiscriminatorBufferSize()
@@ -298,4 +302,70 @@ McciCatena::cFram2k::reset()
         // finally, verify that the result looks good.
 	return this->isValid();
 	}
+
+/*
 
+Name:	McciCatena::cFram2K::read()
+
+Function:
+	Read a string of bytes from the FRAM
+
+Definition:
+	public: virtual size_t 
+		McciCatena::cFram2k::read(
+			cFramStorage::Offset uOffset, 
+			uint8_t *pBuffer, 
+			size_t nBuffer
+			) override;
+
+Description:
+	nBuffer bytes are read from the FRAM device, starting at uOffset.
+
+Returns:
+	number of bytes read.
+
+*/
+
+size_t 
+McciCatena::cFram2k::read(
+	cFramStorage::Offset uOffset, 
+	uint8_t *pBuffer, 
+	size_t nBuffer
+	)
+	{
+	return this->m_hw.read(uOffset, pBuffer, nBuffer);
+	}
+
+/*
+
+Name:	McciCatena::cFram2K::write()
+
+Function:
+	Write a sequence of bytes to the FRAM.
+
+Definition:
+	public: virtual void
+		McciCatena::cFram2k::write(
+			cFramStorage::Offset uOffset, 
+			const uint8_t *pBuffer, 
+			size_t nBuffer
+			) override;
+
+Description:
+	The sequence of bytes at [pBuffer, pBuffer+nBuffer) is written
+	to the FRAM at offset uOffset.
+
+Returns:
+	No explicit result.
+
+*/
+
+void
+McciCatena::cFram2k::write(
+	cFramStorage::Offset uOffset, 
+	const uint8_t *pBuffer, 
+	size_t nBuffer
+	)
+	{
+	this->m_hw.write(uOffset, pBuffer, nBuffer);
+	}

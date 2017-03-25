@@ -31,7 +31,12 @@ Revision history:
 
 */
 
-#include <Catena4450.h>
+#include "Catena4450.h"
+
+#include "Catena_Fram.h"
+#include "Catena_Log.h"
+
+using namespace McciCatena;
 
 bool
 Catena4450::LoRaWAN::GetAbpProvisioningInfo(
@@ -40,13 +45,41 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
         {
         Catena4450 * const pCatena = this->m_pCatena;
 
-	pCatena->SafePrintf("%s: failing\n", __FUNCTION__);
+	Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
 
 	if (pInfo != nullptr)
 		memset(pInfo, 0, sizeof(pInfo));
 
 	return false;
 	}
+
+/*
+
+Name:	Catena4450::LoRaWAN::GetOtaaProvisioningInfo()
+
+Function:
+	Fetch OTAA provisioning info from FRAM (if availalbe)
+
+Definition:
+	public: virtual bool
+		Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
+		        Catena4450::LoRaWAN::OtaaProvisioningInfo *pInfo
+		        );
+
+Description:
+	This routine fetches the OTAA provisioning info from FRAM if
+	available, formatting it into *pInfo.  For this to work, FRAM
+	must be initialized and the AppKey, AppEUI and DevEUI must be
+	available.
+
+	If pInfo is nullptr, the routine simply checks whether the info
+	is availalbe.
+
+Returns:
+	This routine returns true if and only if the provisioning info
+	is available.
+
+*/
 
 bool
 Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
@@ -54,13 +87,37 @@ Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
         )
         {
         Catena4450 * const pCatena = this->m_pCatena;
+	cFram::Cursor framAppEUI(pCatena->getFram()), 
+		      framDevEUI(pCatena->getFram()), 
+		      framAppKey(pCatena->getFram());
+	bool fResult;
 
-	pCatena->SafePrintf("%s: failing\n", __FUNCTION__);
+	fResult = false;
 
-	if (pInfo != nullptr)
-		memset(pInfo, 0, sizeof(pInfo));
+	if (framAppEUI.locate(cFramStorage::vItemDefs[cFramStorage::kAppEUI]) &&
+	    framDevEUI.locate(cFramStorage::vItemDefs[cFramStorage::kDevEUI]) &&
+	    framAppKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppKey]))
+		fResult = true;
 
-	return false;
+	if (! fResult)
+		{
+		Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+
+		if (pInfo != nullptr)
+			memset(pInfo, 0, sizeof(pInfo));
+
+		return false;
+		}
+
+	if (pInfo == nullptr)
+		return true;
+
+	/* copy the data */
+	framAppKey.get(pInfo->AppKey, sizeof(pInfo->AppKey));
+	framDevEUI.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
+	framAppEUI.get(pInfo->AppEUI, sizeof(pInfo->AppEUI));
+
+	return true;
 	}
 
 Catena4450::LoRaWAN::ProvisioningStyle
@@ -69,10 +126,37 @@ Catena4450::LoRaWAN::GetProvisioningStyle(
 	)
 	{
         Catena4450 * const pCatena = this->m_pCatena;
-	
-	pCatena->SafePrintf("%s: failing\n", __FUNCTION__);
+        cFram::Cursor framJoin(pCatena->getFram());
 
-	return ProvisioningStyle::kNone;
+        if (! framJoin.locate(cFramStorage::vItemDefs[cFramStorage::kJoin]))
+                {
+        	Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+
+        	return ProvisioningStyle::kNone;
+                }
+
+        uint8_t uJoin;
+        if (! framJoin.get(&uJoin, sizeof(uJoin)))
+                {
+                Log.printf(Log.kError, "%s: get() failed\n", __FUNCTION__);
+                return ProvisioningStyle::kNone;
+                }
+
+        switch (uJoin)
+                {
+        case 0:
+                return ProvisioningStyle::kNone;
+
+        case 1:
+                return ProvisioningStyle::kOTAA;
+
+        case 2:
+                return ProvisioningStyle::kABP;
+
+        default:
+                Log.printf(Log.kError, "%s: bad Join value: %u\n", __FUNCTION__, uJoin);
+                return ProvisioningStyle::kNone;
+                }
 	}
 
 void

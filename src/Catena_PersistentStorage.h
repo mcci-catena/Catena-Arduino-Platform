@@ -60,19 +60,19 @@ public:
 	virtual bool begin() = 0;
 
 	// initialize the store (gently) - do not overwite store if valid
-	virtual bool initialize() 
-                {
-                if (this->isvalid())
-                        return false;
-                else
-                        return this->reset();
-                };
+	virtual bool initialize() = 0;
 
         // initialize the store (forcibly).
         virtual bool reset() = 0;
 
         // return the state of the store.
-        virtual bool isvalid() { return false; }
+        virtual bool isValid() = 0;
+
+        // query whether the FRAM is valid and ready
+        virtual bool isReady() const = 0;
+
+        // invalidate any cached ready state
+        virtual void invalidate() = 0;
 
 private:
 	};

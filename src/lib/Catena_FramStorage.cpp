@@ -33,8 +33,37 @@ Revision history:
 
 #include "Catena_FramStorage.h"
 
-#include "Catena_Log.h"
+#include "Catena_Guids_FramStorage.h"
 #include <cstring>
+
+using namespace McciCatena;
+
+/****************************************************************************\
+|
+|	read-only data
+|
+\****************************************************************************/
+
+const MCCIADK_GUID_WIRE McciCatena::cFramStorage::skFramGuid = GUID_FRAM_CATENA_V1(WIRE);
+
+const cFramStorage::StandardItem 
+McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
+        {
+        cFramStorage::StandardItem(kHeader, sizeof(uint32_t), /* number */ true),
+        cFramStorage::StandardItem(kSysEUI, sizeof(uint8_t[8]), /* number */ false),
+        cFramStorage::StandardItem(kPlatformGuid, sizeof(MCCIADK_GUID_WIRE), /* number */ false),
+        cFramStorage::StandardItem(kDevEUI, sizeof(uint8_t[8]), /* number */ true),
+        cFramStorage::StandardItem(kAppEUI, sizeof(uint8_t[8]), /* number */ true),
+        cFramStorage::StandardItem(kDevAddr, sizeof(uint32_t), /* number */ true),
+        cFramStorage::StandardItem(kJoin, sizeof(uint8_t), /* number */ true),
+        cFramStorage::StandardItem(kLoRaClass, sizeof(uint8_t), /* number */ true),
+        cFramStorage::StandardItem(kNwSkey, sizeof(uint8_t[16]), /* number */ false),
+        cFramStorage::StandardItem(kAppSKey, sizeof(uint8_t[16]), /* number */ false),
+        cFramStorage::StandardItem(kFCntDown, sizeof(uint32_t), /* number */ true),
+        cFramStorage::StandardItem(kFCntUp, sizeof(uint32_t), /* number */ true),
+        cFramStorage::StandardItem(kNwId, sizeof(uint32_t), /* number */ true),
+        cFramStorage::StandardItem(kAppKey, sizeof(uint8_t[16]), /* number */ false),
+        };
 
 
 /****************************************************************************\
@@ -88,15 +117,6 @@ McciCatena::cFramStorage::Object::initialize(
 				valueSizeInBytes
 				);
 
-        Log.printf(
-                Log.kAlways, 
-                " %s: kObjectQuantum(%u) nClicks(%u) sizeKey(nClicks)(%u)\n", 
-                FUNCTION, 
-                kObjectQuantum,
-                nClicks,
-                uSizeKey_SetClicks(0, nClicks)
-                );
-
 	// check for bad input parameters.
 	if (nClicks == 0)
 		return false;
@@ -111,12 +131,55 @@ McciCatena::cFramStorage::Object::initialize(
 
         return true;
 	}
+
+/*
+
+Name:	McciCatena::cFramStorage::Object::matchesGuid()
+
+Function:
+	Check whether this object is identified by given GUID.
+
+Definition:
+	public: bool 
+		McciCatena::cFramStorage::Object::matchesGuid(
+			const MCCIADK_GUID_WIRE &guid
+			) const;
+
+Description:
+	Simply compares the GUID to the one in the object. 
+
+Returns:
+	true for equality.
+
+Notes:
+	This could equally well be done by an operator= implementation
+	for MCCIADK_GUID_WIRE, but that's currently a C-only header file.
+
+	This routine does the ritual check for "standard object". Things
+	would be more efficient if we had a ::StdObject type, and checked
+	when we promoted the pointer.
+
+*/
 
 bool 
-McciCatena::cFramStorage::Object::matchesGuid(const MCCIADK_GUID_WIRE &guid) const
+McciCatena::cFramStorage::Object::matchesGuid(
+	const MCCIADK_GUID_WIRE &guid
+	) const
         {
         if (! this->isStandard())
                 return false;
         else
                 return std::memcmp(&guid, &this->Guid, sizeof(guid)) == 0;
+        }
+
+bool
+McciCatena::cFramStorage::Object::isValid() const
+        {
+        if (! this->isStandard())
+                return false;
+
+        if (! this->hasValidSize())
+                return false;
+
+        return true;
         }

@@ -62,7 +62,9 @@ public:
 	class LoRaWAN /* forward */;
 
 	// methods
-	virtual bool begin();
+	virtual bool begin() override;
+
+        McciCatena::cFram2k *getFram() { return &this->m_Fram; };
 
 protected:
 	using Super = CatenaFeatherM0LoRa;
@@ -90,12 +92,12 @@ public:
 	bool begin(Catena4450 *pParent);
 
 protected:
-        virtual ProvisioningStyle GetProvisioningStyle(void);
-        virtual bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo*);
-        virtual bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo*);
-        virtual void NetSaveFCntUp(uint32_t uFCntUp);
-        virtual void NetSaveFCntDown(uint32_t uFCntDown);
-        virtual void NetSaveSessionInfo(const SessionInfo &Info, const uint8_t *pExtraInfo, size_t nExtraInfo);
+        virtual ProvisioningStyle GetProvisioningStyle(void) override;
+        virtual bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo*) override;
+        virtual bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo*) override;
+        virtual void NetSaveFCntUp(uint32_t uFCntUp) override;
+        virtual void NetSaveFCntDown(uint32_t uFCntDown) override;
+        virtual void NetSaveSessionInfo(const SessionInfo &Info, const uint8_t *pExtraInfo, size_t nExtraInfo) override;
 
 private:
 	Catena4450		*m_pCatena;

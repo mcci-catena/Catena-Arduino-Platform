@@ -48,7 +48,73 @@ public:
 	enum StandardKeys : uint8_t
 		{
 		kHeader = 0,
-		kEnd = 0xFFu
+		kSysEUI = 1,
+                kPlatformGuid = 2,
+                kDevEUI = 3,
+                kAppEUI = 4,
+                kDevAddr = 5,
+                kJoin = 6,
+                kLoRaClass = 7,
+                kNwSkey = 8,
+                kAppSKey = 9,
+                kFCntDown = 10,
+                kFCntUp = 11,
+                kNwId = 12,
+                kAppKey = 13,
+                kMAX
+		};
+
+        class StandardItem
+                {
+        private:
+                static uint32_t constexpr makeValue(
+                        uint8_t a_uKey, 
+                        uint16_t a_uSize, 
+                        bool a_fNumber, 
+                        bool a_fReplicated
+                        )
+                        {
+                        return ((!a_fReplicated) << 25) | (a_fNumber << 24) | (a_uKey << 16) | a_uSize;
+                        }
+        public:
+                StandardItem(uint8_t a_uKey, uint16_t a_uSize, bool a_fNumber, bool a_fReplicated = true) 
+                        : uValue(makeValue(a_uKey, a_uSize, a_fNumber, a_fReplicated)) {};
+                uint16_t getSize() const
+                        {
+                        return this->uValue & 0xFFFFu;
+                        }
+                StandardKeys getKey() const
+                        {
+                        return StandardKeys((this->uValue >> 16) & 0xFF);
+                        }
+                bool isNumber() const
+                        {
+                        return this->uValue & (1 << 24);
+                        }
+                bool isReplicated() const
+                        {
+                        return !(this->uValue & (1 << 25));
+                        }
+                const MCCIADK_GUID_WIRE *getGuid() const
+                        {
+                        return &skFramGuid;
+                        }
+        private:
+                uint32_t uValue;
+                };
+
+        typedef uint32_t Offset;
+        enum : Offset { kInvalidOffset = ~UINT32_C(0) };
+       
+        static const StandardItem vItemDefs[kMAX];
+
+        class Object;
+
+	enum : uint32_t 
+		{
+		SIZE_MASK = 0xFFFFu,
+		NONSTD_MASK = 0x80000000u,
+		DATASIZE_MASK = 0x7FFF0000u,
 		};
 
         struct ObjectRaw
@@ -71,25 +137,27 @@ public:
 
 		// the discriminator images.
                 uint8_t		uVer[3];
-                };
+
+ 	        bool isStandard() const
+		        {
+		        return (this->uSizeKey & NONSTD_MASK) == 0;
+		        }
+
+                Object *getStandardObject()
+                        {
+                        if (this->isStandard())
+                                return (Object *)this;
+                        else
+                                return nullptr;
+                        }
+               };
+
+        static MCCIADK_GUID_WIRE const skFramGuid;
 	static constexpr size_t kObjectQuantum = sizeof(uint32_t);
 	static constexpr size_t kObjectStandardClicks =
 				(sizeof(ObjectRaw) + kObjectQuantum - 1) /
 					kObjectQuantum;
 	static constexpr size_t kObjectStandardSize = kObjectQuantum * kObjectStandardClicks;
-        class Object;
-	};
-
-
-struct cFramStorage::Object : public cFramStorage::ObjectRaw
-	{
-public:
-	enum : uint32_t 
-		{
-		SIZE_MASK = 0xFFFFu,
-		NONSTD_MASK = 0x80000000u,
-		DATASIZE_MASK = 0x7FFF0000u,
-		};
 
 	static uint32_t constexpr getField(uint32_t v, uint32_t mask)
 		{
@@ -135,6 +203,34 @@ public:
                         uSizeKey, getClicks(sizeInBytes)
                         );
 		}
+	// set the data key size, clamping at max value.
+	static uint32_t constexpr uSizeKey_SetDataSize(
+		size_t oldSizeKey,
+		size_t nBytes
+		)
+		{
+		return setField(
+                        oldSizeKey, 
+                        nBytes <= getMaxValue(DATASIZE_MASK) ? nBytes 
+                                                             : getMaxValue(DATASIZE_MASK), 
+                        DATASIZE_MASK
+                        );
+		}
+        // get the index to the data field given a replicant index
+        static uint32_t constexpr dataOffset(
+                size_t dataSize,
+                bool dataReplicant
+                )
+                {
+                return kObjectStandardSize + (dataReplicant ? getClicks(dataSize)
+                                                            : 0);
+                }
+	};
+
+
+struct cFramStorage::Object : public cFramStorage::ObjectRaw
+	{
+public:
 
 	uint16_t getObjectSize(void) const
 		{
@@ -160,39 +256,14 @@ public:
 			return false;
 			}
 		}
-	bool isStandard() const
-		{
-		return (this->uSizeKey & NONSTD_MASK) == 0;
-		}
 	uint16_t hasValidSize() const
 		{
-		uint16_t const objSize = this->getObjectSize();
-		if (! this->isStandard())
-			return objSize > 0;
-
 		// standard object... check the data size
 		return this->validDataSize(this->getDataSize());
 		}
 	uint16_t getDataSize() const
 		{
-		if (! this->isStandard())
-			return 0;
-
 		return (uint16_t) getField(this->uSizeKey, DATASIZE_MASK);
-		}
-
-	// set the data key size, clamping at max value.
-	static uint32_t constexpr uSizeKey_SetDataSize(
-		size_t oldSizeKey,
-		size_t nBytes
-		)
-		{
-		return setField(
-                        oldSizeKey, 
-                        nBytes <= getMaxValue(DATASIZE_MASK) ? nBytes 
-                                                             : getMaxValue(DATASIZE_MASK), 
-                        DATASIZE_MASK
-                        );
 		}
 
         // compare this object's guid to another
@@ -200,10 +271,7 @@ public:
 
 	int getKey() const
 		{
-		if (! this->isStandard())
-			return -1;
-		else
-			return this->uKey;
+		return this->uKey;
 		}
 	uint16_t static neededClicks(size_t nBytes, bool fReplicated)
 		{
@@ -221,18 +289,12 @@ public:
 
 	bool validDataSize(size_t nBytes) const
 		{
-		if (! this->isStandard())
-			return false;
-		
 		uint16_t const n = neededClicks(nBytes, false);
 		return (n <= this->getObjectClicks());
 		}
 	
 	bool isReplicated() const
 		{
-		if (! this->isStandard())
-			return false;
-
 		const uint16_t dataSize = this->getDataSize();
 		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
@@ -241,9 +303,6 @@ public:
 		}
 	unsigned nReplicants() const
 		{
-		if (! this->isStandard())
-			return 0;
-
 		const uint16_t dataSize = this->getDataSize();
 		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
@@ -258,9 +317,6 @@ public:
 	// zero means error.
 	uint32_t offsetOfReplicant(unsigned i) const
 		{
-		if (! this->isStandard() || i > 1)
-			return 0;
-
 		const uint16_t dataSize = this->getDataSize();
 		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
@@ -325,6 +381,9 @@ public:
 		size_t valueSizeInBytes,
 		bool fReplicated
 		);
+
+        // check whether the object is formally valid
+        bool isValid(void) const;
 	};
 
 }; // namespace McciCatena
