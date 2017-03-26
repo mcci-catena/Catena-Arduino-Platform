@@ -40,10 +40,6 @@ Revision history:
 # include "Catena_Fram.h"
 #endif
 
-#ifndef _CATENA_COMMANDSTREAM_H_
-# include "Catena_CommandStream.h"
-#endif
-
 #ifndef _ADAFRUIT_FRAM_I2C_H_
 # include <Adafruit_FRAM_I2C.h>
 #endif
@@ -84,25 +80,6 @@ public:
                 {
                 return 2 * 1024;
                 };
-
-	// initialize the commands
-	bool addCommands();
-
-        // implement the dump command
-        static cCommandStream::CommandStatus doDump(
-                        cCommandStream *pThis,
-                        void *pContext,
-                        int argc,
-                        char **argv
-                        );
-
-        // implement the reset command
-        static cCommandStream::CommandStatus doReset(
-                        cCommandStream *pThis,
-                        void *pContext,
-                        int argc,
-                        char **argv
-                        );
 
 
 protected:

@@ -1,11 +1,11 @@
-/* Catena_Fram2k_commands.cpp	Wed Mar 22 2017 23:02:50 tmm */
+/* Catena_Fram_commands.cpp	Wed Mar 22 2017 23:02:50 tmm */
 
 /*
 
-Module:  Catena_Fram2k_commands.cpp
+Module:  Catena_Fram_commands.cpp
 
 Function:
-	McciCatena::cFram2k::addCommands() and command processors.
+	McciCatena::cFram::addCommands() and command processors.
 
 Version:
 	V0.5.0	Wed Mar 22 2017 23:02:50 tmm	Edit level 1
@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#include "Catena_Fram2k.h"
+#include "Catena_Fram.h"
 
 #include "CatenaBase.h"
 #include <cstring>
@@ -54,8 +54,8 @@ using namespace McciCatena;
 
 static const cCommandStream::cEntry sDefaultEntries[] =
 	{
-	{ "dump", cFram2k::doDump },
-        { "reset", cFram2k::doReset },
+	{ "dump", cFram::doDump },
+        { "reset", cFram::doReset },
 	};
 
 static cCommandStream::cDispatch
@@ -63,13 +63,13 @@ sDispatch(sDefaultEntries, sizeof(sDefaultEntries), "fram");
 
 /*
 
-Name:	McciCatena::cFram2k::addCommands()
+Name:	McciCatena::cFram::addCommands()
 
 Function:
 	Add the FRAM commands to the Catena command table.
 
 Definition:
-	bool McciCatena::cFram2k::addCommands();
+	bool McciCatena::cFram::addCommands();
 
 Description:
 	All the commands are added to the system command table.
@@ -80,7 +80,7 @@ Returns:
 */
 
 bool 
-McciCatena::cFram2k::addCommands()
+McciCatena::cFram::addCommands()
 	{
 	CatenaBase::pCatenaBase->addCommands(
 		sDispatch, static_cast<void *>(this)
@@ -129,14 +129,14 @@ getuint32(
 	}
 
 cCommandStream::CommandStatus 
-McciCatena::cFram2k::doDump(
+McciCatena::cFram::doDump(
 	cCommandStream *pThis,
 	void *pContext,
 	int argc, 
 	char **argv
 	)
 	{
-	cFram2k * const pFram = static_cast<cFram2k *>(pContext);
+	cFram * const pFram = static_cast<cFram *>(pContext);
 	uint32_t uLength;
 	uint32_t uBase;
 	cCommandStream::CommandStatus status;
@@ -165,7 +165,7 @@ McciCatena::cFram2k::doDump(
 			n = sizeof(buffer);
 
 		std::memset(buffer, 0, n);
-		pFram->m_hw.read(uBase + here, buffer, n);
+		pFram->read(uBase + here, buffer, n);
 
 		McciAdkLib_FormatDumpLine(line, sizeof(line), 0, uBase + here, buffer, n);
 		pThis->printf("%s\n", line);
@@ -175,14 +175,14 @@ McciCatena::cFram2k::doDump(
 	}
 
 cCommandStream::CommandStatus 
-McciCatena::cFram2k::doReset(
+McciCatena::cFram::doReset(
 	cCommandStream *pThis,
 	void *pContext,
 	int argc, 
 	char **argv
 	)
 	{
-	cFram2k * const pFram = static_cast<cFram2k *>(pContext);
+	cFram * const pFram = static_cast<cFram *>(pContext);
         cCommandStream::CommandStatus status;
         bool fResult;
 

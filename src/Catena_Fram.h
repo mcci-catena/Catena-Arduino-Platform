@@ -36,12 +36,16 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENA_PERSISTENTSTORAGE_H_
-# include "Catena_PersistentStorage.h"
+#ifndef _CATENA_COMMANDSTREAM_H_
+# include "Catena_CommandStream.h"
 #endif
 
 #ifndef _CATENA_FRAMSTORAGE_H_
 # include "Catena_FramStorage.h"
+#endif
+
+#ifndef _CATENA_PERSISTENTSTORAGE_H_
+# include "Catena_PersistentStorage.h"
 #endif
 
 namespace McciCatena {
@@ -89,6 +93,26 @@ public:
         virtual void invalidate() override { this->m_fReady = false; }
 
 	class Cursor;
+
+	// initialize the commands
+	bool addCommands();
+
+        // implement the dump command
+        static cCommandStream::CommandStatus doDump(
+                        cCommandStream *pThis,
+                        void *pContext,
+                        int argc,
+                        char **argv
+                        );
+
+        // implement the reset command
+        static cCommandStream::CommandStatus doReset(
+                        cCommandStream *pThis,
+                        void *pContext,
+                        int argc,
+                        char **argv
+                        );
+
 
 protected:
         // record the "ready status"
