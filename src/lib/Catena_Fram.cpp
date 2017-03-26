@@ -218,8 +218,8 @@ McciCatena::cFram::isValid()
 	
 	if (nRead != object.getBufferSize())
 		{
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"read failed; expected 0x%x, got 0x%x\n",
 			object.getBufferSize(),
 			nRead
@@ -231,8 +231,8 @@ McciCatena::cFram::isValid()
 	// first object must be standard
 	if (! object.isStandard())
 		{
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"first object not standard: %08x\n",
 			object.uSizeKey
 			);
@@ -243,8 +243,8 @@ McciCatena::cFram::isValid()
 	if (! object.hasValidSize() ||
             object.getDataSize() != sizeof(uint32_t))
 		{
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"first object size not valid: %08x objectSize(%u) dataSize(%u)\n",
 			object.uSizeKey,
                         object.getObjectSize(),
@@ -256,16 +256,16 @@ McciCatena::cFram::isValid()
 	// check the guid
 	if (! object.matchesGuid(cFramStorage::skFramGuid))
 		{
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"guid doesn't match FRAM guid\n"
 			);
 		return false;
 		}
 	if (object.getKey() != cFramStorage::kHeader)
 		{
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"key is not kHeader: %02x\n",
 			object.getKey()
 			);
@@ -279,8 +279,8 @@ McciCatena::cFram::isValid()
                         );
         if (offsetOfEndPointer == 0)
                 {
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"couldn't find end pointer: uVer[%u %u %u]\n",
                         object.uVer[0], object.uVer[1], object.uVer[2]
 			);
@@ -291,8 +291,8 @@ McciCatena::cFram::isValid()
         nRead = this->read(offsetOfEndPointer, (uint8_t *)&endPointer, sizeof(endPointer));
         if (nRead != sizeof(endPointer))
                 {
-                Log.printf(
-                        Log.kError,
+                gLog.printf(
+                        gLog.kError,
                         "error reading end pointer offset %u\n nRead %u\n",
                          (unsigned) offsetOfEndPointer,
                          (unsigned) nRead
@@ -304,8 +304,8 @@ McciCatena::cFram::isValid()
        if (endPointer % cFramStorage::kObjectQuantum != 0 ||
            endPointer < object.getObjectSize())
                 {
-                Log.printf(
-                        Log.kError,
+                gLog.printf(
+                        gLog.kError,
                         "invalid end pointer %u\n",
                         endPointer
                         );
@@ -458,8 +458,8 @@ McciCatena::cFram::writeItemData(
 
 	if (nBuffer != item.getSize())
 		{
-		Log.printf(
-			Log.kAlways,
+		gLog.printf(
+			gLog.kBug,
 			"%s: nBuffer(%u) != item.getSize()(%u)\n",
 			__FUNCTION__,
                         nBuffer,
@@ -612,8 +612,8 @@ McciCatena::cFram::Cursor::create(
 
 	if (offset == cFramStorage::kInvalidOffset)
 		{
-		Log.printf(
-			Log.kError,
+		gLog.printf(
+			gLog.kError,
 			"%s: can't allocate 0x%#x bytes\n",
 			object.getObjectSize()
 			);

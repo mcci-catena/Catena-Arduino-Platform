@@ -43,7 +43,21 @@ namespace McciCatena {
 class cLog
 	{
 public:
-	cLog() {};
+	enum DebugFlags : uint32_t
+		{
+		kAlways		= 0u,
+		kFatal		= 0xFFFFFFFFu,
+
+                kBug            = 0x00000001u,
+		kError		= 0x00000002u,
+		kWarning	= 0x00000004u,
+		kTrace		= 0x00000008u,
+		kInfo		= 0x00000010u,
+		};
+
+	cLog(DebugFlags flags = DebugFlags(0)) 
+                : m_uDebugFlags(flags) 
+                {};
 
 	// neither copyable nor movable.
 	cLog(const cLog&) = delete;
@@ -51,19 +65,8 @@ public:
 	cLog(const cLog&&) = delete;
 	cLog& operator=(const cLog&&) = delete;
 
-	enum DebugFlags : uint32_t
-		{
-		kAlways		= 0u,
-		kFatal		= 0xFFFFFFFFu,
-
-		kError		= 0x00000001u,
-		kWarning	= 0x00000002u,
-		kTrace		= 0x00000004u,
-		kInfo		= 0x00000008u,
-		};
-
 	// initialize
-	bool begin(DebugFlags uDebugFlags = kError)
+	bool begin(DebugFlags uDebugFlags = DebugFlags(kError | kBug))
 		{
 		this->m_uDebugFlags = uDebugFlags;
 		}
@@ -85,10 +88,10 @@ public:
 		/* format counts start with 2 for non-static C++ member fns */
 
 private:
-	DebugFlags m_uDebugFlags = DebugFlags(0);
+	DebugFlags m_uDebugFlags;
 	};
 
-extern cLog Log;
+extern cLog gLog;
 
 }; // namespace McciCatena
 

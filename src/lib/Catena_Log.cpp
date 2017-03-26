@@ -40,7 +40,7 @@ Revision history:
 using namespace McciCatena;
 
 // the global instance
-cLog McciCatena::Log;
+cLog McciCatena::gLog;
 
 void 
 cLog::printf(

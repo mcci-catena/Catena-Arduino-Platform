@@ -50,7 +50,7 @@ CatenaBase::CatenaBase()
 bool
 CatenaBase::begin(void)
 	{
-	Log.begin(Log.kError);
+	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 
 	this->m_PollingEngine.begin();
 	return true;

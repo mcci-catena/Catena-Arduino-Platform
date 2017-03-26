@@ -97,7 +97,7 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 
 	if (! fResult)
 		{
-		Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+		gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
 
 		if (pInfo != nullptr)
 			memset(pInfo, 0, sizeof(pInfo));
@@ -163,7 +163,7 @@ Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
 
 	if (! fResult)
 		{
-		Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+		gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
 
 		if (pInfo != nullptr)
 			memset(pInfo, 0, sizeof(pInfo));
@@ -192,7 +192,7 @@ Catena4450::LoRaWAN::GetProvisioningStyle(
 
         if (! framJoin.locate(cFramStorage::vItemDefs[cFramStorage::kJoin]))
                 {
-        	Log.printf(Log.kError, "%s: failing\n", __FUNCTION__);
+        	gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
 
         	return ProvisioningStyle::kNone;
                 }
@@ -200,7 +200,7 @@ Catena4450::LoRaWAN::GetProvisioningStyle(
         uint8_t uJoin;
         if (! framJoin.get(&uJoin, sizeof(uJoin)))
                 {
-                Log.printf(Log.kError, "%s: get() failed\n", __FUNCTION__);
+                gLog.printf(gLog.kError, "%s: get() failed\n", __FUNCTION__);
                 return ProvisioningStyle::kNone;
                 }
 
@@ -220,7 +220,7 @@ Catena4450::LoRaWAN::GetProvisioningStyle(
                 return ProvisioningStyle::kABP;
 
         default:
-                Log.printf(Log.kError, "%s: bad Join value: %u\n", __FUNCTION__, uJoin);
+                gLog.printf(gLog.kError, "%s: bad Join value: %u\n", __FUNCTION__, uJoin);
                 return ProvisioningStyle::kNone;
                 }
 	}
@@ -236,7 +236,7 @@ Catena4450::LoRaWAN::NetSaveFCntUp(
 
         if (! cursor.create())
                 {
-        	Log.printf(Log.kError, "%s: can't save FCntUp: %u\n", __FUNCTION__, uFCntUp);
+        	gLog.printf(gLog.kError, "%s: can't save FCntUp: %u\n", __FUNCTION__, uFCntUp);
                 }
 
         cursor.putuint32(uFCntUp);
