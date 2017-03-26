@@ -96,6 +96,15 @@ public:
                         char **argv
                         );
 
+        // implement the reset command
+        static cCommandStream::CommandStatus doReset(
+                        cCommandStream *pThis,
+                        void *pContext,
+                        int argc,
+                        char **argv
+                        );
+
+
 protected:
 private:
 	Adafruit_FRAM_I2C	m_hw;

@@ -236,6 +236,13 @@ public:
 		{
 		return uSizeKey_GetSize(this->uSizeKey);
 		}
+        uint16_t nextObjectOffset(void) const
+                {
+                uint16_t size = uSizeKey_GetSize(this->uSizeKey);
+                if (size == 0)
+                        size = kObjectQuantum;
+                return size;
+                }
 	uint16_t getObjectClicks(void) const
 		{
 		return this->uSizeKey & SIZE_MASK;

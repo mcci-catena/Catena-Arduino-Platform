@@ -73,45 +73,121 @@ McciCatena::cFram::loadCache(
         cFramStorage::Object object;
         const MCCIADK_GUID_WIRE * const pGuid = &cFramStorage::skFramGuid;
 
-        if (! this->isReady())
-                return;
-
 	this->resetCache();
 
-        for (cFramStorage::Offset offset = 0; 
+        if (! this->isReady())
+                {
+                gLog.printf(
+                        gLog.kError,
+                        "%s: fram not ready\n",
+                        __func__
+                        );
+                return;
+                }
+
+        cFramStorage::Offset offset;
+
+        for (offset = 0; 
              offset < this->m_endOffset; 
-             offset += object.getObjectSize())
+             offset += object.nextObjectOffset())
                 {
                 if (! this->read(offset, (uint8_t *)&object, sizeof(object)))
+                        {
+                        gLog.printf(
+                                gLog.kError,
+                                "%s: read error at offset 0x%x\n",
+                                __func__,
+                                offset
+                                );
                         return;
+                        }
 
                 if (! object.isValid())
+                        {
+                        gLog.printf(
+                                gLog.kError,
+                                "%s: invalid object at offset 0x%x\n",
+                                __func__,
+                                offset
+                                );
                         continue;
+                        }
 
                 const uint8_t uThisKey = object.getKey();
 
                 // TODO(tmm@mcci.com) handle GUIDs other than skFramGuid
                 if (! (object.matchesGuid(cFramStorage::skFramGuid) &&
                        uThisKey < cFramStorage::StandardKeys::kMAX))
+                        {
+                        gLog.printf(
+                                gLog.kError,
+                                "%s: mismatch guid/key at offset 0x%x\n",
+                                __func__,
+                                offset
+                                );
                         continue;
+                        }
 
                 // make sure things match definition
                 cFramStorage::StandardItem const item =
                         cFramStorage::vItemDefs[uThisKey];
 
                 if (object.isReplicated() != item.isReplicated())
+                        {
+                        gLog.printf(
+                                gLog.kError,
+                                "%s: replication mispmatch at offset 0x%x\n",
+                                __func__,
+                                offset
+                                );
                         continue;
+                        }
 
                 if (object.getDataSize() != item.getSize())
+                        {
+                        gLog.printf(
+                                gLog.kError,
+                                "%s: mismatch size at offset 0x%x, got %u, expected %u\n",
+                                __func__,
+                                offset,
+                                object.getDataSize(),
+                                item.getSize()
+                                );
                         continue;
+                        }
 
                 // take the first one.
                 if (this->m_offsetCache[uThisKey] == cFramStorage::kInvalidOffset)
                         {
+                        gLog.printf(
+                                gLog.kTrace,
+                                "%s: cache key 0x%x at offset 0x%x\n",
+                                __func__,
+                                uThisKey,
+                                offset
+                                );
                         this->m_offsetCache[uThisKey] = offset;
                         this->m_uVerCache[uThisKey] = object.getCurrent();
                         }
+                else
+                        {
+                        gLog.printf(
+                                gLog.kError,
+                                "%s: key %u at offset 0x%x duplicate of offset 0x%x\n",
+                                __func__,
+                                uThisKey,
+                                offset,
+                                this->m_offsetCache[uThisKey]
+                                );
+                        }
                 }
+        gLog.printf(
+                gLog.kTrace,
+                "%s: cache loaded through offset 0x%x (end offset 0x%x)\n",
+                __func__,
+                offset,
+                this->m_endOffset
+                );
         }
 
 /*
@@ -144,7 +220,6 @@ McciCatena::cFram::resetCache(
 		{
 		this->m_offsetCache[i] = cFramStorage::kInvalidOffset;
 		this->m_uVerCache[i] = 0;
-		this->m_endOffset = 0;
 		}
 	}
 
@@ -315,6 +390,12 @@ McciCatena::cFram::isValid()
         // cache the relevant offsets and variant selectors.
 	this->m_fReady = true;
 	this->m_endOffset = endPointer;
+        gLog.printf(
+                gLog.kAlways,
+                "%s: end pointer set to 0x%x\n",
+                __func__,
+                endPointer
+                );
 
         this->loadCache();
 	return true;
@@ -456,6 +537,18 @@ McciCatena::cFram::writeItemData(
 		{ 1, 1, 1 },
 		};
 
+        if (offset == cFramStorage::kInvalidOffset)
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "%s: offset for uKey(%u) invalid!\n",
+                        __FUNCTION__,
+                        uKey
+                        );
+
+                return false;
+                }
+
 	if (nBuffer != item.getSize())
 		{
 		gLog.printf(
@@ -493,6 +586,15 @@ McciCatena::cFram::writeItemData(
 
 	if (fResult)
 		{
+                gLog.printf(
+                        gLog.kAlways, "key(0x%x) write new version(%u): base(%u) offset(%u) size(%u)\n",
+                        uKey,
+                        newVer,
+                        offset,
+                        offset + cFramStorage::Object::offsetOfDiscriminator(),
+                        sizeof(uVers[newVer])
+                        );
+
 		fResult = this->write(
 			offset + offsetof(cFramStorage::ObjectRaw,
 					 uVer[0]),
@@ -624,7 +726,7 @@ McciCatena::cFram::Cursor::create(
 	// write object and the default value
 	pFram->write(offset, (uint8_t *) &object, sizeof(object));
 	
-	offset += object.getObjectSize();
+	offset += sizeof(object);
 	for (auto nWrite = object.getObjectSize() - sizeof(object);
 	     nWrite > 0;
 	     nWrite -= sizeof(zeroes), offset += sizeof(zeroes))

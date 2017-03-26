@@ -76,6 +76,7 @@ public:
 		kIoError = -1,
 		kSuccess = 0,
 		kError = 1,
+                kInvalidParameter = 2,
 		};
 
 	typedef CommandStatus (CommandFn)(

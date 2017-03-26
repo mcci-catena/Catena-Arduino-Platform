@@ -55,6 +55,7 @@ using namespace McciCatena;
 static const cCommandStream::cEntry sDefaultEntries[] =
 	{
 	{ "dump", cFram2k::doDump },
+        { "reset", cFram2k::doReset },
 	};
 
 static cCommandStream::cDispatch
@@ -172,3 +173,30 @@ McciCatena::cFram2k::doDump(
 
 	return status;
 	}
+
+cCommandStream::CommandStatus 
+McciCatena::cFram2k::doReset(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc, 
+	char **argv
+	)
+	{
+	cFram2k * const pFram = static_cast<cFram2k *>(pContext);
+        cCommandStream::CommandStatus status;
+        bool fResult;
+
+        if (argc > 2)
+                return cCommandStream::CommandStatus::kInvalidParameter;
+        if (argc == 2 && strcmp(argv[1], "hard") != 0)
+                return cCommandStream::CommandStatus::kInvalidParameter;
+
+        if (argc == 2)
+                fResult = pFram->reset();
+        else
+                fResult = pFram->initialize();
+
+        return fResult ? cCommandStream::CommandStatus::kSuccess
+                       : cCommandStream::CommandStatus::kError
+                       ;
+        }

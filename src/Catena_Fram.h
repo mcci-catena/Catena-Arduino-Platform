@@ -56,6 +56,8 @@ public:
         virtual bool begin() override 
                 {
                 this->resetCache();
+                this->m_endOffset = 0;
+                this->m_fReady = false;
                 return true;
                 }
 
