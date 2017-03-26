@@ -33,7 +33,10 @@ Revision history:
 
 #include "Catena_Fram.h"
 
+#include <cstring>
+
 #include "Catena_Log.h"
+#include "mcciadk_baselib.h"
 
 using namespace McciCatena;
 
@@ -587,7 +590,8 @@ McciCatena::cFram::writeItemData(
 	if (fResult)
 		{
                 gLog.printf(
-                        gLog.kAlways, "key(0x%x) write new version(%u): base(%u) offset(%u) size(%u)\n",
+                        gLog.kTrace, 
+                        "key(0x%x) write new version(%u): base(%u) offset(%u) size(%u)\n",
                         uKey,
                         newVer,
                         offset,
@@ -724,6 +728,7 @@ McciCatena::cFram::Cursor::create(
 		}
 
 	// write object and the default value
+        cFramStorage::Offset const objOffset = offset;
 	pFram->write(offset, (uint8_t *) &object, sizeof(object));
 	
 	offset += sizeof(object);
@@ -745,6 +750,8 @@ McciCatena::cFram::Cursor::create(
 		))
 		{
 		pFram->m_endOffset = offset;
+                pFram->m_offsetCache[this->m_uKey] = objOffset;
+                this->m_offset = objOffset;
 		return true;	
 		}
 
@@ -779,11 +786,21 @@ McciCatena::cFram::Cursor::locate(
 	const cFramStorage::StandardItem item
 	)
 	{
+        static const char FUNCTION[] = "cFram::Cursor::locate";
         uint8_t const uKey = item.getKey();
 
 	// don't crash on invalid param.
 	if (uKey >= cFramStorage::StandardKeys::kMAX)
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "%s: invalid item key(0x%x)\n",
+                        FUNCTION,
+                        uKey
+                        );
+
 		return false;
+                }
 
 	// if the FRAM isn't ready, give up.
 	if (! this->m_pFram->isReady())
@@ -833,9 +850,24 @@ McciCatena::cFram::Cursor::put(
 	size_t nBuffer
 	)
 	{
+        static const char FUNCTION[] = "cFram::Cursor::put";
+
 	if (! this->islocated() ||
 	    ! this->isbound())
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "%s: can't put to un%s cursor: "
+                        "uSize(0x%x) uKey(0x%x) uVer(%u) offset(0x%x)\n",
+                        FUNCTION,
+                        (! this->islocated()) ? "located" : "bound",
+                        this->m_uSize,
+                        this->m_uKey,
+                        this->m_uVer,
+                        this->m_offset
+                        );
 		return false;
+                }
 
 	return this->m_pFram->writeItemData(
 		cFramStorage::vItemDefs[this->m_uKey],
@@ -843,3 +875,187 @@ McciCatena::cFram::Cursor::put(
 		nBuffer
 		);
 	}
+
+bool
+McciCatena::cFram::Cursor::getitem(
+        cFramStorage::StandardItem &item
+        ) const
+        {
+        if (! this->isbound())
+                return false;
+
+        item = cFramStorage::vItemDefs[this->m_uKey];
+        return true;
+        }
+
+size_t
+McciCatena::cFram::Cursor::getitemsize() const
+        {
+        cFramStorage::StandardItem item;
+
+        if (! this->getitem(item))
+                return 0;
+
+        return item.getSize();
+        }
+
+static int getnibble(const char * &pValue)
+        {
+        char c;
+
+        c = *pValue;
+        if ('0' <= c && c <= '9')
+                {
+                ++pValue;
+                return c - '0';
+                }
+        else if ('A' <= c && c <= 'F')
+                {
+                ++pValue;
+                return c - 'A' + 0xA;
+                }
+        else if ('a' <= c && c <= 'f')
+                {
+                ++pValue;
+                return c - 'a' + 0xA;
+                }
+        else
+                return -1;
+        }
+
+static int getbyte(const char * &pValue)
+        {
+        int v;
+
+        v = getnibble(pValue);
+        if (v >= 0)
+                {
+                int v2;
+                v2 = getnibble(pValue);
+                if (v2 >= 0)
+                        return v * 16 + v2;
+                else
+                        return v;
+                }
+        else
+                return v;
+        }
+
+bool 
+McciCatena::cFram::Cursor::parsevalue(
+        const char *pValue,
+        uint8_t *pData,
+        size_t nData
+        ) const
+        {
+        // we don't write the data, but we use the cursor to
+        // help decode it.
+        cFramStorage::StandardItem item;
+
+        if (! this->getitem(item))
+                return false;
+        if (nData != item.getSize())
+                return false;
+
+        // value is hex, and may have embedded '-' to separate
+        // bytes. At the end, if it's a number, we have to reverse 
+        // it.... for sanity, start with zeros.
+        std::memset(pData, 0, nData);
+
+        char c;
+        size_t i;
+
+        for (i = 0; i < nData; )
+                {
+                int v = getbyte(pValue);
+                if (v < 0)
+                        {
+                        if (pValue[0] == '\0')
+                                break;
+                        else
+                                return false;
+                        }
+
+                pData[i++] = uint8_t(v);
+                if (pValue[0] == '-' && pValue[1] != '\0')
+                        ++pValue;
+                }
+
+        // ok, we might have fewer bytes than specified. in that case, right justify.
+        if (i < nData)
+                {
+                for (size_t j = nData; j > 0; --j)
+                        {
+                        if (i > 0)
+                                {
+                                pData[j - 1] = pData[i - 1];
+                                --i;
+                                }
+                        else
+                                pData[j - 1] = 0;
+                        }
+                }
+
+        // if it's a number, we now have to byte-reverse
+        if (item.isNumber())
+                {
+                size_t nData2 = nData/2;
+                size_t i, j;
+                for (i = 0, j = nData-1; i < nData/2; ++i, --j)
+                        std::swap(pData[i], pData[j]);
+                }
+
+        return true;
+        }
+
+size_t 
+McciCatena::cFram::Cursor::formatvalue(
+        char *pBuffer,
+        size_t nBuffer,
+        size_t iBuffer,
+        const uint8_t *pData,
+        size_t nData
+        ) const
+        {
+        // data has been fetched, but we need to use the 
+        // cursor info to format it.
+        cFramStorage::StandardItem item;
+
+        if (iBuffer < nBuffer)
+                pBuffer[iBuffer] = '\0';
+
+        if (! this->getitem(item))
+                return iBuffer;
+
+        // if it's a number, we need to reverse it.
+        // TODO(tmm@mcci.com): better formatting for GUIDs
+        for (size_t i = 0; i < nData; ++i)
+                {
+                size_t j;
+                const char *pSep;
+                pSep = "-";
+                if (item.isNumber())
+                        {
+                        j = nData - i - 1;
+                        if (nData <= 4 || j == 0)
+                                pSep = "";
+                        }
+                else
+                        {
+                        j = i;
+                        if (i == nData - 1)
+                                pSep = "";
+                        }
+
+                iBuffer += McciAdkLib_Snprintf(
+                                pBuffer,
+                                nBuffer,
+                                iBuffer,
+                                "%02x%s",
+                                pData[j],
+                                pSep
+                                );
+                }
+
+        return iBuffer;
+        }

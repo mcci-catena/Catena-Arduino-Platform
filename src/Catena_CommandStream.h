@@ -77,6 +77,11 @@ public:
 		kSuccess = 0,
 		kError = 1,
                 kInvalidParameter = 2,
+                kInternalError = 3,
+                kNotInitialized = 4,
+                kReadError = 5,
+                kWriteError = 6,
+                kCreateError = 7,
 		};
 
 	typedef CommandStatus (CommandFn)(

@@ -90,6 +90,7 @@ public:
 	LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
 
 	bool begin(Catena4450 *pParent);
+        Catena4450 *getCatena() const { return this->m_pCatena; };
 
 protected:
         virtual ProvisioningStyle GetProvisioningStyle(void) override;
@@ -102,6 +103,8 @@ protected:
 private:
 	Catena4450		*m_pCatena;
 
+        // initialize the commands
+        bool addCommands();
 	};
 
 /**** end of Catena4450.h ****/

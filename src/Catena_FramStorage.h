@@ -77,6 +77,7 @@ public:
                         return ((!a_fReplicated) << 25) | (a_fNumber << 24) | (a_uKey << 16) | a_uSize;
                         }
         public:
+                StandardItem() : uValue(0) {};
                 StandardItem(uint8_t a_uKey, uint16_t a_uSize, bool a_fNumber, bool a_fReplicated = true) 
                         : uValue(makeValue(a_uKey, a_uSize, a_fNumber, a_fReplicated)) {};
                 uint16_t getSize() const
@@ -222,7 +223,7 @@ public:
                 bool dataReplicant
                 )
                 {
-                return kObjectStandardSize + (dataReplicant ? getClicks(dataSize)
+                return kObjectStandardSize + (dataReplicant ? getClicks(dataSize) * kObjectQuantum
                                                             : 0);
                 }
 	};

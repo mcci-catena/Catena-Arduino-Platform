@@ -31,9 +31,12 @@ Revision history:
 
 */
 
-#include <Catena4450.h>
+#include "Catena4450.h"
 
-#include <mcciadk_baselib.h>
+#include "Catena_Log.h"
+#include "mcciadk_baselib.h"
+
+using namespace McciCatena;
 
 /*
 
@@ -60,15 +63,25 @@ Catena4450::LoRaWAN::begin(
 	Catena4450 *pParent
 	)
 	{
+        static const char FUNCTION[] = "Catena4450::LoRaWAN::begin";
+
 	/* set things up */
 	this->m_pCatena = pParent;
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
-	/* call the base begin */
-	if (! this->Arduino_LoRaWAN::begin())
-		return false;
+        /* set up command processor */
+        this->addCommands();
 
-	/* do any required post-processing */
+	/* call the base begin */
+	if (! this->Super::begin(pParent))
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "%s: Super::begin() failed\n",
+                        FUNCTION
+                        );
+		return false;
+                }
 
 	/* indicate success to the client */
 	return true;

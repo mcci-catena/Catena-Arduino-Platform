@@ -184,6 +184,17 @@ public:
         // set up a cursor to match a standard item
 	bool locate(const cFramStorage::StandardItem);
 
+        bool locate(cFramStorage::StandardKeys uKey)
+                {
+                return this->locate(cFramStorage::vItemDefs[uKey]);
+                }
+
+        // return the standard item associated with this cursor
+        bool getitem(cFramStorage::StandardItem &) const;
+
+        // get the item size associated with this cursor
+        size_t getitemsize() const;
+
         // get a buffer
 	bool get(uint8_t *pBuffer, size_t nBuffer);
 
@@ -201,6 +212,21 @@ public:
 		{
 		return this->put((const uint8_t *)&v, sizeof(v));
 		}
+
+        // parse a value
+        bool parsevalue(
+                const char *pValue,
+                uint8_t *pData,
+                size_t nData
+                ) const;
+
+        size_t formatvalue(
+                char *pBuffer,
+                size_t nBuffer,
+                size_t iBuffer,
+                const uint8_t *pData,
+                size_t nData
+                ) const;
 	
 private:
         cFramStorage::StandardItem getItem()
