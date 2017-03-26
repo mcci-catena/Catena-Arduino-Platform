@@ -382,6 +382,8 @@ public:
 		bool fReplicated
 		);
 
+        bool initialize(StandardItem);
+
         // check whether the object is formally valid
         bool isValid(void) const;
 	};

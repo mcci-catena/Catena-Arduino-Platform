@@ -87,6 +87,10 @@ Definition:
 		bool fReplicated
 		);
 
+	bool cFramStorage::Object::initialize(
+		cFramStorage::StandardItem item
+		);
+
 Description:
 	The object header is initialized appopriately according to the
 	parameters passed in.
@@ -130,6 +134,19 @@ McciCatena::cFramStorage::Object::initialize(
 	this->uVer[2] = 0;
 
         return true;
+	}
+
+bool
+McciCatena::cFramStorage::Object::initialize(
+	cFramStorage::StandardItem item
+	)
+	{
+	return this->initialize(
+		cFramStorage::skFramGuid,
+		item.getKey(),
+		item.getSize(),
+		item.isReplicated()
+		);
 	}
 
 /*

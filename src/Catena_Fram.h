@@ -55,25 +55,43 @@ protected:
 public:
         virtual bool begin() override 
                 {
-                for (unsigned i = 0; i < cFramStorage::StandardKeys::kMAX; ++i)
-                        {
-                        this->m_offsetCache[i] = cFramStorage::kInvalidOffset;
-                        this->m_uVerCache[i] = 0;
-                        this->m_endOffset = 0;
-                        }
+                this->resetCache();
                 return true;
                 }
+
+        // initialize the store
+        virtual bool initialize() override;
+
+        // check the store
+        virtual bool isValid() override;
+
+        // reset the store
+        virtual bool reset() override;
+
+        // read from the store.
 	virtual size_t read(
 		cFramStorage::Offset uOffset, uint8_t *pBuffer, size_t nBuffer
 		) = 0;
 
-	virtual void write(
+        // write to the store
+	virtual bool write(
 		cFramStorage::Offset uOffset, const uint8_t *pBuffer, size_t nBuffer
 		) = 0;
+
+        // return the unformatted size of the store.
+        virtual cFramStorage::Offset getsize() const = 0;
+
+        // return state of the FRAM system
+        virtual bool isReady() const override { return this->m_fReady; }
+
+        virtual void invalidate() override { this->m_fReady = false; }
 
 	class Cursor;
 
 protected:
+        // record the "ready status"
+        bool                    m_fReady;
+
         // to save storage, we make these parallel arrays
 
         // saved offset of objects. If not valid, will be kInvalidOffset.
@@ -85,15 +103,57 @@ protected:
         // offset of first free byte in FRAM
         cFramStorage::Offset m_endOffset;
 
-
+        // load the cache from the media.
         void loadCache(void);
+
+        // forget the cache contents.
+        void resetCache(void);
+
+        // set a specific entry.
+        void setCacheEntry(cFramStorage::StandardKeys, cFramStorage::Offset, uint8_t uVer);
+
+        cFramStorage::Offset allocate(size_t nBytes);
+
+        bool writeItemData(
+                cFramStorage::StandardItem item,
+                const uint8_t *pBuffer,
+                size_t nBuffer
+                );
+
 	};
 
 
 class cFram::Cursor
 	{
 public:
-	Cursor(cFram *pFram) : m_pFram(pFram), m_offset(cFramStorage::kInvalidOffset) {};
+        // the basic constructor just fills things in.
+	Cursor(cFram *pFram) 
+                : m_pFram(pFram), 
+                  m_uKey(cFramStorage::StandardKeys::kMAX), 
+                  m_offset(cFramStorage::kInvalidOffset) 
+                {};
+
+        // construct and locate
+        Cursor(cFram *pFram, cFramStorage::StandardItem item);
+
+        // construct and locate using key
+        Cursor(cFram *pFram, cFramStorage::StandardKeys uKey) 
+                : Cursor{pFram, cFramStorage::vItemDefs[uKey]} {};
+
+        // take a located cursor and create an object if needed
+        bool create(void);
+
+        // test whether a cursro is bound to an object
+        bool isbound() const
+                {
+                return this->m_uKey != cFramStorage::StandardKeys::kMAX;
+                }
+
+        // test whether a cursor was located
+        bool islocated() const
+                {
+                return this->m_offset != cFramStorage::kInvalidOffset;
+                }
 
         // set up a cursor to match a standard item
 	bool locate(const cFramStorage::StandardItem);
@@ -108,15 +168,20 @@ public:
 		}
 
         // put a buffer
-	void put(const uint8_t *pBuffer, size_t nBuffer);
+	bool put(const uint8_t *pBuffer, size_t nBuffer);
 
         // put a uint32_t
-	void putuint32(uint32_t &v)
+	bool putuint32(uint32_t &v)
 		{
 		return this->put((const uint8_t *)&v, sizeof(v));
 		}
 	
 private:
+        cFramStorage::StandardItem getItem()
+                {
+                return cFramStorage::vItemDefs[this->m_uKey];
+                };
+
 	cFram *m_pFram;
 	uint16_t m_uSize;
 	uint8_t m_uKey;

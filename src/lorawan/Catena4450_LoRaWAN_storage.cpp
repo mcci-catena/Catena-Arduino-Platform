@@ -231,8 +231,15 @@ Catena4450::LoRaWAN::NetSaveFCntUp(
 	)
 	{
         Catena4450 * const pCatena = this->m_pCatena;
-	
-	pCatena->SafePrintf("%s: FCntUp: %u\n", __FUNCTION__, uFCntUp);
+        auto const pFram = pCatena->getFram();
+        cFram::Cursor cursor(pFram, cFramStorage::kFCntUp);
+
+        if (! cursor.create())
+                {
+        	Log.printf(Log.kError, "%s: can't save FCntUp: %u\n", __FUNCTION__, uFCntUp);
+                }
+
+        cursor.putuint32(uFCntUp);
 	}
 
 void

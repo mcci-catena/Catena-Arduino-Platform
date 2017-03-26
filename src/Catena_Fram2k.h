@@ -70,29 +70,20 @@ public:
         // begin working with the FRAM
 	virtual bool begin() override;
 
-        // initialize the store
-        virtual bool initialize() override;
-
-        // check the store
-        virtual bool isValid() override;
-
-        // reset the store
-        virtual bool reset() override;
-
         // read from the store
         virtual size_t read(
                 cFramStorage::Offset uOffset, uint8_t *pBuffer, size_t nBuffer
                 ) override;
 
         // write to the store
-        virtual void write(
+        virtual bool write(
                 cFramStorage::Offset uOffset, const uint8_t *pBuffer, size_t nBuffer
                 ) override;
 
-        // return state of the FRAM system
-        virtual bool isReady() const override { return this->m_fReady; }
-
-        virtual void invalidate() override { this->m_fReady = false; }
+        virtual cFramStorage::Offset getsize() const override
+                {
+                return 2 * 1024;
+                };
 
 	// initialize the commands
 	bool addCommands();
@@ -108,7 +99,6 @@ public:
 protected:
 private:
 	Adafruit_FRAM_I2C	m_hw;
-        bool    m_fReady;
 	};
 
 }; // namespace McciCatena
