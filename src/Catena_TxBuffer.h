@@ -193,7 +193,7 @@ public:
 /* the magic byte at the front of the buffer */
 enum : uint8_t   {
         FormatSensor1 = 0x11,
-        FormatSensor2 = 0x12,
+        FormatSensor2 = 0x14,
         };
 
 /* the flags for the second byte of the buffer */
