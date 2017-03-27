@@ -232,14 +232,8 @@ Catena4450::LoRaWAN::NetSaveFCntUp(
 	{
         Catena4450 * const pCatena = this->m_pCatena;
         auto const pFram = pCatena->getFram();
-        cFram::Cursor cursor(pFram, cFramStorage::kFCntUp);
 
-        if (! cursor.create())
-                {
-        	gLog.printf(gLog.kError, "%s: can't save FCntUp: %u\n", __FUNCTION__, uFCntUp);
-                }
-
-        cursor.putuint32(uFCntUp);
+        pFram->saveField(cFramStorage::kFCntUp, uFCntUp);
 	}
 
 void
@@ -249,31 +243,8 @@ Catena4450::LoRaWAN::NetSaveFCntDown(
 	{
         Catena4450 * const pCatena = this->m_pCatena;
         auto const pFram = pCatena->getFram();
-        cFram::Cursor cursor(pFram, cFramStorage::kFCntDown);
 
-        if (!cursor.create())
-                {
-                gLog.printf(gLog.kError, "%s: can't save FCntUp: %u\n", __FUNCTION__, uFCntDown);
-                }
-
-        cursor.putuint32(uFCntDown);
-        }
-
-template <typename T>
-static void saveField(
-        cFram *pFram,
-        cFramStorage::StandardKeys uKey,
-        const T &field
-        )
-        {
-        cFram::Cursor cursor(pFram, uKey);
-
-        if (! cursor.create())
-                {
-                gLog.printf(gLog.kError, "%s: can't save uKey(0x%x)\n", __FUNCTION__, uKey);
-                }
-
-        cursor.put((const uint8_t *) &field, sizeof(field));
+        pFram->saveField(cFramStorage::kFCntDown, uFCntDown);
         }
 
 void 
@@ -286,12 +257,12 @@ Catena4450::LoRaWAN::NetSaveSessionInfo(
         Catena4450 * const pCatena = this->m_pCatena;
 	auto const pFram = pCatena->getFram();
 
-        saveField(pFram, cFramStorage::kNetID,   Info.V1.NetID);
-        saveField(pFram, cFramStorage::kDevAddr, Info.V1.DevAddr);
-        saveField(pFram, cFramStorage::kNwkSKey, Info.V1.NwkSKey);
-        saveField(pFram, cFramStorage::kAppSKey, Info.V1.AppSKey);
-        saveField(pFram, cFramStorage::kFCntUp,  Info.V1.FCntUp);
-        saveField(pFram, cFramStorage::kFCntDown, Info.V1.FCntDown);
+        pFram->saveField(cFramStorage::kNetID,   Info.V1.NetID);
+        pFram->saveField(cFramStorage::kDevAddr, Info.V1.DevAddr);
+        pFram->saveField(cFramStorage::kNwkSKey, Info.V1.NwkSKey);
+        pFram->saveField(cFramStorage::kAppSKey, Info.V1.AppSKey);
+        pFram->saveField(cFramStorage::kFCntUp,  Info.V1.FCntUp);
+        pFram->saveField(cFramStorage::kFCntDown, Info.V1.FCntDown);
 
         gLog.printf(
                 gLog.kAlways,

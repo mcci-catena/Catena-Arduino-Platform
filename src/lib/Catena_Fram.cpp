@@ -612,6 +612,37 @@ McciCatena::cFram::writeItemData(
 
 	return fResult;
 	}
+
+void McciCatena::cFram::saveField(
+        cFramStorage::StandardKeys uKey,
+        const uint8_t *pValue,
+        size_t nValue
+        )
+        {
+        cFram::Cursor cursor(this, uKey);
+
+        if (! cursor.create())
+                {
+                gLog.printf(gLog.kError,
+                        "%s: can't save uKey(0x%x) %u bytes\n",
+                        __FUNCTION__, uKey, nValue
+                        );
+                }
+
+        cursor.put(pValue, nValue);
+        }
+
+bool McciCatena::cFram::getField(
+        cFramStorage::StandardKeys uKey,
+        uint8_t *pValue,
+        size_t nValue
+        )
+        {
+        cFram::Cursor cursor(this, uKey);
+
+        return cursor.get(pValue, nValue);
+        }
+
 
 /****************************************************************************\
 |

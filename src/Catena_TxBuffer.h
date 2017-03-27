@@ -176,15 +176,28 @@ public:
                 {
                 put2uf(Lux);
                 }
+        void putLux(uint16_t Lux)
+                {
+                put2(uint32_t(Lux));
+                }
+        void putBootCountLsb(uint32_t bootCount)
+                {
+                put(uint8_t(bootCount & 0xFF));
+                }
+        void putWH(uint32_t wattHour)
+                {
+                put2(uint32_t(wattHour & 0xFFFF));
+                }
         };
 
 /* the magic byte at the front of the buffer */
-enum    {
+enum : uint8_t   {
         FormatSensor1 = 0x11,
+        FormatSensor2 = 0x12,
         };
 
 /* the flags for the second byte of the buffer */
-enum    {
+enum  FlagsSensor1 : uint8_t  {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
         FlagTPH = 1 << 2,
@@ -192,6 +205,28 @@ enum    {
         FlagWater = 1 << 4,
         FlagSoilTH = 1 << 5,
         };
+
+enum class FlagsSensor2 : uint8_t 
+        {
+        FlagVbat = 1 << 0,
+        FlagVcc = 1 << 1,
+        FlagBoot = 1 << 2,
+        FlagTPH = 1 << 3,
+        FlagLux = 1 << 4,
+        FlagWattHours = 1 << 5
+        };
+
+constexpr FlagsSensor2 operator| (const FlagsSensor2 lhs, const FlagsSensor2 rhs)
+        {
+        return FlagsSensor2(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+FlagsSensor2 operator|= (FlagsSensor2 &lhs, const FlagsSensor2 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
+
 
 } /* namespace McciCatena */
 

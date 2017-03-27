@@ -66,12 +66,19 @@ public:
 
         McciCatena::cFram2k *getFram() { return &this->m_Fram; };
 
+        bool getBootCount(uint32_t &bootCount)
+                { 
+                bootCount = this->m_BootCount;
+                return true;
+                };
+
 protected:
 	using Super = CatenaFeatherM0LoRa;
 
 private:
 	// the FRAM instance
 	McciCatena::cFram2k			m_Fram;
+        uint32_t                                m_BootCount;
 	};
 
 /*

@@ -61,6 +61,7 @@ public:
                 kFCntUp = 11,
                 kNetID = 12,
                 kAppKey = 13,
+                kBootCount = 14,
                 kMAX
 		};
 

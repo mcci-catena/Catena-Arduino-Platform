@@ -91,6 +91,15 @@ bool Catena4450::begin()
 		this->m_Fram.initialize();
 		}
 
+        this->m_Fram.getField(
+                cFramStorage::StandardKeys::kBootCount,
+                this->m_BootCount
+                );
+        ++this->m_BootCount;
+        this->m_Fram.saveField(
+                cFramStorage::StandardKeys::kBootCount,
+                this->m_BootCount
+                );
 	return true;
 	}
 

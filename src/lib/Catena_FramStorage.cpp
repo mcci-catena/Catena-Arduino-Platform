@@ -63,6 +63,7 @@ McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
         cFramStorage::StandardItem(kFCntUp, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kNetID, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kAppKey, sizeof(uint8_t[16]), /* number */ false),
+        cFramStorage::StandardItem(kBootCount, sizeof(uint32_t), /* number */ true),
         };
 
 

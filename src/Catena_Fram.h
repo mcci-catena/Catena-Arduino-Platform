@@ -113,6 +113,36 @@ public:
                         char **argv
                         );
 
+        void saveField(
+                cFramStorage::StandardKeys uKey,
+                const uint8_t *pValue,
+                size_t nValue
+                );
+
+        template <typename T>
+        void saveField(
+                cFramStorage::StandardKeys uKey,
+                const T &field
+                )
+                {
+                this->saveField(uKey, (const uint8_t *)&field, sizeof(field));
+                };
+
+        bool getField(
+                cFramStorage::StandardKeys uKey,
+                uint8_t *pValue,
+                size_t nValue
+                );
+
+        template <typename T>
+        bool getField(
+                cFramStorage::StandardKeys uKey,
+                T &field
+                )
+                {
+                this->getField(uKey, (uint8_t *)&field, sizeof(field));
+                };
+
 
 protected:
         // record the "ready status"
