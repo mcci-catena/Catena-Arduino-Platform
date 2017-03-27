@@ -79,7 +79,7 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 	cFram::Cursor framNwkSKey(pFram),
 		      framAppSKey(pFram),
 		      framDevAddr(pFram),
-		      framNwkID(pFram),
+		      framNetID(pFram),
 		      framFCntUp(pFram),
 		      framFCntDown(pFram);
 		      
@@ -90,7 +90,7 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 	if (framNwkSKey.locate(cFramStorage::vItemDefs[cFramStorage::kNwkSKey]) &&
 	    framAppSKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppSKey]) &&
 	    framDevAddr.locate(cFramStorage::vItemDefs[cFramStorage::kDevAddr]) &&
-	    framNwkID.locate(cFramStorage::vItemDefs[cFramStorage::kNwkID]) &&
+	    framNetID.locate(cFramStorage::vItemDefs[cFramStorage::kNetID]) &&
 	    framFCntUp.locate(cFramStorage::vItemDefs[cFramStorage::kFCntUp]) &&
 	    framFCntDown.locate(cFramStorage::vItemDefs[cFramStorage::kFCntDown]))
 		fResult = true;
@@ -108,7 +108,7 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 	framNwkSKey.get(pInfo->NwkSKey, sizeof(pInfo->NwkSKey));
 	framAppSKey.get(pInfo->AppSKey, sizeof(pInfo->AppSKey));
 	framDevAddr.getuint32(pInfo->DevAddr);
-	framNwkID.getuint32(pInfo->NwkID);
+	framNetID.getuint32(pInfo->NetID);
 	framFCntUp.getuint32(pInfo->FCntUp);
 	framFCntDown.getuint32(pInfo->FCntDown);
 
@@ -248,9 +248,33 @@ Catena4450::LoRaWAN::NetSaveFCntDown(
 	)
 	{
         Catena4450 * const pCatena = this->m_pCatena;
-	
-	pCatena->SafePrintf("%s: FCntDown: %u\n", __FUNCTION__, uFCntDown);
-	}
+        auto const pFram = pCatena->getFram();
+        cFram::Cursor cursor(pFram, cFramStorage::kFCntDown);
+
+        if (!cursor.create())
+                {
+                gLog.printf(gLog.kError, "%s: can't save FCntUp: %u\n", __FUNCTION__, uFCntDown);
+                }
+
+        cursor.putuint32(uFCntDown);
+        }
+
+template <typename T>
+static void saveField(
+        cFram *pFram,
+        cFramStorage::StandardKeys uKey,
+        const T &field
+        )
+        {
+        cFram::Cursor cursor(pFram, uKey);
+
+        if (! cursor.create())
+                {
+                gLog.printf(gLog.kError, "%s: can't save uKey(0x%x)\n", __FUNCTION__, uKey);
+                }
+
+        cursor.put((const uint8_t *) &field, sizeof(field));
+        }
 
 void 
 Catena4450::LoRaWAN::NetSaveSessionInfo(
@@ -260,6 +284,20 @@ Catena4450::LoRaWAN::NetSaveSessionInfo(
 	)
 	{
         Catena4450 * const pCatena = this->m_pCatena;
-	
-	pCatena->SafePrintf("%s: ignoring\n", __FUNCTION__);
+	auto const pFram = pCatena->getFram();
+
+        saveField(pFram, cFramStorage::kNetID,   Info.V1.NetID);
+        saveField(pFram, cFramStorage::kDevAddr, Info.V1.DevAddr);
+        saveField(pFram, cFramStorage::kNwkSKey, Info.V1.NwkSKey);
+        saveField(pFram, cFramStorage::kAppSKey, Info.V1.AppSKey);
+        saveField(pFram, cFramStorage::kFCntUp,  Info.V1.FCntUp);
+        saveField(pFram, cFramStorage::kFCntDown, Info.V1.FCntDown);
+
+        gLog.printf(
+                gLog.kAlways,
+                "NwkID:   %08x   "
+                "DevAddr: %08x\n",
+                Info.V1.NetID,
+                Info.V1.DevAddr
+                );
 	}

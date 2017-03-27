@@ -59,7 +59,7 @@ public:
                 kAppSKey = 9,
                 kFCntDown = 10,
                 kFCntUp = 11,
-                kNwkID = 12,
+                kNetID = 12,
                 kAppKey = 13,
                 kMAX
 		};

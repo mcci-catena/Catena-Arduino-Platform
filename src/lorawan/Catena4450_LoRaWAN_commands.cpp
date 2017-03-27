@@ -70,7 +70,7 @@ static KeyMap sKeyMap[] =
 	{ "nwkskey", cFramStorage::StandardKeys::kNwkSKey, },
 	{ "appskey", cFramStorage::StandardKeys::kAppSKey, },
 	{ "devaddr", cFramStorage::StandardKeys::kDevAddr, },
-	{ "nwkid", cFramStorage::StandardKeys::kNwkID, },
+	{ "netid", cFramStorage::StandardKeys::kNetID, },
 	{ "fcntup", cFramStorage::StandardKeys::kFCntUp, },
 	{ "fcntdown", cFramStorage::StandardKeys::kFCntDown, },
 	{ "join", cFramStorage::StandardKeys::kJoin, },
