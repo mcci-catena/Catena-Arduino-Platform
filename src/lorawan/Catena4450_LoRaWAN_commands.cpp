@@ -193,7 +193,7 @@ doConfigure(
 			}
 		else
 			{
-			char strbuf[32];
+			char strbuf[64];
 
 			if (! cursor.get(databuf, size))
 				{
