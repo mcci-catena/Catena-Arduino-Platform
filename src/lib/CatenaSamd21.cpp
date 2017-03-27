@@ -39,5 +39,9 @@ using namespace McciCatena;
 bool
 CatenaSamd21::cSerialReady::isReady() const
 	{
-	return (!! ::Serial);
+        // unfortunately, we can't use !! Serial (or bool(Serial) -- 
+        // it doesn't really check what we want, and then it inserts
+        // a 10ms delay unconditionally.
+        // so we just check DTR instead.
+	return (Serial.dtr());
 	}

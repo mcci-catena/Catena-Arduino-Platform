@@ -73,6 +73,7 @@ static KeyMap sKeyMap[] =
 	{ "nwkid", cFramStorage::StandardKeys::kNwkID, },
 	{ "fcntup", cFramStorage::StandardKeys::kFCntUp, },
 	{ "fcntdown", cFramStorage::StandardKeys::kFCntDown, },
+	{ "join", cFramStorage::StandardKeys::kJoin, },
 	};
 
 /*

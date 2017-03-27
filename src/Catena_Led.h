@@ -81,7 +81,10 @@ public:
                 m_Pattern = LedPattern::Off;
                 }
         
-        virtual void poll(void) { this->loop(); }
+        virtual void poll(void) override 
+                {
+                this->loop(); 
+                }
 
         void loop(void)
                 {

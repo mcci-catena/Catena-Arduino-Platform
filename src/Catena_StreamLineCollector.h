@@ -103,7 +103,7 @@ public:
 	
 public:
 	// the poll method (makes this pollable)
-	virtual void poll(void);
+	virtual void poll(void) override;
 	
 	// the setup function. The enabler function is used for streams like
 	// USB Serial, which hang if you talk to them when they're not plugged

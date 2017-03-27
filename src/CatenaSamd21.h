@@ -172,9 +172,9 @@ protected:
 	        {
         public:
 		// return true if Serial is ready. Overridden because
-		// we actually can do !!Serial() only if Serial is a USB
-		// implementation.
-	        virtual bool isReady() const;
+		// the Arduino !!Serial() delays 10ms unconditionally!
+                // so we need special business.
+	        virtual bool isReady() const override;
 	        };
 
 
