@@ -57,6 +57,7 @@ enum class LedPattern:uint64_t
         TwoShort = 0b10000000000000001001,
         ThreeShort = 0b10000000000001001001,
         FiftyFiftySlow = 0b100000000000000001111111111111111,
+        OneThirtySecond = 0b100000000000000000000000000000001,
 
         Joining = TwoShort,
         Measuring = FastFlash,
@@ -64,6 +65,7 @@ enum class LedPattern:uint64_t
         WarmingUp = OneEigth,
         Settling = OneSixteenth,
         NotProvisioned = ThreeShort,
+        Sleeping = OneThirtySecond,
         };
 
 class StatusLed : public cPollableObject
