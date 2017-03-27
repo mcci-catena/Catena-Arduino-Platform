@@ -62,7 +62,7 @@ Description:
 	initialize like this:
 
 		static const cStreamLineCollector::StreamReadyFn myReady =
-			[Serial&]{ return !!Serial; }
+			[Serial&]{ return Serial->dtr(); }
 
 	Then pass a pointer to myReady as pReadyFn:
 		collector.begin(&Serial, &myReady);

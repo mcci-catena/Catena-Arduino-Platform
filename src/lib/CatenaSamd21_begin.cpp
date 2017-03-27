@@ -142,14 +142,14 @@ bool CatenaSamd21::begin(
         /* do unattended startup */
         delay(2000);
         /* big difference: don't spin */
-        if (Serial)
+        if (Serial.dtr())
                 Serial.begin(115200);
         }
     else
         {
         /* wait a while to make it easier to break in */
         delay(2000);
-        while (!Serial)
+        while (! Serial.dtr())
            /* NOTHING */; // wait for Serial to be initialized
 
         Serial.begin(115200);

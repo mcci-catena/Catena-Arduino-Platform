@@ -78,7 +78,7 @@ CatenaBase::SafePrintf(
 	...
 	)
 	{
-	if (! Serial) 
+	if (! Serial.dtr())
 		return;
 
 	char buf[128];
@@ -90,5 +90,5 @@ CatenaBase::SafePrintf(
 
 	// in case we overflowed:
 	buf[sizeof(buf) - 1] = '\0';
-	if (Serial) Serial.print(buf);
+	if (Serial.dtr()) Serial.print(buf);
 	}
