@@ -188,6 +188,10 @@ public:
                 {
                 put2(uint32_t(wattHour & 0xFFFF));
                 }
+        void putPulseFraction(uint16_t fracAsFloat12)
+                {
+                put2u(fracAsFloat12);
+                }
         };
 
 /* the magic byte at the front of the buffer */
@@ -213,7 +217,8 @@ enum class FlagsSensor2 : uint8_t
         FlagBoot = 1 << 2,
         FlagTPH = 1 << 3,
         FlagLux = 1 << 4,
-        FlagWattHours = 1 << 5
+        FlagWattHours = 1 << 5,
+        FlagPulsesPerHour = 1 << 6,
         };
 
 constexpr FlagsSensor2 operator| (const FlagsSensor2 lhs, const FlagsSensor2 rhs)
