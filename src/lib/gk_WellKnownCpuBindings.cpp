@@ -264,6 +264,14 @@ const CATENA_CPUID_TO_PLATFORM CatenaSamd21::vCpuIdToPlatform[] =
            OperatingFlagsSet: fUnattended,
         },
 
+
+        { CpuID:  { 0xf4, 0xe8, 0xc5, 0x24, 0x54, 0x53, 0x4b, 0x50,
+		    0x4a, 0x31, 0x2e, 0x39, 0x37, 0x13, 0x07, 0xff },
+           pPlatform: &gkPlatformCatena4450_m101,
+           SysEUI: { 0x00, 0x02, 0xcc, 0x01, 0x00, 0x00, 0x00, 0x49},
+           OperatingFlagsClear: 0,
+           OperatingFlagsSet: fUnattended,
+        },
     };
 
 const size_t CatenaSamd21::nvCpuIdToPlatform =
