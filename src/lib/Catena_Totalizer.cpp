@@ -66,6 +66,12 @@ McciCatena::cTotalizer::begin(
 	this->m_lastStable = this->m_last;
 	this->m_initialized = true;
 	this->m_fIsStable = true;
+        this->m_total = 0;
+        this->m_tEdge = 0;
+        this->m_tLastMeasured = 0;
+        this->m_nLastMeasured = 0;
+        this->m_tEdge = 0;
+        this->m_fHaveDelta = false;
 
 	// register with the polling engine
 	CatenaBase::pCatenaBase->registerObject(this);
@@ -104,3 +110,28 @@ McciCatena::cTotalizer::poll()
 			}
 		}
 	}
+
+bool 
+McciCatena::cTotalizer::getDeltaCountAndTime(
+        uint32_t &outCount, 
+        uint32_t &outDelta
+        )
+        {
+        if (this->m_fHaveDelta) 
+                {
+                outCount = this->m_total - this->m_nLastMeasured;
+                outDelta = this->m_tEdge - this->m_tLastMeasured;
+                }
+        else
+                outCount = outDelta = 0;
+
+        return this->m_fHaveDelta;
+        }
+
+void 
+McciCatena::cTotalizer::setReference()
+        {
+        this->m_tLastMeasured = this->m_tEdge;
+        this->m_nLastMeasured = this->m_total;
+        this->m_fHaveDelta = true;
+        }

@@ -63,21 +63,28 @@ public:
 	// get the running total
 	uint32_t getcurrent() const
 		{ return this->m_total; };
+        bool getDeltaCountAndTime(uint32_t &outCount, uint32_t &outDelta);
+        void setReference();
 
 private:
         // total number of counts seen
-	uint32_t m_total = 0;
+	uint32_t m_total;
         // time of last change (from millis())
         uint32_t m_tEdge;
+        // time of last measurement
+        uint32_t m_tLastMeasured;
+        uint32_t m_nLastMeasured;
         // last bit value observed.
 	bool m_last;
         // last debounced bit value observed
         bool m_lastStable;
         // value has stabilized
         bool m_fIsStable;
+        // true if we have a valid previous measurement
+        bool m_fHaveDelta;
         // counter is initialized
 	bool m_initialized = false;
-        // pin to monitor.
+        // Arduino digital pin to be monitored.
 	uint8_t m_pin;
 	};
 
