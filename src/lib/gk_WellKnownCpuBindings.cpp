@@ -281,6 +281,14 @@ const CATENA_CPUID_TO_PLATFORM CatenaSamd21::vCpuIdToPlatform[] =
            OperatingFlagsSet: 0,
         },
 
+        { CpuID: { 0xbf, 0x3d, 0x75, 0xd3, 0x54, 0x53, 0x4b, 0x50,
+                  0x4a, 0x31, 0x2e, 0x39, 0x37, 0x2a, 0x07, 0xff },
+           pPlatform: &gkPlatformCatena4450_m102,
+           SysEUI: { 0x00, 0x02, 0xcc, 0x01, 0x00, 0x00, 0x00, 0x4B},
+           OperatingFlagsClear: 0,
+           OperatingFlagsSet: 0,
+        },
+
     };
 
 const size_t CatenaSamd21::nvCpuIdToPlatform =
