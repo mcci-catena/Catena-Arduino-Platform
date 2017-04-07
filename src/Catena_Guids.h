@@ -106,5 +106,9 @@ Revision history:
 #define GUID_HW_CATENA_4450_M101(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0x82bf2661, 0x70cb, 0x45ae, 0xb6, 0x20, 0xca, 0xf6, 0x95, 0x47, 0x8b, 0xc1)
 
+// {2281255E-AC5C-48CB-A263-9DC890D16638}
+#define GUID_HW_CATENA_4450_M102(f)		\
+        MCCIADK_GUID_GEN_INIT(f,  0x2281255e, 0xac5c, 0x48cb, 0xa2, 0x63, 0x9d, 0xc8, 0x90, 0xd1, 0x66, 0x38)
+
 /**** end of catena_guids.h ****/
 #endif /* _CATENA_GUIDS_H_ */

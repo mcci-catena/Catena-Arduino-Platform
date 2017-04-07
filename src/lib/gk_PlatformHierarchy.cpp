@@ -207,6 +207,20 @@ const CATENA_PLATFORM gkPlatformCatena4450_m101 =
 		Catena4410::fM101
 	};
 
+const CATENA_PLATFORM gkPlatformCatena4450_m102 =
+	{
+	Guid: GUID_HW_CATENA_4450_M102(NATIVE),
+	pParent: &gkPlatformCatena4450,
+	PlatformFlags:
+		Catena4410::fHasLoRa |
+		Catena4410::fHasTtnNycLoRa |
+		Catena4410::fHasBme280 |
+		Catena4410::fHasLuxRohm |
+		Catena4410::fHasFRAM |
+		Catena4410::fHasI2cMux |
+		Catena4410::fM102
+	};
+
 /****************************************************************************\
 |
 |	VARIABLES:
