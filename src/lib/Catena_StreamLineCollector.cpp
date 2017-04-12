@@ -81,6 +81,7 @@ McciCatena::cStreamLineCollector::begin(
 	this->m_pStream = pStream;
 
 	this->m_pStreamReady = pStreamReady;
+        this->m_fLastWasCr = false;
 	}
 
 /*
@@ -224,7 +225,7 @@ McciCatena::cStreamLineCollector::poll(
                 
                 status = ErrorCode::kBusy;
 
-                for (nRead = 0; nRead < nRemaining; ++nRead)
+                for (nRead = 0; status == ErrorCode::kBusy && nRead < nRemaining; ++nRead)
                         {
                         int const c = this->m_pStream->read();
                         if (c < 0)
@@ -235,10 +236,29 @@ McciCatena::cStreamLineCollector::poll(
 
                         *this->m_pInsert++ = (uint8_t) c;
 
-                        if (c == kEol)
+                        // activate on cr or lf; 
+                        // silently ignore empty lines, so cr/lf
+                        // is still effectively only one line ending.
+                        if (c == kCr)
+                                {
+                                this->m_pInsert[-1] = '\n';
+                                this->m_fLastWasCr = true;
                                 status = ErrorCode::kSuccess;
+                                }
+                        else if (c == kEol)
+                                {
+                                if (this->m_fLastWasCr)
+                                        --this->m_pInsert;
+                                else
+                                        status = ErrorCode::kSuccess;
+
+                                this->m_fLastWasCr = false;
+                                }
+                        else
+                                this->m_fLastWasCr = false;
                         }
 
+                // exited loop; complete if possible.
                 if (status != ErrorCode::kBusy)
 			this->readComplete(status);
 		}

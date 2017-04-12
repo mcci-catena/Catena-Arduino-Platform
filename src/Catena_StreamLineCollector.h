@@ -73,6 +73,7 @@ public:
 	enum : uint8_t
 		{
 		kEol = '\n',
+                kCr = '\r'
 		};
 
 	enum ErrorCode : uint32_t
@@ -125,6 +126,7 @@ public:
 private:
 	// the stream we're working with
 	Stream			*m_pStream = nullptr;
+        bool                    m_fLastWasCr = false;
 	cStreamReady		*m_pStreamReady = nullptr;
 	
 	// the callback function
