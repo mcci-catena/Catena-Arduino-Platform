@@ -225,6 +225,12 @@ McciCatena::cCommandStream::dispatch(
 	const char * const pCommand = argv[0];
         // Log.printf(Log.kAlways, "dispatch: %s\n", pCommand);
 
+        if (stricmp(pCommand, "help") == 0)
+                {
+                this->dispatchHelp(argc, argv);
+                return 0;
+                }
+
 	auto const pHead = this->m_pHead;
 	if (pHead != nullptr)
 		{
@@ -247,7 +253,7 @@ McciCatena::cCommandStream::dispatch(
 
                                 // need two words, and need to match first word.
 				if (argc < 2 ||
-				    std::strcmp(pCommand, pGroupName) != 0
+				    stricmp(pCommand, pGroupName) != 0
 				    )
 					// no luck.
 					pEntry = nullptr;
@@ -283,6 +289,41 @@ McciCatena::cCommandStream::dispatch(
 	// if we get here, the command wasn't matched
 	return -1;
 	}
+
+int
+McciCatena::cCommandStream::dispatchHelp(
+	int argc,
+	char **argv
+	)
+        {
+        // walk all the tables and print simple help.
+	auto const pHead = this->m_pHead;
+	if (pHead != nullptr)
+		{
+		auto pThis = pHead;
+
+		// iterate over all command tables.		
+		do
+			{
+			const char * const pGroupName = pThis->m_pGroupName;
+
+                        auto pEntry = pThis->m_pEntries;
+                        for (unsigned i = 0;
+                                i < pThis->m_nEntries;
+                                ++i, ++pEntry)
+                                {
+                                if (pGroupName != nullptr)
+                                        this->printf("%s %s\n", pGroupName, pEntry->pName);
+                                else
+                                        this->printf("%s\n", pEntry->pName);
+                                }
+
+			pThis = pThis->m_pNext;
+			} while (pThis != pHead);
+		}
+
+        return 0;
+        }
 
 const cCommandStream::cEntry * 
 McciCatena::cCommandStream::cDispatch::search(const char *pCommand) const

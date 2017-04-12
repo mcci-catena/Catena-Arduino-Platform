@@ -137,6 +137,9 @@ private:
         // dispatch a command
         int dispatch(int argc, char **argv);
 
+        // dispatch help
+        int dispatchHelp(int argc, char **argv);
+
 	// the command buffer
 	uint8_t m_buffer[128];
 
