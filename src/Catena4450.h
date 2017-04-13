@@ -49,8 +49,12 @@ Revision history:
 class Catena4450 : public CatenaFeatherM0LoRa
 	{
 public:
-	Catena4450() {};
-	// default destructor
+        using Super = CatenaFeatherM0LoRa;
+
+        // no specific constructor.
+        Catena4450() {};
+
+	// uses default destructor
 
 	// neither copyable nor movable
 	Catena4450(const Catena4450&) = delete;
@@ -73,7 +77,7 @@ public:
                 };
 
 protected:
-	using Super = CatenaFeatherM0LoRa;
+        virtual void registerCommands(void);
 
 private:
 	// the FRAM instance
