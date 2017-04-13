@@ -34,7 +34,8 @@ Revision history:
 
 */
 
-#include <CatenaSamd21.h>
+#include "CatenaSamd21.h"
+#include "Catena_Log.h"
 
 using namespace McciCatena;
 
@@ -105,6 +106,7 @@ Returns:
 
 bool CatenaSamd21::begin()
     {
+    gLog.printf(gLog.kAlways, "+CatenaSamd21::begin()\n");
     return this->begin(/* clear */ 0, /* set */ 0);
     }
 
@@ -122,8 +124,12 @@ bool CatenaSamd21::begin(
     uint32_t OperatingFlags;
 
     /* do the platform begin */
+    gLog.printf(gLog.kAlways, "+CatenaSamd21::begin(%x, %x)\n", uClearMask, uSetMask);
     if (! this->Super::begin())
+        {
+        gLog.printf(gLog.kError, "CatenaSamd21::Super::begin failed\n");
         return false;
+        }
 
     /* get the CPU ID */
     this->GetUniqueID(&CpuID);

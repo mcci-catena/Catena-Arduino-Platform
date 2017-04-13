@@ -68,21 +68,21 @@ namespace McciCatena {
 
 const CATENA_PLATFORM	gkPlatformFeatherM0 =
 	{
-	Guid: GUID_HW_FEATHER_M0(NATIVE),
+	Guid: GUID_HW_FEATHER_M0(WIRE),
 	pParent: NULL,
 	PlatformFlags: 0,
 	};
 
 const CATENA_PLATFORM	gkPlatformM0LoRa =
 	{
-	Guid: GUID_HW_FEATHER_M0_LORA(NATIVE),
+	Guid: GUID_HW_FEATHER_M0_LORA(WIRE),
 	pParent: &gkPlatformFeatherM0,
-	PlatformFlags:	Catena4410::fHasLoRa,
+	PlatformFlags: CatenaSamd21::fHasLoRa,
 	};
 
 const CATENA_PLATFORM	gkPlatformFeatherM0Proto =
 	{
-	Guid: GUID_HW_FEATHER_M0_PROTO(NATIVE),
+	Guid: GUID_HW_FEATHER_M0_PROTO(WIRE),
 	pParent: NULL,
 	PlatformFlags: 0,
 	};
@@ -90,7 +90,7 @@ const CATENA_PLATFORM	gkPlatformFeatherM0Proto =
 
 const CATENA_PLATFORM   gkPlatformFeatherM0ProtoWingLora =
         {
-	Guid: GUID_HW_FEATHER_M0_PROTO_WINGLORA_TTNMCCI(NATIVE),
+	Guid: GUID_HW_FEATHER_M0_PROTO_WINGLORA_TTNMCCI(WIRE),
 	pParent: &gkPlatformFeatherM0Proto,
 	PlatformFlags:	CatenaSamd21::fHasLoRa |
                         CatenaSamd21::fHasTtnMcciLoRa,
@@ -98,127 +98,127 @@ const CATENA_PLATFORM   gkPlatformFeatherM0ProtoWingLora =
 
 const CATENA_PLATFORM	gkPlatformM0LoRaTtnNyc =
 	{
-	Guid: GUID_HW_FEATHER_M0_LORA_TTNNYC(NATIVE),
+	Guid: GUID_HW_FEATHER_M0_LORA_TTNNYC(WIRE),
 	pParent: &gkPlatformM0LoRa,
-	PlatformFlags:	Catena4410::fHasLoRa | 
-		Catena4410::fHasTtnNycLoRa,
+	PlatformFlags: CatenaSamd21::fHasLoRa |
+                       CatenaSamd21::fHasTtnNycLoRa,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410 =
 	{
-	Guid: GUID_HW_CATENA_4410_BASE(NATIVE),
+	Guid: GUID_HW_CATENA_4410_BASE(WIRE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLux,
+                CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLux,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_gh =
 	{
-	Guid: GUID_HW_CATENA_4410_GH(NATIVE),
+	Guid: GUID_HW_CATENA_4410_GH(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLux |
-		Catena4410::fHasSoilProbe |
-		Catena4410::fHasSolarPanel,
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLux |
+		CatenaSamd21::fHasSoilProbe |
+		CatenaSamd21::fHasSolarPanel,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_mh =
 	{
-	Guid: GUID_HW_CATENA_4410_MH(NATIVE),
+	Guid: GUID_HW_CATENA_4410_MH(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLux |
-		Catena4410::fHasSoilProbe,
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLux |
+		CatenaSamd21::fHasSoilProbe,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_swh =
 	{
-	Guid: GUID_HW_CATENA_4410_SWH(NATIVE),
+	Guid: GUID_HW_CATENA_4410_SWH(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLux |
-		Catena4410::fHasWaterOneWire,
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLux |
+		CatenaSamd21::fHasWaterOneWire,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_pond =
 	{
-	Guid: GUID_HW_CATENA_4410_POND(NATIVE),
+	Guid: GUID_HW_CATENA_4410_POND(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLux |
-		Catena4410::fHasSoilProbe |
-		Catena4410::fHasSolarPanel |
-		Catena4410::fHasWaterOneWire,
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLux |
+		CatenaSamd21::fHasSoilProbe |
+		CatenaSamd21::fHasSolarPanel |
+		CatenaSamd21::fHasWaterOneWire,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_anatolian =
 	{
-	Guid: GUID_HW_CATENA_4410_ANATOLIAN(NATIVE),
+	Guid: GUID_HW_CATENA_4410_ANATOLIAN(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLux |
-		Catena4410::fHasSoilProbe |
-		Catena4410::fHasSolarPanel |
-		Catena4410::fHasWaterOneWire,
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLux |
+		CatenaSamd21::fHasSoilProbe |
+		CatenaSamd21::fHasSolarPanel |
+		CatenaSamd21::fHasWaterOneWire,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4450 =
 	{
-	Guid: GUID_HW_CATENA_4450_BASE(NATIVE),
+	Guid: GUID_HW_CATENA_4450_BASE(WIRE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLuxRohm |
-		Catena4410::fHasFRAM |
-		Catena4410::fHasI2cMux,
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLuxRohm |
+		CatenaSamd21::fHasFRAM |
+		CatenaSamd21::fHasI2cMux,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4450_m101 =
 	{
-	Guid: GUID_HW_CATENA_4450_M101(NATIVE),
+	Guid: GUID_HW_CATENA_4450_M101(WIRE),
 	pParent: &gkPlatformCatena4450,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLuxRohm |
-		Catena4410::fHasFRAM |
-		Catena4410::fHasI2cMux |
-		Catena4410::fM101
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLuxRohm |
+		CatenaSamd21::fHasFRAM |
+		CatenaSamd21::fHasI2cMux |
+		CatenaSamd21::fM101
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4450_m102 =
 	{
-	Guid: GUID_HW_CATENA_4450_M102(NATIVE),
+	Guid: GUID_HW_CATENA_4450_M102(WIRE),
 	pParent: &gkPlatformCatena4450,
 	PlatformFlags:
-		Catena4410::fHasLoRa |
-		Catena4410::fHasTtnNycLoRa |
-		Catena4410::fHasBme280 |
-		Catena4410::fHasLuxRohm |
-		Catena4410::fHasFRAM |
-		Catena4410::fHasI2cMux |
-		Catena4410::fM102
+		CatenaSamd21::fHasLoRa |
+		CatenaSamd21::fHasTtnNycLoRa |
+		CatenaSamd21::fHasBme280 |
+		CatenaSamd21::fHasLuxRohm |
+		CatenaSamd21::fHasFRAM |
+		CatenaSamd21::fHasI2cMux |
+		CatenaSamd21::fM102
 	};
 
 /****************************************************************************\

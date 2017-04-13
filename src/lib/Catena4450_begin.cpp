@@ -58,6 +58,9 @@ Returns:
 
 bool Catena4450::begin()
 	{
+        delay(2000);
+        gLog.printf(gLog.kAlways, "+Catena4450::begin()\n");
+
 	if (! this->Super::begin())
 		return false;
 

@@ -45,6 +45,7 @@ namespace McciCatena {
 class cFramStorage
 	{
 public:
+        // the standard objects= tags.
 	enum StandardKeys : uint8_t
 		{
 		kHeader = 0,
@@ -62,6 +63,8 @@ public:
                 kNetID = 12,
                 kAppKey = 13,
                 kBootCount = 14,
+                kOperatingFlags = 15,
+                // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
 		};
 

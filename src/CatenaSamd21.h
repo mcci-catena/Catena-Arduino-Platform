@@ -140,7 +140,7 @@ public:
 		EUI64_buffer_t *pSysEUI
 		);
 
-	const CATENA_PLATFORM *GetPlatformForID(
+	virtual const CATENA_PLATFORM *GetPlatformForID(
 		const UniqueID_buffer_t *pIdBuffer,
 		EUI64_buffer_t *pSysEUI,
 		uint32_t *pOperatingFlags
@@ -254,8 +254,8 @@ Description:
 	a parent node which is a more general version of the same platform.
 
 Contents:
-	MCCIADK_GUID Guid;
-		The GUID fo rthis platform.
+	MCCIADK_GUID_WIRE Guid;
+		The GUID for this platform.
 
 	const CATENA_PLATFORM *pParent;
 		The parent platform, or NULL if this is the root for
@@ -281,7 +281,7 @@ See Also:
 
 struct CATENA_PLATFORM
 	{
-	MCCIADK_GUID		Guid;
+	MCCIADK_GUID_WIRE	Guid;
 	const CATENA_PLATFORM	*pParent;
 	uint32_t		PlatformFlags;
 	uint32_t		OperatingFlags;
