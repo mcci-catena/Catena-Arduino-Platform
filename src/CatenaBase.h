@@ -85,7 +85,7 @@ public:
 		const char *fmt, ...
 		);
 
-	const inline EUI64_buffer_t *GetSysEUI(void)
+	virtual const EUI64_buffer_t *GetSysEUI(void)
 		{
 		return &this->m_SysEUI;
 		}

@@ -140,7 +140,7 @@ public:
                 T &field
                 )
                 {
-                this->getField(uKey, (uint8_t *)&field, sizeof(field));
+                return this->getField(uKey, (uint8_t *)&field, sizeof(field));
                 };
 
 

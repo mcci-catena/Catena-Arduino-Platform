@@ -32,6 +32,9 @@ Revision history:
 */
 
 #include "CatenaSamd21.h"
+
+#include "Catena_Log.h"
+using namespace McciCatena;
 
 /****************************************************************************\
 |
@@ -77,6 +80,7 @@ CatenaSamd21::GetPlatformForID(
 	return this->GetPlatformForID(pIdBuffer, pSysEui, NULL);
 	}
 
+/* public virtual */
 const CATENA_PLATFORM * 
 CatenaSamd21::GetPlatformForID(
 	const UniqueID_buffer_t *pIdBuffer,
@@ -85,6 +89,8 @@ CatenaSamd21::GetPlatformForID(
 	)
 	{
 	const CATENA_CPUID_TO_PLATFORM *pMap;
+
+        gLog.printf(gLog.kAlways, "CatenaSamd21::GetPlatformForID\n");
 
 	pMap = &vCpuIdToPlatform[0];
 	for (size_t i = 0; i < nvCpuIdToPlatform; ++i, ++pMap)
@@ -113,7 +119,7 @@ CatenaSamd21::GetPlatformForID(
 			}
 		}
 
-	memset(pSysEui, sizeof(pSysEui->b), 0);
+	memset(pSysEui->b, 0, sizeof(pSysEui->b));
 	if (pOperatingFlags)
 		*pOperatingFlags = 0;
 	return (CATENA_PLATFORM *) NULL;

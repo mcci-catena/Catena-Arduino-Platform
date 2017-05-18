@@ -49,8 +49,12 @@ Revision history:
 class Catena4450 : public CatenaFeatherM0LoRa
 	{
 public:
-	Catena4450() {};
-	// default destructor
+        using Super = CatenaFeatherM0LoRa;
+
+        // no specific constructor.
+        Catena4450() {};
+
+	// uses default destructor
 
 	// neither copyable nor movable
 	Catena4450(const Catena4450&) = delete;
@@ -63,6 +67,12 @@ public:
 
 	// methods
 	virtual bool begin() override;
+        virtual const EUI64_buffer_t *GetSysEUI(void) override;
+	virtual const CATENA_PLATFORM *GetPlatformForID(
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI,
+		uint32_t *pOperatingFlags
+		) override;
 
         McciCatena::cFram2k *getFram() { return &this->m_Fram; };
 
@@ -73,12 +83,23 @@ public:
                 };
 
 protected:
-	using Super = CatenaFeatherM0LoRa;
+        virtual void registerCommands(void);
 
 private:
 	// the FRAM instance
 	McciCatena::cFram2k			m_Fram;
         uint32_t                                m_BootCount;
+
+        // the known platforms
+        static const CATENA_PLATFORM (* const vPlatforms[]);
+        static const size_t nvPlatforms;
+
+        // internal methods
+        void savePlatform(
+                const CATENA_PLATFORM &Platform,
+                const EUI64_buffer_t *pSysEUI,
+                const uint32_t *pOperatingFlags
+                );
 	};
 
 /*
