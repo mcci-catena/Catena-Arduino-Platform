@@ -170,7 +170,7 @@ doConfigure(
 	if (! cursor.isbound())
 		{
 		pThis->printf(
-			"%s: unknown",
+			"%s: unknown\n",
 			__func__,
 			pName
 			);
