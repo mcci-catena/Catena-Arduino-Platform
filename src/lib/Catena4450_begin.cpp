@@ -61,6 +61,24 @@ bool Catena4450::begin()
         delay(2000);
         gLog.printf(gLog.kAlways, "+Catena4450::begin()\n");
 
+        // we must initialize the FRAM before we call our parent, 
+        // because FRAM is used for stable storage of platform info.
+
+        // start the FRAM
+        if (!this->m_Fram.begin())
+                return false;
+
+	// check whether the FRAM is valid
+	if (! this->m_Fram.isValid())
+		{
+		gLog.printf(
+			gLog.kError, 
+			"FRAM contents are not valid, resetting\n"
+			);
+		this->m_Fram.initialize();
+		}
+
+        // do the platform selection.
 	if (! this->Super::begin())
 		return false;
 
@@ -77,22 +95,9 @@ bool Catena4450::begin()
         // register all commands in this stack
         this->registerCommands();
 
-        // start the FRAM
-        if (!this->m_Fram.begin())
-                return false;
-
+        // and register the FRAM commands
         if (!this->m_Fram.addCommands())
                 return false;
-
-	// check whether the FRAM is valid
-	if (! this->m_Fram.isValid())
-		{
-		gLog.printf(
-			gLog.kError, 
-			"FRAM contents are not valid, resetting\n"
-			);
-		this->m_Fram.initialize();
-		}
 
         this->m_Fram.getField(
                 cFramStorage::StandardKeys::kBootCount,

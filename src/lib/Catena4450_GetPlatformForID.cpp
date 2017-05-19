@@ -69,6 +69,10 @@ Description:
 	picks any information availble there. If none is available, it falls
 	back to the generic SAM21D method, which scans by CPU ID.
 
+        Because this implementation needs the FRAM system to be available,
+        and it's called early, the Catena begin routine has to initialize
+        the FRAM handler before doing the adaptive portion of initialization.
+
 Returns:
 	Pointer to platform, or NULL. *pSysEUI is alway set to some value,
 	possibly zero if the routine fails. If non-NULL, pOperatingFlags is
