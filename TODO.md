@@ -94,3 +94,7 @@ all teh settable paramters.
 13. If things are configured but join isn't set, don't try to join (bug).
 
 14. if appkey is changed, reset nwskey and appskey (and request a join)
+
+15. Add example sketches.
+
+16. pull out the older Catena code and support for non-FRAM systems.
