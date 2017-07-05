@@ -35,7 +35,7 @@ Revision history:
 
 */
 
-#include <CatenaRTC.H>
+#include <CatenaRTC.h>
 #include <Arduino.h>
 
 bool CatenaRTC::begin(bool fResetTime)
