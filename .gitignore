@@ -32,3 +32,4 @@
 *.BAK
 *.CKP
 emacs.core
+*~
