@@ -1,8 +1,8 @@
-/* Catena4410_project_config.h	Tue Nov  1 2016 11:59:47 tmm */
+/* Catena4420_project_config.h	Tue Nov  1 2016 11:59:47 tmm */
 
 /*
 
-Module:  Catena4410_project_config.h
+Module:  Catena4420_project_config.h
 
 Function:
 	Bridge from anywhere to the lmic project_config
@@ -31,15 +31,15 @@ Revision history:
 
 */
 
-#ifndef _CATENA4410_PROJECT_CONFIG_H_		/* prevent multiple includes */
-#define _CATENA4410_PROJECT_CONFIG_H_
+#ifndef _CATENA4420_PROJECT_CONFIG_H_		/* prevent multiple includes */
+#define _CATENA4420_PROJECT_CONFIG_H_
 
 #include "../../arduino-lmic/project_config/lmic_project_config.h"
 
 /* define the following non-zero for using a static key file */
-#ifndef CATENA4410_USE_STATIC_KEYS /* PARAM */
-# define CATENA4410_USE_STATIC_KEYS 0
+#ifndef CATENA4420_USE_STATIC_KEYS /* PARAM */
+# define CATENA4420_USE_STATIC_KEYS 0
 #endif
 
-/**** end of Catena4410_project_config.h ****/
-#endif /* _CATENA4410_PROJECT_CONFIG_H_ */
+/**** end of Catena4420_project_config.h ****/
+#endif /* _CATENA4420_PROJECT_CONFIG_H_ */

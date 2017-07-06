@@ -32,6 +32,7 @@ Revision history:
 */
 
 #include <Catena4420.h>
+#include <Catena4420_project_config.h>
 
 /****************************************************************************\
 |
@@ -117,7 +118,9 @@ static const Arduino_LoRaWAN::ProvisioningInfo
 skProvisioningInfo[] =
         {
         /* to make it easier to manage the keys, we store the real keys elsewhere */
+#if CATENA4420_USE_STATIC_KEYS
         #include "../../../catena-lorawan-provisioning/extra/gk_lorawan_keys.4420.cpp"
+#endif
         };
 
 const Arduino_LoRaWAN::ProvisioningTable Catena4420::gk_LoRaWAN_Keys =
