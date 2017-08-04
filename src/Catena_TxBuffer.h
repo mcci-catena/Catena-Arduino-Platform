@@ -198,6 +198,7 @@ public:
 enum : uint8_t   {
         FormatSensor1 = 0x11,
         FormatSensor2 = 0x14,
+        FormatSensor3 = 0x15,
         };
 
 /* the flags for the second byte of the buffer */
@@ -227,6 +228,28 @@ constexpr FlagsSensor2 operator| (const FlagsSensor2 lhs, const FlagsSensor2 rhs
         };
 
 FlagsSensor2 operator|= (FlagsSensor2 &lhs, const FlagsSensor2 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
+
+enum class FlagsSensor3 : uint8_t 
+        {
+        FlagVbat = 1 << 0,
+        FlagVcc = 1 << 1,
+        FlagBoot = 1 << 2,
+        FlagTPH = 1 << 3,
+        FlagLux = 1 << 4,
+        FlagWater = 1 << 5,
+        FlagSoilTH = 1 << 6,
+        };
+
+constexpr FlagsSensor3 operator| (const FlagsSensor3 lhs, const FlagsSensor3 rhs)
+        {
+        return FlagsSensor3(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+FlagsSensor3 operator|= (FlagsSensor3 &lhs, const FlagsSensor3 &rhs)
         {
         lhs = lhs | rhs;
         return lhs;
