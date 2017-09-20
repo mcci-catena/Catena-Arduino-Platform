@@ -79,6 +79,7 @@ public:
 	enum OPERATING_FLAGS : uint32_t
 		{
 		fUnattended = 1 << 0,
+                fManufacturingTest = 1 << 1,
 		};
 
 	void SafePrintf(
