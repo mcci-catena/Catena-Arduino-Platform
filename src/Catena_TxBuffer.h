@@ -1,4 +1,4 @@
-/* Catena_TxBuffer.h	Sat Mar 11 2017 14:01:23 tmm */
+/* Catena_TxBuffer.h	Wed Nov 08 2017 22:35:02 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	namespace McciCatena, class TxBuffer_t;
 
 Version:
-	V0.5.0	Sat Mar 11 2017 14:01:23 tmm	Edit level 2
+	V0.6.1	Wed Nov 08 2017 22:35:02 tmm	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -28,6 +28,10 @@ Author:
 Revision history:
    0.4.0  Mon Dec  5 2016 00:02:11  tmm
 	Module created.
+
+   0.6.1  Wed Nov 08 2017 22:35:02  tmm
+        #7: Fix error in handling of negative args to 
+        TxBuffer_t::put2(int32_t) and TxBuffer_t::put2(int32_t).
 
 */
 
@@ -78,7 +82,8 @@ public:
                 else if (v > 0x7FFF)
                         v = 0x7FFF;
 
-                put2((uint32_t) v);
+                put((uint8_t)(v >> 8));
+                put((uint8_t)v);
                 }
         void put3(uint32_t v)
                 {
@@ -103,8 +108,11 @@ public:
                         v = -0x800000;
                 else if (v > 0x7FFFFF)
                         v = 0x7FFFFF;
-                put3((uint32_t) v);
-                }
+
+                put((uint8_t)(v >> 16));
+                put((uint8_t)(v >> 8));
+                put((uint8_t)v);
+        }
         uint8_t *getp(void)
                 {
                 return p;
