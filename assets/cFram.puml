@@ -1,0 +1,78 @@
+@startuml
+/' PlantUML image for FRAM
+'/
+namespace McciCatena {
+abstract class cPersistentStorage {
+  +{abstract} virtual bool begin();
+  +{abstract} virtual bool initialize();
+  +{abstract} virtual bool reset();
+  +{abstract} virtual bool isValid();
+  +{abstract} virtual bool isReady();
+  +{abstract} virtual void invalidate();
+}
+
+cPersistentStorage <|-- cFram
+ 
+abstract class cFram {
+  +virtual bool begin();
+  +virtual bool initialize();
+  +virtual bool reset();
+  +virtual bool isValid();
+  +virtual bool isReady();
+  +virtual void invalidate();
+  +{abstract} size_t read();
+  +{abstract} size_t write();
+  +{abstract} cFramStorage::Offset getsize();
+  +bool addCommands();
+  +{static}cCommandStream::CommandStatus doDump();
+  +{static}cCommandStream::CmmandStatus doReset();
+  +void saveField();
+  +template <typename T> void saveField();
+  +bool getField();
+  +template <typename T> bool getField();
+  #bool m_fReady
+  #cFramStorage::Offset m_offsetCache[]
+  #uint8_t m_uVerCache[];
+  #cFramStorage::Offset m_endOffset;
+  #void loadCache();
+  #void resetCache();
+  #void setCacheEntry();
+  #cFramStorage::Offset allocate();
+  #bool writeItemData();
+}
+
+class cFram2K {
+ +bool begin();
+ +size_t read();
+ +size_t write();
+ +cFramStorage::Offset getsize();
+ -Adafruit_FRAM_I2C m_hw
+}
+
+cFram <|-- cFram2K
+
+class cFram::Cursor {
+ +bool create();
+ +bool isbound();
+ +bool islocated();
+ +bool locate(cFramStorage::StandardItem);
+ +bool locate(cFramStorage::StandardKeys);
+ +bool getitem();
+ +size_t getitemsize();
+ +bool get(uint8_t *, size_t);
+ +bool getuint32(uint32_t &);
+ +bool put(const uint8_t *, size_t);
+ +bool putuint32(uint32_t &);
+ +bool parsevalue();
+ +size_t formatvalue();
+ -cFramStorage::StandardItem getItem();
+ -cFram *m_pFram;
+ -uint16_t m_uSize;
+ -uint8_t m_uKey;
+ -uint8_t m_uVer;
+ -uint32_t m_offset;
+}
+
+cFram <- cFram::Cursor
+}
+@enduml

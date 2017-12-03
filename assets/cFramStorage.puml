@@ -1,0 +1,67 @@
+@startuml
+/' PlantUML image for FRAM
+'/
+namespace McciCatena {
+
+class cFramStorage {
+  +enum StandardKeys
+  +typedef uint32_t Offset;
+  +{static}const StandardItem vItemDefs[];
+  
+}
+
+class cFramStorage::StandardItem {
+  -uint32_t makeValue();
+  +uint32_t getSize();
+  +StandardKeys getKey();
+  +bool isNumber();
+  +bool isReplicated();
+  +const GUID *getGuid();
+  -uint32_t uValue;
+}
+
+class cFramStorage::ObjectRaw {
+  +uint32_t uSizeKey
+  +GUID Guid
+  +uint8_t uKey
+  +uint8_t uVer[3]
+  +bool isStandard()
+  +cFramStorage::Object *getStandardObject()
+}
+
+class cFramStorage::Object {
+  +uint16_t getObjectSize()
+  +uint16_t nextObjectOffset();
+  +uint16_t getObjectClicks();
+  +bool setObjectSize();
+  +uint16_t hasValidSize();
+  +uint16_t getDataSize();
+  +bool matchesGuid();
+  +int getKey();
+  +{static}uint16_t neededClicks();
+  +bool validDataSize();
+  +bool isReplicated();
+  +unsigned nReplicants();
+  +uint32_t offsetOfReplicant();
+  +uint8_t getCurrent();
+  +uint8_t setCurrent();
+  +uint8_t *getDiscriminatorBuffer();
+  +size_t getDiscriminatorBufferSize();
+  +size_t offsetOfDiscriminator();
+  +size_t getBufferSize();
+  +uint8_t *getBuffer();
+  +bool initialize();
+  +bool isValid();
+}
+
+cFramStorage "1" *--> "kMax" cFramStorage::StandardItem : vItemDefs[]
+
+class cFramStorage::StandardKeys
+
+cFramStorage *--> cFramStorage::StandardKeys
+
+cFramStorage::ObjectRaw <|-- "cFramStorage::Object"
+
+
+}
+@enduml
