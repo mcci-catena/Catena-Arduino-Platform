@@ -35,6 +35,8 @@ Revision history:
 #include <Catena4410.h>
 
 #include <mcciadk_baselib.h>
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

@@ -35,6 +35,8 @@ Revision history:
 
 #include <stdio.h>
 #include <stdarg.h>
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

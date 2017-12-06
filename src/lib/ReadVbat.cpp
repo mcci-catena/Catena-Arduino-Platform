@@ -34,6 +34,8 @@ Revision history:
 #include "CatenaFeatherM0.h"
 
 #include "Arduino.h"
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

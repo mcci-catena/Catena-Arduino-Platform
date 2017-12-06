@@ -32,6 +32,7 @@ Revision history:
 */
 
 #include "Catena4420.h"
+using namespace McciCatena;
 
 
 Catena4420::Catena4420()

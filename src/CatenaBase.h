@@ -65,6 +65,8 @@ Revision history:
 # include "mcciadk_guid.h"
 #endif
 
+namespace McciCatena {
+
 /* forward references */
 struct CATENA_PLATFORM;
 
@@ -290,8 +292,7 @@ Returns:
 */
 // actual function is above.
 
-namespace McciCatena {
-
+// global for finding the base from anywhere.
 extern CatenaBase *gpCatenaBase;
 
 }; // end namespace McciCatena

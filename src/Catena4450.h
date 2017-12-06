@@ -46,6 +46,8 @@ Revision history:
 
 #include <Arduino_LoRaWAN_ttn.h>
 
+namespace McciCatena {
+
 class Catena4450 : public CatenaFeatherM0LoRa
 	{
 public:
@@ -134,6 +136,8 @@ private:
         // initialize the commands
         bool addCommands();
 	};
+
+} /* namespace McciCatena */
 
 /**** end of Catena4450.h ****/
 #endif /* _CATENA4450_H_ */

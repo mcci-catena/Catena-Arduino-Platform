@@ -33,6 +33,8 @@ Revision history:
 
 #include "Catena4410.h"
 
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

@@ -42,6 +42,8 @@ Revision history:
 
 #include <Arduino_LoRaWAN_ttn.h>
 
+namespace McciCatena {
+
 class CatenaFeatherM0 : public CatenaSamd21
 	{
 public:
@@ -80,7 +82,7 @@ private:
 	};
 
 class CatenaFeatherM0::LoRaWAN : public Arduino_LoRaWAN_ttn,
-                                 public McciCatena::cPollableObject
+                                 public cPollableObject
 	{
 public:
         using Super = Arduino_LoRaWAN_ttn;
@@ -122,6 +124,8 @@ private:
 	CatenaFeatherM0		*m_pCatena;
 	const CATENA_PLATFORM	*m_pPlatform;
 	};
+
+} /* namespace McciCatena */
 
 /**** end of CatenaFeatherM0.h ****/
 #endif /* _CATENAFEATHERM0_H_ */

@@ -32,6 +32,8 @@ Revision history:
 */
 
 #include <Catena4420.h>
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

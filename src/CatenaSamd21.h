@@ -49,6 +49,8 @@ Revision history:
 # include "CatenaBase.h"
 #endif
 
+namespace McciCatena {
+
 /* forward references */
 struct CATENA_CPUID_TO_PLATFORM;
 
@@ -228,6 +230,8 @@ struct CATENA_CPUID_TO_PLATFORM
 	uint32_t			OperatingFlagsClear;
 	uint32_t			OperatingFlagsSet;
 	};
+
+} /* namespace McciCatena */
 
 /**** end of CatenaSamd21.h ****/
 #endif /* _CATENASAMD21_H_ */

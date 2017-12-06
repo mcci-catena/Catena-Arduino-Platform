@@ -35,6 +35,8 @@ Revision history:
 #include <CatenaFeatherM0.h>
 
 #include <mcciadk_baselib.h>
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

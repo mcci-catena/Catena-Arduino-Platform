@@ -32,6 +32,7 @@ Revision history:
 */
 
 #include <CatenaSamd21.h>
+using namespace McciCatena;
 
 /****************************************************************************\
 |

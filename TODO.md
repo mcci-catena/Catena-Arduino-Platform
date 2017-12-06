@@ -16,6 +16,17 @@
 
 - [x] Add 455x GUIDs to main library Catena_Guids.h
 
+- [x] Put CatenaBase and other Catena* into McciCatena namespace.
+
+- [ ] Eliminate proprietary notices.
+
+- [ ] Add to main library:
+   - [ ] `Catena_Mb85rc64ta.h` and 
+
+   - [ ] `Catena_Fram8k.h`
+
+   - [ ] `Catena_Mx25v8035f.h`
+
 - [ ] Move `CatenaSamd21::m_pPlatform` and CatenaStm32 ditto to CatenaBase. Refactor initialization so that m_pPlatform is initialized by CatenaBase.
 
 - [ ] Rename `McciCatena::CATENA_PLATFORM` to `McciCatena::CatenaBase::PLATFORM`?

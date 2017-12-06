@@ -34,6 +34,8 @@ Revision history:
 #include <Catena4420.h>
 
 #include <Arduino_LoRaWAN_lmic.h>
+using namespace McciCatena;
+
 
 /****************************************************************************\
 |

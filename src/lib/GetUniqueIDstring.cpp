@@ -34,6 +34,8 @@ Revision history:
 #include <CatenaSamd21.h>
 
 #include <stdio.h>
+using namespace McciCatena;
+
 
 char *CatenaSamd21::GetUniqueIDstring(
         UniqueID_string_t *pStringBuf

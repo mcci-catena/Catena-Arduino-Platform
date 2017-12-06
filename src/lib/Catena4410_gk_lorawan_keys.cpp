@@ -33,7 +33,9 @@ Revision history:
 
 #include <Catena4410.h>
 #include <Catena4410_project_config.h>
-
+
+using namespace McciCatena;
+
 /****************************************************************************\
 |
 |		Manifest constants & typedefs.
