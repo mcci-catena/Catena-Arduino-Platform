@@ -4,6 +4,12 @@
 
 - [x] move CatenaSamd21::PLATFORM_FLAGS to CatenaBase.
 
+- [x] move the Stm32 flags to CatenaBase.
+
+- [ ] expand tabs (use blanks only for indentation).
+
+- [ ] find the flag definitions that are based on CatenaSamd21:: and rename to CatenaBase::
+
 - [ ] move McciCatena::CATENA_CPUID_TO_PLATFORM to `McciCatena::CatenaSamd21::CATENA_CPUID_TO_PLATFORM` and rename it to something like `CPUID_PLATFORM_MAP`.
 
 - [ ] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`. Perhaps it should be `CatenaBase::PLATFORM` instead of a standalone name.
@@ -11,6 +17,12 @@
 - [ ] move `CatenaSamd21::PlatformFlags_GetModNumber()` to `CatenaBase::PlatformFlags_GetModNumber()`, ditto `PlatformFlags_GetModNumber()` and other method functions.
 
 - [ ] rebuild.
+
+- [ ] change 'flags' to be method functions; we want to portably query, but we may need to store different capabilities based on the platform.
+
+### STM32 changes
+
+- [ ] Change the STM32 UniqueID to match CPU (96-bit). The type is defined in a hw-specific header file, so should be OK.
 
 ## Commands
 

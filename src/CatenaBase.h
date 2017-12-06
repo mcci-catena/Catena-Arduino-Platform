@@ -109,9 +109,11 @@ public:
 		fHasLuxRohm = 1 << 10,
 		// platform has i2c mux
 		fHasI2cMux = 1 << 11,
-		// platfomr has 2kx8 FRAM
+		// platfomr has FRAM
 		fHasFRAM = 1 << 12,
-		// special wiring variants all are offsets from M100...
+                // platform has 2MB FLASH
+                fHasFlash = 1 << 13,
+                // special wiring variants all are offsets from M100...
 		// we support up to 127 variants, becuase we have 7
 		// bits and variant 0 means "base model".
 		fModNumber = 0x7Fu << 25,
