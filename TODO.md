@@ -1,9 +1,21 @@
 # TO-DO List
 
+## Merging with Catena4551 library
+
+- [x] move CatenaSamd21::PLATFORM_FLAGS to CatenaBase.
+
+- [ ] move McciCatena::CATENA_CPUID_TO_PLATFORM to `McciCatena::CatenaSamd21::CATENA_CPUID_TO_PLATFORM` and rename it to something like `CPUID_PLATFORM_MAP`.
+
+- [ ] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`. Perhaps it should be `CatenaBase::PLATFORM` instead of a standalone name.
+
+- [ ] move `CatenaSamd21::PlatformFlags_GetModNumber()` to `CatenaBase::PlatformFlags_GetModNumber()`, ditto `PlatformFlags_GetModNumber()` and other method functions.
+
+- [ ] rebuild.
+
 ## Commands
 
 1. Add "system configure" and "lorawan configure" variants that display 
-all teh settable paramters.
+all the settable paramters.
 
 2. Extend help to show the settable paramters
 
