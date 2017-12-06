@@ -14,6 +14,8 @@
 
 - [x] Change Catena_Platforms.h to use CatenaBase.h.
 
+- [x] Add 455x GUIDs to main library Catena_Guids.h
+
 - [ ] Move `CatenaSamd21::m_pPlatform` and CatenaStm32 ditto to CatenaBase. Refactor initialization so that m_pPlatform is initialized by CatenaBase.
 
 - [ ] Rename `McciCatena::CATENA_PLATFORM` to `McciCatena::CatenaBase::PLATFORM`?
