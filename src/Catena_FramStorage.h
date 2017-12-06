@@ -124,7 +124,7 @@ public:
 
         struct ObjectRaw
                 {
-                // the size and discriminator
+                // the size of the object, and the size of the data payload:
                 uint32_t uSizeKey;
 
                 // the GUID for this object.  The first object is always the
