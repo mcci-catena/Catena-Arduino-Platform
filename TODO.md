@@ -8,11 +8,17 @@
 
 - [x] expand tabs (use blanks only for indentation).
 
-- [ ] find the flag definitions that are based on CatenaSamd21:: and rename to CatenaBase::
+- [x] find the flag definitions that are based on CatenaSamd21:: and rename to CatenaBase::
+
+- [ ] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`.
+
+- [ ] Change Catena_Platforms.h to use CatenaBase.h.
+
+- [ ] Move `CatenaSamd21::m_pPlatform` and CatenaStm32 ditto to CatenaBase. Refactor initialization so that m_pPlatform is initialized by CatenaBase.
+
+- [ ] Rename `McciCatena::CATENA_PLATFORM` to `McciCatena::CatenaBase::PLATFORM`?
 
 - [ ] move McciCatena::CATENA_CPUID_TO_PLATFORM to `McciCatena::CatenaSamd21::CATENA_CPUID_TO_PLATFORM` and rename it to something like `CPUID_PLATFORM_MAP`.
-
-- [ ] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`. Perhaps it should be `CatenaBase::PLATFORM` instead of a standalone name.
 
 - [ ] move `CatenaSamd21::PlatformFlags_GetModNumber()` to `CatenaBase::PlatformFlags_GetModNumber()`, ditto `PlatformFlags_GetModNumber()` and other method functions.
 

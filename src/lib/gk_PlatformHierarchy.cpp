@@ -77,7 +77,7 @@ const CATENA_PLATFORM	gkPlatformM0LoRa =
 	{
 	Guid: GUID_HW_FEATHER_M0_LORA(WIRE),
 	pParent: &gkPlatformFeatherM0,
-	PlatformFlags: CatenaSamd21::fHasLoRa,
+	PlatformFlags: CatenaBase::fHasLoRa,
 	};
 
 const CATENA_PLATFORM	gkPlatformFeatherM0Proto =
@@ -92,16 +92,16 @@ const CATENA_PLATFORM   gkPlatformFeatherM0ProtoWingLora =
         {
 	Guid: GUID_HW_FEATHER_M0_PROTO_WINGLORA_TTNMCCI(WIRE),
 	pParent: &gkPlatformFeatherM0Proto,
-	PlatformFlags:	CatenaSamd21::fHasLoRa |
-                        CatenaSamd21::fHasTtnMcciLoRa,
+	PlatformFlags:	CatenaBase::fHasLoRa |
+                        CatenaBase::fHasTtnMcciLoRa,
         };
 
 const CATENA_PLATFORM	gkPlatformM0LoRaTtnNyc =
 	{
 	Guid: GUID_HW_FEATHER_M0_LORA_TTNNYC(WIRE),
 	pParent: &gkPlatformM0LoRa,
-	PlatformFlags: CatenaSamd21::fHasLoRa |
-                       CatenaSamd21::fHasTtnNycLoRa,
+	PlatformFlags: CatenaBase::fHasLoRa |
+                       CatenaBase::fHasTtnNycLoRa,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410 =
@@ -109,10 +109,10 @@ const CATENA_PLATFORM gkPlatformCatena4410 =
 	Guid: GUID_HW_CATENA_4410_BASE(WIRE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
 	PlatformFlags:
-                CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLux,
+                CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLux,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_gh =
@@ -120,12 +120,12 @@ const CATENA_PLATFORM gkPlatformCatena4410_gh =
 	Guid: GUID_HW_CATENA_4410_GH(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLux |
-		CatenaSamd21::fHasSoilProbe |
-		CatenaSamd21::fHasSolarPanel,
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_mh =
@@ -133,11 +133,11 @@ const CATENA_PLATFORM gkPlatformCatena4410_mh =
 	Guid: GUID_HW_CATENA_4410_MH(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLux |
-		CatenaSamd21::fHasSoilProbe,
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLux |
+		CatenaBase::fHasSoilProbe,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_swh =
@@ -145,11 +145,11 @@ const CATENA_PLATFORM gkPlatformCatena4410_swh =
 	Guid: GUID_HW_CATENA_4410_SWH(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLux |
-		CatenaSamd21::fHasWaterOneWire,
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLux |
+		CatenaBase::fHasWaterOneWire,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_pond =
@@ -157,13 +157,13 @@ const CATENA_PLATFORM gkPlatformCatena4410_pond =
 	Guid: GUID_HW_CATENA_4410_POND(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLux |
-		CatenaSamd21::fHasSoilProbe |
-		CatenaSamd21::fHasSolarPanel |
-		CatenaSamd21::fHasWaterOneWire,
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4410_anatolian =
@@ -171,13 +171,13 @@ const CATENA_PLATFORM gkPlatformCatena4410_anatolian =
 	Guid: GUID_HW_CATENA_4410_ANATOLIAN(WIRE),
 	pParent: &gkPlatformCatena4410,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLux |
-		CatenaSamd21::fHasSoilProbe |
-		CatenaSamd21::fHasSolarPanel |
-		CatenaSamd21::fHasWaterOneWire,
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4450 =
@@ -185,12 +185,12 @@ const CATENA_PLATFORM gkPlatformCatena4450 =
 	Guid: GUID_HW_CATENA_4450_BASE(WIRE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLuxRohm |
-		CatenaSamd21::fHasFRAM |
-		CatenaSamd21::fHasI2cMux,
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4450_m101 =
@@ -198,13 +198,13 @@ const CATENA_PLATFORM gkPlatformCatena4450_m101 =
 	Guid: GUID_HW_CATENA_4450_M101(WIRE),
 	pParent: &gkPlatformCatena4450,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLuxRohm |
-		CatenaSamd21::fHasFRAM |
-		CatenaSamd21::fHasI2cMux |
-		CatenaSamd21::fM101
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fM101
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4450_m102 =
@@ -212,13 +212,13 @@ const CATENA_PLATFORM gkPlatformCatena4450_m102 =
 	Guid: GUID_HW_CATENA_4450_M102(WIRE),
 	pParent: &gkPlatformCatena4450,
 	PlatformFlags:
-		CatenaSamd21::fHasLoRa |
-		CatenaSamd21::fHasTtnNycLoRa |
-		CatenaSamd21::fHasBme280 |
-		CatenaSamd21::fHasLuxRohm |
-		CatenaSamd21::fHasFRAM |
-		CatenaSamd21::fHasI2cMux |
-		CatenaSamd21::fM102
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fM102
 	};
 
 /****************************************************************************\
