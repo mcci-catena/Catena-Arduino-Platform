@@ -6,7 +6,7 @@
 
 - [x] move the Stm32 flags to CatenaBase.
 
-- [ ] expand tabs (use blanks only for indentation).
+- [x] expand tabs (use blanks only for indentation).
 
 - [ ] find the flag definitions that are based on CatenaSamd21:: and rename to CatenaBase::
 
