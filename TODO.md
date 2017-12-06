@@ -10,7 +10,7 @@
 
 - [x] find the flag definitions that are based on CatenaSamd21:: and rename to CatenaBase::
 
-- [ ] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`.
+- [x] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`.
 
 - [ ] Change Catena_Platforms.h to use CatenaBase.h.
 

@@ -43,14 +43,13 @@ Revision history:
 #ifndef _CATENASAMD21_H_		/* prevent multiple includes */
 #define _CATENASAMD21_H_
 
+#pragma once
+
 #ifndef _CATENABASE_H_
 # include "CatenaBase.h"
 #endif
 
-#include "mcciadk_guid.h"
-
 /* forward references */
-struct CATENA_PLATFORM;
 struct CATENA_CPUID_TO_PLATFORM;
 
 /* the class for Samd21-based Catenas */
@@ -81,20 +80,6 @@ public:
 	virtual bool begin(void);
 	bool begin(uint32_t uOverrideMask);
 	bool begin(uint32_t uClearMask, uint32_t uSetMask);
-
-	// Get the model number from flags. constexpr to allow for
-	// most aggressive optimization.
-	static uint32_t constexpr PlatformFlags_GetModNumber(uint32_t flags)
-		{
-		return (flags & fModNumber) ? 100u + ((flags & fModNumber) / (fModNumber & (~fModNumber + 1u))) : 0;
-		};
-
-	// Return true if this unit has been modded. constexpr to allow for
-	// most aggressive optimization.
-	static bool constexpr PlatformFlags_IsModded(uint32_t flags)
-		{
-		return (flags & fModNumber) != 0;
-		}
 
 	const CATENA_PLATFORM *GetPlatformForID(
 		const UniqueID_buffer_t *pIdBuffer,
@@ -151,102 +136,6 @@ private:
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM	*m_pPlatform;
 	};
-
-/*
-
-Name:	CatenaSamd21::PlatformFlags_GetModNumber()
-
-Index:	Function:	CatenaSamd21::PlatformFlags_IsModded();
-
-Function:
-	Return M101 etc info about this Catena instance given platform flags.
-
-Definition:
-	#include <CatenaSamd21.h>
-
-	static constexpr uint32_t
-		CatenaSamd21::PlatformFlags_GetModNumber(
-			uint32_t uPlatformFlags
-			);
-
-
-	static constexpr bool
-		CatenaSamd21::PlatformFlags_IsModded(
-			uint32_t uPlatformFlags
-			);
-
-Description:
-	Catenas have a "stock" or "base" configuration -- this is how they
-	are built by default. At MCCI, we track variants using "M numbers"
-	(a concept that we got from the Ithaca electronics scene via Ithaco,
-	and ultimately, no doubt, from GE). M numbers are simply unique
-	3-digit numbers; normally they start with 101, and are assigned in
-	sequence. For example, the Catena 4450-M101 has been optimized for
-	AC power measurement use.
-
-	We reserve 7 bits in the platform flags for representing M-numbers.
-	Initially, at any rate, your code must know what the numbers mean.
-
-Returns:
-	CatenaSamd21::PlatformFlags_GetModNumber() extracts the mod-number
-	from the platform flags, and returns it as a number. If there is no
-	mod number for this device, then this will return zero; otherwise it
-	returns the mod number (which is always in the range [101..227].
-
-	CatenaSamd21::PlatformFlags_IsModded() returns true if the platform
-	flags indicate that this instance has a non-zero mod number.
-
-*/
-// actual function is above.
-
-/*
-
-Type:	CATENA_PLATFORM
-
-Function:
-	Represents common info about any Catena variant.
-
-Description:
-	Every Catena model is represented by a CATENA_PLATFORM instance.
-	This instance respresents common information about all Catenas of
-	that kind.
-
-	The platforms are organized as a tree; each node has a pointer to
-	a parent node which is a more general version of the same platform.
-
-Contents:
-	MCCIADK_GUID_WIRE Guid;
-		The GUID for this platform.
-
-	const CATENA_PLATFORM *pParent;
-		The parent platform, or NULL if this is the root for
-		this family of models.
-
-	uint32_t PlatformFlags;
-		The flags describing the capabilites of this platform. These
-		are formed by oring together flags from
-		CatenaSam21::PLATFORM_FLAGS.
-
-	uint32_t OperatingFlags;
-		Default operating flags. The actual operating flags may be
-		modified on a per-device basis.
-
-Notes:
-	Typically the platforms are referenced by name from the table of well-
-	known CPU IDs, or from the code that supplies the default platform.
-
-See Also:
-	CatenaSamd21, CATENA_CPUID_TO_PLATFORM
-
-*/
-
-struct CATENA_PLATFORM
-	{
-	MCCIADK_GUID_WIRE	Guid;
-	const CATENA_PLATFORM	*pParent;
-	uint32_t		PlatformFlags;
-	uint32_t		OperatingFlags;
-	};
 
 inline uint32_t CatenaSamd21::GetPlatformFlags(void)
 	{
@@ -257,6 +146,7 @@ inline uint32_t CatenaSamd21::GetPlatformFlags(void)
 	else
 		return 0;
 	}
+
 
 /*
 
