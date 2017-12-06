@@ -43,7 +43,9 @@ Revision history:
 #ifndef _CATENA_PLATFORMS_H_		/* prevent multiple includes */
 #define _CATENA_PLATFORMS_H_
 
-#include "CatenaSamd21.h"
+#ifndef _CATENABASE_H_
+# include "CatenaBase.h"
+#endif
 
 namespace McciCatena {
 

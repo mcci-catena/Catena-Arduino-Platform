@@ -12,7 +12,7 @@
 
 - [x] move `McciCatena::CATENA_PLATFORM` to `CatenaBase.h`.
 
-- [ ] Change Catena_Platforms.h to use CatenaBase.h.
+- [x] Change Catena_Platforms.h to use CatenaBase.h.
 
 - [ ] Move `CatenaSamd21::m_pPlatform` and CatenaStm32 ditto to CatenaBase. Refactor initialization so that m_pPlatform is initialized by CatenaBase.
 
@@ -21,6 +21,10 @@
 - [ ] move McciCatena::CATENA_CPUID_TO_PLATFORM to `McciCatena::CatenaSamd21::CATENA_CPUID_TO_PLATFORM` and rename it to something like `CPUID_PLATFORM_MAP`.
 
 - [ ] move `CatenaSamd21::PlatformFlags_GetModNumber()` to `CatenaBase::PlatformFlags_GetModNumber()`, ditto `PlatformFlags_GetModNumber()` and other method functions.
+
+- [ ] Merge remaining 455x material into main library.
+
+- [ ] Consider renaming the library to McciCatena instead of Catena4410.
 
 - [ ] rebuild.
 
