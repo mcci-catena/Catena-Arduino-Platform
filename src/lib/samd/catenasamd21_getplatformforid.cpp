@@ -88,7 +88,7 @@ CatenaSamd21::GetPlatformForID(
 	uint32_t *pOperatingFlags
 	)
 	{
-	const CATENA_CPUID_TO_PLATFORM *pMap;
+	const CPUID_PLATFORM_MAP *pMap;
 
         gLog.printf(gLog.kAlways, "CatenaSamd21::GetPlatformForID\n");
 

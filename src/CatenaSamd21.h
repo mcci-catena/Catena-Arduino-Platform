@@ -51,9 +51,6 @@ Revision history:
 
 namespace McciCatena {
 
-/* forward references */
-struct CATENA_CPUID_TO_PLATFORM;
-
 /* the class for Samd21-based Catenas */
 class CatenaSamd21 : public CatenaBase
 	{
@@ -73,6 +70,9 @@ public:
 		{
 		char	c[sizeof(UniqueID_buffer_t) * 3 + 1];
 		};
+
+        /* forward references */
+        struct CPUID_PLATFORM_MAP;
 
 	/*
 	|| Methods
@@ -133,7 +133,7 @@ protected:
 	|| Class-level information
 	*/
 private:
-	static const CATENA_CPUID_TO_PLATFORM vCpuIdToPlatform[];
+	static const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
 	static const size_t nvCpuIdToPlatform;
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM	*m_pPlatform;
@@ -152,7 +152,7 @@ inline uint32_t CatenaSamd21::GetPlatformFlags(void)
 
 /*
 
-Type:	CATENA_CPUID_TO_PLATFORM
+Type:	CatenaSamd21::CPUID_PLATFORM_MAP
 
 Function:
 	Simple structure to map a CPU ID to a Platform code.
@@ -221,7 +221,7 @@ See Also:
 
 */
 
-struct CATENA_CPUID_TO_PLATFORM
+struct CatenaSamd21::CPUID_PLATFORM_MAP
 	{
 	CatenaSamd21::UniqueID_buffer_t	CpuID;
 
