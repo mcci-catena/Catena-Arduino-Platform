@@ -1,17 +1,17 @@
-/* SafePrintf.cpp	Thu Oct 27 2016 23:20:33 tmm */
+/* CatenaBase_SafePrintf.cpp	Wed Dec 06 2017 19:01:23 tmm */
 
 /*
 
-Module:  SafePrintf.cpp
+Module:  CatenaBase_SafePrintf.cpp
 
 Function:
 	CatenaBase::SafePrintf()
 
 Version:
-	V0.3.0	Thu Oct 27 2016 23:20:33 tmm	Edit level 2
+	V0.7.0	Wed Dec 06 2017 19:01:23 tmm	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.1.0  Sat Oct 15 2016 22:38:20  tmm
 	Module created.
+
+   0.7.0  Wed Dec 06 2017 19:01:23  tmm
+        Rename file as part of refactoring.
 
 */
 

@@ -1,4 +1,4 @@
-/* catenafeatherm0_lorawan_getprovisioningstyle.cpp	Mon Oct 31 2016 17:06:29 tmm */
+/* catenafeatherm0_lorawan_getprovisioningstyle.cpp	   0.7.0  Wed Dec 06 2017 19:27:10  tmm tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaFeatherM0::LoRaWAN::GetProvisioningStyle().
 
 Version:
-	V0.3.0	Mon Oct 31 2016 17:06:29 tmm	Edit level 1
+	V0.3.0	   0.7.0  Wed Dec 06 2017 19:27:10  tmm tmm	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016-2017 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -30,7 +30,13 @@ Revision history:
 	Module created. Barbarously long name needed to prevent
         in-library collisions.
 
+   0.7.0  Wed Dec 06 2017 19:27:10  tmm
+        Refactored for Catena 4551 support.
+
+
 */
+
+#ifdef ARDUINO_ARCH_SAMD
 
 #include <CatenaFeatherM0.h>
 
@@ -38,28 +44,6 @@ Revision history:
 using namespace McciCatena;
 
 
-/****************************************************************************\
-|
-|		Manifest constants & typedefs.
-|
-\****************************************************************************/
-
-
-
-/****************************************************************************\
-|
-|	Read-only data.
-|
-\****************************************************************************/
-
-
-
-/****************************************************************************\
-|
-|	VARIABLES:
-|
-\****************************************************************************/
-
 
 Arduino_LoRaWAN::ProvisioningStyle
 CatenaFeatherM0::LoRaWAN::GetProvisioningStyle(
@@ -84,3 +68,5 @@ CatenaFeatherM0::LoRaWAN::GetProvisioningStyle(
                 return pInstance->Style;
                 }
         }
+
+#endif // ARDUINO_ARCH_SAMD
