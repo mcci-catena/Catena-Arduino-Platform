@@ -39,10 +39,6 @@ Revision history:
 #include <Arduino.h>
 #include <SPI.h>
 
-#ifndef _CATENA_SPI_H_
-# include "Catena_Spi.h"
-#endif
-
 /* TODO: change these to enums and constepxrs in the McciCatena namespace */
 
 /* MX25V8035F commands */
@@ -138,7 +134,7 @@ public:
 	Catena_Mx25v8035f(void);
 
 	// set up and probe device
-	boolean begin(SPIClass *pSpi = &Catena_SPI, uint8_t ChipSelectPin = D19);
+	boolean begin(SPIClass *pSpi, uint8_t ChipSelectPin = D19);
 	void end(void);
 
 	// reset chip

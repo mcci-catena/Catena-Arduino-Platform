@@ -75,12 +75,12 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-static volatile uint32_t *gs_pAlarm;
-static RTC_HandleTypeDef *gs_phRtc;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+static volatile uint32_t *gs_pAlarm;
+static RTC_HandleTypeDef *gs_phRtc;
 
 void RTC_IRQHandler(void)
 	{
@@ -129,6 +129,31 @@ void HAL_RTC_MspDeInit(
 		/* USER CODE END RTC_MspDeInit 1 */
 		}
 	}
+
+uint32_t HAL_AddTick(
+	uint32_t delta
+	)
+	{
+	extern __IO uint32_t uwTick;
+	// copy old interrupt-enable state to flags.
+	uint32_t const flags = __get_PRIMASK();
+
+	// disable interrupts
+	__set_PRIMASK(1);
+
+	// observe uwTick, and advance it.
+	uint32_t const tickCount = uwTick + delta;
+
+	// save uwTick
+	uwTick = tickCount;
+
+	// restore interrupts (does nothing if ints were disabled on entry)
+	__set_PRIMASK(flags);
+
+	// return the new value of uwTick.
+	return tickCount;
+	}
+
 
 #ifdef __cplusplus
 }
@@ -414,24 +439,7 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 
 uint32_t CatenaStm32L0Rtc::AdjustMillisForward(uint32_t delta)
 	{
-	extern __IO uint32_t uwTick;
-	// copy old interrupt-enable state to flags.
-	uint32_t const flags = __get_PRIMASK();
-
-	// disable interrupts
-	__set_PRIMASK(1);
-
-	// observe uwTick, and advance it.
-	uint32_t const tickCount = uwTick + delta;
-
-	// save uwTick
-	uwTick = tickCount;
-
-	// restore interrupts (does nothing if ints were disabled on entry)
-	__set_PRIMASK(flags);
-
-	// return the new value of uwTick.
-	return tickCount;
+	return HAL_AddTick(delta);
 	}
 
 /*

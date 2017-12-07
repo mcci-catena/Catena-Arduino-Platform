@@ -120,6 +120,13 @@ boolean Catena_Mx25v8035f::begin(
 	uint16_t DeviceId;
 	SPISettings SpiSettings(CATENA_MX25V8035F_SCLK, MSBFIRST, SPI_MODE0);
 
+	if (pSpi == NULL)
+		{
+		// invalid parameter
+		Serial.println("pSpi is NULL");
+		return false;
+		}
+
 	this->m_pSpi = pSpi;
 	this->m_CS = ChipSelectPin;
 
