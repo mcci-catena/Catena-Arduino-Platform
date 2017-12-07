@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <CatenaSamd21.h>
 using namespace McciCatena;
 
@@ -89,3 +91,5 @@ void CatenaSamd21::GetUniqueID(
 			}
 		}
 	}
+
+#endif // ARDUINO_ARCH_SAMD

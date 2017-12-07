@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "CatenaSamd21.h"
 
 #include "Catena_CommandStream.h"
@@ -95,3 +97,5 @@ doCpuid(
 	pThis->printf("%s\n", pCatena->GetUniqueIDstring(&CpuIDstring));
         return pThis->kSuccess;
         }
+
+#endif // ARDUINO_ARCH_SAMD

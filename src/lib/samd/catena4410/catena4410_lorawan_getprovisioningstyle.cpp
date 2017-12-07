@@ -32,6 +32,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <Catena4410.h>
 
 #include <Arduino_LoRaWAN_lmic.h>
@@ -84,3 +86,5 @@ Catena4410::LoRaWAN::GetProvisioningStyle(
                 return pInstance->Style;
                 }
         }
+
+#endif // ARDUINO_ARCH_SAMD

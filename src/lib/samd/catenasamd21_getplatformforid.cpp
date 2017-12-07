@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "CatenaSamd21.h"
 
 #include "Catena_Log.h"
@@ -124,3 +126,5 @@ CatenaSamd21::GetPlatformForID(
 		*pOperatingFlags = 0;
 	return (CATENA_PLATFORM *) NULL;
 	}
+
+#endif // ARDUINO_ARCH_SAMD

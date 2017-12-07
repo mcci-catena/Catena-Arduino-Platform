@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4450.h"
 
 #include "Catena_Log.h"
@@ -111,3 +113,4 @@ bool Catena4450::begin()
 	return true;
 	}
 
+#endif // ARDUINO_ARCH_SAMD

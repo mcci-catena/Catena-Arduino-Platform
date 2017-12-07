@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <Catena4410.h>
 
 #include <Arduino_LoRaWAN_lmic.h>
@@ -90,3 +92,5 @@ Catena4410::LoRaWAN::LoRaWAN() : Catena4410::LoRaWAN::Super(sk_lmic_pins)
         {
         /* nothing needs to be done... but this pulls in the pin table */
         }
+
+#endif // ARDUINO_ARCH_SAMD

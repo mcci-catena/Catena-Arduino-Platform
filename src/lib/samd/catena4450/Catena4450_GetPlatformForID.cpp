@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4450.h"
 
 #include "Catena_Log.h"
@@ -211,3 +213,5 @@ Catena4450::savePlatform(
 			);
 		}
 	}
+
+#endif // ARDUINO_ARCH_SAMD

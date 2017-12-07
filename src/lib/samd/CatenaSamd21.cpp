@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "CatenaSamd21.h"
 
 using namespace McciCatena;
@@ -45,3 +47,5 @@ CatenaSamd21::cSerialReady::isReady() const
         // so we just check DTR instead.
 	return (Serial.dtr());
 	}
+
+#endif // ARDUINO_ARCH_SAMD

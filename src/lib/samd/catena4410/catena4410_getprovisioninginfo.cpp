@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <Catena4410.h>
 using namespace McciCatena;
 
@@ -98,3 +100,5 @@ CatenaFeatherM0::GetProvisioningInfo(
         /* nothing matched */
         return NULL;
         }
+
+#endif // ARDUINO_ARCH_SAMD

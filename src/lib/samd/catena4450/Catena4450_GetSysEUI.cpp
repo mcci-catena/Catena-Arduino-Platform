@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4450.h"
 
 using namespace McciCatena;
@@ -73,3 +75,5 @@ Catena4450::GetSysEUI(void)
 
 	return &this->m_SysEUI;
 	}
+
+#endif // ARDUINO_ARCH_SAMD

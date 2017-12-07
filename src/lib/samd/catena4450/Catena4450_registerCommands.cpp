@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4450.h"
 
 #include "Catena_CommandStream.h"
@@ -235,3 +237,5 @@ doConfigure(
 			}
 		}
 	}
+
+#endif // ARDUINO_ARCH_SAMD

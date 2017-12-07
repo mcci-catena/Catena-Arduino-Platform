@@ -35,6 +35,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <CatenaRTC.h>
 #include <Arduino.h>
 
@@ -280,3 +282,5 @@ CatenaRTC::CalendarTime::Advance(
 	++Year;
 	return result;
 	}
+
+#endif // ARDUINO_ARCH_SAMD

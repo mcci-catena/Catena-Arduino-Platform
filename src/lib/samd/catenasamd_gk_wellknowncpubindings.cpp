@@ -40,6 +40,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4410.h"
 #include "Catena_Platforms.h"
 
@@ -332,3 +334,4 @@ const size_t CatenaSamd21::nvCpuIdToPlatform =
 \****************************************************************************/
 
 
+#endif // ARDUINO_ARCH_SAMD

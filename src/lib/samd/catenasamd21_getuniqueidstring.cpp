@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <CatenaSamd21.h>
 
 #include <stdio.h>
@@ -69,3 +71,5 @@ char *CatenaSamd21::GetUniqueIDstring(
 
         return &pStringBuf->c[0];
         }
+
+#endif // ARDUINO_ARCH_SAMD

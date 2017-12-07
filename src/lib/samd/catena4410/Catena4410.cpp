@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4410.h"
 
 using namespace McciCatena;
@@ -75,3 +77,5 @@ Catena4410::Catena4410()
 	{
 	/* this function does nothing */
 	}
+
+#endif // ARDUINO_ARCH_SAMD

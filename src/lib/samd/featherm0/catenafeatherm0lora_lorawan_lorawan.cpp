@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <CatenaFeatherM0LoRa.h>
 
 #include <Arduino_LoRaWAN_lmic.h>
@@ -92,3 +94,5 @@ CatenaFeatherM0LoRa::LoRaWAN::LoRaWAN() :
         {
         /* nothing needs to be done... but this pulls in the pin table */
         }
+
+#endif // ARDUINO_ARCH_SAMD

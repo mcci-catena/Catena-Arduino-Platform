@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4450.h"
 
 #include "Catena_Fram.h"
@@ -272,3 +274,5 @@ Catena4450::LoRaWAN::NetSaveSessionInfo(
                 Info.V1.DevAddr
                 );
 	}
+
+#endif // ARDUINO_ARCH_SAMD

@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <CatenaFeatherM0.h>
 
 #include <Arduino_LoRaWAN_lmic.h>
@@ -86,3 +88,5 @@ CatenaFeatherM0::LoRaWAN::GetOtaaProvisioningInfo(
 
         return true;
         }
+
+#endif // ARDUINO_ARCH_SAMD

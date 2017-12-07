@@ -35,6 +35,7 @@ Revision history:
 
 #include <CatenaStm32.h>
 #include <stm32l0xx_ll_utils.h>
+using namespace McciCatena;
 
 /****************************************************************************\
 |

@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <Catena4410.h>
 using namespace McciCatena;
 
@@ -77,3 +79,5 @@ Catena4410::GetLoRaWANkeys(
 	{
 	return &Catena4410::gk_LoRaWAN_Keys;
 	}
+
+#endif // ARDUINO_ARCH_SAMD

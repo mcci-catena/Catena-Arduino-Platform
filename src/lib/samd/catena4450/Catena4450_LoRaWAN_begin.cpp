@@ -31,6 +31,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include "Catena4450.h"
 
 #include "Catena_Log.h"
@@ -86,3 +88,5 @@ Catena4450::LoRaWAN::begin(
 	/* indicate success to the client */
 	return true;
 	}
+
+#endif // ARDUINO_ARCH_SAMD

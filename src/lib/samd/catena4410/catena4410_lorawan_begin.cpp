@@ -32,6 +32,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_SAMD
+
 #include <Catena4410.h>
 
 #include <mcciadk_baselib.h>
@@ -90,3 +92,5 @@ bool Catena4410::LoRaWAN::begin(
         /* indicate success to the client */
         return true;
 	}
+
+#endif // ARDUINO_ARCH_SAMD
