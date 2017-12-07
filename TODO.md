@@ -18,20 +18,26 @@
 
 - [x] Put CatenaBase and other Catena* into McciCatena namespace.
 
-- [ ] Eliminate proprietary notices.
 
-- [ ] Add to main library:
-   - [ ] `Catena_Mb85rc64ta.h` and 
+- [x ] Add to main library:
+   - [x] `Catena_Mb85rc64ta.h` and 
 
-   - [ ] `Catena_Fram8k.h`
+   - [x] `Catena_Fram8k.h`
 
-   - [ ] `Catena_Mx25v8035f.h`
+   - [x] `Catena_Mx25v8035f.h`
+
+   - [x] all the Catena 4451 code.
+
+- [ ] move McciCatena::CATENA_CPUID_TO_PLATFORM to `McciCatena::CatenaSamd21::CATENA_CPUID_TO_PLATFORM` and rename it to something like `CPUID_PLATFORM_MAP`.
+
+   - [x] similar move for stm32.
+
 
 - [ ] Move `CatenaSamd21::m_pPlatform` and CatenaStm32 ditto to CatenaBase. Refactor initialization so that m_pPlatform is initialized by CatenaBase.
 
-- [ ] Rename `McciCatena::CATENA_PLATFORM` to `McciCatena::CatenaBase::PLATFORM`?
+- [ ] Eliminate proprietary notices.
 
-- [ ] move McciCatena::CATENA_CPUID_TO_PLATFORM to `McciCatena::CatenaSamd21::CATENA_CPUID_TO_PLATFORM` and rename it to something like `CPUID_PLATFORM_MAP`.
+- [ ] Rename `McciCatena::CATENA_PLATFORM` to `McciCatena::CatenaBase::PLATFORM`?
 
 - [ ] move `CatenaSamd21::PlatformFlags_GetModNumber()` to `CatenaBase::PlatformFlags_GetModNumber()`, ditto `PlatformFlags_GetModNumber()` and other method functions.
 
