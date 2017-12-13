@@ -1,11 +1,11 @@
-/* Catena4550_LoRaWAN_begin.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena455x_LoRaWAN_begin.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena4550_LoRaWAN_begin.cpp
+Module:  Catena455x_LoRaWAN_begin.cpp
 
 Function:
-	Catena4550::LoRaWAN::begin()
+	Catena455x::LoRaWAN::begin()
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena4550.h"
+#include "Catena455x.h"
 
 #include "Catena_Log.h"
 #include "mcciadk_baselib.h"
@@ -42,14 +42,14 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena4550::LoRaWAN::begin()
+Name:	Catena455x::LoRaWAN::begin()
 
 Function:
 	Record linkage to main Catena object and set up LoRaWAN.
 
 Definition:
-	bool Catena4550::LoRaWAN::begin(
-		Catena4550 *pParent
+	bool Catena455x::LoRaWAN::begin(
+		Catena455x *pParent
 		);
 
 Description:
@@ -61,11 +61,11 @@ Returns:
 */
 
 bool
-Catena4550::LoRaWAN::begin(
-	Catena4550 *pParent
+Catena455x::LoRaWAN::begin(
+	Catena455x *pParent
 	)
 	{
-        static const char FUNCTION[] = "Catena4550::LoRaWAN::begin";
+        static const char FUNCTION[] = "Catena455x::LoRaWAN::begin";
 
 	/* set things up */
 	this->m_pCatena = pParent;
@@ -91,4 +91,4 @@ Catena4550::LoRaWAN::begin(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena4550_LoRaWAN_begin.cpp ****/
+/**** end of Catena455x_LoRaWAN_begin.cpp ****/

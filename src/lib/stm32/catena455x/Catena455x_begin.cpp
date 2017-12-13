@@ -1,11 +1,11 @@
-/* Catena4550_begin.cpp	Wed Dec 06 2017 15:31:37 chwon */
+/* Catena455x_begin.cpp	Wed Dec 06 2017 15:31:37 chwon */
 
 /*
 
-Module:  Catena4550_begin.cpp
+Module:  Catena455x_begin.cpp
 
 Function:
-	Catena4550::begin()
+	Catena455x::begin()
 
 Version:
 	V0.6.0	Wed Dec 06 2017 15:31:37 chwon	Edit level 2
@@ -36,7 +36,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena4550.h"
+#include "Catena455x.h"
 
 #include "Catena_Log.h"
 
@@ -44,29 +44,29 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena4550::begin()
+Name:	Catena455x::begin()
 
 Function:
 	Set up all the well-known board peripherals.
 
 Definition:
-	bool Catena4550::begin();
+	bool Catena455x::begin();
 
 Description:
-	Issues begin() for all the Catena4550 things.
+	Issues begin() for all the Catena455x things.
 
 Returns:
 	true for success, false for failure.
 
 */
 
-bool Catena4550::begin()
+bool Catena455x::begin()
 	{
 	Serial.begin(115200);
 	Wire.begin();
 	delay(1000);
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
-	gLog.printf(gLog.kAlways, "\n+Catena4550::begin()\n");
+	gLog.printf(gLog.kAlways, "\n+Catena455x::begin()\n");
 
 	// we must initialize the FRAM before we call our parent,
 	// because FRAM is used for stable storage of platform info.
@@ -126,4 +126,4 @@ bool Catena4550::begin()
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena4550_begin.cpp ****/
+/**** end of Catena455x_begin.cpp ****/

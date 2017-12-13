@@ -1,11 +1,11 @@
-/* Catena4550_registerCommands.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena455x_registerCommands.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena4550_registerCommands.cpp
+Module:  Catena455x_registerCommands.cpp
 
 Function:
-	Catena4550::registerCommands()
+	Catena455x::registerCommands()
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena4550.h"
+#include "Catena455x.h"
 
 #include "Catena_CommandStream.h"
 
@@ -87,7 +87,7 @@ static KeyMap sKeyMap[] =
 
 /* protected virtual */
 void
-Catena4550::registerCommands()
+Catena455x::registerCommands()
 	{
 	this->Super::registerCommands();
 
@@ -141,7 +141,7 @@ doConfigure(
 	char **argv
 	)
 	{
-	Catena4550 * const pCatena = static_cast<Catena4550 *>(pContext);
+	Catena455x * const pCatena = static_cast<Catena455x *>(pContext);
 	uint8_t databuf[16];
 
 	if (argc < 2)
@@ -240,4 +240,4 @@ doConfigure(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena4550_registerCommands.cpp ****/
+/**** end of Catena455x_registerCommands.cpp ****/

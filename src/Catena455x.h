@@ -1,11 +1,12 @@
-/* Catena4550.h	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena455x.h	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena4550.h
+Module:  Catena455x.h
 
 Function:
-	class Catena4550: CatenaBase Platform to represent a Catena 4550
+	class Catena455x: CatenaBase Platform to represent a Catena 455x
+	(4550, 4551, etc.)
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -31,8 +32,8 @@ Revision history:
 
 */
 
-#ifndef _CATENA4550_H_		/* prevent multiple includes */
-#define _CATENA4550_H_
+#ifndef _CATENA455X_H_		/* prevent multiple includes */
+#define _CATENA455X_H_
 
 #pragma once
 
@@ -48,21 +49,21 @@ Revision history:
 
 namespace McciCatena {
 
-class Catena4550 : public CatenaStm32L0LoRa
+class Catena455x : public CatenaStm32L0LoRa
 	{
 public:
         using Super = CatenaStm32L0LoRa;
 
         // no specific constructor.
-        Catena4550() {};
+        Catena455x() {};
 
 	// uses default destructor
 
 	// neither copyable nor movable
-	Catena4550(const Catena4550&) = delete;
-	Catena4550& operator=(const Catena4550&) = delete;
-	Catena4550(const Catena4550&&) = delete;
-	Catena4550& operator=(const Catena4550&&) = delete;
+	Catena455x(const Catena455x&) = delete;
+	Catena455x& operator=(const Catena455x&) = delete;
+	Catena455x(const Catena455x&&) = delete;
+	Catena455x& operator=(const Catena455x&&) = delete;
 
 	// LoRaWAN binding
 	class LoRaWAN /* forward */;
@@ -105,9 +106,9 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena 4550. Assumes The Things Network
+|| The LoRaWAN class for the Catena 455x. Assumes The Things Network
 */
-class Catena4550::LoRaWAN : public CatenaStm32L0LoRa::LoRaWAN
+class Catena455x::LoRaWAN : public CatenaStm32L0LoRa::LoRaWAN
 	{
 public:
 	using Super = CatenaStm32L0LoRa::LoRaWAN;
@@ -119,8 +120,8 @@ public:
 	LoRaWAN() {};
 	LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
 
-	bool begin(Catena4550 *pParent);
-        Catena4550 *getCatena() const { return this->m_pCatena; };
+	bool begin(Catena455x *pParent);
+        Catena455x *getCatena() const { return this->m_pCatena; };
 
 protected:
         virtual ProvisioningStyle GetProvisioningStyle(void) override;
@@ -139,7 +140,7 @@ protected:
         		) override;
 
 private:
-	Catena4550 *	m_pCatena;
+	Catena455x *	m_pCatena;
 
         // initialize the commands
         bool addCommands();
@@ -147,5 +148,5 @@ private:
 
 } // namespace McciCatena
 
-/**** end of Catena4550.h ****/
-#endif /* _CATENA4550_H_ */
+/**** end of Catena455x.h ****/
+#endif /* _CATENA455X_H_ */

@@ -1,11 +1,11 @@
-/* Catena4550_GetPlatformForID.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena455x_GetPlatformForID.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena4550_GetPlatformForID.cpp
+Module:  Catena455x_GetPlatformForID.cpp
 
 Function:
-	Catena4550::GetPlatformForID()
+	Catena455x::GetPlatformForID()
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -33,25 +33,25 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena4550.h"
+#include "Catena455x.h"
 
 #include "Catena_Log.h"
 #include "Catena_Platforms.h"
 
 using namespace McciCatena;
 
-const CATENA_PLATFORM (* const Catena4550::vPlatforms[]) =
+const CATENA_PLATFORM (* const Catena455x::vPlatforms[]) =
 	{
 	// entry 0 is the default
 	&gkPlatformCatena4550,
 	&gkPlatformCatena4551,
 	};
 
-const size_t Catena4550::nvPlatforms = sizeof(Catena4550::vPlatforms) / sizeof(Catena4550::vPlatforms[0]);
+const size_t Catena455x::nvPlatforms = sizeof(Catena455x::vPlatforms) / sizeof(Catena455x::vPlatforms[0]);
 
 /*
 
-Name:	Catena4550::GetPlatformForID()
+Name:	Catena455x::GetPlatformForID()
 
 Function:
 	Get a platform given a CPU ID and FRAM.
@@ -59,7 +59,7 @@ Function:
 Definition:
 	public: virtual
 		const CATENA_PLATFORM *
-			Catena4550::GetPlatformForID(
+			Catena455x::GetPlatformForID(
 				const UniqueID_buffer_t *pIdBuffer,
 				EUI64_buffer_t *pSysEui,
 				uint32_t *pOperatingFlags
@@ -83,7 +83,7 @@ Returns:
 
 /* public virtual override */
 const CATENA_PLATFORM *
-Catena4550::GetPlatformForID(
+Catena455x::GetPlatformForID(
 	const UniqueID_buffer_t *pIdBuffer,
 	EUI64_buffer_t *pSysEui,
 	uint32_t *pOperatingFlags
@@ -92,7 +92,7 @@ Catena4550::GetPlatformForID(
 	/* we ignore the CPUID unless we can't get a GUID */
 	MCCIADK_GUID_WIRE PlatformGuid;
 
-        gLog.printf(gLog.kAlways, "Catena4550::GetPlatformForID entered\n");
+        gLog.printf(gLog.kAlways, "Catena455x::GetPlatformForID entered\n");
 
 	// set up the SysEUI
 	if (!this->m_Fram.getField(
@@ -199,7 +199,7 @@ Catena4550::GetPlatformForID(
 	}
 
 void
-Catena4550::savePlatform(
+Catena455x::savePlatform(
 	const CATENA_PLATFORM &Platform,
 	const EUI64_buffer_t *pSysEUI,
 	const uint32_t *pOperatingFlags
@@ -228,4 +228,4 @@ Catena4550::savePlatform(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena4550_GetPlatformForID.cpp ****/
+/**** end of Catena455x_GetPlatformForID.cpp ****/

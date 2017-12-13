@@ -1,8 +1,8 @@
-/* Catena4550_LoRaWAN_storage.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena455x_LoRaWAN_storage.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena4550_LoRaWAN_storage.cpp
+Module:  Catena455x_LoRaWAN_storage.cpp
 
 Function:
 	Interface from LoRaWAN to FRAM.
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena4550.h"
+#include "Catena455x.h"
 
 #include "Catena_Fram.h"
 #include "Catena_Log.h"
@@ -42,15 +42,15 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena4550::LoRaWAN::GetAbpProvisioningInfo()
+Name:	Catena455x::LoRaWAN::GetAbpProvisioningInfo()
 
 Function:
 	Get the ABP info (which is also what's saved after an OTAA Join)
 
 Definition:
 	public: virtual bool
-		Catena4550::LoRaWAN::GetAbpProvisioningInfo(
-		        Catena4550::LoRaWAN::AbpProvisioningInfo *pInfo
+		Catena455x::LoRaWAN::GetAbpProvisioningInfo(
+		        Catena455x::LoRaWAN::AbpProvisioningInfo *pInfo
 		        ) override;
 
 Description:
@@ -72,11 +72,11 @@ Returns:
 */
 
 bool
-Catena4550::LoRaWAN::GetAbpProvisioningInfo(
-        Catena4550::LoRaWAN::AbpProvisioningInfo *pInfo
+Catena455x::LoRaWAN::GetAbpProvisioningInfo(
+        Catena455x::LoRaWAN::AbpProvisioningInfo *pInfo
         )
         {
-        Catena4550 * const pCatena = this->m_pCatena;
+        Catena455x * const pCatena = this->m_pCatena;
 	auto const pFram = pCatena->getFram();
 	cFram::Cursor framNwkSKey(pFram),
 		      framAppSKey(pFram),
@@ -119,15 +119,15 @@ Catena4550::LoRaWAN::GetAbpProvisioningInfo(
 
 /*
 
-Name:	Catena4550::LoRaWAN::GetOtaaProvisioningInfo()
+Name:	Catena455x::LoRaWAN::GetOtaaProvisioningInfo()
 
 Function:
 	Fetch OTAA provisioning info from FRAM (if availalbe)
 
 Definition:
 	public: virtual bool
-		Catena4550::LoRaWAN::GetOtaaProvisioningInfo(
-		        Catena4550::LoRaWAN::OtaaProvisioningInfo *pInfo
+		Catena455x::LoRaWAN::GetOtaaProvisioningInfo(
+		        Catena455x::LoRaWAN::OtaaProvisioningInfo *pInfo
 		        ) override;
 
 Description:
@@ -146,11 +146,11 @@ Returns:
 */
 
 bool
-Catena4550::LoRaWAN::GetOtaaProvisioningInfo(
-        Catena4550::LoRaWAN::OtaaProvisioningInfo *pInfo
+Catena455x::LoRaWAN::GetOtaaProvisioningInfo(
+        Catena455x::LoRaWAN::OtaaProvisioningInfo *pInfo
         )
         {
-        Catena4550 * const pCatena = this->m_pCatena;
+        Catena455x * const pCatena = this->m_pCatena;
 	cFram::Cursor framAppEUI(pCatena->getFram()),
 		      framDevEUI(pCatena->getFram()),
 		      framAppKey(pCatena->getFram());
@@ -184,12 +184,12 @@ Catena4550::LoRaWAN::GetOtaaProvisioningInfo(
 	return true;
 	}
 
-Catena4550::LoRaWAN::ProvisioningStyle
-Catena4550::LoRaWAN::GetProvisioningStyle(
+Catena455x::LoRaWAN::ProvisioningStyle
+Catena455x::LoRaWAN::GetProvisioningStyle(
 	void
 	)
 	{
-        Catena4550 * const pCatena = this->m_pCatena;
+        Catena455x * const pCatena = this->m_pCatena;
         cFram::Cursor framJoin(pCatena->getFram());
 
         if (! framJoin.locate(cFramStorage::vItemDefs[cFramStorage::kJoin]))
@@ -228,35 +228,35 @@ Catena4550::LoRaWAN::GetProvisioningStyle(
 	}
 
 void
-Catena4550::LoRaWAN::NetSaveFCntUp(
+Catena455x::LoRaWAN::NetSaveFCntUp(
 	uint32_t uFCntUp
 	)
 	{
-        Catena4550 * const pCatena = this->m_pCatena;
+        Catena455x * const pCatena = this->m_pCatena;
         auto const pFram = pCatena->getFram();
 
         pFram->saveField(cFramStorage::kFCntUp, uFCntUp);
 	}
 
 void
-Catena4550::LoRaWAN::NetSaveFCntDown(
+Catena455x::LoRaWAN::NetSaveFCntDown(
 	uint32_t uFCntDown
 	)
 	{
-        Catena4550 * const pCatena = this->m_pCatena;
+        Catena455x * const pCatena = this->m_pCatena;
         auto const pFram = pCatena->getFram();
 
         pFram->saveField(cFramStorage::kFCntDown, uFCntDown);
         }
 
 void
-Catena4550::LoRaWAN::NetSaveSessionInfo(
+Catena455x::LoRaWAN::NetSaveSessionInfo(
 	const SessionInfo &Info,
 	const uint8_t *pExtraInfo,
 	size_t nExtraInfo
 	)
 	{
-        Catena4550 * const pCatena = this->m_pCatena;
+        Catena455x * const pCatena = this->m_pCatena;
 	auto const pFram = pCatena->getFram();
 
         pFram->saveField(cFramStorage::kNetID,   Info.V1.NetID);
@@ -277,4 +277,4 @@ Catena4550::LoRaWAN::NetSaveSessionInfo(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena4550_LoRaWAN_storage.cpp ****/
+/**** end of Catena455x_LoRaWAN_storage.cpp ****/
