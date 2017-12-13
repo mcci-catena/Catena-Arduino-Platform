@@ -42,7 +42,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena4550.h"
+#include "CatenaStm32.h"
 #include "Catena_Platforms.h"
 
 using namespace McciCatena;
