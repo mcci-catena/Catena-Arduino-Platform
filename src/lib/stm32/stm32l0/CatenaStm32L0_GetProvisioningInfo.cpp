@@ -1,14 +1,14 @@
-/* GetProvisioningInfo.cpp	Tue Nov  1 2016 11:58:03 tmm */
+/* CatenaStm32L0_GetProvisioningInfo.cpp	Wed Dec 13 2017 17:07:07 tmm */
 
 /*
 
-Module:  GetProvisioningInfo.cpp
+Module:  CatenaStm32L0_GetProvisioningInfo.cpp
 
 Function:
 	CatenaStm32L0::GetProvisioningInfo()
 
 Version:
-	V0.3.0	Tue Nov  1 2016 11:58:03 tmm	Edit level 1
+	V0.7.0	Wed Dec 13 2017 17:07:07 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -28,12 +28,16 @@ Author:
 Revision history:
    0.3.0  Tue Nov  1 2016 11:58:03  tmm
 	Module created.
+	
+   0.7.0  Wed Dec 13 2017 17:07:07   tmm
+	Refactoring.
 
 */
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "CatenaStm32.h"
+#include "CatenaStm32L0.h"
+
 using namespace McciCatena;
 
 /****************************************************************************\
