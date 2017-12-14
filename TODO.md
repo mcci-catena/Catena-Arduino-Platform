@@ -48,7 +48,15 @@
 
     - [x] Remove cloned functions in STM32
 
-- [ ] update `keywords.txt`
+- [x] update `keywords.txt`.  Used `arduino-keywords` with a filter, as follows:
+    ```shell
+    $ pip install arduinokeywords
+    $ arduino-keywords -o /c/tmp src
+    $ cat /c/Users/tmm/Documents/Arduino/libraries/MCCI-Catena4410-Arduino-Library/keywords.txt /c/tmp/keywords.txt |\
+        sed -e 's/[ \t][ \t]*/\t/g' \
+            -e /::/d -e '/^operator=/d' |\
+        LC_ALL=C sort >/c/tmp/keywords2.txt -k 1,2 -u
+    ```
 
 ## General changes
 
