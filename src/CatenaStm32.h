@@ -1,4 +1,4 @@
-/* CatenaStm32.h	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32.h	Thu Dec 14 2017 14:55:06 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class CatenaStm32
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.7.0	Thu Dec 14 2017 14:55:06 tmm	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -19,9 +19,6 @@ Copyright notice:
 
 	An unpublished work.  All rights reserved.
 
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
-
 Author:
 	ChaeHee Won, MCCI Corporation	October 2017
 
@@ -29,10 +26,15 @@ Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
 
+   0.7.0  Thu Dec 14 2017 14:55:06  tmm
+	Refactor common code.
+
 */
 
 #ifndef _CATENASTM32_H_		/* prevent multiple includes */
 #define _CATENASTM32_H_
+
+#pragma once
 
 #ifndef _CATENABASE_H_
 # include "CatenaBase.h"
@@ -75,20 +77,6 @@ public:
 	virtual bool begin(void);
 	bool begin(uint32_t uOverrideMask);
 	bool begin(uint32_t uClearMask, uint32_t uSetMask);
-
-	// Get the model number from flags. constexpr to allow for
-	// most aggressive optimization.
-	static uint32_t constexpr PlatformFlags_GetModNumber(uint32_t flags)
-		{
-		return (flags & fModNumber) ? 100u + ((flags & fModNumber) / (fModNumber & (~fModNumber + 1u))) : 0;
-		};
-
-	// Return true if this unit has been modded. constexpr to allow for
-	// most aggressive optimization.
-	static bool constexpr PlatformFlags_IsModded(uint32_t flags)
-		{
-		return (flags & fModNumber) != 0;
-		}
 
 	const CATENA_PLATFORM *GetPlatformForID(
 		const UniqueID_buffer_t *pIdBuffer,
