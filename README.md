@@ -26,6 +26,8 @@ _Apologies_: This document is a work in progress, and is published in this inter
 - [Library Release History](#library-release-history)
 
 <!-- /TOC -->
+<!-- Due to a bug in Markdown TOC, the table is formatted incorrectly if tab indentation is set other than 4. Due to another bug, this comment must be *after* the TOC entry. -->
+
 
 ## Overview
 
