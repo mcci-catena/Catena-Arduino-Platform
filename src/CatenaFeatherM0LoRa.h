@@ -5,7 +5,7 @@
 Module:  CatenaFeatherM0LoRa.h
 
 Function:
-	class CateanFeatherM0LoRa;
+	class CatenaFeatherM0LoRa;
 
 Version:
 	V0.5.0	Sat Mar 11 2017 15:28:20 tmm	Edit level 1
@@ -41,6 +41,8 @@ Revision history:
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>
+
+namespace McciCatena {
 
 class CatenaFeatherM0LoRa : public CatenaFeatherM0
 	{
@@ -98,6 +100,8 @@ protected:
 
 private:
 	};
+
+} /* namespace McciCatena */
 
 /**** end of CatenaFeatherM0LoRa.h ****/
 #endif /* _CATENAFEATHERM0LORA_H_ */

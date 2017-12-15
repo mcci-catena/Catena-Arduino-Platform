@@ -43,6 +43,8 @@ Revision history:
 
 #include <Arduino_LoRaWAN_ttn.h>
 
+namespace McciCatena {
+
 class Catena4410 : public CatenaFeatherM0
 	{
 public:
@@ -116,6 +118,8 @@ private:
 	Catena4410		*m_pCatena4410;
 	const CATENA_PLATFORM	*m_pPlatform;
 	};
+
+} /* namespace McciCatena */
 
 /**** end of Catena4410.h ****/
 #endif /* _CATENA4410_H_ */

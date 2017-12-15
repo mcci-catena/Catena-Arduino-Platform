@@ -1,4 +1,4 @@
-/* Catena_Platforms.h	Sat Mar 11 2017 13:57:05 tmm */
+/* Catena_Platforms.h	Wed Dec 06 2017 19:27:10 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The global platform definitions.
 
 Version:
-	V0.5.0	Sat Mar 11 2017 13:57:05 tmm	Edit level 4
+	V0.7.0	Wed Dec 06 2017 19:27:10 tmm	Edit level 7
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -38,12 +38,17 @@ Revision history:
    0.5.0  Sat Mar 11 2017 13:57:05  tmm
 	Revise to match naming standards; add McciCatena namespace.
 
+   0.7.0  Wed Dec 06 2017 19:27:10  tmm
+        Add Catena 455x support.
+
 */
 
 #ifndef _CATENA_PLATFORMS_H_		/* prevent multiple includes */
 #define _CATENA_PLATFORMS_H_
 
-#include "CatenaSamd21.h"
+#ifndef _CATENABASE_H_
+# include "CatenaBase.h"
+#endif
 
 namespace McciCatena {
 
@@ -61,6 +66,9 @@ extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
 extern const CATENA_PLATFORM	gkPlatformCatena4450_m102;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0Proto;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
+
+extern const CATENA_PLATFORM	gkPlatformCatena4550;
+extern const CATENA_PLATFORM	gkPlatformCatena4551;
 
 } /* namespace McciCatena */
 

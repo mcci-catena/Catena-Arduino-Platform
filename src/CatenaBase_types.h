@@ -36,8 +36,12 @@ Revision history:
 
 #pragma once
 
+namespace McciCatena {
+
 // the forward-reference scalar types from CatenaBase
 class CatenaBase;
+
+} /* namespace McciCatena */
 
 /**** end of CatenaBase_types.h ****/
 #endif /* _CATENABASE_TYPES_H_ */

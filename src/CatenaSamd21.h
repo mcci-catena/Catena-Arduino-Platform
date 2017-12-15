@@ -43,15 +43,13 @@ Revision history:
 #ifndef _CATENASAMD21_H_		/* prevent multiple includes */
 #define _CATENASAMD21_H_
 
+#pragma once
+
 #ifndef _CATENABASE_H_
 # include "CatenaBase.h"
 #endif
 
-#include "mcciadk_guid.h"
-
-/* forward references */
-struct CATENA_PLATFORM;
-struct CATENA_CPUID_TO_PLATFORM;
+namespace McciCatena {
 
 /* the class for Samd21-based Catenas */
 class CatenaSamd21 : public CatenaBase
@@ -73,44 +71,8 @@ public:
 		char	c[sizeof(UniqueID_buffer_t) * 3 + 1];
 		};
 
-        // flags that describe generic platform capabilities
-	enum PLATFORM_FLAGS : uint32_t
-		{
-                // platform has LoRa
-		fHasLoRa = 1 << 0,
-                // platform has Bluetooth LE
-		fHasBLE = 1 << 1,
-                // platform has Wi-Fi
-		fHasWiFi = 1 << 2,
-                // platform not only has LoRa, but it's wired according to TTN NYC standards
-		fHasTtnNycLoRa = 1 << 3,
-                // platform supports the BME280
-		fHasBme280 = 1 << 4,
-                // platform supports the Lux meter
-		fHasLux = 1 << 5,
-                // platform supports soil probe
-		fHasSoilProbe = 1 << 6,
-                // platform supports external solar panel
-		fHasSolarPanel = 1 << 7,
-                // platform supports one-wire temperature sensor
-		fHasWaterOneWire = 1 << 8,
-                // platform not only has LoRa, but it's wired per the MCCI RadioWing standard
-                fHasTtnMcciLoRa = 1 << 9,
-		// platform has the Rohm Lux meter
-		fHasLuxRohm = 1 << 10,
-		// platform has i2c mux
-		fHasI2cMux = 1 << 11,
-		// platfomr has 2kx8 FRAM
-		fHasFRAM = 1 << 12,
-		// special wiring variants all are offsets from M100...
-		// we support up to 127 variants, becuase we have 7
-		// bits and variant 0 means "base model".
-		fModNumber = 0x7Fu << 25,
-		// a few variant values that are well know.
-		  fM101 = 0x01 << 25,
-		  fM102 = 0x02 << 25,
-		  fM103 = 0x03 << 25,
-		};
+        /* forward references */
+        struct CPUID_PLATFORM_MAP;
 
 	/*
 	|| Methods
@@ -120,20 +82,6 @@ public:
 	virtual bool begin(void);
 	bool begin(uint32_t uOverrideMask);
 	bool begin(uint32_t uClearMask, uint32_t uSetMask);
-
-	// Get the model number from flags. constexpr to allow for
-	// most aggressive optimization.
-	static uint32_t constexpr PlatformFlags_GetModNumber(uint32_t flags)
-		{
-		return (flags & fModNumber) ? 100u + ((flags & fModNumber) / (fModNumber & (~fModNumber + 1u))) : 0;
-		};
-
-	// Return true if this unit has been modded. constexpr to allow for
-	// most aggressive optimization.
-	static bool constexpr PlatformFlags_IsModded(uint32_t flags)
-		{
-		return (flags & fModNumber) != 0;
-		}
 
 	const CATENA_PLATFORM *GetPlatformForID(
 		const UniqueID_buffer_t *pIdBuffer,
@@ -185,106 +133,10 @@ protected:
 	|| Class-level information
 	*/
 private:
-	static const CATENA_CPUID_TO_PLATFORM vCpuIdToPlatform[];
+	static const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
 	static const size_t nvCpuIdToPlatform;
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM	*m_pPlatform;
-	};
-
-/*
-
-Name:	CatenaSamd21::PlatformFlags_GetModNumber()
-
-Index:	Function:	CatenaSamd21::PlatformFlags_IsModded();
-
-Function:
-	Return M101 etc info about this Catena instance given platform flags.
-
-Definition:
-	#include <CatenaSamd21.h>
-
-	static constexpr uint32_t
-		CatenaSamd21::PlatformFlags_GetModNumber(
-			uint32_t uPlatformFlags
-			);
-
-
-	static constexpr bool
-		CatenaSamd21::PlatformFlags_IsModded(
-			uint32_t uPlatformFlags
-			);
-
-Description:
-	Catenas have a "stock" or "base" configuration -- this is how they
-	are built by default. At MCCI, we track variants using "M numbers"
-	(a concept that we got from the Ithaca electronics scene via Ithaco,
-	and ultimately, no doubt, from GE). M numbers are simply unique
-	3-digit numbers; normally they start with 101, and are assigned in
-	sequence. For example, the Catena 4450-M101 has been optimized for
-	AC power measurement use.
-
-	We reserve 7 bits in the platform flags for representing M-numbers.
-	Initially, at any rate, your code must know what the numbers mean.
-
-Returns:
-	CatenaSamd21::PlatformFlags_GetModNumber() extracts the mod-number
-	from the platform flags, and returns it as a number. If there is no
-	mod number for this device, then this will return zero; otherwise it
-	returns the mod number (which is always in the range [101..227].
-
-	CatenaSamd21::PlatformFlags_IsModded() returns true if the platform
-	flags indicate that this instance has a non-zero mod number.
-
-*/
-// actual function is above.
-
-/*
-
-Type:	CATENA_PLATFORM
-
-Function:
-	Represents common info about any Catena variant.
-
-Description:
-	Every Catena model is represented by a CATENA_PLATFORM instance.
-	This instance respresents common information about all Catenas of
-	that kind.
-
-	The platforms are organized as a tree; each node has a pointer to
-	a parent node which is a more general version of the same platform.
-
-Contents:
-	MCCIADK_GUID_WIRE Guid;
-		The GUID for this platform.
-
-	const CATENA_PLATFORM *pParent;
-		The parent platform, or NULL if this is the root for
-		this family of models.
-
-	uint32_t PlatformFlags;
-		The flags describing the capabilites of this platform. These
-		are formed by oring together flags from
-		CatenaSam21::PLATFORM_FLAGS.
-
-	uint32_t OperatingFlags;
-		Default operating flags. The actual operating flags may be
-		modified on a per-device basis.
-
-Notes:
-	Typically the platforms are referenced by name from the table of well-
-	known CPU IDs, or from the code that supplies the default platform.
-
-See Also:
-	CatenaSamd21, CATENA_CPUID_TO_PLATFORM
-
-*/
-
-struct CATENA_PLATFORM
-	{
-	MCCIADK_GUID_WIRE	Guid;
-	const CATENA_PLATFORM	*pParent;
-	uint32_t		PlatformFlags;
-	uint32_t		OperatingFlags;
 	};
 
 inline uint32_t CatenaSamd21::GetPlatformFlags(void)
@@ -297,9 +149,10 @@ inline uint32_t CatenaSamd21::GetPlatformFlags(void)
 		return 0;
 	}
 
+
 /*
 
-Type:	CATENA_CPUID_TO_PLATFORM
+Type:	CatenaSamd21::CPUID_PLATFORM_MAP
 
 Function:
 	Simple structure to map a CPU ID to a Platform code.
@@ -368,7 +221,7 @@ See Also:
 
 */
 
-struct CATENA_CPUID_TO_PLATFORM
+struct CatenaSamd21::CPUID_PLATFORM_MAP
 	{
 	CatenaSamd21::UniqueID_buffer_t	CpuID;
 
@@ -377,6 +230,8 @@ struct CATENA_CPUID_TO_PLATFORM
 	uint32_t			OperatingFlagsClear;
 	uint32_t			OperatingFlagsSet;
 	};
+
+} /* namespace McciCatena */
 
 /**** end of CatenaSamd21.h ****/
 #endif /* _CATENASAMD21_H_ */

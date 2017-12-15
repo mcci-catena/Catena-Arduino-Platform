@@ -32,4 +32,7 @@
 *.BAK
 *.CKP
 emacs.core
+
+# vs code files
+.vscode
 *~

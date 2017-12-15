@@ -37,6 +37,7 @@ Revision history:
 #include "Catena_Log.h"
 #include <cstring>
 #include <cstdarg>
+#include "mcciadk_baselib.h"
 
 using namespace McciCatena;
 
@@ -225,7 +226,7 @@ McciCatena::cCommandStream::dispatch(
 	const char * const pCommand = argv[0];
         // Log.printf(Log.kAlways, "dispatch: %s\n", pCommand);
 
-        if (stricmp(pCommand, "help") == 0)
+        if (McciAdkLib_StringCompareCaseInsensitive(pCommand, "help") == 0)
                 {
                 this->dispatchHelp(argc, argv);
                 return 0;
@@ -253,7 +254,7 @@ McciCatena::cCommandStream::dispatch(
 
                                 // need two words, and need to match first word.
 				if (argc < 2 ||
-				    stricmp(pCommand, pGroupName) != 0
+				    McciAdkLib_StringCompareCaseInsensitive(pCommand, pGroupName) != 0
 				    )
 					// no luck.
 					pEntry = nullptr;
