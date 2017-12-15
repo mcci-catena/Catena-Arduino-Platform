@@ -4,22 +4,24 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-<!-- TOC depthFrom:2 -->
+<!-- TOC depthFrom:2 updateOnSave:true -->
 
 - [Overview](#overview)
 - [Coding Practices](#coding-practices)
 - [Components](#components)
-    - [`Catena_functional.h`](#catena_functionalh)
-    - [Platform Management](#platform-management)
-    - [Pollable Interface](#pollable-interface)
-    - [LoRaWAN Support](#lorawan-support)
-    - [FRAM Storage Management](#fram-storage-management)
-        - [FRAM Storage Formats](#fram-storage-formats)
-            - [Object Storage Structure](#object-storage-structure)
-            - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
-            - [The FRAM header object](#the-fram-header-object)
-        - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
-    - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
+        - [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
+        - [Platform Management](#platform-management)
+        - [Pollable Interface](#pollable-interface)
+        - [LoRaWAN Support](#lorawan-support)
+        - [FRAM Storage Management](#fram-storage-management)
+                - [FRAM Storage Formats](#fram-storage-formats)
+                        - [Object Storage Structure](#object-storage-structure)
+                        - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
+                        - [The FRAM header object](#the-fram-header-object)
+                - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
+        - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
+        - [`Catena_functional.h`](#catena_functionalh)
+- [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
 
@@ -39,23 +41,17 @@ In order to assist people who are not everyday readers and writer of C++, this l
 
 4. We tend to use `this->m_...` to refer to class members (rather than omitting `this->`). We do this for emphasis, and to avoid visual ambituity.
 
-5. We tend to name classes starting with a lower-case letter `c`, i.e., <code><strong>c</strong><em><u>ClassName</u></em></code>.
+5. We tend to name classes starting with a lower-case letter `c`, i.e., <code><strong>c</strong><em><u>ClassName</u></em></code>. For the `Catena...` classes, we don't follow this rule, however.
 
 6. We don't use most of the standard C++ library (because of the frequent use of exceptions), nor do we use exceptions in our own code. The exception framework tends to be inefficient, and it's a source of coding problems because the error paths are not directly visible.
 
 7. However, we do take advantage of some of the C++-11 header files, such as `<functional>`, `<type_traits>`, and `<cstdint>`.  (Sometimes we have to do extra work for this.)
 
-
-
 ## Components
 
-### `Catena_functional.h`
+### Class `Catena` and header file `Catena.h`
 
-This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
-
-The technical problem is that the `arduino.h` header file defines `min()` and `max()` macros. This causes problems with parsing the `<functional>` header file, at least with GCC.
-
-The solution is a hack: undefine `min()` prior to including `<functional>`, and then redefine them using the well-known definitions.
+`Catena.h` is the main header file for the library. It uses the `#defines` injected by `board.txt` and `platform.txt` from the Arduino environment to create a class named `Catena` derived from the `Catena...` class that is specific to the board for which the software is being built. This allows examples to be source-compatible, no matter which Catena is our target.
 
 ### Platform Management
 
@@ -126,6 +122,24 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
 ### Asynchronous Serial Port Command Processing
 
+### `Catena_functional.h`
+
+This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
+
+The technical problem is that the `arduino.h` header file defines `min()` and `max()` macros. This causes problems with parsing the `<functional>` header file, at least with GCC.
+
+The solution is a hack: undefine `min()` prior to including `<functional>`, and then redefine them using the well-known definitions.
+
+## Board Support Dependencies
+
 ## Other Libraries and Versions Required
 
+| Library | Version | Comments |
+|---------|:-------:|----------|
+| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.3.1 | Needed in order to support the Murata module used in the Catena 4551 | 
+| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [catena-mcci](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | Needed for miscellaneous definitions |
+
 ## Library Release History
+
+- V0.7.0 is a major refactoring adding support for the `Catena 4551`, which is based on the STM32L0. Although we think that there are no breaking changes, there might be a few, especially if code relied on structured defined internally to the MCCI-Catena-Arduino library `Catena...` classes.
