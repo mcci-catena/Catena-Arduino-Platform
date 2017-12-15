@@ -9,18 +9,18 @@ _Apologies_: This document is a work in progress, and is published in this inter
 - [Overview](#overview)
 - [Coding Practices](#coding-practices)
 - [Components](#components)
-        - [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
-        - [Platform Management](#platform-management)
-        - [Pollable Interface](#pollable-interface)
-        - [LoRaWAN Support](#lorawan-support)
-        - [FRAM Storage Management](#fram-storage-management)
-                - [FRAM Storage Formats](#fram-storage-formats)
-                        - [Object Storage Structure](#object-storage-structure)
-                        - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
-                        - [The FRAM header object](#the-fram-header-object)
-                - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
-        - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
-        - [`Catena_functional.h`](#catena_functionalh)
+    - [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
+    - [Platform Management](#platform-management)
+    - [Pollable Interface](#pollable-interface)
+    - [LoRaWAN Support](#lorawan-support)
+    - [FRAM Storage Management](#fram-storage-management)
+        - [FRAM Storage Formats](#fram-storage-formats)
+            - [Object Storage Structure](#object-storage-structure)
+            - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
+            - [The FRAM header object](#the-fram-header-object)
+        - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
+    - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
+    - [`Catena_functional.h`](#catena_functionalh)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
@@ -114,7 +114,6 @@ An FRAM store managed by this library is expected to begin with a header object.
 The header object carries a single 4-byte (`uint32_t`) payload, which is interpreted as the end-of-storage address -- the offset of the first byte on the FRAM that is not used for object storage. If an object is added to the store, this pointer is updated after the new object object has been fully committed. The new object is not permanently committed until the end-of-storage pointer is atomically updated.
 
 #### Class hierarchy within the FRAM library
-
 
 ![Image of cFram -- see assets/cfram.puml](https://www.plantuml.com/plantuml/png/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0)
 
