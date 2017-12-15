@@ -139,9 +139,9 @@ The solution is a hack: undefine `min()` prior to including `<functional>`, and 
 
 | Library | Version | Comments |
 |---------|:-------:|----------|
-| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.3.1 | Needed in order to support the Murata module used in the Catena 4551 | 
 | [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [catena-mcci](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | Needed for miscellaneous definitions |
+| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.3.1 | Needed in order to support the Murata module used in the Catena 4551 |
+| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
 
