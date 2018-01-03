@@ -1,4 +1,4 @@
-/* CatenaStm32L0Rtc.cpp	Wed Dec 06 2017 15:32:22 chwon */
+/* CatenaStm32L0Rtc.cpp	Wed Jan 03 2018 11:04:33 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Class CatenaStm32L0Rtc
 
 Version:
-	V0.6.0	Wed Dec 06 2017 15:32:22 chwon	Edit level 3
+	V0.7.0	Wed Jan 03 2018 11:04:33 chwon	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -34,6 +34,9 @@ Revision history:
 
    0.6.0  Wed Dec 06 2017 15:32:22  chwon
 	Change clock division setting.
+
+   0.7.0  Wed Jan 03 2018 11:04:33  chwon
+	Need to call HAL_RTCEx_EnableBypassShadow() to support USB.
 
 */
 
@@ -233,7 +236,7 @@ bool CatenaStm32L0Rtc::begin(bool fResetTime)
 		}
 
 	/* Enable Direct Read of the calendar registers (not through Shadow) */
-//	HAL_RTCEx_EnableBypassShadow(&this->m_hRtc);
+	HAL_RTCEx_EnableBypassShadow(&this->m_hRtc);
 
 	HAL_RTC_DeactivateAlarm(&this->m_hRtc, RTC_ALARM_A);
 	return true;

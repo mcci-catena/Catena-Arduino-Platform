@@ -1,4 +1,4 @@
-/* CatenaStm32L0.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0.cpp	Wed Jan 03 2018 11:03:38 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaStm32L0::ReadVbat()
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.7.0	Wed Jan 03 2018 11:03:39 chwon	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
+
+   0.7.0  Wed Jan 03 2018 11:03:39  chwon
+	Remove multiply 2.
 
 */
 
@@ -77,14 +80,14 @@ float
 CatenaStm32L0::ReadVbat(void) const
 	{
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBAT_SENSE);
-	return rawVoltage * 2 * 3.3 / 1024;
+	return rawVoltage * 3.3 / 1024;
 	}
 
 float
 CatenaStm32L0::ReadVbus(void) const
 	{
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBUS_SENSE);
-	return rawVoltage * 2 * 3.3 / 1024;
+	return rawVoltage * 3.3 / 1024;
 	}
 
 #ifdef __cplusplus
