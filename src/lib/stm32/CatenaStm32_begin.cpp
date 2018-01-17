@@ -1,4 +1,4 @@
-/* CatenaStm32_begin.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32_begin.cpp	Wed Jan 17 2018 15:35:49 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32::begin().
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.7.0	Wed Jan 17 2018 15:35:49 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,10 @@ Author:
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
+
+   0.7.0  Wed Jan 17 2018 15:35:49  chwon
+	Remove serial port raindance code because Serial.begin() will
+	reinitialize USB module.
 
 */
 
@@ -142,26 +146,6 @@ bool CatenaStm32::begin(
 				&OperatingFlags
 				);
 	this->m_OperatingFlags = (OperatingFlags & ~uClearMask) | uSetMask;
-
-	/* do the serial port raindance */
-	if (this->m_OperatingFlags &
-	    static_cast<uint32_t>(OPERATING_FLAGS::fUnattended))
-		{
-		/* do unattended startup */
-		delay(2000);
-		/* big difference: don't spin */
-		if (Serial.dtr())
-			Serial.begin(115200);
-		}
-	else
-		{
-		/* wait a while to make it easier to break in */
-		delay(2000);
-		while (Serial.dtr() == 0)
-			/* NOTHING */; // wait for Serial to be initialized
-
-		Serial.begin(115200);
-		}
 
 	return true;
 	}
