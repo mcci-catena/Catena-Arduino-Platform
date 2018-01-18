@@ -76,8 +76,7 @@ const CATENA_PLATFORM gkPlatformCatena4550 =
 		CatenaBase::fHasBme280 |
 		CatenaBase::fHasLuxRohm |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasFlash |
-		CatenaBase::fHasI2cMux,
+		CatenaBase::fHasFlash,
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4551 =
@@ -90,8 +89,7 @@ const CATENA_PLATFORM gkPlatformCatena4551 =
 		CatenaBase::fHasBme280 |
 		CatenaBase::fHasLuxRohm |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasFlash |
-		CatenaBase::fHasI2cMux,
+		CatenaBase::fHasFlash,
 	};
 
 
