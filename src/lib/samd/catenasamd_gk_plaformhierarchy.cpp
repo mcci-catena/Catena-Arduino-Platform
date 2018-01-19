@@ -218,7 +218,43 @@ const CATENA_PLATFORM gkPlatformCatena4450_m102 =
 		CatenaBase::fHasLuxRohm |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasI2cMux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fM102
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4450_m103 =
+	{
+	Guid: GUID_HW_CATENA_4450_M103(WIRE),
+	pParent: &gkPlatformCatena4450,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM103
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4450_m104 =
+	{
+	Guid: GUID_HW_CATENA_4450_M104(WIRE),
+	pParent: &gkPlatformCatena4450,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM104
 	};
 
 /****************************************************************************\
