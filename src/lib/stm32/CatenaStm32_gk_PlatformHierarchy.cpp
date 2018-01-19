@@ -74,7 +74,7 @@ const CATENA_PLATFORM gkPlatformCatena4550 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasLuxSi1113 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
 	};
@@ -87,9 +87,69 @@ const CATENA_PLATFORM gkPlatformCatena4551 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasLuxSi1113 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4551_m101 =
+	{
+	Guid: GUID_HW_CATENA_4551_M101(WIRE),
+	pParent: &gkPlatformCatena4551,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash |
+		CatenaBase::fM101
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4551_m102 =
+	{
+	Guid: GUID_HW_CATENA_4551_M102(WIRE),
+	pParent: &gkPlatformCatena4551,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM102
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4551_m103 =
+	{
+	Guid: GUID_HW_CATENA_4551_M103(WIRE),
+	pParent: &gkPlatformCatena4551,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM103
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4551_m104 =
+	{
+	Guid: GUID_HW_CATENA_4551_M104(WIRE),
+	pParent: &gkPlatformCatena4551,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM104
 	};
 
 

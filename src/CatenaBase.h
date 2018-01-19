@@ -104,7 +104,7 @@ public:
                 fHasTtnNycLoRa = 1 << 3,
                 // platform supports the BME280
                 fHasBme280 = 1 << 4,
-                // platform supports the Lux meter
+                // platform supports the TSL 2561 Lux meter
                 fHasLux = 1 << 5,
                 // platform supports soil probe
                 fHasSoilProbe = 1 << 6,
@@ -118,18 +118,22 @@ public:
                 fHasLuxRohm = 1 << 10,
                 // platform has i2c mux
                 fHasI2cMux = 1 << 11,
-                // platfomr has FRAM
+                // platform has FRAM
                 fHasFRAM = 1 << 12,
-                // platform has 2MB FLASH
+                // platform has 1MB or 2MB FLASH
                 fHasFlash = 1 << 13,
+                // platform has SI 1113 Lux sensor
+                fHasLuxSi1113 = 1 << 14,
+
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
                 // bits and variant 0 means "base model".
                 fModNumber = 0x7Fu << 25,
-                // a few variant values that are well know.
+                // a few variant values that are well known.
                   fM101 = 0x01 << 25,
                   fM102 = 0x02 << 25,
                   fM103 = 0x03 << 25,
+                  fM104 = 0x04 << 25,
                 };
 
 	// Get the model number from flags. constexpr to allow for
