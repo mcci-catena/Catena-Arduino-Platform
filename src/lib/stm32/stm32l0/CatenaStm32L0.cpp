@@ -1,4 +1,4 @@
-/* CatenaStm32L0.cpp	Wed Jan 03 2018 11:03:38 chwon */
+/* CatenaStm32L0.cpp	Tue Jan 23 2018 09:38:23 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32L0::ReadVbat()
 
 Version:
-	V0.7.0	Wed Jan 03 2018 11:03:39 chwon	Edit level 2
+	V0.7.0	Tue Jan 23 2018 09:38:23 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.7.0  Wed Jan 03 2018 11:03:39  chwon
 	Remove multiply 2.
+
+   0.7.0  Tue Jan 23 2018 09:38:23  chwon
+	Move yield() and HAL_GetTick() to variant.cpp.
 
 */
 
@@ -89,85 +92,6 @@ CatenaStm32L0::ReadVbus(void) const
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBUS_SENSE);
 	return rawVoltage * 3.3 / 1024;
 	}
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*
-
-Name:	yield
-
-Function:
-	Yield CPU
-
-Definition:
-	void yield(void);
-
-Description:
-	This function override default week yield() function in the cores/
-	arduino/hooks.c file. It requests wait for interrupt.
-
-Returns:
-	No explicit result.
-
-Notes:
-	We need to keep this function in this file because linker should link
-	this yield function in this file. So do not make this yield function
-	in separate file.
-
-*/
-
-void yield(void)
-	{
-	/* Read PRIMASK register, check interrupt status before disable them */
-	/* Returns 0 if they are enabled, or non-zero if disabled */
-	if (__get_PRIMASK())
-		{
-#if 1
-		if (SCB->ICSR & SCB_ICSR_PENDSTSET_Msk)
-			{
-			SCB->ICSR = SCB_ICSR_PENDSTCLR_Msk;
-			HAL_IncTick();
-			}
-#else
-		if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
-			HAL_IncTick();
-#endif
-		}
-	else
-		{
-		/* Request Wait For Interrupt */
-		__WFI();
-		}
-	}
-
-uint32_t HAL_GetTick(void)
-	{
-	extern __IO uint32_t uwTick;
-
-	/* Read PRIMASK register, check interrupt status before disable them */
-	/* Returns 0 if they are enabled, or non-zero if disabled */
-	if (__get_PRIMASK())
-		{
-#if 1
-		if (SCB->ICSR & SCB_ICSR_PENDSTSET_Msk)
-			{
-			SCB->ICSR = SCB_ICSR_PENDSTCLR_Msk;
-			HAL_IncTick();
-			}
-#else
-		if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
-			HAL_IncTick();
-#endif
-		}
-
-	return uwTick;
-	}
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // ARDUINO_ARCH_STM32
 
