@@ -71,6 +71,9 @@ static const Arduino_LoRaWAN::lmic_pinmap lmic_pins_4420 =
             Catena4420::PIN_SX1276_DIO1,    // DIO1 is D11
             Catena4420::PIN_SX1276_DIO2,    // DIO2 is D10
             },
+    .rxtx_rx_active = 0,
+    .rssi_cal = 0,
+    .spi_freq = 8000000,
 };
 
 

@@ -72,6 +72,7 @@ static const Arduino_LoRaWAN::lmic_pinmap lmic_pins_stm32l0lora =
 		CatenaStm32L0LoRa::PIN_SX1276_DIO2,    // DIO2 is D27
 	       },
 	.rxtx_rx_active = 1,
+	.rssi_cal = 10,
 	.spi_freq = 8000000	/* 8MHz */
 	};
 

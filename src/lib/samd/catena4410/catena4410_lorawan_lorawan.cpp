@@ -70,6 +70,9 @@ static const Arduino_LoRaWAN::lmic_pinmap sk_lmic_pins =
     .dio = {Catena4410::PIN_SX1276_DIO0,    // DIO0 is hardwired to GPIO3
             Catena4410::PIN_SX1276_DIO1,    // DIO1 is jumpered to GPIO6
             Arduino_LoRaWAN::lmic_pinmap::LMIC_UNUSED_PIN}, 
+    .rxtx_rx_active = 0,
+    .rssi_cal = 8,
+    .spi_freq = 8000000,
 };
 
 
