@@ -1,4 +1,4 @@
-/* Catena_TxBuffer.h	Wed Nov 08 2017 22:35:02 tmm */
+/* Catena_TxBuffer.h	Sat Feb 03 2018 16:48:02 vel */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	namespace McciCatena, class TxBuffer_t;
 
 Version:
-	V0.6.1	Wed Nov 08 2017 22:35:02 tmm	Edit level 3
+	V0.8.0	Sat Feb 03 2018 16:48:02 vel	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -33,6 +33,8 @@ Revision history:
         #7: Fix error in handling of negative args to 
         TxBuffer_t::put2(int32_t) and TxBuffer_t::put2(int32_t).
 
+   0.8.0 Sat Feb 03 2018 16:48:02 vel
+    Added 0x16 Format.
 */
 
 #ifndef _CATENA_TXBUFFER_H_		/* prevent multiple includes */
