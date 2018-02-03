@@ -207,7 +207,7 @@ enum : uint8_t   {
         FormatSensor1 = 0x11,
         FormatSensor2 = 0x14,
         FormatSensor3 = 0x15,
-		FormatSensor4 = 0x16,
+        FormatSensor4 = 0x16,
         };
 
 /* the flags for the second byte of the buffer */
