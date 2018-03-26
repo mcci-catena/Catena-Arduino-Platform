@@ -1,4 +1,4 @@
-/* Catena_TxBuffer.h	Wed Nov 08 2017 22:35:02 tmm */
+/* Catena_TxBuffer.h	Sat Feb 03 2018 16:48:02 vel */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	namespace McciCatena, class TxBuffer_t;
 
 Version:
-	V0.6.1	Wed Nov 08 2017 22:35:02 tmm	Edit level 3
+	V0.8.0	Sat Feb 03 2018 16:48:02 vel	Edit level 4
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -32,6 +32,9 @@ Revision history:
    0.6.1  Wed Nov 08 2017 22:35:02  tmm
         #7: Fix error in handling of negative args to 
         TxBuffer_t::put2(int32_t) and TxBuffer_t::put2(int32_t).
+
+   0.8.0 Sat Feb 03 2018 16:48:02 vel
+    	Added 0x16 Format.
 
 */
 
@@ -207,6 +210,7 @@ enum : uint8_t   {
         FormatSensor1 = 0x11,
         FormatSensor2 = 0x14,
         FormatSensor3 = 0x15,
+        FormatSensor4 = 0x16,
         };
 
 /* the flags for the second byte of the buffer */
@@ -263,6 +267,27 @@ FlagsSensor3 operator|= (FlagsSensor3 &lhs, const FlagsSensor3 &rhs)
         return lhs;
         };
 
+enum class FlagsSensor4 : uint8_t 
+        {
+        FlagVbat = 1 << 0,
+        FlagVcc = 1 << 1,
+        FlagBoot = 1 << 2,
+        FlagTPH = 1 << 3,
+        FlagLux = 1 << 4,
+        FlagWaterPressure = 1 << 5,
+        };
+
+constexpr FlagsSensor4 operator| (const FlagsSensor4 lhs, const FlagsSensor4 rhs)
+        {
+        return FlagsSensor4(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+FlagsSensor4 operator|= (FlagsSensor4 &lhs, const FlagsSensor4 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
+	
 
 } /* namespace McciCatena */
 
