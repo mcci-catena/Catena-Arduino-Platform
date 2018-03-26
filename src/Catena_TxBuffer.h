@@ -8,7 +8,7 @@ Function:
 	namespace McciCatena, class TxBuffer_t;
 
 Version:
-	V0.8.0	Sat Feb 03 2018 16:48:02 vel	Edit level 3
+	V0.8.0	Sat Feb 03 2018 16:48:02 vel	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016-2018 by
@@ -34,7 +34,8 @@ Revision history:
         TxBuffer_t::put2(int32_t) and TxBuffer_t::put2(int32_t).
 
    0.8.0 Sat Feb 03 2018 16:48:02 vel
-    Added 0x16 Format.
+    	Added 0x16 Format.
+
 */
 
 #ifndef _CATENA_TXBUFFER_H_		/* prevent multiple includes */
