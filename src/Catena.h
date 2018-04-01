@@ -1,4 +1,4 @@
-/* Catena.h	Wed Dec 13 2017 17:29:35 tmm */
+/* Catena.h	Sat Mar 31 2018 19:28:30 tmm */
 
 /*
 
@@ -9,10 +9,10 @@ Function:
         the target Catena for this build.
 
 Version:
-	V0.7.0	Wed Dec 13 2017 17:29:35 tmm	Edit level 2
+	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -33,6 +33,9 @@ Revision history:
    0.7.0  Wed Dec 13 2017 17:29:35  tmm
 	Refactor.
 
+   0.9.0  Sat Mar 31 2018 19:28:30  tmm
+	Add Catena 4460 support, use BSP symbols.
+
 */
 
 #ifndef _CATENA_H_		/* prevent multiple includes */
@@ -40,9 +43,19 @@ Revision history:
 
 #pragma once
 
-#ifdef ARDUINO_ARCH_SAMD
+#if defined(MCCI_CATENA_4460)
+# include "Catena4460.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4460
+#elif defined(MCCI_CATENA_4450)
 # include "Catena4450.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4450
+#elif defined(ARDUINO_SAMD_FEATHER_M0)
+# include "CatenaFeatherM0.h"
+# define CATENA_H_SUPER_  McciCatena::CatenaFeatherM0
+/* fallback in case it's SAMD but not what we expect */
+#elif defined(ARDUINO_ARCH_SAMD)
+# include "CatenaSamd21.h"
+# define CATENA_H_SUPER_ McciCatena::CatenaSamd21
 #elif defined(ARDUINO_ARCH_STM32)
 # include "Catena4551.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4551

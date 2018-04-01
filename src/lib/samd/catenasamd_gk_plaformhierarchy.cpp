@@ -1,4 +1,4 @@
-/* gk_PlatformHierarchy.cpp	Sat Mar 11 2017 14:03:53 tmm */
+/* gk_PlatformHierarchy.cpp	Sat Mar 31 2018 19:28:30 tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	The hierarchy table.
 
 Version:
-	V0.5.0	Sat Mar 11 2017 14:03:53 tmm	Edit level 4
+	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 5
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -37,6 +37,9 @@ Revision history:
 
    0.5.0  Sat Mar 11 2017 14:03:53  tmm
 	Rename catena_platforms.h and catena4410_guids.h.
+
+   0.9.0  Sat Mar 31 2018 19:28:30  tmm
+	Add platforms for Catena 4460.
 
 */
 
@@ -256,6 +259,84 @@ const CATENA_PLATFORM gkPlatformCatena4450_m104 =
 		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fM104
 	};
+
+const CATENA_PLATFORM gkPlatformCatena4460 =
+	{
+	Guid: GUID_HW_CATENA_4460_BASE(WIRE),
+	pParent: &gkPlatformM0LoRaTtnNyc,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme680 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4460_m101 =
+	{
+	Guid: GUID_HW_CATENA_4460_M101(WIRE),
+	pParent: &gkPlatformCatena4460,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme680 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fM101
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4460_m102 =
+	{
+	Guid: GUID_HW_CATENA_4460_M102(WIRE),
+	pParent: &gkPlatformCatena4460,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme680 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM102
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4460_m103 =
+	{
+	Guid: GUID_HW_CATENA_4460_M103(WIRE),
+	pParent: &gkPlatformCatena4460,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme680 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM103
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4460_m104 =
+	{
+	Guid: GUID_HW_CATENA_4460_M104(WIRE),
+	pParent: &gkPlatformCatena4460,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasI2cMux |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM104
+	};
+
 
 /****************************************************************************\
 |

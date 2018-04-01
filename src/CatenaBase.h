@@ -1,4 +1,4 @@
-/* CatenaBase.h	Sun Mar 19 2017 15:00:21 tmm */
+/* CatenaBase.h	Sat Mar 31 2018 19:28:30 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
         class CatenaBase interfaces.
 
 Version:
-        V0.5.0	Sun Mar 19 2017 15:00:21 tmm	Edit level 4
+        V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 4
 
 Copyright notice:
         This file copyright (C) 2016-2017 by
@@ -34,6 +34,9 @@ Revision history:
 
    0.5.0  Sun Mar 19 2017 15:00:21  tmm
         Major update for comamand support, etc.
+
+   0.9.9  Sat Mar 31 2018 19:28:30  tmm
+		Add fHasBme680.
 
 */
 
@@ -124,6 +127,8 @@ public:
                 fHasFlash = 1 << 13,
                 // platform has SI 1113 Lux sensor
                 fHasLuxSi1113 = 1 << 14,
+				// platform has BME680
+				fHasBme680 = 1 << 15,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
