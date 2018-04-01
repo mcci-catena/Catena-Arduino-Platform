@@ -1,4 +1,4 @@
-/* Catena_Platforms.h	Wed Dec 06 2017 19:27:10 tmm */
+/* Catena_Platforms.h	Sat Mar 31 2018 19:28:30 tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	The global platform definitions.
 
 Version:
-	V0.7.0	Wed Dec 06 2017 19:27:10 tmm	Edit level 7
+	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 8
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -39,7 +39,10 @@ Revision history:
 	Revise to match naming standards; add McciCatena namespace.
 
    0.7.0  Wed Dec 06 2017 19:27:10  tmm
-        Add Catena 455x support.
+	Add Catena 455x support.
+
+   0.9.0  Sat Mar 31 2018 19:28:30  tmm
+	Add Catena 4460 support.
 
 */
 
@@ -64,6 +67,13 @@ extern const CATENA_PLATFORM	gkPlatformCatena4410_pond;
 extern const CATENA_PLATFORM	gkPlatformCatena4450;
 extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
 extern const CATENA_PLATFORM	gkPlatformCatena4450_m102;
+extern const CATENA_PLATFORM	gkPlatformCatena4450_m103;
+extern const CATENA_PLATFORM	gkPlatformCatena4450_m104;
+extern const CATENA_PLATFORM	gkPlatformCatena4460;
+extern const CATENA_PLATFORM	gkPlatformCatena4460_m101;
+extern const CATENA_PLATFORM	gkPlatformCatena4460_m102;
+extern const CATENA_PLATFORM	gkPlatformCatena4460_m103;
+extern const CATENA_PLATFORM	gkPlatformCatena4460_m104;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0Proto;
 extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
 

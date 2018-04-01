@@ -211,6 +211,7 @@ enum : uint8_t   {
         FormatSensor2 = 0x14,
         FormatSensor3 = 0x15,
         FormatSensor4 = 0x16,
+        FormatSensor5 = 0x17,
         };
 
 /* the flags for the second byte of the buffer */
@@ -288,6 +289,27 @@ FlagsSensor4 operator|= (FlagsSensor4 &lhs, const FlagsSensor4 &rhs)
         return lhs;
         };
 	
+enum class FlagsSensor5 : uint8_t
+        {
+        FlagVbat = 1 << 0,
+        FlagVcc = 1 << 1,
+        FlagBoot = 1 << 2,
+        FlagTPH = 1 << 3,
+        FlagLux = 1 << 4,
+        FlagAqi = 1 << 5,
+        };
+
+constexpr FlagsSensor5 operator| (const FlagsSensor5 lhs, const FlagsSensor5 rhs)
+        {
+        return FlagsSensor5(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+FlagsSensor5 operator|= (FlagsSensor5 &lhs, const FlagsSensor5 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
+
 
 } /* namespace McciCatena */
 

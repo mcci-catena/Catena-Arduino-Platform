@@ -1,4 +1,4 @@
-/* Catena_Guids.h	Sun Mar 19 2017 18:23:19 tmm */
+/* Catena_Guids.h	Sat Mar 31 2018 19:28:30 tmm */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	GUIDs for the Catena4410 family.
 
 Version:
-	V0.5.0	Sun Mar 19 2017 18:23:19 tmm	Edit level 4
+	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 5
 
 Copyright notice:
 	This file copyright (C) 2016-2017 by
@@ -34,6 +34,9 @@ Revision history:
 
    0.5.0  Sun Mar 19 2017 18:23:19  tmm
 	Fix internal naming, and add storage FRAM guids.
+
+   0.9.0  Sat Mar 31 2018 19:28:30  tmm
+	Add Catena 4460 material.
 
 */
 
@@ -117,6 +120,26 @@ Revision history:
 // {a731f637-e3ed-4088-a9a8-f54b6671dcf6}
 #define GUID_HW_CATENA_4450_M104(f)		\
         MCCIADK_GUID_GEN_INIT(f,  0xa731f637, 0xe3ed, 0x4088, 0xa9, 0xa8, 0xf5, 0x4b, 0x66, 0x71, 0xdc, 0xf6)
+
+// {3037D9BE-8EBE-4AE7-970E-91915A2484F8}
+#define GUID_HW_CATENA_4460_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x3037d9be, 0x8ebe, 0x4ae7, 0x97, 0xe, 0x91, 0x91, 0x5a, 0x24, 0x84, 0xf8)
+
+// {31E563D1-0267-43FC-BCA0-9A4CB5BFC55A}
+#define GUID_HW_CATENA_4460_M101(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x31e563d1, 0x267, 0x43fc, 0xbc, 0xa0, 0x9a, 0x4c, 0xb5, 0xbf, 0xc5, 0x5a)
+
+// {494F3C17-8AC1-4F80-8ECC-CA4DD3DCCBDC}
+#define GUID_HW_CATENA_4460_M102(f)		\
+        MCCIADK_GUID_GEN_INIT(f,  0x494f3c17, 0x8ac1, 0x4f80, 0x8e, 0xcc, 0xca, 0x4d, 0xd3, 0xdc, 0xcb, 0xdc)
+
+// {A882186F-F4AB-4EE4-9402-7B628A76D886}
+#define GUID_HW_CATENA_4460_M103(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xa882186f, 0xf4ab, 0x4ee4, 0x94, 0x2, 0x7b, 0x62, 0x8a, 0x76, 0xd8, 0x86)
+
+// {398A9E5A-E22F-4265-9D35-BF45433DDBE3}
+#define GUID_HW_CATENA_4460_M104(f)		\
+        MCCIADK_GUID_GEN_INIT(f,  0x398a9e5a, 0xe22f, 0x4265, 0x9d, 0x35, 0xbf, 0x45, 0x43, 0x3d, 0xdb, 0xe3)
 
 // {59F4EE9E-5DBE-4EEE-95B1-4F1C05731A2D}
 #define GUID_HW_CATENA_4550_BASE(f)		\
