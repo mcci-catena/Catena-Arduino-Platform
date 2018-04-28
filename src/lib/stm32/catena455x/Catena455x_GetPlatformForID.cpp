@@ -45,6 +45,10 @@ const CATENA_PLATFORM (* const Catena455x::vPlatforms[]) =
 	// entry 0 is the default
 	&gkPlatformCatena4550,
 	&gkPlatformCatena4551,
+	&gkPlatformCatena4551_m101,
+	&gkPlatformCatena4551_m102,
+	&gkPlatformCatena4551_m103,
+	&gkPlatformCatena4551_m104,
 	};
 
 const size_t Catena455x::nvPlatforms = sizeof(Catena455x::vPlatforms) / sizeof(Catena455x::vPlatforms[0]);

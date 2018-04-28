@@ -51,6 +51,13 @@ Revision history:
 |
 |	Platform GUIDs
 |
+|	After adding here, you must add the corresponding entries to 
+|	- [ ]  Catena_Platforms.here
+|	- [ ]  CatenaStm32_gk_PlatformHierarchy.cpp or 
+|	       CatenaSamd_gk_PlatformHierarchy.cpp
+|	- [ ]  As appropriate to the vPlatforms[] array for
+|	       Catena*_GetPlatformForID.cpp
+|
 \****************************************************************************/
 
 // {2E6DFED4-F577-47D5-9137-B3E63976AE92}
