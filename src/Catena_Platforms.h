@@ -79,6 +79,10 @@ extern const CATENA_PLATFORM    gkPlatformFeatherM0ProtoWingLora;
 
 extern const CATENA_PLATFORM	gkPlatformCatena4550;
 extern const CATENA_PLATFORM	gkPlatformCatena4551;
+extern const CATENA_PLATFORM	gkPlatformCatena4551_m101;
+extern const CATENA_PLATFORM	gkPlatformCatena4551_m102;
+extern const CATENA_PLATFORM	gkPlatformCatena4551_m103;
+extern const CATENA_PLATFORM	gkPlatformCatena4551_m104;
 
 } /* namespace McciCatena */
 

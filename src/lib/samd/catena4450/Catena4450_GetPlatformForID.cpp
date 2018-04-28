@@ -46,6 +46,8 @@ const CATENA_PLATFORM (* const Catena4450::vPlatforms[]) =
 	&gkPlatformCatena4450,
 	&gkPlatformCatena4450_m101,
 	&gkPlatformCatena4450_m102,
+	&gkPlatformCatena4450_m103,
+	&gkPlatformCatena4450_m104,
 	};
 
 const size_t Catena4450::nvPlatforms = sizeof(Catena4450::vPlatforms) / sizeof(Catena4450::vPlatforms[0]);
