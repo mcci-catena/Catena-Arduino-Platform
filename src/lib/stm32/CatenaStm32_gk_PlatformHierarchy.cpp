@@ -74,7 +74,7 @@ const CATENA_PLATFORM gkPlatformCatena4550 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
 	};
@@ -87,7 +87,7 @@ const CATENA_PLATFORM gkPlatformCatena4551 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
 	};
@@ -100,7 +100,7 @@ const CATENA_PLATFORM gkPlatformCatena4551_m101 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash |
 		CatenaBase::fM101
@@ -114,7 +114,7 @@ const CATENA_PLATFORM gkPlatformCatena4551_m102 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasSoilProbe |
 		CatenaBase::fHasWaterOneWire |
@@ -129,7 +129,7 @@ const CATENA_PLATFORM gkPlatformCatena4551_m103 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasSoilProbe |
 		CatenaBase::fHasSolarPanel |
@@ -145,7 +145,7 @@ const CATENA_PLATFORM gkPlatformCatena4551_m104 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasBme280 |
-		CatenaBase::fHasLuxSi1113 |
+		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasSoilProbe |
 		CatenaBase::fHasWaterOneWire |

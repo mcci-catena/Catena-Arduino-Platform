@@ -128,7 +128,9 @@ public:
                 // platform has 1MB or 2MB FLASH
                 fHasFlash = 1 << 13,
                 // platform has SI 1113 Lux sensor
-                fHasLuxSi1113 = 1 << 14,
+                fHasLuxSi1133 = 1 << 14,
+		// [[deprecated("use fHasLuxSi1133")]]
+		fHasLuxSi1113 = fHasLuxSi1133,
 		// platform has BME680
 		fHasBme680 = 1 << 15,
 		// platform has RS485 on Serial1, with A3 
