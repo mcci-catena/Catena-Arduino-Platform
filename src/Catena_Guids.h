@@ -52,7 +52,7 @@ Revision history:
 |	Platform GUIDs
 |
 |	After adding here, you must add the corresponding entries to 
-|	- [ ]  Catena_Platforms.here
+|	- [ ]  Catena_Platforms.h
 |	- [ ]  CatenaStm32_gk_PlatformHierarchy.cpp or 
 |	       CatenaSamd_gk_PlatformHierarchy.cpp
 |	- [ ]  As appropriate to the vPlatforms[] array for
@@ -148,6 +148,14 @@ Revision history:
 #define GUID_HW_CATENA_4460_M104(f)		\
         MCCIADK_GUID_GEN_INIT(f,  0x398a9e5a, 0xe22f, 0x4265, 0x9d, 0x35, 0xbf, 0x45, 0x43, 0x3d, 0xdb, 0xe3)
 
+// {EA8568EC-5DAE-46EE-929A-A3F6B00A565E}
+#define GUID_HW_CATENA_4470_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f, 0xea8568ec, 0x5dae, 0x46ee, 0x92, 0x9a, 0xa3, 0xf6, 0xb0, 0x0a, 0x56, 0x5e)
+
+// {DD0A37A6-E469-43EC-B173-FED795129455}
+#define GUID_HW_CATENA_4470_M101(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xdd0a37a6, 0xe469, 0x43ec, 0xb1, 0x73, 0xfe, 0xd7, 0x95, 0x12, 0x94, 0x55)
+
 // {59F4EE9E-5DBE-4EEE-95B1-4F1C05731A2D}
 #define GUID_HW_CATENA_4550_BASE(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0x59f4ee9e, 0x5dbe, 0x4eee, 0x95, 0xb1, 0x4f, 0x1c, 0x05, 0x73, 0x1a, 0x2d)
@@ -160,7 +168,6 @@ Revision history:
 #define GUID_HW_CATENA_4551_M101(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0xe8405eb4, 0x9618, 0x405d, 0x90, 0xb3, 0xcc, 0x13, 0x70, 0x17, 0xc4, 0x98)
 
-// {1de63656-2be7-45bd-a14c-c37086b09ab1}
 #define GUID_HW_CATENA_4551_M102(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0x1de63656, 0x2be7, 0x45bd, 0xa1, 0x4c, 0xc3, 0x70, 0x86, 0xb0, 0x9a, 0xb1)
 

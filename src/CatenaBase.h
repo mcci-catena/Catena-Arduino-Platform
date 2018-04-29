@@ -1,4 +1,4 @@
-/* CatenaBase.h	Sat Mar 31 2018 19:28:30 tmm */
+/* CatenaBase.h	Sat Apr 28 2018 16:52:31 tmm */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
         class CatenaBase interfaces.
 
 Version:
-        V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 4
+        V0.9.1	Sat Apr 28 2018 16:52:31 tmm	Edit level 4
 
 Copyright notice:
-        This file copyright (C) 2016-2017 by
+        This file copyright (C) 2016-2018 by
 
                 MCCI Corporation
                 3520 Krums Corners Road
@@ -19,9 +19,8 @@ Copyright notice:
 
         An unpublished work.  All rights reserved.
         
-        This file is proprietary information, and may not be disclosed or
-        copied without the prior permission of MCCI Corporation.
- 
+        This file is released under terms of the accompanying LICENSE file.
+
 Author:
         Terry Moore, MCCI Corporation	October 2016
 
@@ -35,8 +34,11 @@ Revision history:
    0.5.0  Sun Mar 19 2017 15:00:21  tmm
         Major update for comamand support, etc.
 
-   0.9.9  Sat Mar 31 2018 19:28:30  tmm
-		Add fHasBme680.
+   0.9.0  Sat Mar 31 2018 19:28:30  tmm
+	Add fHasBme680.
+
+   0.9.1  Sat Apr 28 2018 16:52:31  tmm
+	Add support for RS485 (for Catena 4470).
 
 */
 
@@ -127,8 +129,13 @@ public:
                 fHasFlash = 1 << 13,
                 // platform has SI 1113 Lux sensor
                 fHasLuxSi1113 = 1 << 14,
-				// platform has BME680
-				fHasBme680 = 1 << 15,
+		// platform has BME680
+		fHasBme680 = 1 << 15,
+		// platform has RS485 on Serial1, with A3 
+		// controlling power and A4 controlling TXE
+		fHasRS485 = 1 << 16,
+		// platform uses A2 to control VOUT1 (on terminals)
+		fHasVout1 = 1 << 17,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7

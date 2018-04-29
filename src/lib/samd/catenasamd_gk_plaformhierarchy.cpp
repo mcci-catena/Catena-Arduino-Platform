@@ -337,6 +337,35 @@ const CATENA_PLATFORM gkPlatformCatena4460_m104 =
 		CatenaBase::fM104
 	};
 
+const CATENA_PLATFORM gkPlatformCatena4470 =
+	{
+	Guid: GUID_HW_CATENA_4450_BASE(WIRE),
+	pParent: &gkPlatformM0LoRaTtnNyc,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasRS485 |
+		CatenaBase::fHasVout1,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4470_m101 =
+	{
+	Guid: GUID_HW_CATENA_4450_M101(WIRE),
+	pParent: &gkPlatformCatena4470,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxRohm |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasRS485 |
+		CatenaBase::fHasVout1,
+		CatenaBase::fM101
+	};
+
 
 /****************************************************************************\
 |
