@@ -1,4 +1,4 @@
-# The Catnena-Arduino-Platform Library
+# The MCCI Catena Arduino Platform Library
 
 This library provides a simple-to-use framework for taking advantage of many of the features of the MCCI Catena&reg; Arduino products.
 
@@ -6,13 +6,14 @@ _Apologies_: This document is a work in progress, and is published in this inter
 
 [![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/V0.9.0...master)
 
-
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
 - [Overview](#overview)
 - [Coding Practices](#coding-practices)
 - [Components](#components)
+	- [Namespace `McciCatena`](#namespace-mccicatena)
 	- [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
+	- [Board-specific Classes](#board-specific-classes)
 	- [Platform Management](#platform-management)
 	- [Pollable Interface](#pollable-interface)
 	- [LoRaWAN Support](#lorawan-support)
@@ -56,9 +57,45 @@ In order to assist people who are not everyday readers and writer of C++, this l
 
 ## Components
 
+### Namespace `McciCatena`
+
+Unless otherwise specified, all symbols are defined inside namespace `McciCatena`. Usually sketches begin with something like this:
+
+```c++
+#include <Catena.h>
+
+//... other includes
+
+using namespace McciCatena;
+```
+
 ### Class `Catena` and header file `Catena.h`
 
 `Catena.h` is the main header file for the library. It uses the `#defines` injected by `board.txt` and `platform.txt` from the Arduino environment to create a class named `Catena` derived from the `Catena...` class that is specific to the board for which the software is being built. This allows examples to be source-compatible, no matter which Catena is our target.
+
+### Board-specific Classes
+
+`Catena.h` defines the class `Catena` in terms on one of the following classes, using a formula like this:
+
+```c++
+#include <CatenaXYZ.h>
+
+//... other includes
+
+using namespace McciCatena;
+using Catena = CatenaXYZ;
+```
+
+The known classes and header files are:
+
+Class                 | Header File             | Description
+----------------------|-------------------------|------------------
+`CatenaFeatherM0LoRa` | `CatenaFeatherM0LoRa.h` | Generic for use with a Feather M0 LoRa
+`Catena4410`          | `Catena410.h`           | First generation MCCI systems with BME180
+`Catena4420`          | `Catena4410.h`          | Feather M0 Bluetooth + LoRa Radio Wing
+`Catena4450`          | `Catena4450.h`          | MCCI Catena 4450
+`Catena4460`          | `Catena4460.h`          | MCCI Catena 4460
+`Catena4470`          | `Catena4470.h`          | MCCI Catena 4470
 
 ### Platform Management
 
@@ -153,7 +190,6 @@ typedef void (cStreamLineCollector::ReadCompleteCbFn)(
 - `nBuffer` is passed as the actual number of data bytes in the buffer. In case of error, `nBuffer` will be zero.
 
 #### The command parser
-
 
 ### `Catena_functional.h`
 
