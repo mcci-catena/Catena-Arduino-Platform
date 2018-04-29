@@ -43,12 +43,15 @@ Revision history:
 
 #pragma once
 
-#if defined(MCCI_CATENA_4460)
-# include "Catena4460.h"
-# define CATENA_H_SUPER_  McciCatena::Catena4460
-#elif defined(MCCI_CATENA_4450)
+#if defined(MCCI_CATENA_4450)
 # include "Catena4450.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4450
+#elif defined(MCCI_CATENA_4460)
+# include "Catena4460.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4460
+#elif defined(MCCI_CATENA_4470)
+# include "Catena4470.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4470
 #elif defined(ARDUINO_SAMD_FEATHER_M0)
 # include "CatenaFeatherM0.h"
 # define CATENA_H_SUPER_  McciCatena::CatenaFeatherM0
