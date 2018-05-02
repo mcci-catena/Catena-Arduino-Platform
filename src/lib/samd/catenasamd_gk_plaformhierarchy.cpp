@@ -339,7 +339,7 @@ const CATENA_PLATFORM gkPlatformCatena4460_m104 =
 
 const CATENA_PLATFORM gkPlatformCatena4470 =
 	{
-	Guid: GUID_HW_CATENA_4450_BASE(WIRE),
+	Guid: GUID_HW_CATENA_4470_BASE(WIRE),
 	pParent: &gkPlatformM0LoRaTtnNyc,
 	PlatformFlags:
 		CatenaBase::fHasLoRa |
@@ -353,7 +353,7 @@ const CATENA_PLATFORM gkPlatformCatena4470 =
 
 const CATENA_PLATFORM gkPlatformCatena4470_m101 =
 	{
-	Guid: GUID_HW_CATENA_4450_M101(WIRE),
+	Guid: GUID_HW_CATENA_4470_M101(WIRE),
 	pParent: &gkPlatformCatena4470,
 	PlatformFlags:
 		CatenaBase::fHasLoRa |
