@@ -130,6 +130,7 @@ public:
                 BLOCK64_SIZE		= 64 * 1024,
                 SECTOR_PER_BLOCK64	= BLOCK64_SIZE / SECTOR_SIZE,
                 PAGE_PER_BLOCK64	= BLOCK64_SIZE / PAGE_SIZE,
+		DEVICE_SIZE_BYTES	= 1024 * 1024,
                 };
 
         enum : uint32_t
