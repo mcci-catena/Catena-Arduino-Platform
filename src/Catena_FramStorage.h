@@ -64,6 +64,7 @@ public:
                 kAppKey = 13,
                 kBootCount = 14,
                 kOperatingFlags = 15,
+		kBme680Cal = 16,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
 		};

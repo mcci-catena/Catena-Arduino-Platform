@@ -22,6 +22,7 @@ _Apologies_: This document is a work in progress, and is published in this inter
 			- [Object Storage Structure](#object-storage-structure)
 			- [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
 			- [The FRAM header object](#the-fram-header-object)
+		- [Adding FRAM objects](#adding-fram-objects)
 		- [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
 	- [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
 		- [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
@@ -156,6 +157,29 @@ This format is summarized in the following tables.
 An FRAM store managed by this library is expected to begin with a header object. A header object is identified by the well-known GUID `{1DE7CDCD-0647-4B3C-A18D-8138A3D9613F}` and the key `kHeader` (zero).
 
 The header object carries a single 4-byte (`uint32_t`) payload, which is interpreted as the end-of-storage address -- the offset of the first byte on the FRAM that is not used for object storage. If an object is added to the store, this pointer is updated after the new object object has been fully committed. The new object is not permanently committed until the end-of-storage pointer is atomically updated.
+
+#### Adding FRAM objects
+
+1. Determine the GUID and key you want to use. If you are adding the item as part of the Catena library, you can use the GUID `GUID_FRAM_CATENA_V1(WIRE)`, `{1DE7CDCD-0647-4B3C-A18D-8138A3D9613F}`; add the key to `McciCatena::cFramStorage::StandardKeys`, defined in `Catena_FramStorage.h`.
+
+   There is no presentable way to use a non-standard GUID; several changes must be made in `Catena_Fram.cpp` to enable this.
+
+2. Ultimately, the metadata for your new object is represented by a 32-bit value of type `cFramStorage::StandardItem`. The constructor takes three (optionally four) arguments:
+
+   - `uKey`, the 8-bit key value
+   - `uSize`, the 16-bit object size. (If your object is variable size, you must specify a maximum size, and the actual size of the object must be represented as part of the object data somehow.)
+   - `fNumber`, a boolean value. If true, then the value represents a little-endian value; if false, big-endian. This is used for displays and the command interpreter.
+   - Optionally `fReplicated` (assumed `true`), which controls whether the replicated data-storage scheme should be used.
+
+3. Find the table `McciCatena::cFramStorage::vItemDefs[]` in `Catena_FramStorage.cpp`, and add your `StandardItem` value at the appropriate offset.
+
+4. To query the value of your object, you can use `gCatena.getFram()->getField(uKey, Value)`; this is a templated function which will set Value according toe the curent value stored for `uKey`.
+
+   - You may also use `gCatena.getFram()->getField(uKey, (uint8_t *)&buffer, sizeof(buffer))`.
+
+5. To set the value of your object, you can use `gCatena.getFram()->saveField(uKey, Value)`; this is a templated function which will write Value to the object identified by `uKey`.
+
+   - You may also use `gCatena.getFram()->saveField(uKey, (const uint8_t *)&buffer, sizeof(buffer))`.
 
 #### Class hierarchy within the FRAM library
 
