@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_begin.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_LoRaWAN_begin.cpp	Wed May 09 2018 12:15:37 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32L0::LoRaWAN::begin()
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.10.0	Wed May 09 2018 12:15:37 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -29,14 +29,18 @@ Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
 
+   0.10.0  Wed May 09 2018 12:15:37  chwon
+	Use PIN_SX1276_ANT_SWITCH_TX_BOOST and PIN_SX1276_ANT_SWITCH_TX_RFO.
+
 */
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include <CatenaStm32L0.h>
+#include <CatenaStm32L0LoRa.h>
 
 #include <mcciadk_baselib.h>
-using namespace McciCatena;
+
+using namespace McciCatena;
 
 /****************************************************************************\
 |
@@ -87,11 +91,11 @@ bool CatenaStm32L0::LoRaWAN::begin(
 	/* here's where we do any required post-processing */
 	/* (none at the moment) */
 
-	pinMode(D30, OUTPUT);	/* ANT_SWITCH_TX_BOOST */
-	pinMode(D31, OUTPUT);	/* ANT_SWITCH_TX_RFO */
+	pinMode(CatenaStm32L0LoRa::PIN_SX1276_ANT_SWITCH_TX_BOOST, OUTPUT);
+	pinMode(CatenaStm32L0LoRa::PIN_SX1276_ANT_SWITCH_TX_RFO, OUTPUT);
 
-	digitalWrite(D30, 1);
-	digitalWrite(D31, 0);
+	digitalWrite(CatenaStm32L0LoRa::PIN_SX1276_ANT_SWITCH_TX_BOOST, 1);
+	digitalWrite(CatenaStm32L0LoRa::PIN_SX1276_ANT_SWITCH_TX_RFO, 0);
 
 	/* indicate success to the client */
 	return true;
