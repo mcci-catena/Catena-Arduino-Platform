@@ -19,7 +19,6 @@ Author:
 #pragma once
 
 #include <Arduino.h>
-#include <Catena4470.h>
 #include <SPI.h>
 
 namespace McciCatena {
