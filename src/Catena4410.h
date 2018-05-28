@@ -41,7 +41,9 @@ Revision history:
 # include "CatenaFeatherM0.h"
 #endif
 
-#include <Arduino_LoRaWAN_ttn.h>
+#ifndef _CATENAFEATHERM0LORA_H_
+# include "CatenaFeatherM0LoRa.h"
+#endif
 
 namespace McciCatena {
 
@@ -82,10 +84,10 @@ private:
 || The LoRaWAN class for the Catena4410. For now, we assume The Things
 || Network.
 */
-class Catena4410::LoRaWAN : public Arduino_LoRaWAN_ttn
+class Catena4410::LoRaWAN : public CatenaFeatherM0LoRa::LoRaWAN
 	{
 public:
-        using Super = Arduino_LoRaWAN_ttn;
+        using Super = CatenaFeatherM0LoRa::LoRaWAN;
 
 	/*
 	|| the constructor.
