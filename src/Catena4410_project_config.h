@@ -34,7 +34,7 @@ Revision history:
 #ifndef _CATENA4410_PROJECT_CONFIG_H_		/* prevent multiple includes */
 #define _CATENA4410_PROJECT_CONFIG_H_
 
-#include "../../arduino-lmic/project_config/lmic_project_config.h"
+#include "../../arduino-lmic/src/lmic/lmic_config_preconditions.h"
 
 /* define the following non-zero for using a static key file */
 #ifndef CATENA4410_USE_STATIC_KEYS /* PARAM */
