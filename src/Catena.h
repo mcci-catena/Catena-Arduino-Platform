@@ -52,6 +52,12 @@ Revision history:
 #elif defined(MCCI_CATENA_4470)
 # include "Catena4470.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4470
+#elif defined(MCCI_CATENA_4410)
+# include "Catena4410.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4410
+#elif defined(MCCI_CATENA_4420)
+# include "Catena4420.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4420
 #elif defined(ARDUINO_SAMD_FEATHER_M0)
 # include "CatenaFeatherM0.h"
 # define CATENA_H_SUPER_  McciCatena::CatenaFeatherM0
