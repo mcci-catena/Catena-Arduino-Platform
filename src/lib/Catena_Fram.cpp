@@ -954,12 +954,21 @@ static int getnibble(const char * &pValue)
                 return -1;
         }
 
-static int getbyte(const char * &pValue)
+static int getbyte(const char * &pValue, const char * &pTerm)
         {
         int v;
 
+        if (pTerm == nullptr || pTerm == pValue)
+                {
+                pTerm = std::strchr(pValue, '-');
+                if (pTerm == nullptr)
+                        pTerm = std::strchr(pValue, '\0');
+                }
+
+        bool fHavePair = ((pTerm - pValue) & 1) == 0;
+
         v = getnibble(pValue);
-        if (v >= 0)
+        if (fHavePair && v >= 0)
                 {
                 int v2;
                 v2 = getnibble(pValue);
@@ -990,15 +999,22 @@ McciCatena::cFram::Cursor::parsevalue(
 
         // value is hex, and may have embedded '-' to separate
         // bytes. At the end, if it's a number, we have to reverse 
-        // it.... for sanity, start with zeros.
+        // it.... for sanity, start with zeros.  As a further
+        // headache, if we have an odd-number of consecutive numeric
+        // nibbles, we need to right justify, not left.
         std::memset(pData, 0, nData);
 
         char c;
         size_t i;
 
+        i = 0;
+
+        const char *pTerm = nullptr;
+
         for (i = 0; i < nData; )
                 {
-                int v = getbyte(pValue);
+                // find the end of this string of chars
+                int v = getbyte(pValue, pTerm);
                 if (v < 0)
                         {
                         if (pValue[0] == '\0')
@@ -1009,7 +1025,13 @@ McciCatena::cFram::Cursor::parsevalue(
 
                 pData[i++] = uint8_t(v);
                 if (pValue[0] == '-' && pValue[1] != '\0')
+                        {
+                        // skip the separator
                         ++pValue;
+
+                        // reset the scanner:
+                        pTerm = nullptr;
+                        }
                 }
 
         // ok, we might have fewer bytes than specified. in that case, right justify.
