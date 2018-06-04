@@ -1,11 +1,11 @@
-/* Catena4460_GetPlatformForID.cpp	Wed Apr 12 2017 13:26:14 tmm */
+/* CatenaWingFram2k_GetPlatformForID.cpp	Wed Apr 12 2017 13:26:14 tmm */
 
 /*
 
-Module:  Catena4460_GetPlatformForID.cpp
+Module:  CatenaWingFram2k_GetPlatformForID.cpp
 
 Function:
-	Catena4460::GetPlatformForID()
+	CatenaWingFram2k::GetPlatformForID()
 
 Version:
 	V0.5.0	Wed Apr 12 2017 13:26:14 tmm	Edit level 1
@@ -33,28 +33,16 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4460.h"
+#include "CatenaWingFram2k.h"
 
 #include "Catena_Log.h"
 #include "Catena_Platforms.h"
 
 using namespace McciCatena;
-
-const CATENA_PLATFORM (* const Catena4460::vPlatforms[]) =
-	{
-	// entry 0 is the default
-	&gkPlatformCatena4460,
-	&gkPlatformCatena4460_m101,
-	&gkPlatformCatena4460_m102,
-	&gkPlatformCatena4460_m103,
-	&gkPlatformCatena4460_m104,
-	};
-
-const size_t Catena4460::nvPlatforms = sizeof(Catena4460::vPlatforms) / sizeof(Catena4460::vPlatforms[0]);
 
 /*
 
-Name:	Catena4460::GetPlatformForID()
+Name:	CatenaWingFram2k::GetPlatformForID()
 
 Function:
 	Get a platform given a CPU ID and FRAM.
@@ -62,7 +50,7 @@ Function:
 Definition:
 	public: virtual 
 		const CATENA_PLATFORM * 
-			Catena4460::GetPlatformForID(
+			CatenaWingFram2k::GetPlatformForID(
 				const UniqueID_buffer_t *pIdBuffer,
 				EUI64_buffer_t *pSysEui,
 				uint32_t *pOperatingFlags
@@ -86,7 +74,7 @@ Returns:
 
 /* public virtual override */
 const CATENA_PLATFORM * 
-Catena4460::GetPlatformForID(
+CatenaWingFram2k::GetPlatformForID(
 	const UniqueID_buffer_t *pIdBuffer,
 	EUI64_buffer_t *pSysEui,
 	uint32_t *pOperatingFlags
@@ -95,7 +83,7 @@ Catena4460::GetPlatformForID(
 	/* we ignore the CPUID unless we can't get a GUID */
 	MCCIADK_GUID_WIRE PlatformGuid;
 
-        gLog.printf(gLog.kAlways, "Catena4460::GetPlatformForID entered\n");
+        gLog.printf(gLog.kAlways, "CatenaWingFram2k::GetPlatformForID entered\n");
 
 	// set up the SysEUI
 	if (!this->m_Fram.getField(
@@ -142,7 +130,11 @@ Catena4460::GetPlatformForID(
 		SavedFlags = 0;
 		}
 
-	// search for a matching GUID		
+	// search for a matching GUID
+        const CATENA_PLATFORM * const * vPlatforms;
+        size_t nvPlatforms;
+
+        this->getPlatformTable(vPlatforms, nvPlatforms);
         const CATENA_PLATFORM *pPlatform;
 
 	for (size_t i = 0; i < nvPlatforms; ++i)
@@ -189,7 +181,7 @@ Catena4460::GetPlatformForID(
 	}
 
 void
-Catena4460::savePlatform(
+CatenaWingFram2k::savePlatform(
 	const CATENA_PLATFORM &Platform,
 	const EUI64_buffer_t *pSysEUI,
 	const uint32_t *pOperatingFlags

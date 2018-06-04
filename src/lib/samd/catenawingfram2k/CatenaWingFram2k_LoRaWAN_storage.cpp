@@ -1,8 +1,8 @@
-/* Catena4450_LoRaWAN_storage.cpp	Fri Mar 17 2017 22:49:16 tmm */
+/* CatenaWingFram2k_LoRaWAN_storage.cpp	Fri Mar 17 2017 22:49:16 tmm */
 
 /*
 
-Module:  Catena4450_LoRaWAN_storage.cpp
+Module:  CatenaWingFram2k_LoRaWAN_storage.cpp
 
 Function:
 	Interface from LoRaWAN to FRAM.
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4450.h"
+#include "CatenaWingFram2k.h"
 
 #include "Catena_Fram.h"
 #include "Catena_Log.h"
@@ -42,15 +42,15 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena4450::LoRaWAN::GetAbpProvisioningInfo()
+Name:	CatenaWingFram2k::LoRaWAN::GetAbpProvisioningInfo()
 
 Function:
 	Get the ABP info (which is also what's saved after an OTAA Join)
 
 Definition:
 	public: virtual bool
-		Catena4450::LoRaWAN::GetAbpProvisioningInfo(
-		        Catena4450::LoRaWAN::AbpProvisioningInfo *pInfo
+		CatenaWingFram2k::LoRaWAN::GetAbpProvisioningInfo(
+		        CatenaWingFram2k::LoRaWAN::AbpProvisioningInfo *pInfo
 		        ) override;
 
 Description:
@@ -72,11 +72,11 @@ Returns:
 */
 
 bool
-Catena4450::LoRaWAN::GetAbpProvisioningInfo(
-        Catena4450::LoRaWAN::AbpProvisioningInfo *pInfo
+CatenaWingFram2k::LoRaWAN::GetAbpProvisioningInfo(
+        CatenaWingFram2k::LoRaWAN::AbpProvisioningInfo *pInfo
         )
         {
-        Catena4450 * const pCatena = this->m_pCatena;
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
 	auto const pFram = pCatena->getFram();
 	cFram::Cursor framNwkSKey(pFram),
 		      framAppSKey(pFram),
@@ -119,15 +119,15 @@ Catena4450::LoRaWAN::GetAbpProvisioningInfo(
 
 /*
 
-Name:	Catena4450::LoRaWAN::GetOtaaProvisioningInfo()
+Name:	CatenaWingFram2k::LoRaWAN::GetOtaaProvisioningInfo()
 
 Function:
 	Fetch OTAA provisioning info from FRAM (if availalbe)
 
 Definition:
 	public: virtual bool
-		Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
-		        Catena4450::LoRaWAN::OtaaProvisioningInfo *pInfo
+		CatenaWingFram2k::LoRaWAN::GetOtaaProvisioningInfo(
+		        CatenaWingFram2k::LoRaWAN::OtaaProvisioningInfo *pInfo
 		        ) override;
 
 Description:
@@ -146,11 +146,11 @@ Returns:
 */
 
 bool
-Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
-        Catena4450::LoRaWAN::OtaaProvisioningInfo *pInfo
+CatenaWingFram2k::LoRaWAN::GetOtaaProvisioningInfo(
+        CatenaWingFram2k::LoRaWAN::OtaaProvisioningInfo *pInfo
         )
         {
-        Catena4450 * const pCatena = this->m_pCatena;
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
 	cFram::Cursor framAppEUI(pCatena->getFram()), 
 		      framDevEUI(pCatena->getFram()), 
 		      framAppKey(pCatena->getFram());
@@ -184,12 +184,12 @@ Catena4450::LoRaWAN::GetOtaaProvisioningInfo(
 	return true;
 	}
 
-Catena4450::LoRaWAN::ProvisioningStyle
-Catena4450::LoRaWAN::GetProvisioningStyle(
+CatenaWingFram2k::LoRaWAN::ProvisioningStyle
+CatenaWingFram2k::LoRaWAN::GetProvisioningStyle(
 	void
 	)
 	{
-        Catena4450 * const pCatena = this->m_pCatena;
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
         cFram::Cursor framJoin(pCatena->getFram());
 
         if (! framJoin.locate(cFramStorage::vItemDefs[cFramStorage::kJoin]))
@@ -228,35 +228,35 @@ Catena4450::LoRaWAN::GetProvisioningStyle(
 	}
 
 void
-Catena4450::LoRaWAN::NetSaveFCntUp(
+CatenaWingFram2k::LoRaWAN::NetSaveFCntUp(
 	uint32_t uFCntUp
 	)
 	{
-        Catena4450 * const pCatena = this->m_pCatena;
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
         auto const pFram = pCatena->getFram();
 
         pFram->saveField(cFramStorage::kFCntUp, uFCntUp);
 	}
 
 void
-Catena4450::LoRaWAN::NetSaveFCntDown(
+CatenaWingFram2k::LoRaWAN::NetSaveFCntDown(
 	uint32_t uFCntDown
 	)
 	{
-        Catena4450 * const pCatena = this->m_pCatena;
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
         auto const pFram = pCatena->getFram();
 
         pFram->saveField(cFramStorage::kFCntDown, uFCntDown);
         }
 
 void 
-Catena4450::LoRaWAN::NetSaveSessionInfo(
+CatenaWingFram2k::LoRaWAN::NetSaveSessionInfo(
 	const SessionInfo &Info, 
 	const uint8_t *pExtraInfo, 
 	size_t nExtraInfo
 	)
 	{
-        Catena4450 * const pCatena = this->m_pCatena;
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
 	auto const pFram = pCatena->getFram();
 
         pFram->saveField(cFramStorage::kNetID,   Info.V1.NetID);

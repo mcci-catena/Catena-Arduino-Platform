@@ -1,11 +1,11 @@
-/* Catena4450_LoRaWAN_begin.cpp	Sun Mar 12 2017 19:31:15 tmm */
+/* CatenaWingFram2k_LoRaWAN_begin.cpp	Sun Mar 12 2017 19:31:15 tmm */
 
 /*
 
-Module:  Catena4450_LoRaWAN_begin.cpp
+Module:  CatenaWingFram2k_LoRaWAN_begin.cpp
 
 Function:
-	Catena4450::LoRaWAN::begin()
+	CatenaWingFram2k::LoRaWAN::begin()
 
 Version:
 	V0.5.0	Sun Mar 12 2017 19:31:15 tmm	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4450.h"
+#include "CatenaWingFram2k.h"
 
 #include "Catena_Log.h"
 #include "mcciadk_baselib.h"
@@ -42,14 +42,14 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena4450::LoRaWAN::begin()
+Name:	CatenaWingFram2k::LoRaWAN::begin()
 
 Function:
 	Record linkage to main Catena object and set up LoRaWAN.
 
 Definition:
-	bool Catena4450::LoRaWAN::begin(
-		Catena4450 *pParent
+	bool CatenaWingFram2k::LoRaWAN::begin(
+		CatenaWingFram2k *pParent
 		);
 
 Description:
@@ -61,11 +61,11 @@ Returns:
 */
 
 bool 
-Catena4450::LoRaWAN::begin(
-	Catena4450 *pParent
+CatenaWingFram2k::LoRaWAN::begin(
+	CatenaWingFram2k *pParent
 	)
 	{
-        static const char FUNCTION[] = "Catena4450::LoRaWAN::begin";
+        static const char FUNCTION[] = "CatenaWingFram2k::LoRaWAN::begin";
 
 	/* set things up */
 	this->m_pCatena = pParent;

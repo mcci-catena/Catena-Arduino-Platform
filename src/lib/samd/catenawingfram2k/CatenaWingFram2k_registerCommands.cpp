@@ -1,14 +1,14 @@
-/* Catena4460_LoRaWAN_commands.cpp	Sun Mar 26 2017 12:01:36 tmm */
+/* CatenaWingFram2k_registerCommands.cpp	Sun Mar 19 2017 14:53:33 tmm */
 
 /*
 
-Module:  Catena4460_LoRaWAN_commands.cpp
+Module:  CatenaWingFram2k_registerCommands.cpp
 
 Function:
-	The command engine for lorawan commands on the Catena 4460.
+	CatenaWingFram2k::registerCommands()
 
 Version:
-	V0.5.0	Sun Mar 26 2017 12:01:36 tmm	Edit level 1
+	V0.5.0	Sun Mar 19 2017 14:53:33 tmm	Edit level 1
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -18,32 +18,39 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
 Revision history:
-   0.5.0  Sun Mar 26 2017 12:01:36  tmm
+   0.5.0  Sun Mar 19 2017 14:53:33  tmm
 	Module created.
 
 */
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4460.h"
+#include "CatenaWingFram2k.h"
 
-#include "Catena_Log.h"
-
-#include <cstring>
+#include "Catena_CommandStream.h"
 
 using namespace McciCatena;
-
+
 /****************************************************************************\
 |
-|	The command table
+|	Manifest constants
+|
+\****************************************************************************/
+
+static cCommandStream::CommandFn doPlatformGUID;
+static cCommandStream::CommandFn doSysEUI;
+
+/****************************************************************************\
+|
+|	The command tables
 |
 \****************************************************************************/
 
@@ -55,8 +62,7 @@ static const cCommandStream::cEntry sDispatchEntries[] =
 	};
 
 static cCommandStream::cDispatch
-sDispatch(sDispatchEntries, sizeof(sDispatchEntries), "lorawan");
-
+sDispatch(sDispatchEntries, sizeof(sDispatchEntries), "system");
 
 struct KeyMap
 	{
@@ -66,51 +72,40 @@ struct KeyMap
 
 static KeyMap sKeyMap[] =
 	{
-	{ "deveui", cFramStorage::StandardKeys::kDevEUI },
-	{ "appeui", cFramStorage::StandardKeys::kAppEUI },
-	{ "appkey", cFramStorage::StandardKeys::kAppKey, },
-	{ "nwkskey", cFramStorage::StandardKeys::kNwkSKey, },
-	{ "appskey", cFramStorage::StandardKeys::kAppSKey, },
-	{ "devaddr", cFramStorage::StandardKeys::kDevAddr, },
-	{ "netid", cFramStorage::StandardKeys::kNetID, },
-	{ "fcntup", cFramStorage::StandardKeys::kFCntUp, },
-	{ "fcntdown", cFramStorage::StandardKeys::kFCntDown, },
-	{ "join", cFramStorage::StandardKeys::kJoin, },
-	};
-
-/*
+	{ "PlatformGUID", cFramStorage::StandardKeys::kPlatformGuid },
+	{ "SysEUI", cFramStorage::StandardKeys::kSysEUI },
+        { "OperatingFlags", cFramStorage::StandardKeys::kOperatingFlags },
+        };
 
-Name:	Catena4460::LoRaWAN::addCommands()
 
-Function:
-	Add the lorawan commands to the Catena command table.
+/****************************************************************************\
+|
+|	The method function
+|
+\****************************************************************************/
 
-Definition:
-	private: bool Catena4460::LoRaWAN::addCommands();
-
-Description:
-	All the commands are added to the system command table.
-
-Returns:
-	true for success.
-
-*/
-
-bool 
-Catena4460::LoRaWAN::addCommands()
+/* protected virtual */
+void
+CatenaWingFram2k::registerCommands()
 	{
-	gLog.printf(gLog.kAlways, "Catena4460::LoRaWAN::addCommands(): adding\n");
-	this->m_pCatena->addCommands(
-		sDispatch, static_cast<void *>(this)
-		);
+	this->Super::registerCommands();
+
+	this->addCommands(sDispatch, (void *) this);
 	}
+
+/****************************************************************************\
+|
+|	The commands
+|
+\****************************************************************************/
+
 
 /*
 
 Name:	doConfigure()
 
 Function:
-	Implement the LoRaWAN value set/get commands
+	Implement the system value set/get commands
 
 Definition:
 	static cCommandStream::CommandFn doConfigure;
@@ -137,7 +132,6 @@ Returns:
 
 */
 
-
 static cCommandStream::CommandStatus
 doConfigure(
 	cCommandStream *pThis,
@@ -146,9 +140,7 @@ doConfigure(
 	char **argv
 	)
 	{
-	Catena4460::LoRaWAN * const pLoRaWAN = 
-		static_cast<Catena4460::LoRaWAN *>(pContext);
-	Catena4460 * const pCatena = pLoRaWAN->getCatena();
+	CatenaWingFram2k * const pCatena = static_cast<CatenaWingFram2k *>(pContext);
 	uint8_t databuf[16];
 
 	if (argc < 2)
@@ -168,7 +160,7 @@ doConfigure(
 			cursor.locate(p.uKey);
 			}
 		}
-	
+
 	if (! cursor.isbound())
 		{
 		pThis->printf(
@@ -246,5 +238,4 @@ doConfigure(
 		}
 	}
 
-        
 #endif // ARDUINO_ARCH_SAMD
