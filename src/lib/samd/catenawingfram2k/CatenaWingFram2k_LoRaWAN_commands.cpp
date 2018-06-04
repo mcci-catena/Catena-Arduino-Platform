@@ -1,11 +1,11 @@
-/* Catena4470_LoRaWAN_commands.cpp	Sun Mar 26 2017 12:01:36 tmm */
+/* CatenaWingFram2k_LoRaWAN_commands.cpp	Sun Mar 26 2017 12:01:36 tmm */
 
 /*
 
-Module:  Catena4470_LoRaWAN_commands.cpp
+Module:  CatenaWingFram2k_LoRaWAN_commands.cpp
 
 Function:
-	The command engine for lorawan commands on the Catena 4470.
+	The command engine for lorawan commands on the Catena WingFram2k.
 
 Version:
 	V0.5.0	Sun Mar 26 2017 12:01:36 tmm	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4470.h"
+#include "CatenaWingFram2k.h"
 
 #include "Catena_Log.h"
 
@@ -80,13 +80,13 @@ static KeyMap sKeyMap[] =
 
 /*
 
-Name:	Catena4470::LoRaWAN::addCommands()
+Name:	CatenaWingFram2k::LoRaWAN::addCommands()
 
 Function:
 	Add the lorawan commands to the Catena command table.
 
 Definition:
-	private: bool Catena4470::LoRaWAN::addCommands();
+	private: bool CatenaWingFram2k::LoRaWAN::addCommands();
 
 Description:
 	All the commands are added to the system command table.
@@ -97,9 +97,9 @@ Returns:
 */
 
 bool 
-Catena4470::LoRaWAN::addCommands()
+CatenaWingFram2k::LoRaWAN::addCommands()
 	{
-	gLog.printf(gLog.kAlways, "Catena4470::LoRaWAN::addCommands(): adding\n");
+	gLog.printf(gLog.kAlways, "CatenaWingFram2k::LoRaWAN::addCommands(): adding\n");
 	this->m_pCatena->addCommands(
 		sDispatch, static_cast<void *>(this)
 		);
@@ -146,9 +146,9 @@ doConfigure(
 	char **argv
 	)
 	{
-	Catena4470::LoRaWAN * const pLoRaWAN = 
-		static_cast<Catena4470::LoRaWAN *>(pContext);
-	Catena4470 * const pCatena = pLoRaWAN->getCatena();
+	CatenaWingFram2k::LoRaWAN * const pLoRaWAN = 
+		static_cast<CatenaWingFram2k::LoRaWAN *>(pContext);
+	CatenaWingFram2k * const pCatena = pLoRaWAN->getCatena();
 	uint8_t databuf[16];
 
 	if (argc < 2)

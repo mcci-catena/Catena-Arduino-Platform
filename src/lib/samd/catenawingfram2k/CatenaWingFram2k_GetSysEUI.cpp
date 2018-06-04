@@ -1,11 +1,11 @@
-/* Catena4470_GetSysEUI.cpp	Wed Apr 12 2017 13:05:46 tmm */
+/* CatenaWingFram2k_GetSysEUI.cpp	Wed Apr 12 2017 13:05:46 tmm */
 
 /*
 
-Module:  Catena4470_GetSysEUI.cpp
+Module:  CatenaWingFram2k_GetSysEUI.cpp
 
 Function:
-	Catena4470::GetSysEUI()
+	CatenaWingFram2k::GetSysEUI()
 
 Version:
 	V0.5.0	Wed Apr 12 2017 13:05:46 tmm	Edit level 1
@@ -33,20 +33,20 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4470.h"
+#include "CatenaWingFram2k.h"
 
 using namespace McciCatena;
 
 /*
 
-Name:	Catena4470::GetSysEUI()
+Name:	CatenaWingFram2k::GetSysEUI()
 
 Function:
 	Returns the SysEUI for this platform
 
 Definition:
 	const CatenaBase::EUI64_buffer_t *
-		Catena4470::GetSysEUI(
+		CatenaWingFram2k::GetSysEUI(
 			void
 			);
 
@@ -59,8 +59,8 @@ Returns:
 */
 
 /* public: virtual override */
-const Catena4470::EUI64_buffer_t *
-Catena4470::GetSysEUI(void)
+const CatenaWingFram2k::EUI64_buffer_t *
+CatenaWingFram2k::GetSysEUI(void)
 	{
 	if (! this->m_Fram.getField(cFramStorage::StandardKeys::kSysEUI,
 			this->m_SysEUI

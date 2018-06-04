@@ -1,11 +1,11 @@
-/* Catena4460_begin.cpp	Sun Mar 12 2017 19:19:28 tmm */
+/* CatenaWingFram2k_begin.cpp	Sun Mar 12 2017 19:19:28 tmm */
 
 /*
 
-Module:  Catena4460_begin.cpp
+Module:  CatenaWingFram2k_begin.cpp
 
 Function:
-	Catena4460::begin()
+	CatenaWingFram2k::begin()
 
 Version:
 	V0.5.0	Sun Mar 12 2017 19:19:28 tmm	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include "Catena4460.h"
+#include "CatenaWingFram2k.h"
 
 #include "Catena_Log.h"
 
@@ -41,16 +41,16 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena4460::begin()
+Name:	CatenaWingFram2k::begin()
 
 Function:
 	Set up all the well-known board peripherals.
 
 Definition:
-	bool Catena4460::begin();
+	bool CatenaWingFram2k::begin();
 
 Description:
-	Issues begin() for all the Catena4460 things.
+	Issues begin() for all the CatenaWingFram2k things.
 
 Returns:
 	true for success, false for failure.
@@ -58,10 +58,10 @@ Returns:
 */
 
 
-bool Catena4460::begin()
+bool CatenaWingFram2k::begin()
 	{
         delay(2000);
-        gLog.printf(gLog.kAlways, "+Catena4460::begin()\n");
+        // gLog.printf(gLog.kAlways, "+CatenaWingFram2k::begin()\n");
 
         // we must initialize the FRAM before we call our parent, 
         // because FRAM is used for stable storage of platform info.
