@@ -40,8 +40,6 @@ Revision history:
 # include "CatenaFeatherM0.h"
 #endif
 
-#include <Arduino_LoRaWAN_ttn.h>
-
 namespace McciCatena {
 
 class CatenaFeatherM0LoRa : public CatenaFeatherM0
