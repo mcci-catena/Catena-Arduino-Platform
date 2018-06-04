@@ -40,7 +40,7 @@ Revision history:
 # include "CatenaSamd21.h"
 #endif
 
-#define ARDUINO_LORAWAN_NETWORK_MACHINEQ 1
+//#define ARDUINO_LORAWAN_NETWORK_MACHINEQ 1
 
 #ifdef ARDUINO_LORAWAN_NETWORK_TTN
 # include <Arduino_LoRaWAN_ttn.h>
