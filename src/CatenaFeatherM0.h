@@ -40,7 +40,19 @@ Revision history:
 # include "CatenaSamd21.h"
 #endif
 
-#include <Arduino_LoRaWAN_ttn.h>
+#define ARDUINO_LORAWAN_NETWORK_MACHINEQ 1
+
+#ifdef ARDUINO_LORAWAN_NETWORK_TTN
+# include <Arduino_LoRaWAN_ttn.h>
+using Arduino_LoRaWAN_Network = Arduino_LoRaWAN_ttn;
+#elif defined(ARDUINO_LORAWAN_NETWORK_MACHINEQ)
+# include <Arduino_LoRaWAN_machineQ.h>
+using Arduino_LoRaWAN_Network = Arduino_LoRaWAN_machineQ;
+#else
+// **** default **** : assume TTN
+# include <Arduino_LoRaWAN_ttn.h>
+using Arduino_LoRaWAN_Network = Arduino_LoRaWAN_ttn;
+#endif
 
 namespace McciCatena {
 
@@ -81,11 +93,11 @@ protected:
 private:
 	};
 
-class CatenaFeatherM0::LoRaWAN : public Arduino_LoRaWAN_ttn,
+class CatenaFeatherM0::LoRaWAN : public Arduino_LoRaWAN_Network,
                                  public cPollableObject
 	{
 public:
-        using Super = Arduino_LoRaWAN_ttn;
+        using Super = Arduino_LoRaWAN_Network;
 
 	/*
 	|| the constructor.
