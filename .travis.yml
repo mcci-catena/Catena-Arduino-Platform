@@ -41,7 +41,7 @@ before_install:
 
   #
   # function to clone a git repo for test: $1 == host, $2 == name
-  - 'function _clonelib { R="https://$1/${2}.git" ; D="$HOME/arduino_ide/libraries/"$(basename "$2") ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -r "$D" }'
+  - 'function _clonelib { R="https://$1/${2}.git" ; D="$HOME/arduino_ide/libraries/"$(basename "$2") ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
  
   #
   # modify the board manager preferences to point to our BSPs.
