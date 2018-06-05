@@ -15,7 +15,7 @@ before_install:
   # arduino_lorawan looks for project_config things, so we must put
   # things in the canonical place
   #
-  - export THISLIB="$HOME/arduino_ide/libraries/arduino-lorawan"
+  - export THISLIB="$HOME/arduino_ide/libraries/Catena-Arduino-Platform"
   - ln -s $PWD $THISLIB
 
   #
