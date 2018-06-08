@@ -36,3 +36,7 @@ emacs.core
 # vs code files
 .vscode
 *~
+
+# visual micro files
+*.vcxitems
+vs-readme.txt
