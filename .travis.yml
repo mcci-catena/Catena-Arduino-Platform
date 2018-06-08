@@ -55,7 +55,7 @@ install:
  - _clonelib github.com mcci-catena/RTCZero
 
  - arduino --install-boards mcci:samd
-# - arduino --install-boards mcci:stm32
+ - arduino --install-boards mcci:stm32
 
 script:
 
@@ -82,7 +82,7 @@ script:
 # *** TESTS FOR STM32L0 / Catena 4551 ****
 #  make sure you install the BSP above.
 #
-# - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello/catena_hello.ino
-# - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello/catena_hello.ino
+ - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
 ### end of file ###
