@@ -298,6 +298,7 @@ enum class FlagsSensor5 : uint8_t
         FlagLux = 1 << 4,
         FlagAqi = 1 << 5,
         FlagLogGasR = 1 << 6,
+	FlagAqiAccuracyMisc = 1 << 7,
         };
 
 constexpr FlagsSensor5 operator| (const FlagsSensor5 lhs, const FlagsSensor5 rhs)
