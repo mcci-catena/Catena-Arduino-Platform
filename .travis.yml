@@ -25,8 +25,9 @@ before_install:
   # Changes to the BSP may break this build, sorry!
   #
   - "function _samdopts { echo mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
-  - "function _stm32l0opts { echo mcci:stm32:Catena:pnum=${1:-CATENA_4551},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} ; }"
-  
+  - "function _stm32l0opts { echo mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} ; }"
+  - export MCCI_STM32_OPTS="--pref recipe.hooks.objcopy.postobjcopy.1.pattern=true"
+
   #
   # show the output of the config commands for reference.
   - "echo $(_stm32l0opts) $(_stm32l0opts '' projcfg)"
@@ -57,6 +58,9 @@ install:
  - arduino --install-boards mcci:samd
  - arduino --install-boards mcci:stm32
 
+ # fix for broken BSPs
+ - 'if [ -d $HOME/.arduino15/packages/mcci/hardware/stm32/1.1.0 ]; then echo "Work around broken BSP version 1.1.0" ; export MCCI_STM32_OPTS="$MCCI_STM32_OPTS --pref build.board=CATENA_4551" ; fi'
+
 script:
 
  #
@@ -82,7 +86,7 @@ script:
 # *** TESTS FOR STM32L0 / Catena 4551 ****
 #  make sure you install the BSP above.
 #
- - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello/catena_hello.ino
- - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello/catena_hello.ino
+ - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
 ### end of file ###
