@@ -78,29 +78,31 @@ install:
 script:
 
  #
- # test each of the boards
+ # *** TESTS FOR SAMD21 / Feather M0, Catena 44xx boards ***
+ # test each of the SAMD boards
  - arduino --verify --board $(_samdopts mcci_catena_4410) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4420) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4450) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4460) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_hello/catena_hello.ino
-#
-# test each of the regions.
+
+ #
+ # test each of the regions on the 4450.
  - arduino --verify --board $(_samdopts '' us915) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' eu868) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
-# V1.1.0 of the samd bsp doesn't support au921 correctly -- test with projcfg
-# - arduino --verify --board $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ # V1.1.0 of the samd bsp doesn't support au921 correctly -- test with projcfg
+ # - arduino --verify --board $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _projcfg CFG_au921 CFG_sx1276_radio && arduino --verify --board $(_samdopts '' projcfg) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' as923) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' as923jp) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' in866) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
-
-#
-# *** TESTS FOR STM32L0 / Catena 4551 ****
-#  make sure you install the BSP above.
-#
+ #
+ # *** TESTS FOR STM32L0 / Catena 4551. 46xx boards ****
+ # test each of the STM32L0 boards
  - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello/catena_hello.ino
+
+ # test one region; no need to test them all, we think.
  - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
 ### end of file ###
