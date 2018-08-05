@@ -1,4 +1,18 @@
-# Travis script for test-building this library.
+##############################################################################
+#
+# File: .travis.yml
+#
+# Function:
+#     Travis script for test-building this library.
+#
+# Copyright Notice:
+#     See LICENSE file accompanying this project.
+#
+# Author:
+#     Terry Moore, MCCI Corporation   June 2018
+#
+##############################################################################
+
 language: c
 dist: trusty
 sudo: false
@@ -25,13 +39,14 @@ before_install:
   # Changes to the BSP may break this build, sorry!
   #
   - "function _samdopts { echo mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
-  - "function _stm32l0opts { echo mcci:stm32:Catena:pnum=${1:-CATENA_4551},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} ; }"
-  
+  - "function _stm32l0opts { echo mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} ; }"
+  - export MCCI_STM32_OPTS="--pref recipe.hooks.objcopy.postobjcopy.1.pattern=true"
+
   #
   # show the output of the config commands for reference.
   - "echo $(_stm32l0opts) $(_stm32l0opts '' projcfg)"
   - "echo $(_samdopts) $(_samdopts '' projcfg)"
-  
+
   #
   # Put one or more arguments into lmic_project_config.h as  `#define $i\n`
   - function _projcfg { for i in "$@" ; do printf '#define %s 1\n' "$i" ; done  > $HOME/arduino_ide/libraries/arduino-lmic/project_config/lmic_project_config.h ; }
@@ -42,7 +57,7 @@ before_install:
   #
   # function to clone a git repo for test: $1 == host, $2 == name
   - 'function _clonelib { R="https://$1/${2}.git" ; D="$HOME/arduino_ide/libraries/"$(basename "$2") ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
- 
+
   #
   # modify the board manager preferences to point to our BSPs.
   - arduino --pref "boardsmanager.additional.urls=https://github.com/mcci-catena/arduino-boards/raw/master/BoardManagerFiles/package_mcci_index.json" --save-prefs
@@ -57,32 +72,37 @@ install:
  - arduino --install-boards mcci:samd
  - arduino --install-boards mcci:stm32
 
+ # fix for broken BSPs
+ - 'if [ -d $HOME/.arduino15/packages/mcci/hardware/stm32/1.1.0 ]; then echo "Work around broken BSP version 1.1.0" ; export MCCI_STM32_OPTS="$MCCI_STM32_OPTS --pref build.board=CATENA_4551" ; fi'
+
 script:
 
  #
- # test each of teh boards
+ # *** TESTS FOR SAMD21 / Feather M0, Catena 44xx boards ***
+ # test each of the SAMD boards
  - arduino --verify --board $(_samdopts mcci_catena_4410) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4420) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4450) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4460) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_hello/catena_hello.ino
-#
-# test each of the regions.
+
+ #
+ # test each of the regions on the 4450.
  - arduino --verify --board $(_samdopts '' us915) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' eu868) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
-# V1.1.0 of the samd bsp doesn't support au921 correctly -- test with projcfg
-# - arduino --verify --board $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ # V1.1.0 of the samd bsp doesn't support au921 correctly -- test with projcfg
+ # - arduino --verify --board $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _projcfg CFG_au921 CFG_sx1276_radio && arduino --verify --board $(_samdopts '' projcfg) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' as923) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' as923jp) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - arduino --verify --board $(_samdopts '' in866) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
+ #
+ # *** TESTS FOR STM32L0 / Catena 4551. 46xx boards ****
+ # test each of the STM32L0 boards
+ - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello/catena_hello.ino
 
-#
-# *** TESTS FOR STM32L0 / Catena 4551 ****
-#  make sure you install the BSP above.
-#
- - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello/catena_hello.ino
- - arduino --verify --board $(_stm32l0opts) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ # test one region; no need to test them all, we think.
+ - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
 ### end of file ###
