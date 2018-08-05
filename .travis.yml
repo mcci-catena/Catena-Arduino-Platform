@@ -1,4 +1,18 @@
-# Travis script for test-building this library.
+##############################################################################
+#
+# File: .travis.yml
+#
+# Function:
+#     Travis script for test-building this library.
+#
+# Copyright Notice:
+#     See LICENSE file accompanying this project.
+#
+# Author:
+#     Terry Moore, MCCI Corporation   June 2018
+#
+##############################################################################
+
 language: c
 dist: trusty
 sudo: false
@@ -32,7 +46,7 @@ before_install:
   # show the output of the config commands for reference.
   - "echo $(_stm32l0opts) $(_stm32l0opts '' projcfg)"
   - "echo $(_samdopts) $(_samdopts '' projcfg)"
-  
+
   #
   # Put one or more arguments into lmic_project_config.h as  `#define $i\n`
   - function _projcfg { for i in "$@" ; do printf '#define %s 1\n' "$i" ; done  > $HOME/arduino_ide/libraries/arduino-lmic/project_config/lmic_project_config.h ; }
@@ -43,7 +57,7 @@ before_install:
   #
   # function to clone a git repo for test: $1 == host, $2 == name
   - 'function _clonelib { R="https://$1/${2}.git" ; D="$HOME/arduino_ide/libraries/"$(basename "$2") ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
- 
+
   #
   # modify the board manager preferences to point to our BSPs.
   - arduino --pref "boardsmanager.additional.urls=https://github.com/mcci-catena/arduino-boards/raw/master/BoardManagerFiles/package_mcci_index.json" --save-prefs
@@ -64,7 +78,7 @@ install:
 script:
 
  #
- # test each of teh boards
+ # test each of the boards
  - arduino --verify --board $(_samdopts mcci_catena_4410) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4420) $THISLIB/examples/catena_hello/catena_hello.ino
  - arduino --verify --board $(_samdopts mcci_catena_4450) $THISLIB/examples/catena_hello/catena_hello.ino
