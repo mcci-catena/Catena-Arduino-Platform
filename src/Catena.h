@@ -65,6 +65,9 @@ Revision history:
 #elif defined(ARDUINO_ARCH_SAMD)
 # include "CatenaSamd21.h"
 # define CATENA_H_SUPER_ McciCatena::CatenaSamd21
+#elif defined(MCCI_CATENA_4801)
+# include "Catena4801.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4801
 #elif defined(ARDUINO_ARCH_STM32)
 # include "Catena4551.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4551

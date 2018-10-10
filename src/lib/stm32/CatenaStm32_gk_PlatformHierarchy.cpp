@@ -21,7 +21,7 @@ Copyright notice:
 
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	October 2016
 
@@ -50,7 +50,7 @@ namespace McciCatena {
 |
 |		Manifest constants & typedefs.
 |
-|	This is strictly for private types and constants which will not 
+|	This is strictly for private types and constants which will not
 |	be exported.
 |
 \****************************************************************************/
@@ -61,7 +61,7 @@ namespace McciCatena {
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only 
+|	If program is to be ROM-able, these must all be tagged read-only
 |	using the ROM storage class; they may be global.
 |
 \****************************************************************************/
@@ -152,6 +152,18 @@ const CATENA_PLATFORM gkPlatformCatena4551_m104 =
 		CatenaBase::fM104
 	};
 
+const CATENA_PLATFORM gkPlatformCatena4801 =
+	{
+	Guid: GUID_HW_CATENA_4801_BASE(WIRE),
+	pParent: &gkPlatformCatena4801,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash |
+		CatenaBase::fHasRS485
+	};
+
 
 /****************************************************************************\
 |
@@ -159,7 +171,7 @@ const CATENA_PLATFORM gkPlatformCatena4551_m104 =
 |
 |	If program is to be ROM-able, these must be initialized
 |	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those 
+|	every variable to have an initializer.)  Note that only those
 |	variables owned by this module should be declared here, using the BSS
 |	keyword; this allows for linkers that dislike multiple declarations
 |	of objects.

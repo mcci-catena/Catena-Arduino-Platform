@@ -1,40 +1,28 @@
 /* CatenaStm32L0.cpp	Tue Jan 23 2018 09:38:23 chwon */
 
 /*
-
 Module:  CatenaStm32L0.cpp
-
 Function:
 	CatenaStm32L0::ReadVbat()
-
 Version:
 	V0.7.0	Tue Jan 23 2018 09:38:23 chwon	Edit level 3
-
 Copyright notice:
 	This file copyright (C) 2017-2018 by
-
 		MCCI Corporation
 		3520 Krums Corners Road
 		Ithaca, NY  14850
-
 	An unpublished work.  All rights reserved.
-
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
-
 Author:
 	ChaeHee Won, MCCI Corporation	October 2017
-
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
-
    0.7.0  Wed Jan 03 2018 11:03:39  chwon
 	Remove multiply 2.
-
    0.7.0  Tue Jan 23 2018 09:38:23  chwon
 	Move yield() and HAL_GetTick() to variant.cpp.
-
 */
 
 #ifdef ARDUINO_ARCH_STM32
@@ -86,12 +74,14 @@ CatenaStm32L0::ReadVbat(void) const
 	return rawVoltage * 3.3 / 1024;
 	}
 
+#ifndef MCCI_CATENA_4801
 float
 CatenaStm32L0::ReadVbus(void) const
 	{
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBUS_SENSE);
 	return rawVoltage * 3.3 / 1024;
 	}
+#endif
 
 #endif // ARDUINO_ARCH_STM32
 

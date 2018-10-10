@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	December 2016
 
@@ -30,7 +30,7 @@ Revision history:
 	Module created.
 
    0.6.1  Wed Nov 08 2017 22:35:02  tmm
-        #7: Fix error in handling of negative args to 
+        #7: Fix error in handling of negative args to
         TxBuffer_t::put2(int32_t) and TxBuffer_t::put2(int32_t).
 
    0.8.0 Sat Feb 03 2018 16:48:02 vel
@@ -169,7 +169,7 @@ public:
                 }
         void putT(float T)
                 {
-                put2sf(T * 256.0f + 0.5f);                
+                put2sf(T * 256.0f + 0.5f);
                 }
         void putRH(float RH)
                 {
@@ -212,6 +212,7 @@ enum : uint8_t   {
         FormatSensor3 = 0x15,
         FormatSensor4 = 0x16,
         FormatSensor5 = 0x17,
+        FormatSensor6 = 0x18,
         };
 
 /* the flags for the second byte of the buffer */
@@ -224,7 +225,7 @@ enum  FlagsSensor1 : uint8_t  {
         FlagSoilTH = 1 << 5,
         };
 
-enum class FlagsSensor2 : uint8_t 
+enum class FlagsSensor2 : uint8_t
         {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
@@ -246,7 +247,7 @@ FlagsSensor2 operator|= (FlagsSensor2 &lhs, const FlagsSensor2 &rhs)
         return lhs;
         };
 
-enum class FlagsSensor3 : uint8_t 
+enum class FlagsSensor3 : uint8_t
         {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
@@ -268,7 +269,7 @@ FlagsSensor3 operator|= (FlagsSensor3 &lhs, const FlagsSensor3 &rhs)
         return lhs;
         };
 
-enum class FlagsSensor4 : uint8_t 
+enum class FlagsSensor4 : uint8_t
         {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
@@ -288,7 +289,7 @@ FlagsSensor4 operator|= (FlagsSensor4 &lhs, const FlagsSensor4 &rhs)
         lhs = lhs | rhs;
         return lhs;
         };
-	
+
 enum class FlagsSensor5 : uint8_t
         {
         FlagVbat = 1 << 0,
@@ -312,6 +313,23 @@ FlagsSensor5 operator|= (FlagsSensor5 &lhs, const FlagsSensor5 &rhs)
         return lhs;
         };
 
+enum class FlagsSensor6 : uint8_t
+        {
+	FlagVbat = 1 << 0,
+	FlagBoot = 1 << 1,
+	FlagWater= 1 << 2,
+        };
+
+constexpr FlagsSensor6 operator| (const FlagsSensor6 lhs, const FlagsSensor6 rhs)
+        {
+        return FlagsSensor6(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+FlagsSensor6 operator|= (FlagsSensor6 &lhs, const FlagsSensor6 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
 
 } /* namespace McciCatena */
 

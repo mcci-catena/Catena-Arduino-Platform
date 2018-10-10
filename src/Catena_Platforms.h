@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	October 2016
 
@@ -62,7 +62,7 @@ extern const CATENA_PLATFORM	gkPlatformCatena4410;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_anatolian;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_gh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_mh;
-extern const CATENA_PLATFORM	gkPlatformCatena4410_swh; 
+extern const CATENA_PLATFORM	gkPlatformCatena4410_swh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_pond;
 extern const CATENA_PLATFORM	gkPlatformCatena4450;
 extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
@@ -85,6 +85,7 @@ extern const CATENA_PLATFORM	gkPlatformCatena4551_m101;
 extern const CATENA_PLATFORM	gkPlatformCatena4551_m102;
 extern const CATENA_PLATFORM	gkPlatformCatena4551_m103;
 extern const CATENA_PLATFORM	gkPlatformCatena4551_m104;
+extern const CATENA_PLATFORM	gkPlatformCatena4801;
 
 } /* namespace McciCatena */
 

@@ -1,34 +1,24 @@
 /* CatenaStm32L0.h	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
-
 Module:  CatenaStm32L0.h
-
 Function:
 	Class CatenaStm32L0
-
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
-
 Copyright notice:
 	This file copyright (C) 2017 by
-
 		MCCI Corporation
 		3520 Krums Corners Road
 		Ithaca, NY  14850
-
 	An unpublished work.  All rights reserved.
-
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
-
 Author:
 	ChaeHee Won, MCCI Corporation	October 2017
-
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
-
 */
 
 #ifndef _CATENASTM32L0_H_		/* prevent multiple includes */
@@ -39,6 +29,8 @@ Revision history:
 #ifndef _CATENASTM32_H_
 # include "CatenaStm32.h"
 #endif
+
+//#include "Catena4801.h"
 
 #include <Arduino_LoRaWAN_ttn.h>
 
@@ -55,12 +47,19 @@ public:
 	// forward reference
 	class LoRaWAN;
 
+#if defined(MCCI_CATENA_4801)
+	enum ANALOG_PINS
+		{
+		APIN_VBAT_SENSE = A0,
+		};
+#else
 	// all Stm32L0s put vbat on A7
 	enum ANALOG_PINS
 		{
 		APIN_VBAT_SENSE = A3,
 		APIN_VBUS_SENSE = A4,
 		};
+#endif
 
 	enum DIGITAL_PINS
 		{
@@ -70,6 +69,13 @@ public:
 		PIN_SPI2_MISO = D22,
 		PIN_SPI2_SCK = D24,
 		};
+
+/*#if defined(MCCI_CATENA_4801)
+	enum ANALOG_PINS
+		{
+		APIN_VBAT_SENSE = A0,
+		};
+#endif*/
 
 	// read the current battery voltage, in engineering units
 	float ReadVbat(void) const;
