@@ -126,7 +126,7 @@ Description:
 
 	The parsed syntax:
 
-	lorawan configure [ {param} [ {value} ] ]
+	system configure [ {param} [ {value} ] ]
 
 Returns:
 	Command status
