@@ -63,11 +63,35 @@ bool Catena480x::begin()
 	Wire.begin();
 	delay(1000);
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
+
 	gLog.printf(
-		gLog.kAlways,
-		"\n+Catena480x::begin() for %s\n",
+		gLog.kInfo,
+		"\n+Catena455x::begin() for %s\n",
 		CatenaName()
 		);
+
+	// we must initialize the FRAM before we call our parent,
+	// because FRAM is used for stable storage of platform info.
+
+	// start the FRAM
+	if (!this->m_Fram.begin())
+		{
+		gLog.printf(
+			gLog.kError,
+			"FRAM begin() failed\n"
+			);
+		return false;
+		}
+
+	// check whether the FRAM is valid
+	if (! this->m_Fram.isValid())
+		{
+		gLog.printf(
+			gLog.kError,
+			"FRAM contents are not valid, resetting\n"
+			);
+		this->m_Fram.initialize();
+		}
 
 	// do the platform selection.
 	if (! this->Super::begin())
