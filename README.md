@@ -11,23 +11,23 @@ _Apologies_: This document is a work in progress, and is published in this inter
 - [Overview](#overview)
 - [Coding Practices](#coding-practices)
 - [Components](#components)
-	- [Namespace `McciCatena`](#namespace-mccicatena)
-	- [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
-	- [Board-specific Classes](#board-specific-classes)
-	- [Platform Management](#platform-management)
-	- [Pollable Interface](#pollable-interface)
-	- [LoRaWAN Support](#lorawan-support)
-	- [FRAM Storage Management](#fram-storage-management)
-		- [FRAM Storage Formats](#fram-storage-formats)
-			- [Object Storage Structure](#object-storage-structure)
-			- [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
-			- [The FRAM header object](#the-fram-header-object)
-		- [Adding FRAM objects](#adding-fram-objects)
-		- [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
-	- [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
-		- [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
-		- [The command parser](#the-command-parser)
-	- [`Catena_functional.h`](#catena_functionalh)
+        - [Namespace `McciCatena`](#namespace-mccicatena)
+        - [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
+        - [Board-specific Classes](#board-specific-classes)
+        - [Platform Management](#platform-management)
+        - [Pollable Interface](#pollable-interface)
+        - [LoRaWAN Support](#lorawan-support)
+        - [FRAM Storage Management](#fram-storage-management)
+                - [FRAM Storage Formats](#fram-storage-formats)
+                        - [Object Storage Structure](#object-storage-structure)
+                        - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
+                        - [The FRAM header object](#the-fram-header-object)
+                - [Adding FRAM objects](#adding-fram-objects)
+                - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
+        - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
+                - [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
+                - [The command parser](#the-command-parser)
+        - [`Catena_functional.h`](#catena_functionalh)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
@@ -76,16 +76,7 @@ using namespace McciCatena;
 
 ### Board-specific Classes
 
-`Catena.h` defines the class `Catena` in terms on one of the following classes, using a formula like this:
-
-```c++
-#include <CatenaXYZ.h>
-
-//... other includes
-
-using namespace McciCatena;
-using Catena = CatenaXYZ;
-```
+`Catena.h` defines the class `Catena` in terms on one of the following classes based on the setting of the BSP:
 
 The known classes and header files are:
 
@@ -97,6 +88,11 @@ Class                 | Header File             | Description
 `Catena4450`          | `Catena4450.h`          | MCCI Catena 4450
 `Catena4460`          | `Catena4460.h`          | MCCI Catena 4460
 `Catena4470`          | `Catena4470.h`          | MCCI Catena 4470
+`Catena4551`          | `Catena4551.h`          | MCCI Catena 4551 first-generation Murata-based board.
+`Catena4610`          | `Catena4610.h`          | MCCI Catena 4610 second-generation Murata-based board with LiPo charging
+`Catena4611`          | `Catena4611.h`          | MCCI Catena 4611 second-generation Murata-based board with fixed Vdd, no charging
+`Catena4612`          | `Catena4612.h`          | MCCI Catena 4612 second-generation Murata-based board with variable Vdd, no charging.
+`Catena4801`          | `Catena4801.h`          | MCCI Catena 4801 Murata-based board with Modbus.
 
 ### Platform Management
 
