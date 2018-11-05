@@ -66,7 +66,7 @@ bool Catena455x::begin()
 	Wire.begin();
 	delay(1000);
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
-	gLog.printf(gLog.kAlways, "\n+Catena455x::begin()\n");
+	// gLog.printf(gLog.kAlways, "\n+Catena455x::begin()\n");
 
 	// we must initialize the FRAM before we call our parent,
 	// because FRAM is used for stable storage of platform info.
