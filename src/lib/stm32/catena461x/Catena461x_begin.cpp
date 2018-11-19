@@ -1,17 +1,17 @@
-/* Catena455x_begin.cpp	Wed Dec 06 2017 15:31:37 chwon */
+/* Catena461x_begin.cpp	Thu Nov 15 2018 14:52:31 chwon */
 
 /*
 
-Module:  Catena455x_begin.cpp
+Module:  Catena461x_begin.cpp
 
 Function:
-	Catena455x::begin()
+	Catena461x::begin()
 
 Version:
-	V0.6.0	Wed Dec 06 2017 15:31:37 chwon	Edit level 2
+	V0.11.0	Thu Nov 15 2018 14:52:31 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -20,23 +20,20 @@ Copyright notice:
 	An unpublished work.  All rights reserved.
 
 	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
+	ChaeHee Won, MCCI Corporation	November 2018
 
 Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
+   0.11.0  Thu Nov 15 2018 14:52:31  chwon
 	Module created.
-
-   0.6.0  Wed Dec 06 2017 15:31:37  chwon
-	Set debug flag.
 
 */
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena455x.h"
+#include "Catena461x.h"
 
 #include "Catena_Log.h"
 
@@ -44,29 +41,29 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena455x::begin()
+Name:	Catena461x::begin()
 
 Function:
 	Set up all the well-known board peripherals.
 
 Definition:
-	bool Catena455x::begin();
+	bool Catena461x::begin();
 
 Description:
-	Issues begin() for all the Catena455x things.
+	Issues begin() for all the Catena461x things.
 
 Returns:
 	true for success, false for failure.
 
 */
 
-bool Catena455x::begin()
+bool Catena461x::begin()
 	{
 	Serial.begin(115200);
 	Wire.begin();
 	delay(1000);
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
-	gLog.printf(gLog.kAlways, "\n+Catena455x::begin()\n");
+	gLog.printf(gLog.kAlways, "\n+Catena461x::begin()\n");
 
 	// do the platform selection.
 	if (! this->Super::begin())
@@ -77,4 +74,4 @@ bool Catena455x::begin()
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena455x_begin.cpp ****/
+/**** end of Catena461x_begin.cpp ****/

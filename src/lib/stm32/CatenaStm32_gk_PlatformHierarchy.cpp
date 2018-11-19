@@ -40,6 +40,8 @@ Revision history:
 
 */
 
+#ifdef ARDUINO_ARCH_STM32
+
 #include "Catena_Platforms.h"
 #include "Catena_Guids.h"
 
@@ -152,6 +154,225 @@ const CATENA_PLATFORM gkPlatformCatena4551_m104 =
 		CatenaBase::fM104
 	};
 
+const CATENA_PLATFORM gkPlatformCatena4610 =
+	{
+	Guid: GUID_HW_CATENA_4610_BASE(WIRE),
+	pParent: &gkPlatformCatena4610,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4610_m101 =
+	{
+	Guid: GUID_HW_CATENA_4610_M101(WIRE),
+	pParent: &gkPlatformCatena4610,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash |
+		CatenaBase::fM101
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4610_m102 =
+	{
+	Guid: GUID_HW_CATENA_4610_M102(WIRE),
+	pParent: &gkPlatformCatena4610,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM102
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4610_m103 =
+	{
+	Guid: GUID_HW_CATENA_4610_M103(WIRE),
+	pParent: &gkPlatformCatena4610,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM103
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4610_m104 =
+	{
+	Guid: GUID_HW_CATENA_4610_M104(WIRE),
+	pParent: &gkPlatformCatena4610,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM104
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4611 =
+	{
+	Guid: GUID_HW_CATENA_4611_BASE(WIRE),
+	pParent: &gkPlatformCatena4611,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4611_m101 =
+	{
+	Guid: GUID_HW_CATENA_4611_M101(WIRE),
+	pParent: &gkPlatformCatena4611,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash |
+		CatenaBase::fM101
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4611_m102 =
+	{
+	Guid: GUID_HW_CATENA_4611_M102(WIRE),
+	pParent: &gkPlatformCatena4611,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM102
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4611_m103 =
+	{
+	Guid: GUID_HW_CATENA_4611_M103(WIRE),
+	pParent: &gkPlatformCatena4611,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM103
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4611_m104 =
+	{
+	Guid: GUID_HW_CATENA_4611_M104(WIRE),
+	pParent: &gkPlatformCatena4611,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM104
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4612 =
+	{
+	Guid: GUID_HW_CATENA_4612_BASE(WIRE),
+	pParent: &gkPlatformCatena4612,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash,
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4612_m101 =
+	{
+	Guid: GUID_HW_CATENA_4612_M101(WIRE),
+	pParent: &gkPlatformCatena4612,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash |
+		CatenaBase::fM101
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4612_m102 =
+	{
+	Guid: GUID_HW_CATENA_4612_M102(WIRE),
+	pParent: &gkPlatformCatena4612,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM102
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4612_m103 =
+	{
+	Guid: GUID_HW_CATENA_4612_M103(WIRE),
+	pParent: &gkPlatformCatena4612,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasSolarPanel |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM103
+	};
+
+const CATENA_PLATFORM gkPlatformCatena4612_m104 =
+	{
+	Guid: GUID_HW_CATENA_4612_M104(WIRE),
+	pParent: &gkPlatformCatena4612,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxSi1133 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasSoilProbe |
+		CatenaBase::fHasWaterOneWire |
+		CatenaBase::fM104
+	};
+
 
 /****************************************************************************\
 |
@@ -168,3 +389,5 @@ const CATENA_PLATFORM gkPlatformCatena4551_m104 =
 
 
 } /* namespace McciCatena */
+
+#endif // ARDUINO_ARCH_STM32

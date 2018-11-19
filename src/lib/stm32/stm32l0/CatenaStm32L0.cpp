@@ -41,7 +41,7 @@ Revision history:
 
 #include "CatenaStm32L0.h"
 
-#include "Arduino.h"
+#include <Arduino.h>
 using namespace McciCatena;
 
 /****************************************************************************\

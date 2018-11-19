@@ -43,6 +43,8 @@ Revision history:
 # include "Catena455x.h"
 #endif
 
+#define	CATENA_NAME_STRING	"Catena 4551"
+
 namespace McciCatena {
 
 class Catena4551 : public Catena455x

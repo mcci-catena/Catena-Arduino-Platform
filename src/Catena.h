@@ -1,4 +1,4 @@
-/* Catena.h	Sat Mar 31 2018 19:28:30 tmm */
+/* Catena.h	Thu Nov 15 2018 15:06:41 chwon */
 
 /*
 
@@ -9,7 +9,7 @@ Function:
         the target Catena for this build.
 
 Version:
-	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 3
+	V0.11.0	Thu Nov 15 2018 15:06:42 chwon	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -36,6 +36,9 @@ Revision history:
    0.9.0  Sat Mar 31 2018 19:28:30  tmm
 	Add Catena 4460 support, use BSP symbols.
 
+   0.11.0  Thu Nov 15 2018 15:06:42  chwon
+	Add Catena 461x support.
+
 */
 
 #ifndef _CATENA_H_		/* prevent multiple includes */
@@ -61,6 +64,18 @@ Revision history:
 #elif defined(ARDUINO_SAMD_FEATHER_M0)
 # include "CatenaFeatherM0.h"
 # define CATENA_H_SUPER_  McciCatena::CatenaFeatherM0
+#elif defined(MCCI_CATENA_4551)
+# include "Catena4551.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4551
+#elif defined(MCCI_CATENA_4610)
+# include "Catena4610.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4610
+#elif defined(MCCI_CATENA_4611)
+# include "Catena4611.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4611
+#elif defined(MCCI_CATENA_4612)
+# include "Catena4612.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4612
 /* fallback in case it's SAMD but not what we expect */
 #elif defined(ARDUINO_ARCH_SAMD)
 # include "CatenaSamd21.h"

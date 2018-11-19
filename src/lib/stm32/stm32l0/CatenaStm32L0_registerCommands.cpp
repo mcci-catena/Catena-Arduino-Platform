@@ -1,11 +1,11 @@
-/* Catena455x_LoRaWAN_commands.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_registerCommands.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena455x_LoRaWAN_commands.cpp
+Module:  CatenaStm32L0_registerCommands.cpp
 
 Function:
-	The command engine for lorawan commands on the Catena 455x.
+	CatenaStm32L0::registerCommands()
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -33,17 +33,25 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena455x.h"
+#include "CatenaStm32L0.h"
 
-#include "Catena_Log.h"
-
-#include <cstring>
+#include "Catena_CommandStream.h"
 
 using namespace McciCatena;
-
+
 /****************************************************************************\
 |
-|	The command table
+|	Manifest constants
+|
+\****************************************************************************/
+
+static cCommandStream::CommandFn doPlatformGUID;
+static cCommandStream::CommandFn doSysEUI;
+
+
+/****************************************************************************\
+|
+|	The command tables
 |
 \****************************************************************************/
 
@@ -55,8 +63,7 @@ static const cCommandStream::cEntry sDispatchEntries[] =
 	};
 
 static cCommandStream::cDispatch
-sDispatch(sDispatchEntries, sizeof(sDispatchEntries), "lorawan");
-
+sDispatch(sDispatchEntries, sizeof(sDispatchEntries), "system");
 
 struct KeyMap
 	{
@@ -66,51 +73,40 @@ struct KeyMap
 
 static KeyMap sKeyMap[] =
 	{
-	{ "deveui", cFramStorage::StandardKeys::kDevEUI },
-	{ "appeui", cFramStorage::StandardKeys::kAppEUI },
-	{ "appkey", cFramStorage::StandardKeys::kAppKey, },
-	{ "nwkskey", cFramStorage::StandardKeys::kNwkSKey, },
-	{ "appskey", cFramStorage::StandardKeys::kAppSKey, },
-	{ "devaddr", cFramStorage::StandardKeys::kDevAddr, },
-	{ "netid", cFramStorage::StandardKeys::kNetID, },
-	{ "fcntup", cFramStorage::StandardKeys::kFCntUp, },
-	{ "fcntdown", cFramStorage::StandardKeys::kFCntDown, },
-	{ "join", cFramStorage::StandardKeys::kJoin, },
-	};
-
-/*
+	{ "PlatformGUID", cFramStorage::StandardKeys::kPlatformGuid },
+	{ "SysEUI", cFramStorage::StandardKeys::kSysEUI },
+        { "OperatingFlags", cFramStorage::StandardKeys::kOperatingFlags },
+        };
 
-Name:	Catena455x::LoRaWAN::addCommands()
 
-Function:
-	Add the lorawan commands to the Catena command table.
+/****************************************************************************\
+|
+|	The method function
+|
+\****************************************************************************/
 
-Definition:
-	private: bool Catena455x::LoRaWAN::addCommands();
-
-Description:
-	All the commands are added to the system command table.
-
-Returns:
-	true for success.
-
-*/
-
-bool
-Catena455x::LoRaWAN::addCommands()
+/* protected virtual */
+void
+CatenaStm32L0::registerCommands()
 	{
-	gLog.printf(gLog.kAlways, "Catena455x::LoRaWAN::addCommands(): adding\n");
-	this->m_pCatena->addCommands(
-		sDispatch, static_cast<void *>(this)
-		);
+	this->Super::registerCommands();
+
+	this->addCommands(sDispatch, (void *) this);
 	}
+
+/****************************************************************************\
+|
+|	The commands
+|
+\****************************************************************************/
+
 
 /*
 
 Name:	doConfigure()
 
 Function:
-	Implement the LoRaWAN value set/get commands
+	Implement the system value set/get commands
 
 Definition:
 	static cCommandStream::CommandFn doConfigure;
@@ -137,7 +133,6 @@ Returns:
 
 */
 
-
 static cCommandStream::CommandStatus
 doConfigure(
 	cCommandStream *pThis,
@@ -146,9 +141,7 @@ doConfigure(
 	char **argv
 	)
 	{
-	Catena455x::LoRaWAN * const pLoRaWAN =
-		static_cast<Catena455x::LoRaWAN *>(pContext);
-	Catena455x * const pCatena = pLoRaWAN->getCatena();
+	CatenaStm32L0 * const pCatena = static_cast<CatenaStm32L0 *>(pContext);
 	uint8_t databuf[16];
 
 	if (argc < 2)
@@ -173,7 +166,6 @@ doConfigure(
 		{
 		pThis->printf(
 			"%s: unknown\n",
-			__func__,
 			pName
 			);
 		return cCommandStream::CommandStatus::kInvalidParameter;
@@ -248,4 +240,4 @@ doConfigure(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena455x_LoRaWAN_commands.cpp ****/
+/**** end of CatenaStm32L0_registerCommands.cpp ****/

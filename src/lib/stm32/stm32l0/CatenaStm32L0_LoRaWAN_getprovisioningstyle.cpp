@@ -35,7 +35,9 @@ Revision history:
 
 #include <CatenaStm32L0.h>
 
-#include <Arduino_LoRaWAN_lmic.h>
+#include <Catena_Fram.h>
+#include <Catena_Log.h>
+
 using namespace McciCatena;
 
 /****************************************************************************\
@@ -61,29 +63,48 @@ using namespace McciCatena;
 \****************************************************************************/
 
 
-Arduino_LoRaWAN::ProvisioningStyle
+CatenaStm32L0::LoRaWAN::ProvisioningStyle
 CatenaStm32L0::LoRaWAN::GetProvisioningStyle(
-        void
-        )
-        {
+	void
+	)
+	{
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-        const ProvisioningInfo * const pInstance = pCatena->GetProvisioningInfo();
+        cFram::Cursor framJoin(pCatena->getFram());
 
-        if (! pInstance)
+        if (! framJoin.locate(cFramStorage::vItemDefs[cFramStorage::kJoin]))
                 {
-                ARDUINO_LORAWAN_PRINTF(
-                        LogVerbose,
-                        "%s: no provisioning info\n",
-                        __func__
-                        );
+        	gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
 
-                return Arduino_LoRaWAN::ProvisioningStyle::kNone;
+        	return ProvisioningStyle::kNone;
                 }
-        else
+
+        uint8_t uJoin;
+        if (! framJoin.get(&uJoin, sizeof(uJoin)))
                 {
-                return pInstance->Style;
+                gLog.printf(gLog.kError, "%s: get() failed\n", __FUNCTION__);
+                return ProvisioningStyle::kNone;
                 }
-        }
+
+        switch (uJoin)
+                {
+	/*
+	|| we use 0 as the "none" indicator, because that's the default
+	|| value when writing out the key.
+	*/
+        case 0:
+                return ProvisioningStyle::kNone;
+
+        case 1:
+                return ProvisioningStyle::kOTAA;
+
+        case 2:
+                return ProvisioningStyle::kABP;
+
+        default:
+                gLog.printf(gLog.kError, "%s: bad Join value: %u\n", __FUNCTION__, uJoin);
+                return ProvisioningStyle::kNone;
+                }
+	}
 
 #endif // ARDUINO_ARCH_STM32
 

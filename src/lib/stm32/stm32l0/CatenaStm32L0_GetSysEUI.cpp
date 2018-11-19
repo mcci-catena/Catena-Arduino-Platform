@@ -1,11 +1,11 @@
-/* Catena455x_GetSysEUI.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_GetSysEUI.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena455x_GetSysEUI.cpp
+Module:  CatenaStm32L0_GetSysEUI.cpp
 
 Function:
-	Catena455x::GetSysEUI()
+	CatenaStm32L0::GetSysEUI()
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -33,20 +33,20 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena455x.h"
+#include "CatenaStm32L0.h"
 
 using namespace McciCatena;
 
 /*
 
-Name:	Catena455x::GetSysEUI()
+Name:	CatenaStm32L0::GetSysEUI()
 
 Function:
 	Returns the SysEUI for this platform
 
 Definition:
 	const CatenaBase::EUI64_buffer_t *
-		Catena455x::GetSysEUI(
+		CatenaStm32L0::GetSysEUI(
 			void
 			);
 
@@ -59,8 +59,8 @@ Returns:
 */
 
 /* public: virtual override */
-const Catena455x::EUI64_buffer_t *
-Catena455x::GetSysEUI(void)
+const CatenaStm32L0::EUI64_buffer_t *
+CatenaStm32L0::GetSysEUI(void)
 	{
 	if (! this->m_Fram.getField(cFramStorage::StandardKeys::kSysEUI,
 			this->m_SysEUI
@@ -78,4 +78,4 @@ Catena455x::GetSysEUI(void)
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena455x_GetSysEUI.cpp ****/
+/**** end of CatenaStm32L0_GetSysEUI.cpp ****/

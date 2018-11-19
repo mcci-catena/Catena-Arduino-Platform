@@ -38,6 +38,7 @@ Revision history:
 
 #include <CatenaStm32L0LoRa.h>
 
+#include <Catena_Log.h>
 #include <mcciadk_baselib.h>
 
 using namespace McciCatena;
@@ -80,13 +81,25 @@ bool CatenaStm32L0::LoRaWAN::begin(
 	CatenaStm32L0 *pParent
 	)
 	{
+	gLog.printf(gLog.kTrace, "+CatenaStm32L0::LoRaWAN::begin()\n");
+
 	this->m_pCatena = pParent;
 	this->m_pPlatform = pParent->GetPlatform();
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
+        /* set up command processor */
+        this->addCommands();
+
 	/* first call the base begin */
 	if (! this->Arduino_LoRaWAN::begin())
+		{
+		gLog.printf(
+			gLog.kError,
+			"?CatenaStm32L0::LoRaWAN::begin:"
+			" Arduino_LoRaWAN:begin failed\n"
+			);
 		return false;
+		}
 
 	/* here's where we do any required post-processing */
 	/* (none at the moment) */
