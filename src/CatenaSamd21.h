@@ -49,6 +49,8 @@ Revision history:
 # include "CatenaBase.h"
 #endif
 
+#include "CatenaRTC.h"
+
 namespace McciCatena {
 
 /* the class for Samd21-based Catenas */
@@ -112,6 +114,8 @@ public:
 		}
 	inline uint32_t GetPlatformFlags(void);		
 
+	virtual void Sleep(uint32_t howLongInSeconds) override;
+
 protected:
 	virtual void registerCommands(void);
 
@@ -137,6 +141,7 @@ private:
 	static const size_t nvCpuIdToPlatform;
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM	*m_pPlatform;
+	CatenaRTC		m_Rtc;
 	};
 
 inline uint32_t CatenaSamd21::GetPlatformFlags(void)
