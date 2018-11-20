@@ -82,6 +82,7 @@ public:
 	float ReadVbat(void) const;
 	float ReadVbus(void) const;
 
+	virtual bool begin(void) override;
 	virtual void Sleep(uint32_t howLongInSeconds) override;
 
 protected:
