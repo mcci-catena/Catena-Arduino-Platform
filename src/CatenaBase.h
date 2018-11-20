@@ -179,7 +179,7 @@ public:
 
         virtual bool begin();
 
-	virtual void Sleep(uint32_t howLongInSeconds) {};
+	virtual void Sleep(uint32_t howLongInSeconds) = 0; // require a concrete method
 
         // poll the engine
         void poll(void);
