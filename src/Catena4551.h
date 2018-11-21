@@ -61,6 +61,8 @@ public:
 	Catena4551(const Catena4551&&) = delete;
 	Catena4551& operator=(const Catena4551&&) = delete;
 
+	virtual const char *CatenaName() const override { return "Catena 4551"; };
+
 protected:
 
 private:

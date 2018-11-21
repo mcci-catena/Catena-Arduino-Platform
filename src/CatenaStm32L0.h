@@ -43,6 +43,10 @@ Revision history:
 # include "CatenaStm32.h"
 #endif
 
+#ifndef _CATENA_FRAM8K_H_
+# include "Catena_Fram8k.h"
+#endif
+
 #ifndef _CATENASTM32L0RTC_H_
 # include "CatenaStm32L0Rtc.h"
 #endif
@@ -65,8 +69,12 @@ public:
 	// all Stm32L0s put vbat on A7
 	enum ANALOG_PINS
 		{
+#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
+		APIN_VBAT_SENSE = A0,
+#else
 		APIN_VBAT_SENSE = A3,
 		APIN_VBUS_SENSE = A4,
+#endif
 		};
 
 	enum DIGITAL_PINS
@@ -78,24 +86,52 @@ public:
 		PIN_SPI2_SCK = D24,
 		};
 
+        // start the Stm32L0 level
+	virtual bool begin(void) override;
+	virtual const EUI64_buffer_t *GetSysEUI(void) override;
+	virtual const CATENA_PLATFORM *GetPlatformForID(
+					const UniqueID_buffer_t *pIdBuffer,
+					EUI64_buffer_t *pSysEUI,
+					uint32_t *pOperatingFlags
+					) override;
+
+	McciCatena::cFram8k *getFram() { return &this->m_Fram; };
+
+	bool getBootCount(uint32_t &bootCount)
+		{
+		bootCount = this->m_BootCount;
+		return true;
+		};
+
 	// read the current battery voltage, in engineering units
 	float ReadVbat(void) const;
 	float ReadVbus(void) const;
 
-	virtual bool begin(void) override;
 	virtual void Sleep(uint32_t howLongInSeconds) override;
 
 protected:
-        // methods
-        virtual const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
-        virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const
-                { return nullptr; }
+	// methods
+	virtual void registerCommands(void);
 
         // instance data
         const CATENA_PLATFORM *m_pPlatform;
 
 private:
+	// the FRAM instance
+	McciCatena::cFram8k		m_Fram;
+        uint32_t			m_BootCount;
 	McciCatena::CatenaStm32L0Rtc	m_Rtc;
+
+        // the known platforms
+        static const CATENA_PLATFORM(* const vPlatforms[]);
+        static const size_t nvPlatforms;
+
+        // internal methods
+        void savePlatform(
+                const CATENA_PLATFORM &Platform,
+                const EUI64_buffer_t *pSysEUI,
+                const uint32_t *pOperatingFlags
+                );
 	};
 
 class CatenaStm32L0::LoRaWAN : public Arduino_LoRaWAN_ttn,
@@ -116,6 +152,7 @@ public:
 	|| the connection.
 	*/
 	virtual bool begin(CatenaStm32L0 *pCatena);
+	CatenaStm32L0 *getCatena() const { return this->m_pCatena; };
 
         virtual void poll() { this->Super::loop(); };
 
@@ -123,15 +160,20 @@ protected:
 	/*
 	|| we have to provide these for the lower level
 	*/
-	virtual ProvisioningStyle GetProvisioningStyle(void);
-
-	virtual bool GetAbpProvisioningInfo(
-			AbpProvisioningInfo *pProvisioningInfo
-			);
-
-	virtual bool GetOtaaProvisioningInfo(
-			OtaaProvisioningInfo *pProvisioningInfo
-			);
+        virtual ProvisioningStyle GetProvisioningStyle(void) override;
+        virtual bool GetAbpProvisioningInfo(
+        		Arduino_LoRaWAN::AbpProvisioningInfo *
+        		) override;
+        virtual bool GetOtaaProvisioningInfo(
+        		Arduino_LoRaWAN::OtaaProvisioningInfo *
+        		) override;
+        virtual void NetSaveFCntUp(uint32_t uFCntUp) override;
+        virtual void NetSaveFCntDown(uint32_t uFCntDown) override;
+        virtual void NetSaveSessionInfo(
+        		const SessionInfo &Info,
+        		const uint8_t *pExtraInfo,
+        		size_t nExtraInfo
+        		) override;
 
 	//
 	// TODO(tmm@mcci.com) -- the following are not used but are always
@@ -140,6 +182,9 @@ protected:
 private:
 	CatenaStm32L0		*m_pCatena;
 	const CATENA_PLATFORM	*m_pPlatform;
+
+	// initialize the commands
+	bool addCommands();
 	};
 
 } // namespace McciCatena

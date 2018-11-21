@@ -105,7 +105,15 @@ public:
 		{
 		return this->m_OperatingFlags;
 		}
-	inline uint32_t GetPlatformFlags(void);
+	inline uint32_t GetPlatformFlags(void)
+		{
+		const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
+
+		if (pPlatform != NULL)
+			return pPlatform->PlatformFlags;
+		else
+			return 0;
+		}
 
 protected:
 	virtual void registerCommands(void);
@@ -134,17 +142,6 @@ private:
 	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
-
-inline uint32_t CatenaStm32::GetPlatformFlags(void)
-	{
-	const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
-
-	if (pPlatform != NULL)
-		return pPlatform->PlatformFlags;
-	else
-		return 0;
-	}
-
 /*
 
 Type:	CatenaStm32::CPUID_PLATFORM_MAP

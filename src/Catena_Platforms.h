@@ -1,4 +1,4 @@
-/* Catena_Platforms.h	Sat Mar 31 2018 19:28:30 tmm */
+/* Catena_Platforms.h	Thu Nov 15 2018 15:24:45 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	The global platform definitions.
 
 Version:
-	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 8
+	V0.11.0	Thu Nov 15 2018 15:24:45 chwon	Edit level 9
 
 Copyright notice:
 	This file copyright (C) 2016-2018 by
@@ -43,6 +43,9 @@ Revision history:
 
    0.9.0  Sat Mar 31 2018 19:28:30  tmm
 	Add Catena 4460 support.
+
+   0.11.0  Thu Nov 15 2018 15:24:45  chwon
+	Add Catena 461x support.
 
 */
 
@@ -85,6 +88,24 @@ extern const CATENA_PLATFORM	gkPlatformCatena4551_m101;
 extern const CATENA_PLATFORM	gkPlatformCatena4551_m102;
 extern const CATENA_PLATFORM	gkPlatformCatena4551_m103;
 extern const CATENA_PLATFORM	gkPlatformCatena4551_m104;
+
+extern const CATENA_PLATFORM	gkPlatformCatena4610;
+extern const CATENA_PLATFORM	gkPlatformCatena4610_m101;
+extern const CATENA_PLATFORM	gkPlatformCatena4610_m102;
+extern const CATENA_PLATFORM	gkPlatformCatena4610_m103;
+extern const CATENA_PLATFORM	gkPlatformCatena4610_m104;
+extern const CATENA_PLATFORM	gkPlatformCatena4611;
+extern const CATENA_PLATFORM	gkPlatformCatena4611_m101;
+extern const CATENA_PLATFORM	gkPlatformCatena4611_m102;
+extern const CATENA_PLATFORM	gkPlatformCatena4611_m103;
+extern const CATENA_PLATFORM	gkPlatformCatena4611_m104;
+extern const CATENA_PLATFORM	gkPlatformCatena4612;
+extern const CATENA_PLATFORM	gkPlatformCatena4612_m101;
+extern const CATENA_PLATFORM	gkPlatformCatena4612_m102;
+extern const CATENA_PLATFORM	gkPlatformCatena4612_m103;
+extern const CATENA_PLATFORM	gkPlatformCatena4612_m104;
+
+extern const CATENA_PLATFORM	gkPlatformCatena4801;
 
 } /* namespace McciCatena */
 

@@ -98,6 +98,70 @@ Returns:
 
 bool CatenaStm32L0::begin()
 	{
+	gLog.printf(gLog.kTrace, "+CatenaStm32L0::begin()\n");
+
+	// we must initialize the FRAM before we call our parent,
+	// because FRAM is used for stable storage of platform info.
+
+	// start the FRAM
+	if (!this->m_Fram.begin())
+		{
+		gLog.printf(
+			gLog.kError,
+			"CatenaStm32L0::begin: FRAM begin() failed\n"
+			);
+		return false;
+		}
+
+	// check whether the FRAM is valid
+	if (! this->m_Fram.isValid())
+		{
+		gLog.printf(
+			gLog.kError,
+			"CatenaStm32L0::begin: FRAM contents are not valid, resetting\n"
+			);
+		this->m_Fram.initialize();
+		}
+
+	if (! this->Super::begin())
+		{
+		gLog.printf(gLog.kError, "?CatenaStm32L0::Super::begin failed\n");
+		return false;
+		}
+
+	// set up the command line collector
+	this->m_Collector.begin(&Serial, &this->m_SerialReady);
+	this->registerObject(&this->m_Collector);
+
+	// set up the command line processor
+	this->m_CommandStream.begin(
+		&this->m_Collector,
+		this
+		);
+
+	// register all commands in this stack
+	this->registerCommands();
+
+	// and register the FRAM commands
+	if (!this->m_Fram.addCommands())
+		{
+		gLog.printf(
+			gLog.kError,
+			"?CatenaStm32L0::begin: addCommands() failed\n"
+			);
+		return false;
+		}
+
+	this->m_Fram.getField(
+		cFramStorage::StandardKeys::kBootCount,
+		this->m_BootCount
+		);
+	++this->m_BootCount;
+	this->m_Fram.saveField(
+		cFramStorage::StandardKeys::kBootCount,
+		this->m_BootCount
+		);
+
 	return this->m_Rtc.begin();
 	}
 

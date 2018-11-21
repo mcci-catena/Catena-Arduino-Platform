@@ -1,17 +1,17 @@
-/* Catena_Guids.h	Sat Mar 31 2018 19:28:30 tmm */
+/* Catena_Guids.h	Thu Nov 15 2018 15:15:37 chwon */
 
 /*
 
 Module:  Catena_Guids.h
 
 Function:
-	GUIDs for the Catena4410 family.
+	GUIDs for the Catena family.
 
 Version:
-	V0.9.0	Sat Mar 31 2018 19:28:30 tmm	Edit level 5
+	V0.11.0	Thu Nov 15 2018 15:15:37 chwon	Edit level 6
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -37,6 +37,9 @@ Revision history:
 
    0.9.0  Sat Mar 31 2018 19:28:30  tmm
 	Add Catena 4460 material.
+
+   0.11.0  Thu Nov 15 2018 15:15:37  chwon
+	Add Catena 461x material.
 
 */
 
@@ -168,6 +171,7 @@ Revision history:
 #define GUID_HW_CATENA_4551_M101(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0xe8405eb4, 0x9618, 0x405d, 0x90, 0xb3, 0xcc, 0x13, 0x70, 0x17, 0xc4, 0x98)
 
+// {1de63656-2be7-45bd-a14c-c37086b09ab1}
 #define GUID_HW_CATENA_4551_M102(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0x1de63656, 0x2be7, 0x45bd, 0xa1, 0x4c, 0xc3, 0x70, 0x86, 0xb0, 0x9a, 0xb1)
 
@@ -178,6 +182,70 @@ Revision history:
 // {93f951c8-b15a-4907-b7d1-6a467a0dcd1d}
 #define GUID_HW_CATENA_4551_M104(f)		\
 	MCCIADK_GUID_GEN_INIT(f,  0x93f951c8, 0xb15a, 0x4907, 0xb7, 0xd1, 0x6a, 0x46, 0x7a, 0x0d, 0xcd, 0x1d)
+
+// {53ca094b-b888-465e-aa0e-e3064ec56d21}
+#define GUID_HW_CATENA_4610_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x53ca094b, 0xb888, 0x465e, 0xaa, 0x0e, 0xe3, 0x06, 0x4e, 0xc5, 0x6d, 0x21)
+
+// {6a5d8d0c-d5ae-4143-adc7-8f84ec56a867}
+#define GUID_HW_CATENA_4610_M101(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x6a5d8d0c, 0xd5ae, 0x4143, 0xad, 0xc7, 0x8f, 0x84, 0xec, 0x56, 0xa8, 0x67)
+
+// {18252b1c-3c0d-403e-8012-224d96c5af06}
+#define GUID_HW_CATENA_4610_M102(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x18252b1c, 0x3c0d, 0x403e, 0x80, 0x12, 0x22, 0x4d, 0x96, 0xc5, 0xaf, 0x06)
+
+// {c2cf6cf4-a4c3-4611-941f-6955ffa5bfdc}
+#define GUID_HW_CATENA_4610_M103(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xc2cf6cf4, 0xa4c3, 0x4611, 0x94, 0x1f, 0x69, 0x55, 0xff, 0xa5, 0xbf, 0xdc)
+
+// {bfed4740-a58a-4ef6-933a-09cb22e93d00}
+#define GUID_HW_CATENA_4610_M104(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xbfed4740, 0xa58a, 0x4ef6, 0x93, 0x3a, 0x09, 0xcb, 0x22, 0xe9, 0x3d, 0x00)
+
+// {9bb29dca-0685-4837-8182-3dfa309d279f}
+#define GUID_HW_CATENA_4611_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x9bb29dca, 0x0685, 0x4837, 0x81, 0x82, 0x3d, 0xfa, 0x30, 0x9d, 0x27, 0x9f)
+
+// {4e995471-1570-4767-adae-6657ef871bcd}
+#define GUID_HW_CATENA_4611_M101(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x4e995471, 0x1570, 0x4767, 0xad, 0xae, 0x66, 0x57, 0xef, 0x87, 0x1b, 0xcd)
+
+// {964bcf91-9c45-4386-a6e7-5f2d7c3641ef}
+#define GUID_HW_CATENA_4611_M102(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x964bcf91, 0x9c45, 0x4386, 0xa6, 0xe7, 0x5f, 0x2d, 0x7c, 0x36, 0x41, 0xef)
+
+// {c85b27cb-7cf9-4025-92bb-2009c08449e5}
+#define GUID_HW_CATENA_4611_M103(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xc85b27cb, 0x7cf9, 0x4025, 0x92, 0xbb, 0x20, 0x09, 0xc0, 0x84, 0x49, 0xe5)
+
+// {c22be8af-e693-4319-b243-1c2d10197973}
+#define GUID_HW_CATENA_4611_M104(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xc22be8af, 0xe693, 0x4319, 0xb2, 0x43, 0x1c, 0x2d, 0x10, 0x19, 0x79, 0x73)
+
+// {915decfa-d156-4d4f-bac5-70e7724726d8}
+#define GUID_HW_CATENA_4612_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x915decfa, 0xd156, 0x4d4f, 0xba, 0xc5, 0x70, 0xe7, 0x72, 0x47, 0x26, 0xd8)
+
+// {d210a354-c49a-4c4f-856a-4b545dcfaa20}
+#define GUID_HW_CATENA_4612_M101(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xd210a354, 0xc49a, 0x4c4f, 0x85, 0x6a, 0x4b, 0x54, 0x5d, 0xcf, 0xaa, 0x20)
+
+// {7fa9709d-17af-463e-ae7f-8210e49acd7a}
+#define GUID_HW_CATENA_4612_M102(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x7fa9709d, 0x17af, 0x463e, 0xae, 0x7f, 0x82, 0x10, 0xe4, 0x9a, 0xcd, 0x7a)
+
+// {ff8b2ac6-75cd-4ed3-980b-50b209e64551}
+#define GUID_HW_CATENA_4612_M103(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xff8b2ac6, 0x75cd, 0x4ed3, 0x98, 0x0b, 0x50, 0xb2, 0x09, 0xe6, 0x45, 0x51)
+
+// {dea48489-cdac-43f4-b8ad-edb08ce21546}
+#define GUID_HW_CATENA_4612_M104(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0xdea48489, 0xcdac, 0x43f4, 0xb8, 0xad, 0xed, 0xb0, 0x8c, 0xe2, 0x15, 0x46)
+
+// {10ea7e25-a4a4-45fd-8959-c04a6a5d7f95}
+#define GUID_HW_CATENA_4801_BASE(f)		\
+	MCCIADK_GUID_GEN_INIT(f,  0x10ea7e25, 0xa4a4, 0x45fd, 0x89, 0x59, 0xc0, 0x4a, 0x6a, 0x5d, 0x7f, 0x95)
 
 /**** end of catena_guids.h ****/
 #endif /* _CATENA_GUIDS_H_ */

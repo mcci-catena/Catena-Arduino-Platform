@@ -1,4 +1,4 @@
-/* Catena4420.h	Sun Dec  4 2016 23:45:17 tmm */
+/* Catena4420.h	Wed Nov 21 2018 13:41:45 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class Catena4420 (Aduino header file)
 
 Version:
-	V0.4.0	Sun Dec  4 2016 23:45:17 tmm	Edit level 1
+	V0.11.0	Wed Nov 21 2018 13:41:45 chwon	Edit level 1
 
 Copyright notice:
 	This file copyright (C) 2016 by
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.4.0  Sun Dec  4 2016 23:45:17  tmm
 	Module created.
+
+   0.11.0  Wed Nov 21 2018 13:41:46  chwon
+	Add CatenaName() method.
 
 */
 
@@ -63,6 +66,8 @@ public:
 	|| LoRaWAN binding
 	*/
 	class LoRaWAN /* forward */;
+
+	virtual const char *CatenaName() const override { return "Catena 4420"; };
 
 protected:
 	using Super = CatenaFeatherM0;

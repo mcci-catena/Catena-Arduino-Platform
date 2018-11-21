@@ -1,11 +1,11 @@
-/* Catena455x_GetPlatformForID.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_GetPlatformForID.cpp	Fri Oct 13 2017 15:19:30 chwon */
 
 /*
 
-Module:  Catena455x_GetPlatformForID.cpp
+Module:  CatenaStm32L0_GetPlatformForID.cpp
 
 Function:
-	Catena455x::GetPlatformForID()
+	CatenaStm32L0::GetPlatformForID()
 
 Version:
 	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
@@ -33,29 +33,63 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena455x.h"
+#include "CatenaStm32L0.h"
 
 #include "Catena_Log.h"
 #include "Catena_Platforms.h"
 
 using namespace McciCatena;
 
-const CATENA_PLATFORM (* const Catena455x::vPlatforms[]) =
+const CATENA_PLATFORM (* const CatenaStm32L0::vPlatforms[]) =
 	{
 	// entry 0 is the default
+#if defined(ARDUINO_MCCI_CATENA_4550) || defined(ARDUINO_CATENA_4550)
 	&gkPlatformCatena4550,
+#endif	/* CATENA_4550 */
+
+#if defined(ARDUINO_MCCI_CATENA_4551) || defined(ARDUINO_CATENA_4551)
 	&gkPlatformCatena4551,
 	&gkPlatformCatena4551_m101,
 	&gkPlatformCatena4551_m102,
 	&gkPlatformCatena4551_m103,
 	&gkPlatformCatena4551_m104,
+#endif	/* CATENA_4551 */
+
+#if defined(ARDUINO_MCCI_CATENA_4610)
+	&gkPlatformCatena4610,
+	&gkPlatformCatena4610_m101,
+	&gkPlatformCatena4610_m102,
+	&gkPlatformCatena4610_m103,
+	&gkPlatformCatena4610_m104,
+#endif	/* CATENA_4610 */
+
+#if defined(ARDUINO_MCCI_CATENA_4611) || defined(ARDUINO_CATENA_4611)
+	&gkPlatformCatena4611,
+	&gkPlatformCatena4611_m101,
+	&gkPlatformCatena4611_m102,
+	&gkPlatformCatena4611_m103,
+	&gkPlatformCatena4611_m104,
+#endif	/* CATENA_4611 */
+
+#if defined(ARDUINO_MCCI_CATENA_4612) || defined(ARDUINO_CATENA_4612)
+	&gkPlatformCatena4612,
+	&gkPlatformCatena4612_m101,
+	&gkPlatformCatena4612_m102,
+	&gkPlatformCatena4612_m103,
+	&gkPlatformCatena4612_m104,
+#endif	/* CATENA_4612 */
+
+#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
+	&gkPlatformCatena4801,
+#endif	/* CATENA_4801 */
 	};
 
-const size_t Catena455x::nvPlatforms = sizeof(Catena455x::vPlatforms) / sizeof(Catena455x::vPlatforms[0]);
+const size_t CatenaStm32L0::nvPlatforms =
+	sizeof(CatenaStm32L0::vPlatforms) / sizeof(CatenaStm32L0::vPlatforms[0]);
 
 /*
 
-Name:	Catena455x::GetPlatformForID()
+Name:	CatenaStm32L0::GetPlatformForID()
 
 Function:
 	Get a platform given a CPU ID and FRAM.
@@ -63,7 +97,7 @@ Function:
 Definition:
 	public: virtual
 		const CATENA_PLATFORM *
-			Catena455x::GetPlatformForID(
+			CatenaStm32L0::GetPlatformForID(
 				const UniqueID_buffer_t *pIdBuffer,
 				EUI64_buffer_t *pSysEui,
 				uint32_t *pOperatingFlags
@@ -72,7 +106,7 @@ Definition:
 Description:
 	This override for GetPlatformForID() looks at the FRAM, and
 	picks any information availble there. If none is available, it falls
-	back to the generic SAM21D method, which scans by CPU ID.
+	back to the generic STM32L0 method, which scans by CPU ID.
 
         Because this implementation needs the FRAM system to be available,
         and it's called early, the Catena begin routine has to initialize
@@ -87,7 +121,7 @@ Returns:
 
 /* public virtual override */
 const CATENA_PLATFORM *
-Catena455x::GetPlatformForID(
+CatenaStm32L0::GetPlatformForID(
 	const UniqueID_buffer_t *pIdBuffer,
 	EUI64_buffer_t *pSysEui,
 	uint32_t *pOperatingFlags
@@ -96,7 +130,7 @@ Catena455x::GetPlatformForID(
 	/* we ignore the CPUID unless we can't get a GUID */
 	MCCIADK_GUID_WIRE PlatformGuid;
 
-        gLog.printf(gLog.kAlways, "Catena455x::GetPlatformForID entered\n");
+        gLog.printf(gLog.kTrace, "+CatenaStm32L0::GetPlatformForID:\n");
 
 	// set up the SysEUI
 	if (!this->m_Fram.getField(
@@ -203,7 +237,7 @@ Catena455x::GetPlatformForID(
 	}
 
 void
-Catena455x::savePlatform(
+CatenaStm32L0::savePlatform(
 	const CATENA_PLATFORM &Platform,
 	const EUI64_buffer_t *pSysEUI,
 	const uint32_t *pOperatingFlags
@@ -232,4 +266,4 @@ Catena455x::savePlatform(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena455x_GetPlatformForID.cpp ****/
+/**** end of CatenaStm32L0_GetPlatformForID.cpp ****/

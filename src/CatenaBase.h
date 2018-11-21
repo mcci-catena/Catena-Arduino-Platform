@@ -179,6 +179,7 @@ public:
 
         virtual bool begin();
 
+	virtual const char *CatenaName() const = 0; // requires that an override be provided.
 	virtual void Sleep(uint32_t howLongInSeconds) = 0; // require a concrete method
 
         // poll the engine

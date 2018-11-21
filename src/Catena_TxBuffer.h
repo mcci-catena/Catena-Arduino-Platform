@@ -1,4 +1,4 @@
-/* Catena_TxBuffer.h	Sat Feb 03 2018 16:48:02 vel */
+/* Catena_TxBuffer.h	Wed Nov 21 2018 12:33:24 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	namespace McciCatena, class TxBuffer_t;
 
 Version:
-	V0.8.0	Sat Feb 03 2018 16:48:02 vel	Edit level 4
+	V0.11.0	Wed Nov 21 2018 12:33:24 chwon	Edit level 5
 
 Copyright notice:
 	This file copyright (C) 2016-2018 by
@@ -35,6 +35,9 @@ Revision history:
 
    0.8.0 Sat Feb 03 2018 16:48:02 vel
     	Added 0x16 Format.
+
+   0.11.0  Wed Nov 21 2018 12:33:24  chwon
+	Added FormatSensor6 (0x18) format.
 
 */
 
@@ -212,6 +215,7 @@ enum : uint8_t   {
         FormatSensor3 = 0x15,
         FormatSensor4 = 0x16,
         FormatSensor5 = 0x17,
+        FormatSensor6 = 0x18,
         };
 
 /* the flags for the second byte of the buffer */
@@ -312,6 +316,23 @@ FlagsSensor5 operator|= (FlagsSensor5 &lhs, const FlagsSensor5 &rhs)
         return lhs;
         };
 
+enum class FlagsSensor6 : uint8_t
+        {
+        FlagVbat  = 1 << 0,
+        FlagBoot  = 1 << 1,
+        FlagWater = 1 << 2,
+        };
+
+constexpr FlagsSensor6 operator| (const FlagsSensor6 lhs, const FlagsSensor6 rhs)
+        {
+        return FlagsSensor6(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+FlagsSensor6 operator|= (FlagsSensor6 &lhs, const FlagsSensor6 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
 
 } /* namespace McciCatena */
 

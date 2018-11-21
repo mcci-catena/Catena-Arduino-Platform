@@ -1,18 +1,17 @@
-/* Catena455x.h	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena480x.h	Tue Nov 06 2018 14:25:23 chwon */
 
 /*
 
-Module:  Catena455x.h
+Module:  Catena480x.h
 
 Function:
-	class Catena455x: CatenaBase Platform to represent a Catena 455x
-	(4550, 4551, etc.)
+	class Catena480x: CatenaBase Platform to represent a Catena 480x
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.11.0	Tue Nov 06 2018 14:25:23 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -21,19 +20,19 @@ Copyright notice:
 	An unpublished work.  All rights reserved.
 
 	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
+	ChaeHee Won, MCCI Corporation	November 2018
 
 Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
+   0.11.0  Tue Nov 06 2018 14:25:23 chwon
 	Module created.
 
 */
 
-#ifndef _CATENA455X_H_		/* prevent multiple includes */
-#define _CATENA455X_H_
+#ifndef _CATENA461X_H_	/* prevent multiple includes */
+#define _CATENA461X_H_
 
 #pragma once
 
@@ -45,21 +44,21 @@ Revision history:
 
 namespace McciCatena {
 
-class Catena455x : public CatenaStm32L0LoRa
+class Catena480x : public CatenaStm32L0LoRa
 	{
 public:
         using Super = CatenaStm32L0LoRa;
 
         // no specific constructor.
-        Catena455x() {};
+        Catena480x() {};
 
 	// uses default destructor
 
 	// neither copyable nor movable
-	Catena455x(const Catena455x&) = delete;
-	Catena455x& operator=(const Catena455x&) = delete;
-	Catena455x(const Catena455x&&) = delete;
-	Catena455x& operator=(const Catena455x&&) = delete;
+	Catena480x(const Catena480x&) = delete;
+	Catena480x& operator=(const Catena480x&) = delete;
+	Catena480x(const Catena480x&&) = delete;
+	Catena480x& operator=(const Catena480x&&) = delete;
 
 	// LoRaWAN binding
 	class LoRaWAN /* forward */;
@@ -75,7 +74,7 @@ private:
 /*
 || The LoRaWAN class for the Catena 455x. Assumes The Things Network
 */
-class Catena455x::LoRaWAN : public CatenaStm32L0LoRa::LoRaWAN
+class Catena480x::LoRaWAN : public CatenaStm32L0LoRa::LoRaWAN
 	{
 public:
 	using Super = CatenaStm32L0LoRa::LoRaWAN;
@@ -87,7 +86,7 @@ public:
 	LoRaWAN() {};
 	LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
 
-	bool begin(Catena455x *pParent);
+	bool begin(Catena480x *pParent);
 
 protected:
 
@@ -96,5 +95,5 @@ private:
 
 } // namespace McciCatena
 
-/**** end of Catena455x.h ****/
-#endif /* _CATENA455X_H_ */
+/**** end of Catena480x.h ****/
+#endif /* _CATENA461X_H_ */
