@@ -1,4 +1,4 @@
-/* CatenaRTC.h	Tue Nov  1 2016 22:56:04 tmm */
+/* CatenaRTC.h	Mon Nov 19 2018 12:08:48 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	RTC wrapper for Catena
 
 Version:
-	V0.3.0	Tue Nov  1 2016 22:56:04 tmm	Edit level 1
+	V0.11.0	Mon Nov 19 2018 12:08:48 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016, 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -29,12 +29,13 @@ Revision history:
    0.3.0  Tue Nov  1 2016 22:56:04  tmm
 	Module created.
 
+   0.11.0  Mon Nov 19 2018 12:08:48  chwon
+	Remove include CatenaSamd21.h.
+
 */
 
 #ifndef _CATENARTC_H_		/* prevent multiple includes */
 #define _CATENARTC_H_
-
-#include <CatenaSamd21.h>
 
 #include <RTCZero.h>
 

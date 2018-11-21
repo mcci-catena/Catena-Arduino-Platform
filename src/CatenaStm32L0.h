@@ -1,4 +1,4 @@
-/* CatenaStm32L0.h	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0.h	Mon Nov 19 2018 12:11:24 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Class CatenaStm32L0
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.11.0	Mon Nov 19 2018 12:11:24 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -29,6 +29,9 @@ Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
 
+   0.11.0  Mon Nov 19 2018 12:11:25  chwon
+	Add Sleep() method override and add m_Rtc in the private context.
+
 */
 
 #ifndef _CATENASTM32L0_H_		/* prevent multiple includes */
@@ -38,6 +41,10 @@ Revision history:
 
 #ifndef _CATENASTM32_H_
 # include "CatenaStm32.h"
+#endif
+
+#ifndef _CATENASTM32L0RTC_H_
+# include "CatenaStm32L0Rtc.h"
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>
@@ -75,6 +82,9 @@ public:
 	float ReadVbat(void) const;
 	float ReadVbus(void) const;
 
+	virtual bool begin(void) override;
+	virtual void Sleep(uint32_t howLongInSeconds) override;
+
 protected:
         // methods
         virtual const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
@@ -85,6 +95,7 @@ protected:
         const CATENA_PLATFORM *m_pPlatform;
 
 private:
+	McciCatena::CatenaStm32L0Rtc	m_Rtc;
 	};
 
 class CatenaStm32L0::LoRaWAN : public Arduino_LoRaWAN_ttn,

@@ -1,4 +1,4 @@
-/* CatenaBase.h	Sat Apr 28 2018 16:52:31 tmm */
+/* CatenaBase.h	Mon Nov 19 2018 12:07:02 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
         class CatenaBase interfaces.
 
 Version:
-        V0.9.1	Sat Apr 28 2018 16:52:31 tmm	Edit level 4
+        V0.11.0	Mon Nov 19 2018 12:07:02 chwon	Edit level 5
 
 Copyright notice:
         This file copyright (C) 2016-2018 by
@@ -39,6 +39,9 @@ Revision history:
 
    0.9.1  Sat Apr 28 2018 16:52:31  tmm
 	Add support for RS485 (for Catena 4470).
+
+   0.11.0  Mon Nov 19 2018 12:07:02  chwon
+	Add Sleep() virtual method.
 
 */
 
@@ -175,6 +178,8 @@ public:
                 }
 
         virtual bool begin();
+
+	virtual void Sleep(uint32_t howLongInSeconds) = 0; // require a concrete method
 
         // poll the engine
         void poll(void);
