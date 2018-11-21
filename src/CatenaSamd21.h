@@ -1,4 +1,4 @@
-/* CatenaSamd21.h	Sun Mar 19 2017 15:49:23 tmm */
+/* CatenaSamd21.h	Wed Nov 21 2018 13:32:28 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	class CatenaSamd21
 
 Version:
-	V0.5.0	Sun Mar 19 2017 15:49:23 tmm	Edit level 4
+	V0.11.0	Wed Nov 21 2018 13:32:28 chwon	Edit level 5
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -38,6 +38,9 @@ Revision history:
    0.5.0  Sun Mar 19 2017 15:49:23  tmm
 	Refactor to add support for USB command-line processing.
 
+   0.11.0  Wed Nov 21 2018 13:32:28  chwon
+	Add Sleep() method and add CatenaRTC class.
+
 */
 
 #ifndef _CATENASAMD21_H_		/* prevent multiple includes */
@@ -47,6 +50,10 @@ Revision history:
 
 #ifndef _CATENABASE_H_
 # include "CatenaBase.h"
+#endif
+
+#ifndef _CATENARTC_H_
+# include "CatenaRTC.h"
 #endif
 
 namespace McciCatena {
@@ -112,6 +119,8 @@ public:
 		}
 	inline uint32_t GetPlatformFlags(void);		
 
+	virtual void Sleep(uint32_t howLongInSeconds) override;
+
 protected:
 	virtual void registerCommands(void);
 
@@ -137,6 +146,7 @@ private:
 	static const size_t nvCpuIdToPlatform;
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM	*m_pPlatform;
+	CatenaRTC		m_Rtc;
 	};
 
 inline uint32_t CatenaSamd21::GetPlatformFlags(void)

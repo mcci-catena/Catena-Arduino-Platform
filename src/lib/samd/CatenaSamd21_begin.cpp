@@ -1,4 +1,4 @@
-/* CatenaSamd21_begin.cpp	Sat Mar 18 2017 23:14:48 tmm */
+/* CatenaSamd21_begin.cpp	Mon Nov 19 2018 12:15:05 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaSamd21::begin().
 
 Version:
-	V0.5.0	Sat Mar 18 2017 23:14:48 tmm	Edit level 2
+	V0.11.0	Mon Nov 19 2018 12:15:05 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.5.0  Sat Mar 18 2017 23:14:48  tmm
 	Changed module name to match standards.
+
+   0.11.0  Mon Nov 19 2018 12:15:05  chwon
+	Add RTC class begin.
 
 */
 
@@ -162,6 +165,8 @@ bool CatenaSamd21::begin(
 
         Serial.begin(115200);
         }
+
+    this->m_Rtc.begin();
 
     return true;
     }

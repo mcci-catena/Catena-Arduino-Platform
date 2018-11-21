@@ -47,6 +47,10 @@ Revision history:
 # include "Catena_Fram8k.h"
 #endif
 
+#ifndef _CATENASTM32L0RTC_H_
+# include "CatenaStm32L0Rtc.h"
+#endif
+
 #include <Arduino_LoRaWAN_ttn.h>
 
 namespace McciCatena {
@@ -103,6 +107,9 @@ public:
 	float ReadVbat(void) const;
 	float ReadVbus(void) const;
 
+	virtual bool begin(void) override;
+	virtual void Sleep(uint32_t howLongInSeconds) override;
+
 protected:
 	// methods
 	virtual void registerCommands(void);
@@ -114,6 +121,7 @@ private:
 	// the FRAM instance
 	McciCatena::cFram8k		m_Fram;
         uint32_t			m_BootCount;
+	McciCatena::CatenaStm32L0Rtc	m_Rtc;
 
         // the known platforms
         static const CATENA_PLATFORM(* const vPlatforms[]);

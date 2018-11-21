@@ -162,7 +162,7 @@ bool CatenaStm32L0::begin()
 		this->m_BootCount
 		);
 
-	return true;
+	return this->m_Rtc.begin();
 	}
 
 #endif // ARDUINO_ARCH_STM32
