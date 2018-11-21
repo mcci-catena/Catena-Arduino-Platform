@@ -1,4 +1,4 @@
-/* Catena4450.h	Sun Mar 19 2017 15:50:15 tmm */
+/* Catena4450.h	Wed Nov 21 2018 13:44:26 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	class Catena4450: CatenaBase Platform to represent a Catena 4450
 
 Version:
-	V0.5.0	Sun Mar 19 2017 15:50:15 tmm	Edit level 2
+	V0.11.0	Wed Nov 21 2018 13:44:27 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.5.0  Sun Mar 12 2017 18:16:07  tmm
 	Module created.
+
+   0.11.0  Wed Nov 21 2018 13:44:27  chwon
+	Add CatenaName() method.
 
 */
 
@@ -57,6 +60,8 @@ public:
 	Catena4450& operator=(const Catena4450&) = delete;
 	Catena4450(const Catena4450&&) = delete;
 	Catena4450& operator=(const Catena4450&&) = delete;
+
+	virtual const char *CatenaName() const override { return "Catena 4450"; };
 
 protected:
         // we are required to provide a table of platforms

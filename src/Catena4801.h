@@ -1,11 +1,11 @@
-/* Catena4611.h	Thu Nov 15 2018 15:07:23 chwon */
+/* Catena4801.h	Thu Nov 15 2018 15:07:23 chwon */
 
 /*
 
-Module:  Catena4611.h
+Module:  Catena4801.h
 
 Function:
-	class Catena4611: CatenaBase Platform to represent a Catena 4611
+	class Catena4801: CatenaBase Platform to represent a Catena 4801
 
 Version:
 	V0.11.0	Thu Nov 15 2018 15:07:23 chwon	Edit level 1
@@ -31,8 +31,8 @@ Revision history:
 
 */
 
-#ifndef _Catena4611_H_	/* prevent multiple includes */
-#define _Catena4611_H_
+#ifndef _Catena4801_H_	/* prevent multiple includes */
+#define _Catena4801_H_
 
 #pragma once
 
@@ -42,23 +42,23 @@ Revision history:
 
 namespace McciCatena {
 
-class Catena4611 : public Catena461x
+class Catena4801 : public Catena461x
 	{
 public:
         using Super = Catena461x;
 
         // no specific constructor.
-        Catena4611() {};
+        Catena4801() {};
 
 	// uses default destructor
 
 	// neither copyable nor movable
-	Catena4611(const Catena4611&) = delete;
-	Catena4611& operator=(const Catena4611&) = delete;
-	Catena4611(const Catena4611&&) = delete;
-	Catena4611& operator=(const Catena4611&&) = delete;
+	Catena4801(const Catena4801&) = delete;
+	Catena4801& operator=(const Catena4801&) = delete;
+	Catena4801(const Catena4801&&) = delete;
+	Catena4801& operator=(const Catena4801&&) = delete;
 
-	virtual const char *CatenaName() const override { return "Catena 4611"; };
+	virtual const char *CatenaName() const override { return "Catena 4801"; };
 
 protected:
 
@@ -67,5 +67,5 @@ private:
 
 } // namespace McciCatena
 
-/**** end of Catena4611.h ****/
-#endif /* _Catena4611_H_ */
+/**** end of Catena4801.h ****/
+#endif /* _Catena4801_H_ */

@@ -65,8 +65,12 @@ public:
 	// all Stm32L0s put vbat on A7
 	enum ANALOG_PINS
 		{
+#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
+		APIN_VBAT_SENSE = A0,
+#else
 		APIN_VBAT_SENSE = A3,
 		APIN_VBUS_SENSE = A4,
+#endif
 		};
 
 	enum DIGITAL_PINS
@@ -79,7 +83,7 @@ public:
 		};
 
         // start the Stm32L0 level
-	virtual bool begin(void);
+	virtual bool begin(void) override;
 	virtual const EUI64_buffer_t *GetSysEUI(void) override;
 	virtual const CATENA_PLATFORM *GetPlatformForID(
 					const UniqueID_buffer_t *pIdBuffer,

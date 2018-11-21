@@ -64,18 +64,21 @@ Revision history:
 #elif defined(ARDUINO_SAMD_FEATHER_M0)
 # include "CatenaFeatherM0.h"
 # define CATENA_H_SUPER_  McciCatena::CatenaFeatherM0
-#elif defined(MCCI_CATENA_4551)
+#elif defined(ARDUINO_MCCI_CATENA_4551) || defined(ARDUINO_CATENA_4551)
 # include "Catena4551.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4551
-#elif defined(MCCI_CATENA_4610)
+#elif defined(ARDUINO_MCCI_CATENA_4610)
 # include "Catena4610.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4610
-#elif defined(MCCI_CATENA_4611)
+#elif defined(ARDUINO_MCCI_CATENA_4611) || defined(ARDUINO_CATENA_4611)
 # include "Catena4611.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4611
-#elif defined(MCCI_CATENA_4612)
+#elif defined(ARDUINO_MCCI_CATENA_4612) || defined(ARDUINO_CATENA_4612)
 # include "Catena4612.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4612
+#elif defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
+# include "Catena4801.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4801
 /* fallback in case it's SAMD but not what we expect */
 #elif defined(ARDUINO_ARCH_SAMD)
 # include "CatenaSamd21.h"

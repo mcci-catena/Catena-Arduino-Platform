@@ -1,4 +1,4 @@
-/* Catena455x_begin.cpp	Wed Dec 06 2017 15:31:37 chwon */
+/* Catena455x_begin.cpp	Tue Nov 20 2018 13:53:31 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Catena455x::begin()
 
 Version:
-	V0.6.0	Wed Dec 06 2017 15:31:37 chwon	Edit level 2
+	V0.11.0	Tue Nov 20 2018 13:53:31 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.6.0  Wed Dec 06 2017 15:31:37  chwon
 	Set debug flag.
+
+   0.11.0  Tue Nov 20 2018 13:53:31  chwon
+	Move common code to CatenaStm32L0::begin().
 
 */
 
@@ -66,7 +69,11 @@ bool Catena455x::begin()
 	Wire.begin();
 	delay(1000);
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
-	gLog.printf(gLog.kAlways, "\n+Catena455x::begin()\n");
+	gLog.printf(
+		gLog.kAlways,
+		"\n+Catena455x::begin() for %s\n",
+		CatenaName()
+		);
 
 	// do the platform selection.
 	if (! this->Super::begin())

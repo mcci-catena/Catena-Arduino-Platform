@@ -81,6 +81,7 @@ function _cpuid {
 
 const CatenaStm32::CPUID_PLATFORM_MAP CatenaStm32::vCpuIdToPlatform[] =
     {
+#if defined(ARDUINO_MCCI_CATENA_4550) || defined(ARDUINO_CATENA_4550)
         { CpuID: { 0xf6, 0x74, 0x4f, 0xbe, 0x35, 0x50, 0x4d, 0x51,
                    0x20, 0x20, 0x20, 0x35, 0x2d, 0x2e, 0x11, 0xff },
                 pPlatform : &gkPlatformCatena4550,
@@ -88,7 +89,9 @@ const CatenaStm32::CPUID_PLATFORM_MAP CatenaStm32::vCpuIdToPlatform[] =
                 OperatingFlagsClear : 0,
                 OperatingFlagsSet : 0,
         },
+#endif	/* CATENA_4550 */
 
+#if defined(ARDUINO_MCCI_CATENA_4551) || defined(ARDUINO_CATENA_4551)
         { CpuID: { 0x95, 0x31, 0xbd, 0x24, 0x54, 0x53, 0x4b, 0x50,
                    0x4a, 0x31, 0x2e, 0x39, 0x3f, 0x16, 0x07, 0xff },
                 pPlatform : &gkPlatformCatena4551,
@@ -96,6 +99,7 @@ const CatenaStm32::CPUID_PLATFORM_MAP CatenaStm32::vCpuIdToPlatform[] =
                 OperatingFlagsClear : 0,
                 OperatingFlagsSet : 0,
         },
+#endif	/* CATENA_4551 */
 
     };
 

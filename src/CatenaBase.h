@@ -176,6 +176,8 @@ public:
 
         virtual bool begin();
 
+	virtual const char *CatenaName() const = 0; // requires that an override be provided.
+
         // poll the engine
         void poll(void);
         void registerObject(McciCatena::cPollableObject *pObject);

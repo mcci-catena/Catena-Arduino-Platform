@@ -68,6 +68,7 @@ namespace McciCatena {
 |
 \****************************************************************************/
 
+#if defined(ARDUINO_MCCI_CATENA_4550) || defined(ARDUINO_CATENA_4550)
 const CATENA_PLATFORM gkPlatformCatena4550 =
 	{
 	Guid: GUID_HW_CATENA_4550_BASE(WIRE),
@@ -80,7 +81,9 @@ const CATENA_PLATFORM gkPlatformCatena4550 =
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
 	};
+#endif	/* CATENA_4550 */
 
+#if defined(ARDUINO_MCCI_CATENA_4551) || defined(ARDUINO_CATENA_4551)
 const CATENA_PLATFORM gkPlatformCatena4551 =
 	{
 	Guid: GUID_HW_CATENA_4551_BASE(WIRE),
@@ -153,7 +156,9 @@ const CATENA_PLATFORM gkPlatformCatena4551_m104 =
 		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fM104
 	};
+#endif	/* CATENA_4551 */
 
+#if defined(ARDUINO_MCCI_CATENA_4610)
 const CATENA_PLATFORM gkPlatformCatena4610 =
 	{
 	Guid: GUID_HW_CATENA_4610_BASE(WIRE),
@@ -164,7 +169,7 @@ const CATENA_PLATFORM gkPlatformCatena4610 =
 		CatenaBase::fHasBme280 |
 		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasFlash,
+		CatenaBase::fHasFlash
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4610_m101 =
@@ -226,7 +231,9 @@ const CATENA_PLATFORM gkPlatformCatena4610_m104 =
 		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fM104
 	};
+#endif	/* CATENA_4610 */
 
+#if defined(ARDUINO_MCCI_CATENA_4611) || defined(ARDUINO_CATENA_4611)
 const CATENA_PLATFORM gkPlatformCatena4611 =
 	{
 	Guid: GUID_HW_CATENA_4611_BASE(WIRE),
@@ -237,7 +244,7 @@ const CATENA_PLATFORM gkPlatformCatena4611 =
 		CatenaBase::fHasBme280 |
 		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasFlash,
+		CatenaBase::fHasFlash
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4611_m101 =
@@ -299,7 +306,9 @@ const CATENA_PLATFORM gkPlatformCatena4611_m104 =
 		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fM104
 	};
+#endif	/* CATENA_4611 */
 
+#if defined(ARDUINO_MCCI_CATENA_4612) || defined(ARDUINO_CATENA_4612)
 const CATENA_PLATFORM gkPlatformCatena4612 =
 	{
 	Guid: GUID_HW_CATENA_4612_BASE(WIRE),
@@ -310,7 +319,7 @@ const CATENA_PLATFORM gkPlatformCatena4612 =
 		CatenaBase::fHasBme280 |
 		CatenaBase::fHasLuxSi1133 |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasFlash,
+		CatenaBase::fHasFlash
 	};
 
 const CATENA_PLATFORM gkPlatformCatena4612_m101 =
@@ -372,6 +381,21 @@ const CATENA_PLATFORM gkPlatformCatena4612_m104 =
 		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fM104
 	};
+#endif	/* CATENA_4612 */
+
+#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
+const CATENA_PLATFORM gkPlatformCatena4801 =
+	{
+	Guid: GUID_HW_CATENA_4801_BASE(WIRE),
+	pParent: &gkPlatformCatena4801,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash |
+		CatenaBase::fHasRS485
+	};
+#endif	/* CATENA_4801 */
 
 
 /****************************************************************************\

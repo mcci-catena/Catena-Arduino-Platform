@@ -40,8 +40,6 @@ Revision history:
 # include "Catena461x.h"
 #endif
 
-#define	CATENA_NAME_STRING	"Catena 4610"
-
 namespace McciCatena {
 
 class Catena4610 : public Catena461x
@@ -59,6 +57,8 @@ public:
 	Catena4610& operator=(const Catena4610&) = delete;
 	Catena4610(const Catena4610&&) = delete;
 	Catena4610& operator=(const Catena4610&&) = delete;
+
+	virtual const char *CatenaName() const override { return "Catena 4610"; };
 
 protected:
 

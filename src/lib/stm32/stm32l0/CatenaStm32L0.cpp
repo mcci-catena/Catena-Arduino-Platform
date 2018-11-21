@@ -89,8 +89,12 @@ CatenaStm32L0::ReadVbat(void) const
 float
 CatenaStm32L0::ReadVbus(void) const
 	{
+#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
+	return 0;
+#else
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBUS_SENSE);
 	return rawVoltage * 3.3 / 1024;
+#endif
 	}
 
 #endif // ARDUINO_ARCH_STM32

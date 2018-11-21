@@ -1,4 +1,4 @@
-/* Catena4410.h	Sun Dec  4 2016 20:01:55 tmm */
+/* Catena4410.h	Wed Nov 21 2018 13:40:53 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Arduino library header for Catena 4410
 
 Version:
-	V0.4.0	Sun Dec  4 2016 20:01:55 tmm	Edit level 3
+	V0.11.0	Wed Nov 21 2018 13:40:53 chwon	Edit level 4
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016, 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.4.0  Sun Dec  4 2016 20:01:55  tmm
 	Refactor based on CatenaFeatherM0.
+
+   0.11.0  Wed Nov 21 2018 13:40:53  chwon
+	Add CatenaName() method.
 
 */
 
@@ -70,6 +73,8 @@ public:
 	|| LoRaWAN binding
 	*/
 	class LoRaWAN /* forward */;
+
+	virtual const char *CatenaName() const override { return "Catena 4410"; };
 
 protected:
 	using Super = CatenaFeatherM0;
