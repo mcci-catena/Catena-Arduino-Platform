@@ -65,7 +65,7 @@ bool Catena461x::begin()
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 
 	gLog.printf(
-		gLog.kInfo,
+		gLog.kAlways,
 		"\n+Catena461x::begin() for %s\n",
 		CatenaName()
 		);
