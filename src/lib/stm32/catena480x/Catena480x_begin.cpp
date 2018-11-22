@@ -66,7 +66,7 @@ bool Catena480x::begin()
 
 	gLog.printf(
 		gLog.kInfo,
-		"\n+Catena455x::begin() for %s\n",
+		"\n+Catena480x::begin() for %s\n",
 		CatenaName()
 		);
 
