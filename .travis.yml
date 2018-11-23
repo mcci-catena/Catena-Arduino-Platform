@@ -68,11 +68,12 @@ before_install:
   - function _projcfg { for i in "$@" ; do printf '#define %s %s\n' $(_splitdef "$i") ; done  > $PWD/project_config/lmic_project_config.h ; }
   #
   # Handy macro to deal with expected failures.
-  - 'function _expect_failure { if [ $? -eq 0 ]; then echo "Suceeded, but should have failed!" ; echo project_config/lmic_project_config.h ; cat $HOME/arduino_ide/libraries/arduino-lmic/project_config/lmic_project_config.h ; return 1 ; else echo "Failed, as expected"; return 0 ; fi ; }'
+  - 'function _expect_failure { if [ $? -eq 0 ]; then echo "Suceeded, but should have failed!" ; echo project_config/lmic_project_config.h ; cat $HOME/$ARDUINO_IDE/libraries/arduino-lmic/project_config/lmic_project_config.h ; return 1 ; else echo "Failed, as expected"; return 0 ; fi ; }'
 
   #
   # function to clone a git repo for test: $1 == host, $2 == name
-  - 'function _clonelib { R="https://$1/${2}.git" ; D="$HOME/arduino_ide/libraries/"$(basename "$2") ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
+  # get rid of any cached values.
+  - 'function _clonelib { R="https://$1/${2}.git" ; L=$(basename "$2) ; D="$HOME/$ARDUINO_LIBS/$L" ; rm -rf "$HOME/ARDUINO_IDE/libraries/$L" ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
 
   #
   # modify the board manager preferences to point to our BSPs.
