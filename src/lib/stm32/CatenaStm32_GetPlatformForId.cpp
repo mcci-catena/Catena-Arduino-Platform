@@ -92,7 +92,7 @@ CatenaStm32::GetPlatformForID(
 	{
 	const CPUID_PLATFORM_MAP *pMap;
 
-        gLog.printf(gLog.kAlways, "CatenaStm32::GetPlatformForID\n");
+        gLog.printf(gLog.kTrace, "CatenaStm32::GetPlatformForID\n");
 
 	pMap = &vCpuIdToPlatform[0];
 	for (size_t i = 0; i < nvCpuIdToPlatform; ++i, ++pMap)
