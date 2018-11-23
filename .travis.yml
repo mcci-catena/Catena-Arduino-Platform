@@ -17,20 +17,33 @@ language: c
 dist: trusty
 sudo: false
 
+env:
+ global:
+  - IDE_VERSION=1.8.7
+ matrix:
+  - TARGET=samd
+  - TARGET=stm32l0
+
+cache:
+  directories:
+  - $HOME/.arduino15
+  - $HOME/arduino_ide
+
 before_install:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
   - sleep 3
   - export DISPLAY=:1.0
-  - wget http://downloads.arduino.cc/arduino-1.8.5-linux64.tar.xz
-  - tar xf arduino-1.8.5-linux64.tar.xz
-  - mv arduino-1.8.5 $HOME/arduino_ide
-  - export PATH="$HOME/arduino_ide:$PATH"
+  - export ARDUINO_IDE=arduino_ide/${IDE_VERSION}
+  - export ARDUINO_LIBS="$HOME/Arduino/libraries"
+  - if [ ! -d "$HOME/arduino_ide" ] ; then mkdir "$HOME/arduino_ide" ; fi
+  - if [ ! -d "$HOME/$ARDUINO_IDE" ] ; then { echo "fetch" && wget http://downloads.arduino.cc/arduino-${IDE_VERSION}-linux64.tar.xz && echo "untar" && tar xf arduino-${IDE_VERSION}-linux64.tar.xz && echo "move" && mv -f arduino-${IDE_VERSION} $HOME/${ARDUINO_IDE} ; } || { echo "IDE install failed"; exit 1; } ; else echo "IDE already installed" ; fi
+  - export PATH="$HOME/${ARDUINO_IDE}:$PATH"
   #
   # arduino_lorawan looks for project_config things, so we must put
   # things in the canonical place
   #
-  - export THISLIB="$HOME/arduino_ide/libraries/Catena-Arduino-Platform"
-  - ln -s $PWD $THISLIB
+  - export THISLIB="$HOME/$ARDUINO_IDE/libraries/Catena-Arduino-Platform"
+  - ln -sf $PWD $THISLIB
 
   #
   # functions to generate the board settings for SAMD, STM32L0, ...
@@ -38,29 +51,37 @@ before_install:
   #
   # Changes to the BSP may break this build, sorry!
   #
-  - "function _samdopts { echo mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
-  - "function _stm32l0opts { echo mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} ; }"
+  - "function _samdopts { echo '--board' mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
   - export MCCI_STM32_OPTS="--pref recipe.hooks.objcopy.postobjcopy.1.pattern=true"
+  - "function _stm32l0opts { echo '--board' mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},upload_method=${6:-STLink},sysclk=${7:-pll32m} $MCCI_STM32_OPTS ; }"
 
   #
-  # show the output of the config commands for reference.
-  - "echo $(_stm32l0opts) $(_stm32l0opts '' projcfg)"
-  - "echo $(_samdopts) $(_samdopts '' projcfg)"
+  # Select based on target
+  #
+  - function _notsamd { test "$TARGET" != "samd"; }
+  - function _notstm32l0 { test "$TARGET" != "stm32l0"; }
+  - function _notany { for i in "$@" ; do if [ "$TARGET" = "$i" ]; then return 1 ; fi ; done; return 0; }
 
   #
-  # Put one or more arguments into lmic_project_config.h as  `#define $i\n`
-  - function _projcfg { for i in "$@" ; do printf '#define %s 1\n' "$i" ; done  > $HOME/arduino_ide/libraries/arduino-lmic/project_config/lmic_project_config.h ; }
+  # Put one or more arguments into lmic_project_config.h as  `#define $i 1\n` or `#define $i $arg`
+  - function _splitdef { if [ "$1" = "${1/=/}" ]; then echo "$1" 1 ; else echo "${1/=/ }" ; fi ; }
+  - function _projcfg { for i in "$@" ; do printf '#define %s %s\n' $(_splitdef "$i") ; done  > "$ARDUINO_LIBS"/arduino-lmic/project_config/lmic_project_config.h ; }
+
   #
   # Handy macro to deal with expected failures.
-  - 'function _expect_failure { if [ $? -eq 0 ]; then echo "Suceeded, but should have failed!" ; echo project_config/lmic_project_config.h ; cat $HOME/arduino_ide/libraries/arduino-lmic/project_config/lmic_project_config.h ; return 1 ; else echo "Failed, as expected"; return 0 ; fi ; }'
+  - 'function _expect_failure { if [ $? -eq 0 ]; then echo "Suceeded, but should have failed!" ; echo project_config/lmic_project_config.h ; cat $HOME/$ARDUINO_IDE/libraries/arduino-lmic/project_config/lmic_project_config.h ; return 1 ; else echo "Failed, as expected"; return 0 ; fi ; }'
 
   #
   # function to clone a git repo for test: $1 == host, $2 == name
-  - 'function _clonelib { R="https://$1/${2}.git" ; D="$HOME/arduino_ide/libraries/"$(basename "$2") ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
+  # get rid of any cached values.
+  - 'function _clonelib { R="https://$1/${2}.git" ; L=$(basename "$2") ; D="$ARDUINO_LIBS/$L" ; rm -rf "$HOME/ARDUINO_IDE/libraries/$L" ; echo git clone "$R" "$D" ; git clone --depth=1 "$R" "$D" ; ls -R "$D" ; }'
 
   #
   # modify the board manager preferences to point to our BSPs.
-  - arduino --pref "boardsmanager.additional.urls=https://github.com/mcci-catena/arduino-boards/raw/master/BoardManagerFiles/package_mcci_index.json" --save-prefs
+  - BSPMCCI=https://github.com/mcci-catena/arduino-boards/raw/master/BoardManagerFiles/package_mcci_index.json
+  # - BSPADAFRUIT=https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
+  # - BSPESP32=https://dl.espressif.com/dl/package_esp32_index.json
+  - arduino --pref "boardsmanager.additional.urls=$BSPMCCI" --save-prefs
 
 install:
  - _clonelib github.com mcci-catena/Adafruit_FRAM_I2C
@@ -69,40 +90,57 @@ install:
  - _clonelib github.com mcci-catena/Catena-mcciadk
  - _clonelib github.com mcci-catena/RTCZero
 
- - arduino --install-boards mcci:samd
- - arduino --install-boards mcci:stm32
+ - _notsamd    || arduino --install-boards mcci:samd   || echo "assume mcci:samd already installed, continue"
+ - _notstm32l0 || arduino --install-boards mcci:stm32  || echo "assume mcci:stm32 already installed, continue"
 
  # fix for broken BSPs
- - 'if [ -d $HOME/.arduino15/packages/mcci/hardware/stm32/1.1.0 ]; then echo "Work around broken BSP version 1.1.0" ; export MCCI_STM32_OPTS="$MCCI_STM32_OPTS --pref build.board=CATENA_4551" ; fi'
+ - 'if [ "$TARGET" = stm32l0 -a -d $HOME/.arduino15/packages/mcci/hardware/stm32/1.1.0 ]; then echo "Work around broken BSP version 1.1.0" ; export MCCI_STM32_OPTS="$MCCI_STM32_OPTS --pref build.board=CATENA_4551" ; fi'
+ #
+ # show the output of the config commands for reference.
+ - "echo $(_stm32l0opts) $(_stm32l0opts '' projcfg)"
+ - "echo $(_samdopts) $(_samdopts '' projcfg)"
 
 script:
 
  #
  # *** TESTS FOR SAMD21 / Feather M0, Catena 44xx boards ***
  # test each of the SAMD boards
- - arduino --verify --board $(_samdopts mcci_catena_4410) $THISLIB/examples/catena_hello/catena_hello.ino
- - arduino --verify --board $(_samdopts mcci_catena_4420) $THISLIB/examples/catena_hello/catena_hello.ino
- - arduino --verify --board $(_samdopts mcci_catena_4450) $THISLIB/examples/catena_hello/catena_hello.ino
- - arduino --verify --board $(_samdopts mcci_catena_4460) $THISLIB/examples/catena_hello/catena_hello.ino
- - arduino --verify --board $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notsamd    || arduino --verify $(_samdopts mcci_catena_4410) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notsamd    || arduino --verify $(_samdopts mcci_catena_4420) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notsamd    || arduino --verify $(_samdopts mcci_catena_4450) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notsamd    || arduino --verify $(_samdopts mcci_catena_4460) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notsamd    || arduino --verify $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_hello/catena_hello.ino
 
  #
  # test each of the regions on the 4450.
- - arduino --verify --board $(_samdopts '' us915) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- - arduino --verify --board $(_samdopts '' eu868) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notsamd    || arduino --verify $(_samdopts '' us915) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notsamd    || arduino --verify $(_samdopts '' eu868) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  # V1.1.0 of the samd bsp doesn't support au921 correctly -- test with projcfg
- # - arduino --verify --board $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- - _projcfg CFG_au921 CFG_sx1276_radio && arduino --verify --board $(_samdopts '' projcfg) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- - arduino --verify --board $(_samdopts '' as923) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- - arduino --verify --board $(_samdopts '' as923jp) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- - arduino --verify --board $(_samdopts '' in866) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ # - _notsamd    || arduino --verify $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notsamd    || { _projcfg CFG_au921 CFG_sx1276_radio && arduino --verify $(_samdopts '' projcfg) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino ; }
+ - _notsamd    || arduino --verify $(_samdopts '' as923) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notsamd    || arduino --verify $(_samdopts '' as923jp) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notsamd    || arduino --verify $(_samdopts '' in866) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
  #
  # *** TESTS FOR STM32L0 / Catena 4551. 46xx boards ****
  # test each of the STM32L0 boards
- - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4551) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4551) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4611) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4611) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello_lora.ino
 
- # test one region; no need to test them all, we think.
- - arduino --verify --board $(_stm32l0opts) $MCCI_STM32_OPTS $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ # test each of the regions for 4610 (using it as an example). us915 already tested
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 eu868  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 au921  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923jp) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 in866  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
 
 ### end of file ###
