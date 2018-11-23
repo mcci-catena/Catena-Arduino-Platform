@@ -53,7 +53,7 @@ before_install:
   #
   - "function _samdopts { echo '--board' mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
   - export MCCI_STM32_OPTS="--pref recipe.hooks.objcopy.postobjcopy.1.pattern=true"
-  - "function _stm32l0opts { echo '--board' mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} $MCCI_STM32_OPTS ; }"
+  - "function _stm32l0opts { echo '--board' mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},upload_method=${6:-STLink},sysclk=${7:-pll32m} $MCCI_STM32_OPTS ; }"
 
   #
   # Select based on target
@@ -65,7 +65,8 @@ before_install:
   #
   # Put one or more arguments into lmic_project_config.h as  `#define $i 1\n` or `#define $i $arg`
   - function _splitdef { if [ "$1" = "${1/=/}" ]; then echo "$1" 1 ; else echo "${1/=/ }" ; fi ; }
-  - function _projcfg { for i in "$@" ; do printf '#define %s %s\n' $(_splitdef "$i") ; done  > $PWD/project_config/lmic_project_config.h ; }
+  - function _projcfg { for i in "$@" ; do printf '#define %s %s\n' $(_splitdef "$i") ; done  > "$ARDUINO_LIBS"/arduino-lmic/project_config/lmic_project_config.h ; }
+
   #
   # Handy macro to deal with expected failures.
   - 'function _expect_failure { if [ $? -eq 0 ]; then echo "Suceeded, but should have failed!" ; echo project_config/lmic_project_config.h ; cat $HOME/$ARDUINO_IDE/libraries/arduino-lmic/project_config/lmic_project_config.h ; return 1 ; else echo "Failed, as expected"; return 0 ; fi ; }'
