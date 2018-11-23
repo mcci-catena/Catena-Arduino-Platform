@@ -51,9 +51,9 @@ before_install:
   #
   # Changes to the BSP may break this build, sorry!
   #
-  - "function _samdopts { echo -- "--board" mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
+  - "function _samdopts { echo -- '--board' mcci:samd:${1:-mcci_catena_4450}:lorawan_region=${2:-us915} ; }"
   - export MCCI_STM32_OPTS="--pref recipe.hooks.objcopy.postobjcopy.1.pattern=true"
-  - "function _stm32l0opts { echo -- "--board" mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} $MCCI_STM32_OPTS ; }"
+  - "function _stm32l0opts { echo -- '--board' mcci:stm32:${1:-mcci_catena_4551}:lorawan_region=${2:-us915},opt=${3:-osstd},xserial=${4:-generic},usb=${5:-none},upload_method=${6:-STLink} $MCCI_STM32_OPTS ; }"
 
   #
   # Put one or more arguments into lmic_project_config.h as  `#define $i\n`
