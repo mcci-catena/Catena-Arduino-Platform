@@ -127,7 +127,7 @@ bool CatenaStm32::begin(
 
 	/* do the platform begin */
 	gLog.printf(
-		gLog.kAlways,
+		gLog.kTrace,
 		"+CatenaStm32::begin(%x, %x)\n",
 		uClearMask,
 		uSetMask

@@ -394,7 +394,7 @@ McciCatena::cFram::isValid()
 	this->m_fReady = true;
 	this->m_endOffset = endPointer;
         gLog.printf(
-                gLog.kAlways,
+                gLog.kTrace,
                 "%s: end pointer set to 0x%x\n",
                 __func__,
                 endPointer

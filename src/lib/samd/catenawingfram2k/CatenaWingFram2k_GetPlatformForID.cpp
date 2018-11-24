@@ -83,7 +83,7 @@ CatenaWingFram2k::GetPlatformForID(
 	/* we ignore the CPUID unless we can't get a GUID */
 	MCCIADK_GUID_WIRE PlatformGuid;
 
-        gLog.printf(gLog.kAlways, "CatenaWingFram2k::GetPlatformForID entered\n");
+        gLog.printf(gLog.kTrace, "CatenaWingFram2k::GetPlatformForID entered\n");
 
 	// set up the SysEUI
 	if (!this->m_Fram.getField(

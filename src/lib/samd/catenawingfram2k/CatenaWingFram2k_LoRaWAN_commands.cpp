@@ -99,7 +99,7 @@ Returns:
 bool 
 CatenaWingFram2k::LoRaWAN::addCommands()
 	{
-	gLog.printf(gLog.kAlways, "CatenaWingFram2k::LoRaWAN::addCommands(): adding\n");
+	gLog.printf(gLog.kTrace, "CatenaWingFram2k::LoRaWAN::addCommands(): adding\n");
 	this->m_pCatena->addCommands(
 		sDispatch, static_cast<void *>(this)
 		);
