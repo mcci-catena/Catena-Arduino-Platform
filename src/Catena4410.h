@@ -50,18 +50,14 @@ Revision history:
 
 namespace McciCatena {
 
-class Catena4410 : public CatenaFeatherM0
+class Catena4410 : public CatenaFeatherM0LoRa
 	{
 public:
 	enum DIGITAL_PINS
 		{
 		PIN_ONE_WIRE = 0,
 		PIN_SHT10_CLK = 11,
-		PIN_SHT10_DATA = 10,
-		PIN_SX1276_NSS = 8,
-		PIN_SX1276_NRESET = 4,
-		PIN_SX1276_DIO0 = 3,
-		PIN_SX1276_DIO1 = 6,
+		PIN_SHT10_DATA = 10
 		};
 	
 	/*
@@ -77,7 +73,7 @@ public:
 	virtual const char *CatenaName() const override { return "Catena 4410"; };
 
 protected:
-	using Super = CatenaFeatherM0;
+	using Super = CatenaFeatherM0LoRa;
         virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
 
 private:
