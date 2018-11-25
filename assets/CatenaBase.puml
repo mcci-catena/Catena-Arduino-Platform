@@ -1,0 +1,214 @@
+@startuml
+/' PlantUML image for Catena class hierarcy
+'/
+namespace McciCatena {
+
+abstract class CatenaBase {
+  +struct EUI64_buffer_t;
+  +struct EUI64_string_t;
+  +enum OPERATING_FLAGS;
+  +enum PLATFORM_FLAGS;
+  +{static}uint32_t PlatformFlags_GetModNumber();
+  +{static}bool constexpr PlatformFlags+_IsModded();
+  +void SafePrintf();
+  +const EUI64_Buffer_t *GetSysEUI();
+  +{abstract} void begin();
+  +const char * CatenaName() const;
+  +void Sleep();
+  +void poll();
+  +void registerObject();
+  +addCommands();
+  +{static}CatenaBase *pCatenaBase;
+  #void registerCommands();
+  #EUI64_buffer_t m_SysEUI;
+  #cPollingEngine m_PollingEnging;
+  #cStreamInlineCollector m_Collector;
+  #cCommandStream m_CommandStream;
+}
+
+abstract class CatenaSamd21 {
+  +struct UniqueID_buffer_t[];
+  +struct UniqueID_string_t[];
+  +{abstract} bool begin();
+  +bool begin(uint32_t overrideMask);
+  +book begin(uint32_t uClearMask, uint32_t uSetMask);
+  +const CATENA_PLATFORM *GetPlatformForID(const UniqueID_buffer_t, EUI64_buffer_t*);
+  +{abstract}const CATENA_PLATFORM *GetPlatformForID(const UniqueID_buffer_t, EUI64_buffer_t*, uint32_t *);
+  +void GetUniqueID(UniqueID_buffer_t *);
+  +char *GetUniqueIDstring(UniqueID_string_t *);
+  +const CATENA_PLATFORM *GetPlatform();
+  +uint32_t GetOperatingFlags();
+  +uint32_t GetPlatformFlags();
+  #{abstract}void registerCommands();
+  #cSerialReady m_SerialReady;
+  -{static}const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
+  -{static}const size_t nvCpuIdToPlatform;
+  -uint32_t m_OperatingFlags;
+  -const CATENA_PLATFORM *m_pPlatform;
+  -CatenaRTC m_Rtc;
+}
+
+abstract class CatenaStm32 {
+  +struct UniqueID_buffer_t[];
+  +struct UniqueID_string_t[];
+  +{abstract} bool begin();
+  +bool begin(uint32_t overrideMask);
+  +book begin(uint32_t uClearMask, uint32_t uSetMask);
+  +const CATENA_PLATFORM *GetPlatformForID(const UniqueID_buffer_t, EUI64_buffer_t*);
+  +{abstract}const CATENA_PLATFORM *GetPlatformForID(const UniqueID_buffer_t, EUI64_buffer_t*, uint32_t *);
+  +void GetUniqueID(UniqueID_buffer_t *);
+  +char *GetUniqueIDstring(UniqueID_string_t *);
+  +const CATENA_PLATFORM *GetPlatform();
+  +uint32_t GetOperatingFlags();
+  +uint32_t GetPlatformFlags();
+  #{abstract}void registerCommands();
+  #cSerialReady m_SerialReady;
+  -{static}const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
+  -{static}const size_t nvCpuIdToPlatform;
+  -uint32_t m_OperatingFlags;
+  -const CATENA_PLATFORM *m_pPlatform;
+}
+
+abstract class CatenaFeatherM0 {
+  +enum ANALOG_PINS;
+  +enum DIGITAL_PINS;
+  +float ReadVbat() const;
+  #{abstract}const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
+  #{abstract}const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
+  #const CATENA_PLATFORM *m_pPlatform;
+}
+
+abstract class CatenaFeatherM0LoRa {
+  +enum DIGITAL_PINS;
+}
+
+abstract class CatenaWingFram2k {
+  +{abstract}bool begin()
+  +{abstract}const EUI64_buffer_t *GetSysEUI()
+  +{abstract}CATENA_PLATFORM *GetPlatformForID()
+  +cFram2k *getFram()
+  +bool getBootCount(&bootCount)
+  #void registerCommands()
+  #{abstract}void getPlatformTable()
+  -cFram2k  m_Fram
+  -uint32_t m_BootCount
+  -void savePlatform()
+}
+
+abstract class CatenaStm32L0 {
+  +enum ANALOG_PINS
+  +enum DIGITAL_PINS
+  +{abstract}bool begin()
+  +{abstract}CATENA_PLATFORM *GetPlatformForID()
+  +cFram2k *getFram()
+  +bool getBootCount(&bootCount)
+  +float ReadVbat() const;
+  +float ReadVbus() const;
+  +{abstract}void Sleep(uint32_t secs) override;
+  #void registerCommands()
+  #const CATENA_PLATFORM *m_pPlatform;
+  -cFram8k  m_Fram
+  -uint32_t m_BootCount
+  -CatenaStm32L0Rtc m_Rtc;
+  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
+  -{static}const size_t nvPlatforms;
+  -void savePlatform()
+}
+
+abstract class CatenaStm32L0LoRa {
+  +enum DIGITAL_PINS;
+}
+
+abstract class Catena455x {
+  +{abstract}bool begin() override;
+}
+
+abstract class Catena461x {
+  +{abstract}bool begin() override;
+}
+
+abstract class Catena480x {
+  +{abstract}bool begin() override;
+}
+
+class Catena4410 {
+  +enum DIGITAL_PINS;
+  +{abstract}const char *CatenaName() const override;
+  #{abstract}const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
+  -{static}const Arduino_LoRaWAN::ProvisioningTable gk_LoRaWAN_Keys;
+}
+
+class Catena4420 {
+  +enum DIGITAL_PINS;
+  +{abstract}const char *CatenaName() const override;
+  #{abstract}const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
+  -{static}const Arduino_LoRaWAN::ProvisioningTable gk_LoRaWAN_Keys;
+}
+
+class Catena4450 {
+  +const char *CatenaName() const;
+  #virtual void getPlatformTable();
+  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
+  -{static}const size_t nvPlatforms;
+}
+
+class Catena4460 {
+  +const char *CatenaName() const;
+  #virtual void getPlatformTable();
+  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
+  -{static}const size_t nvPlatforms;
+}
+
+class Catena4470 {
+  +const char *CatenaName() const;
+  #virtual void getPlatformTable();
+  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
+  -{static}const size_t nvPlatforms;
+}
+
+class Catena4551 {
+  +const char *CatenaName() const;
+}
+
+class Catena4610 {
+  +const char *CatenaName() const;
+}
+
+class Catena4611 {
+  +const char *CatenaName() const;
+}
+
+class Catena4612 {
+  +const char *CatenaName() const;
+}
+
+class Catena4801 {
+  +const char *CatenaName() const;
+}
+
+CatenaBase <|-- CatenaSamd21
+CatenaBase <|-- CatenaStm32
+
+CatenaSamd21 <|-- CatenaFeatherM0
+CatenaFeatherM0 <|-- CatenaFeatherM0LoRa
+CatenaFeatherM0 <|-- Catena4420
+CatenaFeatherM0LoRa <|-- Catena4410
+CatenaFeatherM0LoRa <|-- CatenaWingFram2k
+CatenaWingFram2k <|-- Catena4450
+CatenaWingFram2k <|-- Catena4460
+CatenaWingFram2k <|-- Catena4470
+
+CatenaStm32 <|-- CatenaStm32L0
+CatenaStm32L0 <|-- CatenaStm32L0LoRa
+CatenaStm32L0LoRa <|-- Catena455x
+CatenaStm32L0LoRa <|-- Catena461x
+CatenaStm32L0LoRa <|-- Catena480x
+
+Catena455x <|-- Catena4551
+Catena461x <|-- Catena4610
+Catena461x <|-- Catena4611
+Catena461x <|-- Catena4612
+Catena480x <|-- Catena4801
+hide members
+}
+@enduml
