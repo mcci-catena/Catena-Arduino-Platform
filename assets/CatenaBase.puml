@@ -1,4 +1,4 @@
-@startuml
+@startuml "Catena Class Hierarchy"
 /' PlantUML image for Catena class hierarcy
 '/
 namespace McciCatena {
@@ -209,6 +209,5 @@ Catena461x <|-- Catena4610
 Catena461x <|-- Catena4611
 Catena461x <|-- Catena4612
 Catena480x <|-- Catena4801
-hide members
 }
 @enduml
