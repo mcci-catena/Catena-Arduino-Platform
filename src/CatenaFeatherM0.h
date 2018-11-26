@@ -102,8 +102,7 @@ public:
 	/*
 	|| the constructor.
 	*/
-	LoRaWAN();
-        LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
+	LoRaWAN() {};
 		
 	/*
 	|| the begin function loads data from the local

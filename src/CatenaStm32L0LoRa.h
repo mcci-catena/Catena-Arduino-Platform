@@ -78,11 +78,9 @@ public:
         using Super = CatenaStm32L0::LoRaWAN;
 
 	/*
-	|| the constructor. deliberately an external reference, as pulling
-	|| in that module will also bring the pinmap in.
+	|| the constructor.
 	*/
-	LoRaWAN();
-        LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
+	LoRaWAN() {};
 
 	/*
 	|| the begin function loads data from the local

@@ -84,7 +84,6 @@ public:
 	|| Super constructor does most of the owrk.
 	*/
 	LoRaWAN() {};
-	LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
 
 	bool begin(Catena480x *pParent);
 
