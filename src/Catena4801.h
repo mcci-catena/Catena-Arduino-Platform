@@ -42,10 +42,10 @@ Revision history:
 
 namespace McciCatena {
 
-class Catena4801 : public Catena461x
+class Catena4801 : public Catena480x
 	{
 public:
-        using Super = Catena461x;
+        using Super = Catena480x;
 
         // no specific constructor.
         Catena4801() {};
