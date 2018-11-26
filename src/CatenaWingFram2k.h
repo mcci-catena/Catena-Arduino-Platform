@@ -119,7 +119,6 @@ public:
 	|| Super constructor does most of the owrk.
 	*/
 	LoRaWAN() {};
-	LoRaWAN(const lmic_pinmap &pinmap) : Super(pinmap) {};
 
         /* start operations: this starts up the LMIC */
 	bool begin(CatenaWingFram2k *pParent);
