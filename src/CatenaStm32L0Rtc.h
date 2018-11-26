@@ -43,9 +43,6 @@ Revision history:
 
 #include <Arduino.h>
 
-/* TODO: make this an enum const in the McciCatena namespace */
-#define	CATENA_STM32L0_RTC_BASE_YEAR	2017
-
 namespace McciCatena {
 
 class CatenaStm32L0Rtc
@@ -68,6 +65,8 @@ public:
 
 		bool Advance(uint32_t delta);
 		};
+
+	// static constexpr ostime_t CATENA_STM32L0_RTC_BASE_YEAR = 2017;
 
 	CatenaStm32L0Rtc() {};
 	bool begin(bool fResetTime = false);

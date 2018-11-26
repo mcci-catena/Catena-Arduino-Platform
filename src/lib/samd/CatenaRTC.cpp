@@ -1,4 +1,4 @@
-/* catenartc.cpp	Thu Nov 10 1 2017 15:32:10 tmm */
+/* catenartc.cpp	Mon Nov 26 2018 15:02:35 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaRTC class
 
 Version:
-	V0.3.0	Thu Nov 10 2016 23:41:10 tmm	Edit level 2
+	V0.12.0	Mon Nov 26 2018 15:02:35 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016, 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -33,16 +33,164 @@ Revision history:
 	Add debugging code. Disable all other interrupt sources during sleep
 	other than RTC (don't let Systick wake us up).
 
+   0.12.0  Mon Nov 26 2018 15:02:36  chwon
+	Remove RTCZero library.
+
 */
 
 #ifdef ARDUINO_ARCH_SAMD
 
 #include <CatenaRTC.h>
-#include <Arduino.h>
+using namespace McciCatena;
+
+/****************************************************************************\
+|
+|		Manifest constants & typedefs.
+|
+|	This is strictly for private types and constants which will not
+|	be exported.
+|
+\****************************************************************************/
+
+
+/****************************************************************************\
+|
+|	Read-only data.
+|
+|	If program is to be ROM-able, these must all be tagged read-only
+|	using the ROM storage class; they may be global.
+|
+\****************************************************************************/
+
+
+/****************************************************************************\
+|
+|	VARIABLES:
+|
+|	If program is to be ROM-able, these must be initialized
+|	using the BSS keyword.  (This allows for compilers that require
+|	every variable to have an initializer.)  Note that only those
+|	variables owned by this module should be declared here, using the BSS
+|	keyword; this allows for linkers that dislike multiple declarations
+|	of objects.
+|
+\****************************************************************************/
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static volatile uint32_t *gs_pAlarm;
+
+void RTC_Handler(void)
+	{
+	if (gs_pAlarm)
+		*gs_pAlarm = 1;
+
+	// must clear flag at end
+	RTC->MODE2.INTFLAG.reg = RTC_MODE2_INTFLAG_ALARM0;
+	}
+
+/* Wait for sync in write operations */
+static inline void RtcWaitSynchronize(void)
+	{
+	while (RTC->MODE2.STATUS.bit.SYNCBUSY)
+		;
+	}
+
+#ifdef __cplusplus
+}
+#endif
 
 bool CatenaRTC::begin(bool fResetTime)
 	{
-	RTCZero::begin(fResetTime);
+	uint16_t tmp_reg = 0;
+
+	/* turn on digital interface clock */
+	PM->APBAMASK.reg |= PM_APBAMASK_RTC;
+
+	/* Configure the 32768Hz Oscillator */
+	SYSCTRL->XOSC32K.reg =	SYSCTRL_XOSC32K_ONDEMAND |
+				SYSCTRL_XOSC32K_RUNSTDBY |
+				SYSCTRL_XOSC32K_EN32K |
+				SYSCTRL_XOSC32K_XTALEN |
+				SYSCTRL_XOSC32K_STARTUP(6) |
+				SYSCTRL_XOSC32K_ENABLE;
+
+	// If the RTC is in clock mode and the reset was
+	// not due to POR or BOD, preserve the clock time
+	// POR causes a reset anyway, BOD behaviour is?
+	bool validTime = false;
+	RTC_MODE2_CLOCK_Type oldTime;
+
+	if (! fResetTime &&
+	    (PM->RCAUSE.reg & (PM_RCAUSE_SYST | PM_RCAUSE_WDT | PM_RCAUSE_EXT)))
+		{
+		if (RTC->MODE2.CTRL.reg & RTC_MODE2_CTRL_MODE_CLOCK)
+			{
+			validTime = true;
+			oldTime.reg = RTC->MODE2.CLOCK.reg;
+			}
+		}
+
+	/* Attach peripheral clock to 32k oscillator */
+	GCLK->GENDIV.reg = GCLK_GENDIV_ID(2)|GCLK_GENDIV_DIV(4);
+	while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
+		;
+	GCLK->GENCTRL.reg = GCLK_GENCTRL_GENEN |
+			    GCLK_GENCTRL_SRC_XOSC32K |
+			    GCLK_GENCTRL_ID(2) |
+			    GCLK_GENCTRL_DIVSEL;
+	while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
+		;
+	GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN |
+			    GCLK_CLKCTRL_GEN_GCLK2 |
+			    (RTC_GCLK_ID << GCLK_CLKCTRL_ID_Pos);
+	while (GCLK->STATUS.bit.SYNCBUSY)
+		;
+
+	// disable RTC
+	RTC->MODE2.CTRL.reg &= ~RTC_MODE2_CTRL_ENABLE;
+	RtcWaitSynchronize();
+
+	// RTC software reset
+	RTC->MODE2.CTRL.reg |= RTC_MODE2_CTRL_SWRST;
+	RtcWaitSynchronize();
+
+	tmp_reg |= RTC_MODE2_CTRL_MODE_CLOCK; // set clock operating mode
+	tmp_reg |= RTC_MODE2_CTRL_PRESCALER_DIV1024; // set prescaler to 1024 for MODE2
+	tmp_reg &= ~RTC_MODE2_CTRL_MATCHCLR; // disable clear on match
+  
+	//According to the datasheet RTC_MODE2_CTRL_CLKREP = 0 for 24h
+	tmp_reg &= ~RTC_MODE2_CTRL_CLKREP; // 24h time representation
+
+	RTC->MODE2.READREQ.reg &= ~RTC_READREQ_RCONT; // disable continuously mode
+
+	RTC->MODE2.CTRL.reg = tmp_reg;
+	RtcWaitSynchronize();
+
+	NVIC_EnableIRQ(RTC_IRQn); // enable RTC interrupt 
+	NVIC_SetPriority(RTC_IRQn, 0x00);
+
+	RTC->MODE2.INTENSET.reg |= RTC_MODE2_INTENSET_ALARM0; // enable alarm interrupt
+	RTC->MODE2.Mode2Alarm[0].MASK.bit.SEL = MATCH_OFF; // default alarm match is off (disabled)
+	RtcWaitSynchronize();
+
+	// enable RTC
+	RTC->MODE2.CTRL.reg |= RTC_MODE2_CTRL_ENABLE;
+	RtcWaitSynchronize();
+
+	// software reset remove
+	RTC->MODE2.CTRL.reg &= ~RTC_MODE2_CTRL_SWRST;
+	RtcWaitSynchronize();
+
+	// If desired and valid, restore the time value
+	if (! fResetTime && validTime)
+		{
+		RTC->MODE2.CLOCK.reg = oldTime.reg;
+		RtcWaitSynchronize();
+		}
+
         return true;
 	}
 
@@ -56,17 +204,20 @@ CatenaRTC::CalendarTime
 CatenaRTC::GetTime(void)
         {
         CalendarTime result;
-        uint8_t s_again;
+        RTC_MODE2_CLOCK_Type Mode2Clock;
 
-        do  {
-            result.Second = getSeconds();
-            result.Minute = getMinutes();
-            result.Hour = getHours();
-            result.Day = getDay();
-            result.Month = getMonth();
-            result.Year = getYear();
-            s_again = getSeconds();
-            } while (s_again != result.Second);
+	RTC->MODE2.READREQ.reg = RTC_READREQ_RREQ;
+	RtcWaitSynchronize();
+
+	Mode2Clock.reg = RTC->MODE2.CLOCK.reg;
+
+	result.Second = Mode2Clock.bit.SECOND;
+	result.Minute = Mode2Clock.bit.MINUTE;
+	result.Hour = Mode2Clock.bit.HOUR;
+	result.Day = Mode2Clock.bit.DAY;
+	result.Month = Mode2Clock.bit.MONTH;
+	result.Year = Mode2Clock.bit.YEAR;
+
         return result;
         }
 
@@ -80,20 +231,18 @@ void CatenaRTC::SetAlarm(uint32_t delta)
 
 void CatenaRTC::SetAlarm(const CalendarTime *pNow)
         {
-        setAlarmSeconds(pNow->Second);
-        setAlarmMinutes(pNow->Minute);
-        setAlarmHours(pNow->Hour);
-        setAlarmDay(pNow->Day);
-        setAlarmMonth(pNow->Month);
-        setAlarmYear(pNow->Year);
-        }
+        RTC_MODE2_ALARM_Type Mode2Alarm;
 
-static volatile uint32_t *s_pAlarm;
+	Mode2Alarm.reg = 0;
+	Mode2Alarm.bit.SECOND = pNow->Second;
+	Mode2Alarm.bit.MINUTE = pNow->Minute;
+	Mode2Alarm.bit.HOUR = pNow->Hour;
+	Mode2Alarm.bit.DAY = pNow->Day;
+	Mode2Alarm.bit.MONTH = pNow->Month;
+	Mode2Alarm.bit.YEAR = pNow->Year;
 
-static void AlarmCb(void)
-        {
-        if (s_pAlarm)
-                *s_pAlarm = 1;
+	RTC->MODE2.Mode2Alarm[0].ALARM.reg = Mode2Alarm.reg;
+	RtcWaitSynchronize();
         }
 
 void CatenaRTC::SleepForAlarm(
@@ -115,12 +264,15 @@ void CatenaRTC::SleepForAlarm(
         systick_ctrl_save = SysTick->CTRL;
         SysTick->CTRL = systick_ctrl_save & ~SysTick_CTRL_ENABLE_Msk;
 
-        // turn off alarms, just in case, so we can safely init.
-        this->disableAlarm();
-        this->m_Alarm = false;
-        s_pAlarm = &this->m_Alarm;
-        this->attachInterrupt(AlarmCb);
-        this->enableAlarm(how);
+	// turn off alarms, just in case, so we can safely init.
+	RTC->MODE2.Mode2Alarm[0].MASK.bit.SEL = 0x00;
+	RtcWaitSynchronize();
+
+	this->m_Alarm = false;
+	gs_pAlarm = &this->m_Alarm;
+
+	RTC->MODE2.Mode2Alarm[0].MASK.bit.SEL = how;
+	RtcWaitSynchronize();
 
         /* we may want to try deep sleep, maybe not */
         nWakes = 0;
@@ -161,11 +313,16 @@ void CatenaRTC::SleepForAlarm(
                         while (! m_Alarm)
                                 {
                                 ++nWakes;
-                                this->standbyMode();
+                                // Entering standby mode when connected
+                                // via the native USB port causes issues.
+                                SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+                                __WFI();
                                 }
                         break;
                 }
-        this->disableAlarm();
+
+	RTC->MODE2.Mode2Alarm[0].MASK.bit.SEL = 0x00;
+	RtcWaitSynchronize();
 
         uint32_t systick_ctrl_post = SysTick->CTRL;
         uint32_t nvic_iser_post = NVIC->ISER[0];
