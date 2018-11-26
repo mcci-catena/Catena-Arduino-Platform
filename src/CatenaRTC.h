@@ -1,4 +1,4 @@
-/* CatenaRTC.h	Mon Nov 19 2018 12:08:48 chwon */
+/* CatenaRTC.h	Mon Nov 26 2018 15:01:32 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	RTC wrapper for Catena
 
 Version:
-	V0.11.0	Mon Nov 19 2018 12:08:48 chwon	Edit level 2
+	V0.12.0	Mon Nov 26 2018 15:01:32 chwon	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2016, 2018 by
@@ -31,6 +31,9 @@ Revision history:
 
    0.11.0  Mon Nov 19 2018 12:08:48  chwon
 	Remove include CatenaSamd21.h.
+
+   0.12.0  Mon Nov 26 2018 15:01:32  chwon
+	Remove RTCZero library.
 
 */
 
@@ -91,8 +94,6 @@ public:
 private:
         volatile uint32_t m_Alarm;
 	static const uint16_t md[13];
-
-	void RtcWaitSynchronize(void);
         };
 
 } // namespace McciCatena

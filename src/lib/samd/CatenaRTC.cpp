@@ -1,4 +1,4 @@
-/* catenartc.cpp	Thu Nov 10 1 2017 15:32:10 tmm */
+/* catenartc.cpp	Mon Nov 26 2018 15:02:35 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaRTC class
 
 Version:
-	V0.3.0	Thu Nov 10 2016 23:41:10 tmm	Edit level 2
+	V0.12.0	Mon Nov 26 2018 15:02:35 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016, 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -32,6 +32,9 @@ Revision history:
    0.3.0  Thu Nov 10 2016 23:41:10  tmm
 	Add debugging code. Disable all other interrupt sources during sleep
 	other than RTC (don't let Systick wake us up).
+
+   0.12.0  Mon Nov 26 2018 15:02:36  chwon
+	Remove RTCZero library.
 
 */
 
@@ -86,6 +89,13 @@ void RTC_Handler(void)
 
 	// must clear flag at end
 	RTC->MODE2.INTFLAG.reg = RTC_MODE2_INTFLAG_ALARM0;
+	}
+
+/* Wait for sync in write operations */
+static inline void RtcWaitSynchronize(void)
+	{
+	while (RTC->MODE2.STATUS.bit.SYNCBUSY)
+		;
 	}
 
 #ifdef __cplusplus
@@ -182,13 +192,6 @@ bool CatenaRTC::begin(bool fResetTime)
 		}
 
         return true;
-	}
-
-/* Wait for sync in write operations */
-inline void CatenaRTC::RtcWaitSynchronize()
-	{
-	while (RTC->MODE2.STATUS.bit.SYNCBUSY)
-		;
 	}
 
 const uint16_t CatenaRTC::md[13] =
