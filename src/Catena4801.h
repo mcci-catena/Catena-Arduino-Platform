@@ -36,8 +36,8 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENA461X_H_
-# include "Catena461x.h"
+#ifndef _CATENA480X_H_
+# include "Catena480x.h"
 #endif
 
 namespace McciCatena {

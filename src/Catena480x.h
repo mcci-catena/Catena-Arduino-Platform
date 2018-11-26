@@ -31,8 +31,8 @@ Revision history:
 
 */
 
-#ifndef _CATENA461X_H_	/* prevent multiple includes */
-#define _CATENA461X_H_
+#ifndef _CATENA480X_H_	/* prevent multiple includes */
+#define _CATENA480X_H_
 
 #pragma once
 
@@ -95,4 +95,4 @@ private:
 } // namespace McciCatena
 
 /**** end of Catena480x.h ****/
-#endif /* _CATENA461X_H_ */
+#endif /* _CATENA480X_H_ */
