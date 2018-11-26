@@ -37,13 +37,25 @@ Revision history:
 #ifndef _CATENARTC_H_		/* prevent multiple includes */
 #define _CATENARTC_H_
 
-#include <RTCZero.h>
+#include <Arduino.h>
 
 /* the class for real-time calculations */
+namespace McciCatena {
 
-class CatenaRTC : public RTCZero
+class CatenaRTC
         {
 public:
+	enum Alarm_Match: uint8_t
+		{
+		MATCH_OFF          = RTC_MODE2_MASK_SEL_OFF_Val,          // Never
+		MATCH_SS           = RTC_MODE2_MASK_SEL_SS_Val,           // Every Minute
+		MATCH_MMSS         = RTC_MODE2_MASK_SEL_MMSS_Val,         // Every Hour
+		MATCH_HHMMSS       = RTC_MODE2_MASK_SEL_HHMMSS_Val,       // Every Day
+		MATCH_DHHMMSS      = RTC_MODE2_MASK_SEL_DDHHMMSS_Val,     // Every Month
+		MATCH_MMDDHHMMSS   = RTC_MODE2_MASK_SEL_MMDDHHMMSS_Val,   // Every Year
+		MATCH_YYMMDDHHMMSS = RTC_MODE2_MASK_SEL_YYMMDDHHMMSS_Val  // Once, on a specific date and a specific time
+		};
+
         struct JulianTime;
         struct CalendarTime;
 	enum class SleepMode
@@ -79,8 +91,11 @@ public:
 private:
         volatile uint32_t m_Alarm;
 	static const uint16_t md[13];
+
+	void RtcWaitSynchronize(void);
         };
 
+} // namespace McciCatena
 
 
 /**** end of CatenaRTC.h ****/
