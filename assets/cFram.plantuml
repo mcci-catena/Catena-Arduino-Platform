@@ -1,4 +1,4 @@
-@startuml
+@startuml "cFram class hierarchy"
 /' PlantUML image for FRAM
 '/
 namespace McciCatena {

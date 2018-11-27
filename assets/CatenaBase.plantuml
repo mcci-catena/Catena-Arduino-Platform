@@ -115,10 +115,6 @@ abstract class CatenaStm32L0 {
   -void savePlatform()
 }
 
-abstract class CatenaStm32L0LoRa {
-  +enum DIGITAL_PINS;
-}
-
 abstract class Catena455x {
   +{abstract}bool begin() override;
 }
@@ -199,10 +195,9 @@ CatenaWingFram2k <|-- Catena4460
 CatenaWingFram2k <|-- Catena4470
 
 CatenaStm32 <|-- CatenaStm32L0
-CatenaStm32L0 <|-- CatenaStm32L0LoRa
-CatenaStm32L0LoRa <|-- Catena455x
-CatenaStm32L0LoRa <|-- Catena461x
-CatenaStm32L0LoRa <|-- Catena480x
+CatenaStm32L0 <|-- Catena455x
+CatenaStm32L0 <|-- Catena461x
+CatenaStm32L0 <|-- Catena480x
 
 Catena455x <|-- Catena4551
 Catena461x <|-- Catena4610
