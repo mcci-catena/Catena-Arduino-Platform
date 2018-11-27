@@ -1,4 +1,4 @@
-/* Catena461x.h	Tue Nov 06 2018 14:25:23 chwon */
+/* Catena461x.h	Mon Nov 26 2018 15:50:21 chwon */
 
 /*
 
@@ -9,7 +9,7 @@ Function:
 	(4610, 4611, 4612, etc.)
 
 Version:
-	V0.11.0	Tue Nov 06 2018 14:25:23 chwon	Edit level 1
+	V0.12.0	Mon Nov 26 2018 15:50:21 chwon	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2018 by
@@ -30,6 +30,9 @@ Revision history:
    0.11.0  Tue Nov 06 2018 14:25:23 chwon
 	Module created.
 
+   0.12.0  Mon Nov 26 2018 15:50:21  chwon
+	Change from CatenaStm32L0LoRa to CatenaStm32L0 class.
+
 */
 
 #ifndef _CATENA461X_H_	/* prevent multiple includes */
@@ -37,18 +40,18 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENASTM32L0LORA_H_
-# include "CatenaStm32L0LoRa.h"
+#ifndef _CATENASTM32L0_H_
+# include "CatenaStm32L0.h"
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>
 
 namespace McciCatena {
 
-class Catena461x : public CatenaStm32L0LoRa
+class Catena461x : public CatenaStm32L0
 	{
 public:
-        using Super = CatenaStm32L0LoRa;
+        using Super = CatenaStm32L0;
 
         // no specific constructor.
         Catena461x() {};
@@ -75,10 +78,10 @@ private:
 /*
 || The LoRaWAN class for the Catena 455x. Assumes The Things Network
 */
-class Catena461x::LoRaWAN : public CatenaStm32L0LoRa::LoRaWAN
+class Catena461x::LoRaWAN : public CatenaStm32L0::LoRaWAN
 	{
 public:
-	using Super = CatenaStm32L0LoRa::LoRaWAN;
+	using Super = CatenaStm32L0::LoRaWAN;
 
 	/*
 	|| the constructor. We don't do anything at this level, the
