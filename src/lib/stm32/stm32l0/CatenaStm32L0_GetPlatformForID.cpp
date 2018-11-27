@@ -39,53 +39,6 @@ Revision history:
 #include "Catena_Platforms.h"
 
 using namespace McciCatena;
-
-const CATENA_PLATFORM (* const CatenaStm32L0::vPlatforms[]) =
-	{
-	// entry 0 is the default
-#if defined(ARDUINO_MCCI_CATENA_4550) || defined(ARDUINO_CATENA_4550)
-	&gkPlatformCatena4550,
-#endif	/* CATENA_4550 */
-
-#if defined(ARDUINO_MCCI_CATENA_4551) || defined(ARDUINO_CATENA_4551)
-	&gkPlatformCatena4551,
-	&gkPlatformCatena4551_m101,
-	&gkPlatformCatena4551_m102,
-	&gkPlatformCatena4551_m103,
-	&gkPlatformCatena4551_m104,
-#endif	/* CATENA_4551 */
-
-#if defined(ARDUINO_MCCI_CATENA_4610)
-	&gkPlatformCatena4610,
-	&gkPlatformCatena4610_m101,
-	&gkPlatformCatena4610_m102,
-	&gkPlatformCatena4610_m103,
-	&gkPlatformCatena4610_m104,
-#endif	/* CATENA_4610 */
-
-#if defined(ARDUINO_MCCI_CATENA_4611) || defined(ARDUINO_CATENA_4611)
-	&gkPlatformCatena4611,
-	&gkPlatformCatena4611_m101,
-	&gkPlatformCatena4611_m102,
-	&gkPlatformCatena4611_m103,
-	&gkPlatformCatena4611_m104,
-#endif	/* CATENA_4611 */
-
-#if defined(ARDUINO_MCCI_CATENA_4612) || defined(ARDUINO_CATENA_4612)
-	&gkPlatformCatena4612,
-	&gkPlatformCatena4612_m101,
-	&gkPlatformCatena4612_m102,
-	&gkPlatformCatena4612_m103,
-	&gkPlatformCatena4612_m104,
-#endif	/* CATENA_4612 */
-
-#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
-	&gkPlatformCatena4801,
-#endif	/* CATENA_4801 */
-	};
-
-const size_t CatenaStm32L0::nvPlatforms =
-	sizeof(CatenaStm32L0::vPlatforms) / sizeof(CatenaStm32L0::vPlatforms[0]);
 
 /*
 
@@ -191,6 +144,10 @@ CatenaStm32L0::GetPlatformForID(
 		}
 
 	// search for a matching GUID
+        const CATENA_PLATFORM * const * vPlatforms;
+        size_t nvPlatforms;
+
+        this->getPlatformTable(vPlatforms, nvPlatforms);
         const CATENA_PLATFORM *pPlatform;
 
 	for (size_t i = 0; i < nvPlatforms; ++i)

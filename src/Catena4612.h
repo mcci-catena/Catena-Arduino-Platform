@@ -61,8 +61,16 @@ public:
 	virtual const char *CatenaName() const override { return "Catena 4612"; };
 
 protected:
+	// we are required to provide a table of platforms
+	virtual void getPlatformTable(
+		const CATENA_PLATFORM * const * &vPlatforms,
+		size_t &nvPlatforms
+		) override;
 
 private:
+	// the known platforms
+	static const CATENA_PLATFORM(* const vPlatforms[]);
+	static const size_t nvPlatforms;
 	};
 
 } // namespace McciCatena

@@ -1,17 +1,17 @@
-/* CatenaStm32L0.cpp	Tue Jan 23 2018 09:38:23 chwon */
+/* Catena461x_ReadVoltage.cpp	Mon Nov 26 2018 16:18:29 chwon */
 
 /*
 
-Module:  CatenaStm32L0.cpp
+Module:  Catena461x_ReadVoltage.cpp
 
 Function:
-	CatenaStm32L0::ReadVbat()
+	Catena461x::ReadVbat() and Catena461x::ReadVbus()
 
 Version:
-	V0.7.0	Tue Jan 23 2018 09:38:23 chwon	Edit level 3
+	V0.12.0	Mon Nov 26 2018 16:18:29 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2017-2018 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -20,26 +20,20 @@ Copyright notice:
 	An unpublished work.  All rights reserved.
 
 	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
+	ChaeHee Won, MCCI Corporation	November 2018
 
 Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
+   0.12.0  Mon Nov 26 2018 16:18:29  chwon
 	Module created.
-
-   0.7.0  Wed Jan 03 2018 11:03:39  chwon
-	Remove multiply 2.
-
-   0.7.0  Tue Jan 23 2018 09:38:23  chwon
-	Move yield() and HAL_GetTick() to variant.cpp.
 
 */
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "CatenaStm32L0.h"
+#include "Catena461x.h"
 
 #include <Arduino.h>
 using namespace McciCatena;
@@ -80,23 +74,19 @@ using namespace McciCatena;
 \****************************************************************************/
 
 float
-CatenaStm32L0::ReadVbat(void) const
+Catena461x::ReadVbat(void) const
 	{
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBAT_SENSE);
 	return rawVoltage * 3.3 / 1024;
 	}
 
 float
-CatenaStm32L0::ReadVbus(void) const
+Catena461x::ReadVbus(void) const
 	{
-#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
-	return 0;
-#else
 	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBUS_SENSE);
 	return rawVoltage * 3.3 / 1024;
-#endif
 	}
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of CatenaStm32L0.cpp ****/
+/**** end of Catena461x_ReadVoltage.cpp ****/

@@ -1,4 +1,4 @@
-/* Catena455x.h	Fri Oct 13 2017 15:19:30 chwon */
+/* Catena455x.h	Mon Nov 26 2018 15:49:24 chwon */
 
 /*
 
@@ -9,10 +9,10 @@ Function:
 	(4550, 4551, etc.)
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Mon Nov 26 2018 15:49:24 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -30,6 +30,9 @@ Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
 
+   0.12.0  Mon Nov 26 2018 15:49:24  chwon
+	Change from CatenaStm32L0LoRa to CatenaStm32L0 class.
+
 */
 
 #ifndef _CATENA455X_H_		/* prevent multiple includes */
@@ -37,18 +40,18 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENASTM32L0LORA_H_
-# include "CatenaStm32L0LoRa.h"
+#ifndef _CATENASTM32L0_H_
+# include "CatenaStm32L0.h"
 #endif
 
 #include <Arduino_LoRaWAN_ttn.h>
 
 namespace McciCatena {
 
-class Catena455x : public CatenaStm32L0LoRa
+class Catena455x : public CatenaStm32L0
 	{
 public:
-        using Super = CatenaStm32L0LoRa;
+        using Super = CatenaStm32L0;
 
         // no specific constructor.
         Catena455x() {};
@@ -66,6 +69,8 @@ public:
 
 	// methods
 	virtual bool begin() override;
+	virtual float ReadVbat(void) const override;
+	virtual float ReadVbus(void) const override;
 
 protected:
 
@@ -75,10 +80,10 @@ private:
 /*
 || The LoRaWAN class for the Catena 455x. Assumes The Things Network
 */
-class Catena455x::LoRaWAN : public CatenaStm32L0LoRa::LoRaWAN
+class Catena455x::LoRaWAN : public CatenaStm32L0::LoRaWAN
 	{
 public:
-	using Super = CatenaStm32L0LoRa::LoRaWAN;
+	using Super = CatenaStm32L0::LoRaWAN;
 
 	/*
 	|| the constructor. We don't do anything at this level, the
