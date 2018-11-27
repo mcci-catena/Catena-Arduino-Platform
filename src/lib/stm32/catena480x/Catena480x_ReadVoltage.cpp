@@ -76,7 +76,7 @@ using namespace McciCatena;
 float
 Catena480x::ReadVbat(void) const
 	{
-	float rawVoltage = analogRead(A0);
+	float rawVoltage = analogRead(Catena480x::APIN_VBAT_SENSE);
 	return rawVoltage * 3.3 / 1024;
 	}
 

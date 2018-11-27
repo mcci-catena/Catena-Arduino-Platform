@@ -66,22 +66,6 @@ public:
 	// forward reference
 	class LoRaWAN;
 
-	// all Stm32L0s put vbat on A7
-	enum ANALOG_PINS
-		{
-		APIN_VBAT_SENSE = A3,
-		APIN_VBUS_SENSE = A4,
-		};
-
-	enum DIGITAL_PINS
-		{
-		PIN_STATUS_LED = D13,
-		PIN_SPI2_FLASH_SS = D19,
-		PIN_SPI2_MOSI = D23,
-		PIN_SPI2_MISO = D22,
-		PIN_SPI2_SCK = D24,
-		};
-
         // start the Stm32L0 level
 	virtual bool begin(void) override;
 	virtual const EUI64_buffer_t *GetSysEUI(void) override;

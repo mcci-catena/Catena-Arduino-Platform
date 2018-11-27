@@ -76,14 +76,14 @@ using namespace McciCatena;
 float
 Catena455x::ReadVbat(void) const
 	{
-	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBAT_SENSE);
+	float rawVoltage = analogRead(Catena455x::APIN_VBAT_SENSE);
 	return rawVoltage * 3.3 / 1024;
 	}
 
 float
 Catena455x::ReadVbus(void) const
 	{
-	float rawVoltage = analogRead(CatenaStm32L0::APIN_VBUS_SENSE);
+	float rawVoltage = analogRead(Catena455x::APIN_VBUS_SENSE);
 	return rawVoltage * 3.3 / 1024;
 	}
 

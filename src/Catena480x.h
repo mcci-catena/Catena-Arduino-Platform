@@ -66,6 +66,20 @@ public:
 	// LoRaWAN binding
 	class LoRaWAN /* forward */;
 
+	enum ANALOG_PINS
+		{
+		APIN_VBAT_SENSE = A0,
+		};
+
+	enum DIGITAL_PINS
+		{
+		PIN_STATUS_LED = D13,
+		PIN_SPI2_FLASH_SS = D19,
+		PIN_SPI2_MOSI = D23,
+		PIN_SPI2_MISO = D22,
+		PIN_SPI2_SCK = D24,
+		};
+
 	// methods
 	virtual bool begin() override;
 	virtual float ReadVbat(void) const override;
