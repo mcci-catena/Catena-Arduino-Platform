@@ -66,26 +66,6 @@ public:
 	// forward reference
 	class LoRaWAN;
 
-	// all Stm32L0s put vbat on A7
-	enum ANALOG_PINS
-		{
-#if defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
-		APIN_VBAT_SENSE = A0,
-#else
-		APIN_VBAT_SENSE = A3,
-		APIN_VBUS_SENSE = A4,
-#endif
-		};
-
-	enum DIGITAL_PINS
-		{
-		PIN_STATUS_LED = D13,
-		PIN_SPI2_FLASH_SS = D19,
-		PIN_SPI2_MOSI = D23,
-		PIN_SPI2_MISO = D22,
-		PIN_SPI2_SCK = D24,
-		};
-
         // start the Stm32L0 level
 	virtual bool begin(void) override;
 	virtual const EUI64_buffer_t *GetSysEUI(void) override;
@@ -104,14 +84,20 @@ public:
 		};
 
 	// read the current battery voltage, in engineering units
-	float ReadVbat(void) const;
-	float ReadVbus(void) const;
+	virtual float ReadVbat(void) const = 0;
+	virtual float ReadVbus(void) const = 0;
 
 	virtual void Sleep(uint32_t howLongInSeconds) override;
 
 protected:
 	// methods
 	virtual void registerCommands(void);
+
+	// subclasses must provide a method for getting the platform table
+	virtual void getPlatformTable(
+		const CATENA_PLATFORM * const * &vPlatforms,
+		size_t &nvPlatforms
+		) = 0;
 
         // instance data
         const CATENA_PLATFORM *m_pPlatform;
@@ -121,10 +107,6 @@ private:
 	McciCatena::cFram8k		m_Fram;
         uint32_t			m_BootCount;
 	McciCatena::CatenaStm32L0Rtc	m_Rtc;
-
-        // the known platforms
-        static const CATENA_PLATFORM(* const vPlatforms[]);
-        static const size_t nvPlatforms;
 
         // internal methods
         void savePlatform(
