@@ -83,8 +83,8 @@ The known classes and header files are:
 Class                 | Header File             | Description
 ----------------------|-------------------------|------------------
 `CatenaFeatherM0LoRa` | `CatenaFeatherM0LoRa.h` | Generic for use with a Feather M0 LoRa
-`Catena4410`          | `Catena410.h`           | First generation MCCI systems with BME180
-`Catena4420`          | `Catena4410.h`          | Feather M0 Bluetooth + LoRa Radio Wing
+`Catena4410`          | `Catena4410.h`          | First generation MCCI systems with BME180
+`Catena4420`          | `Catena4420.h`          | Feather M0 Bluetooth + LoRa Radio Wing
 `Catena4450`          | `Catena4450.h`          | MCCI Catena 4450
 `Catena4460`          | `Catena4460.h`          | MCCI Catena 4460
 `Catena4470`          | `Catena4470.h`          | MCCI Catena 4470
