@@ -71,6 +71,7 @@ public:
 		{
 		APIN_VBAT_SENSE = A3,
 		APIN_VBUS_SENSE = A4,
+		APIN_VREF_SENSE = D34,
 		};
 
 	enum DIGITAL_PINS
@@ -93,7 +94,7 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena 455x. Assumes The Things Network
+|| The LoRaWAN class for the Catena 461x. Assumes The Things Network
 */
 class Catena461x::LoRaWAN : public CatenaStm32L0::LoRaWAN
 	{

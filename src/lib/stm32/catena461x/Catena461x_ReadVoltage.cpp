@@ -34,6 +34,7 @@ Revision history:
 #ifdef ARDUINO_ARCH_STM32
 
 #include "Catena461x.h"
+#include "Catena_Log.h"
 
 #include <Arduino.h>
 using namespace McciCatena;
@@ -76,15 +77,43 @@ using namespace McciCatena;
 float
 Catena461x::ReadVbat(void) const
 	{
-	float rawVoltage = analogRead(Catena461x::APIN_VBAT_SENSE);
-	return rawVoltage * 3.3 / 1024;
+	uint32_t vrefint = analogRead(Catena461x::APIN_VREF_SENSE);
+	uint32_t vbat = analogRead(Catena461x::APIN_VBAT_SENSE);
+	uint32_t vdda;
+	float volt;
+
+	vdda = __LL_ADC_CALC_VREFANALOG_VOLTAGE(vrefint, LL_ADC_RESOLUTION_12B);
+
+	gLog.printf(
+		gLog.kAlways,
+		"Catena461x::ReadVbat: vrefint=%u vbat=%u vdda=%u\n",
+		vrefint,
+		vbat,
+		vdda
+		);
+	volt = __LL_ADC_CALC_DATA_TO_VOLTAGE(vdda, vbat, LL_ADC_RESOLUTION_12B);
+	return volt / 1000;
 	}
 
 float
 Catena461x::ReadVbus(void) const
 	{
-	float rawVoltage = analogRead(Catena461x::APIN_VBUS_SENSE);
-	return rawVoltage * 3.3 / 1024;
+	uint32_t vrefint = analogRead(Catena461x::APIN_VREF_SENSE);
+	uint32_t vbus = analogRead(Catena461x::APIN_VBUS_SENSE);
+	uint32_t vdda;
+	float volt;
+
+	vdda = __LL_ADC_CALC_VREFANALOG_VOLTAGE(vrefint, LL_ADC_RESOLUTION_12B);
+
+	gLog.printf(
+		gLog.kAlways,
+		"Catena461x::ReadVbus: vrefint=%u vbus=%u vdda=%u\n",
+		vrefint,
+		vbus,
+		vdda
+		);
+	volt = __LL_ADC_CALC_DATA_TO_VOLTAGE(vdda, vbus, LL_ADC_RESOLUTION_12B);
+	return volt / 1000;
 	}
 
 #endif // ARDUINO_ARCH_STM32

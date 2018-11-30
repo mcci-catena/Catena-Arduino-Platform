@@ -59,6 +59,7 @@ Returns:
 
 bool Catena461x::begin()
 	{
+	analogReadResolution(ADC_RESOLUTION);
 	Serial.begin(115200);
 	Wire.begin();
 	delay(1000);
