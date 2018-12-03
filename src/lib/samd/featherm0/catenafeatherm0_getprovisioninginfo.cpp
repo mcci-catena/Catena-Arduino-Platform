@@ -5,7 +5,7 @@
 Module:  GetProvisioningInfo.cpp
 
 Function:
-	Catena4410::GetProvisioningInfo()
+	CatenaFeatherM0::GetProvisioningInfo()
 
 Version:
 	V0.3.0	Tue Nov  1 2016 11:58:03 tmm	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include <Catena4410.h>
+#include <CatenaFeatherM0.h>
 using namespace McciCatena;
 
 /****************************************************************************\

@@ -50,9 +50,19 @@ CatenaBase::CatenaBase()
 bool
 CatenaBase::begin(void)
 	{
+	UniqueID_buffer_t CpuID;
+
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 
 	this->m_PollingEngine.begin();
+
+	/* get the CPU ID */
+	this->GetUniqueID(&CpuID);
+	this->m_pPlatform = this->GetPlatformForID(
+				&CpuID,
+				&this->m_SysEUI,
+				&this->m_OperatingFlags
+				);
 	return true;
 	}
 

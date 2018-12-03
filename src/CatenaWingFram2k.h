@@ -75,7 +75,10 @@ public:
 		uint32_t *pOperatingFlags
 		) override;
 
-        McciCatena::cFram2k *getFram() { return &this->m_Fram; };
+        virtual McciCatena::cFram *getFram(void) override
+        	{
+        	return &this->m_Fram;
+        	};
 
         bool getBootCount(uint32_t &bootCount)
                 { 

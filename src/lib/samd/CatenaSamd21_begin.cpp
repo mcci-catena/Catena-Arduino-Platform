@@ -144,7 +144,7 @@ bool CatenaSamd21::begin(
                                 &OperatingFlags
                                 );
     this->m_OperatingFlags =
-        (OperatingFlags & ~uClearMask) | uSetMask;
+        (this->m_OperatingFlags & ~uClearMask) | uSetMask;
 
     /* do the serial port raindance */
     if (this->m_OperatingFlags & 
