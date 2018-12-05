@@ -1,4 +1,4 @@
-/* CatenaSamd21_begin.cpp	Mon Nov 19 2018 12:15:05 chwon */
+/* CatenaSamd21_begin.cpp	Wed Dec 05 2018 14:25:52 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaSamd21::begin().
 
 Version:
-	V0.11.0	Mon Nov 19 2018 12:15:05 chwon	Edit level 3
+	V0.12.0	Wed Dec 05 2018 14:25:52 chwon	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016-2018 by
@@ -34,6 +34,9 @@ Revision history:
 
    0.11.0  Mon Nov 19 2018 12:15:05  chwon
 	Add RTC class begin.
+
+   0.12.0  Wed Dec 05 2018 14:25:52  chwon
+	Move common initialization code to CatenaBase class.
 
 */
 
@@ -125,7 +128,6 @@ bool CatenaSamd21::begin(
     uint32_t uSetMask
     )
     {
-    UniqueID_buffer_t CpuID;
     uint32_t OperatingFlags;
 
     /* do the platform begin */
@@ -136,19 +138,12 @@ bool CatenaSamd21::begin(
         return false;
         }
 
-    /* get the CPU ID */
-    this->GetUniqueID(&CpuID);
-    this->m_pPlatform = this->GetPlatformForID(
-                                &CpuID,
-                                &this->m_SysEUI,
-                                &OperatingFlags
-                                );
-    this->m_OperatingFlags =
-        (this->m_OperatingFlags & ~uClearMask) | uSetMask;
+    OperatingFlags = this->GetOperatingFlags();
+    OperatingFlags = (OperatingFlags & ~uClearMask) | uSetMask;
+    this->SetOperatingFlags(OperatingFlags);
 
     /* do the serial port raindance */
-    if (this->m_OperatingFlags & 
-         static_cast<uint32_t>(OPERATING_FLAGS::fUnattended))
+    if (OperatingFlags & static_cast<uint32_t>(OPERATING_FLAGS::fUnattended))
         {
         /* do unattended startup */
         delay(2000);

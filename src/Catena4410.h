@@ -1,4 +1,4 @@
-/* Catena4410.h	Wed Nov 21 2018 13:40:53 chwon */
+/* Catena4410.h	Wed Dec 05 2018 14:18:53 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Arduino library header for Catena 4410
 
 Version:
-	V0.11.0	Wed Nov 21 2018 13:40:53 chwon	Edit level 4
+	V0.12.0	Wed Dec 05 2018 14:18:53 chwon	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2016, 2018 by
@@ -35,6 +35,10 @@ Revision history:
    0.11.0  Wed Nov 21 2018 13:40:53  chwon
 	Add CatenaName() method.
 
+   0.12.0  Wed Dec 05 2018 14:18:53  chwon
+	Use CatenaFeatherM0 super class instead of CatenaFeatherM0LoRa class.
+	Add getCpuIdPlatformTable() method override.
+
 */
 
 #ifndef _CATENA4410_H_		/* prevent multiple includes */
@@ -45,12 +49,12 @@ Revision history:
 #endif
 
 #ifndef _CATENAFEATHERM0LORA_H_
-# include "CatenaFeatherM0LoRa.h"
+# include "CatenaFeatherM0.h"
 #endif
 
 namespace McciCatena {
 
-class Catena4410 : public CatenaFeatherM0LoRa
+class Catena4410 : public CatenaFeatherM0
 	{
 public:
 	enum DIGITAL_PINS
@@ -73,22 +77,31 @@ public:
 	virtual const char *CatenaName() const override { return "Catena 4410"; };
 
 protected:
-	using Super = CatenaFeatherM0LoRa;
-        virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
+	using Super = CatenaFeatherM0;
+        virtual const Arduino_LoRaWAN::ProvisioningTable *
+        	GetLoRaWANkeys(void) const override;
+
+	virtual void getCpuIdPlatformTable(
+		const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
+		size_t &nvCpuIdToPlatform
+		) override;
 
 private:
         static const Arduino_LoRaWAN::ProvisioningTable gk_LoRaWAN_Keys
                 /* __attribute__((__weak__)) */;
+
+	static const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
+	static const size_t nvCpuIdToPlatform;
 	};
 
 /*
 || The LoRaWAN class for the Catena4410. For now, we assume The Things
 || Network.
 */
-class Catena4410::LoRaWAN : public CatenaFeatherM0LoRa::LoRaWAN
+class Catena4410::LoRaWAN : public CatenaFeatherM0::LoRaWAN
 	{
 public:
-        using Super = CatenaFeatherM0LoRa::LoRaWAN;
+        using Super = CatenaFeatherM0::LoRaWAN;
 
 	/*
 	|| the constructor.
@@ -100,25 +113,23 @@ public:
 	|| platform's stable storage and initializes
 	|| the connection. 
 	*/
-	bool begin(Catena4410 *pCatena4410);
+	// bool begin(Catena4410 *pCatena4410);
 
 protected:
 	/*
-	|| we have to provide these for the lower level
+	|| we use the CatenaFeatherM0 defaults
 	*/
-	ProvisioningStyle GetProvisioningStyle(void);
+	// ProvisioningStyle GetProvisioningStyle(void);
 
-	bool GetAbpProvisioningInfo(
-			AbpProvisioningInfo *pProvisioningInfo
-			);
+	// bool GetAbpProvisioningInfo(
+	//		AbpProvisioningInfo *pProvisioningInfo
+	//		);
 
-	bool GetOtaaProvisioningInfo(
-			OtaaProvisioningInfo *pProvisioningInfo
-			);
+	// bool GetOtaaProvisioningInfo(
+	//		OtaaProvisioningInfo *pProvisioningInfo
+	//		);
 
 private:
-	Catena4410		*m_pCatena4410;
-	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
 } /* namespace McciCatena */

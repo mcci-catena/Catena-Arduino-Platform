@@ -1,4 +1,4 @@
-/* CatenaSamd21.h	Wed Nov 21 2018 13:32:28 chwon */
+/* CatenaSamd21.h	Wed Dec 05 2018 14:07:26 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class CatenaSamd21
 
 Version:
-	V0.11.0	Wed Nov 21 2018 13:32:28 chwon	Edit level 5
+	V0.12.0	Wed Dec 05 2018 14:07:26 chwon	Edit level 6
 
 Copyright notice:
 	This file copyright (C) 2016-2018 by
@@ -40,6 +40,10 @@ Revision history:
 
    0.11.0  Wed Nov 21 2018 13:32:28  chwon
 	Add Sleep() method and add CatenaRTC class.
+
+   0.12.0  Wed Dec 05 2018 14:07:26  chwon
+	Move UniqueuID and CPUID_PLATFORM_MAP structure and related methods to
+	CatenaBase class.
 
 */
 
@@ -82,27 +86,11 @@ public:
 protected:
 	virtual void registerCommands(void);
 
-	// help for the command-processing framework.
-        class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
-	        {
-        public:
-		// return true if Serial is ready. Overridden because
-		// the Arduino !!Serial() delays 10ms unconditionally!
-                // so we need special business.
-	        virtual bool isReady() const override;
-	        };
-
-
-        // the callback object to use for commands (since we're on USB)
-        cSerialReady                            m_SerialReady;
-
 	/*
 	|| Class-level information
 	*/
 private:
-	static const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
-	static const size_t nvCpuIdToPlatform;
-	CatenaRTC		m_Rtc;
+	CatenaRTC	m_Rtc;
 	};
 
 } /* namespace McciCatena */

@@ -1,4 +1,4 @@
-/* begin.cpp	Tue Oct 25 2016 03:42:18 tmm */
+/* begin.cpp	Wed Dec 05 2018 14:30:26 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Catena4410::LoRaWAN::begin()
 
 Version:
-	V0.1.0	Tue Oct 25 2016 03:42:18 tmm	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:30:26 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016, 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -30,11 +30,16 @@ Revision history:
 	Module created. Note that since this lives in a library with
 	lib/begin.cpp, we must have a different file name.
 
+   0.12.0  Wed Dec 05 2018 14:30:26  chwon
+	Add debug message.
+
 */
 
 #ifdef ARDUINO_ARCH_SAMD
 
 #include <CatenaFeatherM0.h>
+
+#include <Catena_Log.h>
 
 #include <mcciadk_baselib.h>
 using namespace McciCatena;
@@ -78,13 +83,21 @@ bool CatenaFeatherM0::LoRaWAN::begin(
 	CatenaFeatherM0 *pParent
 	)
 	{
+	gLog.printf(gLog.kTrace, "+CatenaFeatherM0::LoRaWAN::begin()\n");
+
 	this->m_pCatena = pParent;
-	this->m_pPlatform = pParent->GetPlatform();
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
 	/* first call the base begin */
 	if (! this->Arduino_LoRaWAN::begin())
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "?CatenaFeatherM0::LoRaWAN::begin:"
+                        " Arduino_LoRaWAN::begin() failed\n"
+                        );
 		return false;
+                }
 
         /* here's where we do any required post-processing */
         /* (none at the moment) */

@@ -1,4 +1,4 @@
-/* CatenaStm32L0.h	Mon Nov 19 2018 12:11:24 chwon */
+/* CatenaStm32L0.h	Wed Dec 05 2018 14:10:13 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Class CatenaStm32L0
 
 Version:
-	V0.11.0	Mon Nov 19 2018 12:11:24 chwon	Edit level 2
+	V0.12.0	Wed Dec 05 2018 14:10:13 chwon	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -31,6 +31,10 @@ Revision history:
 
    0.11.0  Mon Nov 19 2018 12:11:25  chwon
 	Add Sleep() method override and add m_Rtc in the private context.
+
+   0.12.0  Wed Dec 05 2018 14:10:13  chwon
+	Remove GetSysEUI() and GetPlatformForID() methods override.
+	Add getFRAM() method override.
 
 */
 
@@ -68,12 +72,6 @@ public:
 
         // start the Stm32L0 level
 	virtual bool begin(void) override;
-	virtual const EUI64_buffer_t *GetSysEUI(void) override;
-	virtual const CATENA_PLATFORM *GetPlatformForID(
-					const UniqueID_buffer_t *pIdBuffer,
-					EUI64_buffer_t *pSysEUI,
-					uint32_t *pOperatingFlags
-					) override;
 
 	virtual McciCatena::cFram *getFram(void) override
 		{
@@ -96,31 +94,15 @@ protected:
 	// methods
 	virtual void registerCommands(void);
 
-	// subclasses must provide a method for getting the platform table
-	virtual void getPlatformTable(
-		const CATENA_PLATFORM * const * &vPlatforms,
-		size_t &nvPlatforms
-		) = 0;
-
-        // instance data
-        const CATENA_PLATFORM *m_pPlatform;
-
 private:
 	// the FRAM instance
 	McciCatena::cFram8k		m_Fram;
         uint32_t			m_BootCount;
 	McciCatena::CatenaStm32L0Rtc	m_Rtc;
-
-        // internal methods
-        void savePlatform(
-                const CATENA_PLATFORM &Platform,
-                const EUI64_buffer_t *pSysEUI,
-                const uint32_t *pOperatingFlags
-                );
 	};
 
 class CatenaStm32L0::LoRaWAN : public Arduino_LoRaWAN_ttn,
-                                 public McciCatena::cPollableObject
+                               public McciCatena::cPollableObject
 	{
 public:
         using Super = Arduino_LoRaWAN_ttn;
@@ -136,9 +118,8 @@ public:
 	|| the connection.
 	*/
 	virtual bool begin(CatenaStm32L0 *pCatena);
-	CatenaStm32L0 *getCatena() const { return this->m_pCatena; };
 
-        virtual void poll() { this->Super::loop(); };
+	virtual void poll() { this->Super::loop(); };
 
 protected:
 	/*
@@ -165,10 +146,6 @@ protected:
 	//
 private:
 	CatenaStm32L0		*m_pCatena;
-	const CATENA_PLATFORM	*m_pPlatform;
-
-	// initialize the commands
-	bool addCommands();
 	};
 
 } // namespace McciCatena

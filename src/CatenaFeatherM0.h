@@ -1,4 +1,4 @@
-/* CatenaFeatherM0.h	Sun Mar 12 2017 19:40:46 tmm */
+/* CatenaFeatherM0.h	Wed Dec 05 2018 14:12:40 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Class CatenaFeatherM0
 
 Version:
-	V0.5.0	Sun Mar 12 2017 19:40:46 tmm	Edit level 2
+	V0.12.0	Wed Dec 05 2018 14:12:40 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2016-2017 by
+	This file copyright (C) 2016-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.4.0  Sun Dec  4 2016 19:57:13  tmm
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:12:41  chwon
+	Add CatenaFeatherM0::begin() and override provisioning stuff.
 
 */
 
@@ -78,17 +81,22 @@ public:
 		PIN_STATUS_LED = 13,
 		};
 
+	// methods
+	virtual bool begin() override;
+
 	// read the current battery voltage, in engineering units
 	float ReadVbat(void) const;
 
 protected:
-        // methods
-        virtual const Arduino_LoRaWAN::ProvisioningInfo *GetProvisioningInfo(void);
-        virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const
-                { return nullptr; }
+	// methods
+	virtual const Arduino_LoRaWAN::ProvisioningInfo *
+		GetProvisioningInfo(void);
 
-        // instance data
-        const CATENA_PLATFORM *m_pPlatform;
+	virtual const Arduino_LoRaWAN::ProvisioningTable *
+		GetLoRaWANkeys(void) const
+			{
+			return nullptr;
+			}
 
 private:
 	};
@@ -117,15 +125,15 @@ protected:
 	/*
 	|| we have to provide these for the lower level
 	*/
-	virtual ProvisioningStyle GetProvisioningStyle(void);
+	virtual ProvisioningStyle GetProvisioningStyle(void) override;
 
 	virtual bool GetAbpProvisioningInfo(
 			AbpProvisioningInfo *pProvisioningInfo
-			);
+			) override;
 
 	virtual bool GetOtaaProvisioningInfo(
 			OtaaProvisioningInfo *pProvisioningInfo
-			);
+			) override;
 
 	//
 	// TODO(tmm@mcci.com) -- the following are not used but are always
@@ -133,7 +141,6 @@ protected:
 	//
 private:
 	CatenaFeatherM0		*m_pCatena;
-	const CATENA_PLATFORM	*m_pPlatform;
 	};
 
 } /* namespace McciCatena */

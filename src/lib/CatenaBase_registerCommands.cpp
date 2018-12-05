@@ -1,49 +1,55 @@
-/* CatenaWingFram2k_LoRaWAN_commands.cpp	Sun Mar 26 2017 12:01:36 tmm */
+/* CatenaBase_registerCommands.cpp	Mon Dec 03 2018 14:35:39 chwon */
 
 /*
 
-Module:  CatenaWingFram2k_LoRaWAN_commands.cpp
+Module:  CatenaBase_registerCommands.cpp
 
 Function:
-	The command engine for lorawan commands on the Catena WingFram2k.
+	CatenaBase::registerCommands()
 
 Version:
-	V0.5.0	Sun Mar 26 2017 12:01:36 tmm	Edit level 1
+	V0.12.0	Mon Dec 03 2018 14:35:39 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
+	copied without the prior permission of MCCI Corporation
+
 Author:
-	Terry Moore, MCCI Corporation	March 2017
+	ChaeHee Won, MCCI Corporation	December 2018
 
 Revision history:
-   0.5.0  Sun Mar 26 2017 12:01:36  tmm
+   0.12.0  Mon Dec 03 2018 14:35:39  chwon
 	Module created.
 
 */
 
-#ifdef ARDUINO_ARCH_SAMD
+#include "CatenaBase.h"
 
-#include "CatenaWingFram2k.h"
-
-#include "Catena_Log.h"
-
-#include <cstring>
+#include "Catena_CommandStream.h"
 
 using namespace McciCatena;
-
+
 /****************************************************************************\
 |
-|	The command table
+|	Manifest constants
+|
+\****************************************************************************/
+
+static cCommandStream::CommandFn doPlatformGUID;
+static cCommandStream::CommandFn doSysEUI;
+
+
+/****************************************************************************\
+|
+|	The command tables
 |
 \****************************************************************************/
 
@@ -55,8 +61,7 @@ static const cCommandStream::cEntry sDispatchEntries[] =
 	};
 
 static cCommandStream::cDispatch
-sDispatch(sDispatchEntries, sizeof(sDispatchEntries), "lorawan");
-
+sDispatch(sDispatchEntries, sizeof(sDispatchEntries), "system");
 
 struct KeyMap
 	{
@@ -66,51 +71,38 @@ struct KeyMap
 
 static KeyMap sKeyMap[] =
 	{
-	{ "deveui", cFramStorage::StandardKeys::kDevEUI },
-	{ "appeui", cFramStorage::StandardKeys::kAppEUI },
-	{ "appkey", cFramStorage::StandardKeys::kAppKey, },
-	{ "nwkskey", cFramStorage::StandardKeys::kNwkSKey, },
-	{ "appskey", cFramStorage::StandardKeys::kAppSKey, },
-	{ "devaddr", cFramStorage::StandardKeys::kDevAddr, },
-	{ "netid", cFramStorage::StandardKeys::kNetID, },
-	{ "fcntup", cFramStorage::StandardKeys::kFCntUp, },
-	{ "fcntdown", cFramStorage::StandardKeys::kFCntDown, },
-	{ "join", cFramStorage::StandardKeys::kJoin, },
-	};
-
-/*
+	{ "PlatformGUID", cFramStorage::StandardKeys::kPlatformGuid },
+	{ "SysEUI", cFramStorage::StandardKeys::kSysEUI },
+        { "OperatingFlags", cFramStorage::StandardKeys::kOperatingFlags },
+        };
 
-Name:	CatenaWingFram2k::LoRaWAN::addCommands()
 
-Function:
-	Add the lorawan commands to the Catena command table.
+/****************************************************************************\
+|
+|	The method function
+|
+\****************************************************************************/
 
-Definition:
-	private: bool CatenaWingFram2k::LoRaWAN::addCommands();
-
-Description:
-	All the commands are added to the system command table.
-
-Returns:
-	true for success.
-
-*/
-
-bool 
-CatenaWingFram2k::LoRaWAN::addCommands()
+/* protected virtual */
+void
+CatenaBase::registerCommands()
 	{
-	gLog.printf(gLog.kTrace, "CatenaWingFram2k::LoRaWAN::addCommands(): adding\n");
-	this->m_pCatena->addCommands(
-		sDispatch, static_cast<void *>(this)
-		);
+	this->addCommands(sDispatch, (void *) this);
 	}
+
+/****************************************************************************\
+|
+|	The commands
+|
+\****************************************************************************/
+
 
 /*
 
 Name:	doConfigure()
 
 Function:
-	Implement the LoRaWAN value set/get commands
+	Implement the system value set/get commands
 
 Definition:
 	static cCommandStream::CommandFn doConfigure;
@@ -130,13 +122,12 @@ Description:
 
 	The parsed syntax:
 
-	lorawan configure [ {param} [ {value} ] ]
+	system configure [ {param} [ {value} ] ]
 
 Returns:
 	Command status
 
 */
-
 
 static cCommandStream::CommandStatus
 doConfigure(
@@ -146,9 +137,7 @@ doConfigure(
 	char **argv
 	)
 	{
-	CatenaWingFram2k::LoRaWAN * const pLoRaWAN = 
-		static_cast<CatenaWingFram2k::LoRaWAN *>(pContext);
-	CatenaWingFram2k * const pCatena = pLoRaWAN->getCatena();
+	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
 	uint8_t databuf[16];
 
 	if (argc < 2)
@@ -162,18 +151,17 @@ doConfigure(
 
 	for (auto const & p : sKeyMap)
 		{
-		if (stricmp(p.pName, pName) == 0)
+		if (strcasecmp(p.pName, pName) == 0)
 			{
 			// matched!
 			cursor.locate(p.uKey);
 			}
 		}
-	
+
 	if (! cursor.isbound())
 		{
 		pThis->printf(
 			"%s: unknown\n",
-			__func__,
 			pName
 			);
 		return cCommandStream::CommandStatus::kInvalidParameter;
@@ -246,5 +234,4 @@ doConfigure(
 		}
 	}
 
-        
-#endif // ARDUINO_ARCH_SAMD
+/**** end of CatenaBase_registerCommands.cpp ****/

@@ -1,4 +1,4 @@
-/* CatenaBase.h	Mon Nov 19 2018 12:07:02 chwon */
+/* CatenaBase.h	Wed Dec 05 2018 14:01:28 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
         class CatenaBase interfaces.
 
 Version:
-        V0.11.0	Mon Nov 19 2018 12:07:02 chwon	Edit level 5
+        V0.12.0	Wed Dec 05 2018 14:01:28 chwon	Edit level 6
 
 Copyright notice:
         This file copyright (C) 2016-2018 by
@@ -42,6 +42,10 @@ Revision history:
 
    0.11.0  Mon Nov 19 2018 12:07:02  chwon
 	Add Sleep() virtual method.
+
+   0.12.0  Wed Dec 05 2018 14:01:29  chwon
+	Add getFram() method and FRAM access methods. Move CPUID_PLATFORM_MAP
+	structure and related methods.
 
 */
 
@@ -77,6 +81,8 @@ Revision history:
 # include "Catena_Fram.h"
 #endif
 
+#include <Arduino_LoRaWAN.h>
+
 namespace McciCatena {
 
 /* forward references */
@@ -89,7 +95,8 @@ public:
         virtual ~CatenaBase() {};
 
         /* an EUI64 */
-        struct EUI64_buffer_t {
+        struct EUI64_buffer_t
+                {
                 uint8_t	b[64/8];
                 };
         struct EUI64_string_t
@@ -190,15 +197,15 @@ public:
                 const char *fmt, ...
                 );
 
-        virtual const EUI64_buffer_t *GetSysEUI(void)
-                {
-                return &this->m_SysEUI;
-                }
+        virtual const EUI64_buffer_t *GetSysEUI(void);
 
 	const CATENA_PLATFORM *GetPlatformForID(
 		const UniqueID_buffer_t *pIdBuffer,
 		EUI64_buffer_t *pSysEUI
-		);
+		)
+		{
+		return this->GetPlatformForID(pIdBuffer, pSysEUI, nullptr);
+		}
 
 	virtual const CATENA_PLATFORM *GetPlatformForID(
 		const UniqueID_buffer_t *pIdBuffer,
@@ -218,26 +225,27 @@ public:
 		{
 		return this->m_pPlatform;
 		}
+
 	inline uint32_t GetOperatingFlags(void)
 		{
 		return this->m_OperatingFlags;
 		}
-	inline uint32_t GetPlatformFlags(void)
+	inline void SetOperatingFlags(uint32_t OperatingFlags)
 		{
-		const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
-
-		if (pPlatform != NULL)
-			return pPlatform->PlatformFlags;
-		else
-			return 0;
+		this->m_OperatingFlags = OperatingFlags;
 		}
+
+	inline uint32_t GetPlatformFlags(void);
 
         virtual bool begin(void);
 
 	virtual const char *CatenaName(void) const = 0; // requires that an override be provided.
 	virtual void Sleep(uint32_t howLongInSeconds) = 0; // require a concrete method
 
-	virtual McciCatena::cFram *getFram(void) = 0; // requires that an override be provided.
+	virtual McciCatena::cFram *getFram(void)
+		{
+		return nullptr;
+		}
 
         // poll the engine
         void poll(void);
@@ -245,6 +253,20 @@ public:
 
         // command handling
         void addCommands(McciCatena::cCommandStream::cDispatch &, void *);
+
+	Arduino_LoRaWAN::ProvisioningStyle GetProvisioningStyle(void);
+	bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo *);
+	bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo *);
+
+	void NetSaveFCntUp(uint32_t uFCntUp);
+	void NetSaveFCntDown(uint32_t uFCntDown);
+	void NetSaveSessionInfo(
+		const Arduino_LoRaWAN::SessionInfo &Info,
+		const uint8_t *pExtraInfo,
+		size_t nExtraInfo
+		);
+
+	bool addLoRaWanCommands(void);
 
 /****************************************************************************\
 |
@@ -262,6 +284,26 @@ public:
 protected:
         virtual void registerCommands(void);
 
+	// subclasses override a method for getting the platform table
+	virtual void getPlatformTable(
+		const CATENA_PLATFORM * const * &vPlatforms,
+		size_t &nvPlatforms
+		)
+		{
+		vPlatforms = nullptr;
+		nvPlatforms = 0;
+		}
+
+	// subclasses override a method for getting the CPU ID platform table
+	virtual void getCpuIdPlatformTable(
+		const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
+		size_t &nvCpuIdToPlatform
+		)
+		{
+		vCpuIdToPlatform = nullptr;
+		nvCpuIdToPlatform = 0;
+		}
+
 	// help for the command-processing framework.
 	class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
 		{
@@ -276,7 +318,6 @@ protected:
 	cSerialReady	m_SerialReady;
 
         // data objects
-protected:
         EUI64_buffer_t m_SysEUI;
         McciCatena::cPollingEngine m_PollingEngine;
 
@@ -286,10 +327,23 @@ protected:
         // the command processor
         McciCatena::cCommandStream              m_CommandStream;
 
+private:
 	uint32_t		m_OperatingFlags;
 	const CATENA_PLATFORM *	m_pPlatform;
-        };
 
+	// internal methods
+	void savePlatform(
+		const CATENA_PLATFORM &Platform,
+		const EUI64_buffer_t *pSysEUI,
+		const uint32_t *pOperatingFlags
+		);
+
+	const CATENA_PLATFORM *getPlatformForCpuId(
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI,
+		uint32_t *pOperatingFlags
+		);
+	};
 
 /*
 
@@ -339,6 +393,16 @@ struct CATENA_PLATFORM
 	uint32_t		PlatformFlags;
 	uint32_t		OperatingFlags;
 	};
+
+inline uint32_t CatenaBase::GetPlatformFlags(void)
+	{
+	const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
+
+	if (pPlatform != nullptr)
+		return pPlatform->PlatformFlags;
+	else
+		return 0;
+	}
 
 /*
 

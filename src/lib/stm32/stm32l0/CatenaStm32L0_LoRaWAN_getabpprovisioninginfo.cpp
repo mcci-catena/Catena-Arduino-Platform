@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_getabpprovisioninginfo.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_LoRaWAN_getabpprovisioninginfo.cpp	Wed Dec 05 2018 14:35:38 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32L0::LoRaWAN::GetAbpProvisioningInfo()
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:35:38 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:35:38  chwon
+	Use Catena provisioning method.
 
 */
 
@@ -98,44 +101,8 @@ CatenaStm32L0::LoRaWAN::GetAbpProvisioningInfo(
         )
         {
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-	auto const pFram = pCatena->getFram();
-	cFram::Cursor framNwkSKey(pFram),
-		      framAppSKey(pFram),
-		      framDevAddr(pFram),
-		      framNetID(pFram),
-		      framFCntUp(pFram),
-		      framFCntDown(pFram);
 
-	bool fResult;
-
-	fResult = false;
-
-	if (framNwkSKey.locate(cFramStorage::vItemDefs[cFramStorage::kNwkSKey]) &&
-	    framAppSKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppSKey]) &&
-	    framDevAddr.locate(cFramStorage::vItemDefs[cFramStorage::kDevAddr]) &&
-	    framNetID.locate(cFramStorage::vItemDefs[cFramStorage::kNetID]) &&
-	    framFCntUp.locate(cFramStorage::vItemDefs[cFramStorage::kFCntUp]) &&
-	    framFCntDown.locate(cFramStorage::vItemDefs[cFramStorage::kFCntDown]))
-		fResult = true;
-
-	if (! fResult)
-		{
-		gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
-
-		if (pInfo != nullptr)
-			memset(pInfo, 0, sizeof(pInfo));
-
-		return false;
-		}
-
-	framNwkSKey.get(pInfo->NwkSKey, sizeof(pInfo->NwkSKey));
-	framAppSKey.get(pInfo->AppSKey, sizeof(pInfo->AppSKey));
-	framDevAddr.getuint32(pInfo->DevAddr);
-	framNetID.getuint32(pInfo->NetID);
-	framFCntUp.getuint32(pInfo->FCntUp);
-	framFCntDown.getuint32(pInfo->FCntDown);
-
-	return true;
+        return pCatena->GetAbpProvisioningInfo(pInfo);
 	}
 
 #endif // ARDUINO_ARCH_STM32

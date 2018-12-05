@@ -1,17 +1,17 @@
-/* CatenaStm32L0_GetSysEUI.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaBase_GetSysEUI.cpp	Mon Dec 03 2018 13:04:44 chwon */
 
 /*
 
-Module:  CatenaStm32L0_GetSysEUI.cpp
+Module:  CatenaBase_GetSysEUI.cpp
 
 Function:
-	CatenaStm32L0::GetSysEUI()
+	CatenaBase::GetSysEUI()
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Mon Dec 03 2018 13:04:44 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -20,33 +20,31 @@ Copyright notice:
 	An unpublished work.  All rights reserved.
 
 	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
+	ChaeHee Won, MCCI Corporation	December 2018
 
 Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
+   0.12.0  Mon Dec 03 2018 13:04:44  chwon
 	Module created.
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
-
-#include "CatenaStm32L0.h"
+#include "CatenaBase.h"
 
 using namespace McciCatena;
 
 /*
 
-Name:	CatenaStm32L0::GetSysEUI()
+Name:	CatenaBase::GetSysEUI()
 
 Function:
 	Returns the SysEUI for this platform
 
 Definition:
 	const CatenaBase::EUI64_buffer_t *
-		CatenaStm32L0::GetSysEUI(
+		CatenaBase::GetSysEUI(
 			void
 			);
 
@@ -59,10 +57,13 @@ Returns:
 */
 
 /* public: virtual override */
-const CatenaStm32L0::EUI64_buffer_t *
-CatenaStm32L0::GetSysEUI(void)
+const CatenaBase::EUI64_buffer_t *
+CatenaBase::GetSysEUI(void)
 	{
-	if (! this->m_Fram.getField(cFramStorage::StandardKeys::kSysEUI,
+	auto const pFram = this->getFram();
+
+	if (pFram == nullptr ||
+	    ! pFram->getField(cFramStorage::StandardKeys::kSysEUI,
 			this->m_SysEUI
 			))
 		{
@@ -76,6 +77,4 @@ CatenaStm32L0::GetSysEUI(void)
 	return &this->m_SysEUI;
 	}
 
-#endif // ARDUINO_ARCH_STM32
-
-/**** end of CatenaStm32L0_GetSysEUI.cpp ****/
+/**** end of CatenaBase_GetSysEUI.cpp ****/

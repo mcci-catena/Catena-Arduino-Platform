@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_storage.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_LoRaWAN_storage.cpp	Wed Dec 05 2018 14:31:03 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Interface from LoRaWAN to FRAM.
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:31:03 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:31:03  chwon
+	Use Catena NetSave methods.
 
 */
 
@@ -46,9 +49,8 @@ CatenaStm32L0::LoRaWAN::NetSaveFCntUp(
 	)
 	{
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-        auto const pFram = pCatena->getFram();
 
-        pFram->saveField(cFramStorage::kFCntUp, uFCntUp);
+        pCatena->NetSaveFCntUp(uFCntUp);
 	}
 
 void
@@ -57,9 +59,8 @@ CatenaStm32L0::LoRaWAN::NetSaveFCntDown(
 	)
 	{
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-        auto const pFram = pCatena->getFram();
 
-        pFram->saveField(cFramStorage::kFCntDown, uFCntDown);
+        pCatena->NetSaveFCntDown(uFCntDown);
         }
 
 void
@@ -70,22 +71,8 @@ CatenaStm32L0::LoRaWAN::NetSaveSessionInfo(
 	)
 	{
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-	auto const pFram = pCatena->getFram();
 
-        pFram->saveField(cFramStorage::kNetID,   Info.V1.NetID);
-        pFram->saveField(cFramStorage::kDevAddr, Info.V1.DevAddr);
-        pFram->saveField(cFramStorage::kNwkSKey, Info.V1.NwkSKey);
-        pFram->saveField(cFramStorage::kAppSKey, Info.V1.AppSKey);
-        pFram->saveField(cFramStorage::kFCntUp,  Info.V1.FCntUp);
-        pFram->saveField(cFramStorage::kFCntDown, Info.V1.FCntDown);
-
-        gLog.printf(
-                gLog.kAlways,
-                "NwkID:   %08x   "
-                "DevAddr: %08x\n",
-                Info.V1.NetID,
-                Info.V1.DevAddr
-                );
+	pCatena->NetSaveSessionInfo(Info, pExtraInfo, nExtraInfo);
 	}
 
 #endif // ARDUINO_ARCH_STM32
