@@ -85,6 +85,7 @@ McciCatena::cFram::addCommands()
 	CatenaBase::pCatenaBase->addCommands(
 		sDispatch, static_cast<void *>(this)
 		);
+	return true;
 	}
 
 /****************************************************************************\
