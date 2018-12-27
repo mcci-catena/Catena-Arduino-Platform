@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.12.0...master) [![Build Status](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.13.0...master) [![Build Status](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform)
 
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
@@ -243,6 +243,8 @@ The solution is a hack: undefine `min()` prior to including `<functional>`, and 
 | [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- v0.13.0 incorporates recent bug fixes and enhancements. We added our own implementation of the RTC class, to avoid the hacks we were using with teh RTCzero library (issue [#86](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/86). We updated the UML docs (issue [#111](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/111)). We refactored the STM32 classes (issue [#99](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/99) and [#103](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/103)). A few other minor changes ([754f4b](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/754f4bd9048f12edbd89906daea483eec31a9468) and [71d45d0](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/71d45d0882b00cc0f18458a35a1f6b320e106433)).
 
 - v0.12.0 adds support for the 4610, 4611, 4612, and 4801, and relies on the LMIC 2.3 pre-integrated pinmap feature to simplify maintenance and make things more structures. We added more UML diagrams to document the class hierarcy. Now depends on MCCI SAMD BSP 1.2.0 and STM32 2.0.0. A common `Catena::Sleep()` method was added for architecture-neutral low-power standby (issue [#83](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/83)). Added experimental machineQ network support. Various minor bug fixes and enhancements.
 
