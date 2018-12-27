@@ -1,4 +1,4 @@
-/* CatenaWingFram2k.h	Sun Mar 19 2017 15:50:15 tmm */
+/* CatenaWingFram2k.h	Wed Dec 05 2018 14:15:16 chwon */
 
 /*
 
@@ -9,10 +9,10 @@ Function:
         Feather Wing with 2k FRAM and the DIO1>D6 loopback.
 
 Version:
-	V0.5.0	Sun Mar 19 2017 15:50:15 tmm	Edit level 2
+	V0.12.0	Wed Dec 05 2018 14:15:17 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -30,6 +30,11 @@ Revision history:
    0.5.0  Sun Mar 12 2017 18:16:07  tmm
 	Module created.
 
+   0.12.0  Wed Dec 05 2018 14:15:17  chwon
+	Use CatenaSamd21 super class instead of CatenaFeatherM0LoRa class.
+	Remove GetSysEUI() and GetPlatformForID() methods override.
+	Add ReadVbat() and add getFRAM() method override.
+
 */
 
 #ifndef _CATENAWINGFRAM2K_H_		/* prevent multiple includes */
@@ -37,20 +42,22 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENAFEATHERM0LORA_H_
-# include "CatenaFeatherM0LoRa.h"
+#ifndef _CATENASAMD21_H_
+# include "CatenaSamd21.h"
 #endif
 
 #ifndef _CATENA_FRAM2K_H_
 # include "Catena_Fram2k.h"
 #endif
 
+#include <Arduino_LoRaWAN_ttn.h>
+
 namespace McciCatena {
 
-class CatenaWingFram2k : public CatenaFeatherM0LoRa
+class CatenaWingFram2k : public CatenaSamd21
 	{
 public:
-        using Super = CatenaFeatherM0LoRa;
+        using Super = CatenaSamd21;
 
         // no specific constructor.
         CatenaWingFram2k() {};
@@ -66,16 +73,24 @@ public:
 	// LoRaWAN binding
 	class LoRaWAN /* forward */;
 
+	// all FeatherM0s put vbat on A7
+	enum ANALOG_PINS
+		{
+		APIN_VBAT_SENSE = A7,
+		};
+
+	enum DIGITAL_PINS
+		{
+		PIN_STATUS_LED = 13,
+		};
+
 	// methods
 	virtual bool begin() override;
-        virtual const EUI64_buffer_t *GetSysEUI(void) override;
-	virtual const CATENA_PLATFORM *GetPlatformForID(
-		const UniqueID_buffer_t *pIdBuffer,
-		EUI64_buffer_t *pSysEUI,
-		uint32_t *pOperatingFlags
-		) override;
 
-        McciCatena::cFram2k *getFram() { return &this->m_Fram; };
+        virtual McciCatena::cFram *getFram(void) override
+        	{
+        	return &this->m_Fram;
+        	};
 
         bool getBootCount(uint32_t &bootCount)
                 { 
@@ -83,36 +98,27 @@ public:
                 return true;
                 };
 
+	// read the current battery voltage, in engineering units
+	float ReadVbat(void) const;
+
 protected:
         virtual void registerCommands(void);
-
-        // subclasses must provide a method for getting the platform table
-        virtual void getPlatformTable(
-                const CATENA_PLATFORM * const * &vPlatforms,
-                size_t &nvPlatforms
-                ) = 0;
 
 private:
 	// the FRAM instance
 	McciCatena::cFram2k			m_Fram;
         uint32_t                                m_BootCount;
-
-        // internal methods
-        void savePlatform(
-                const CATENA_PLATFORM &Platform,
-                const EUI64_buffer_t *pSysEUI,
-                const uint32_t *pOperatingFlags
-                );
 	};
 
 /*
 || The LoRaWAN class for the Catena Wings. Needed because we have a
 || specific storage implementation and pin table.
 */
-class CatenaWingFram2k::LoRaWAN : public CatenaFeatherM0LoRa::LoRaWAN
+class CatenaWingFram2k::LoRaWAN : public Arduino_LoRaWAN_ttn,
+                                  public McciCatena::cPollableObject
 	{
 public:
-	using Super = CatenaFeatherM0LoRa::LoRaWAN;
+	using Super = Arduino_LoRaWAN_ttn;
 
 	/*
 	|| the constructor. We don't do anything at this level, the
@@ -120,25 +126,32 @@ public:
 	*/
 	LoRaWAN() {};
 
-        /* start operations: this starts up the LMIC */
+	/* start operations: this starts up the LMIC */
 	bool begin(CatenaWingFram2k *pParent);
 
-        /* helper to get the Catena pointer for this LoRaWAN instance */
-        CatenaWingFram2k *getCatena() const { return this->m_pCatena; };
+	virtual void poll() { this->Super::loop(); };
 
 protected:
+	/*
+	|| we have to provide these for the lower level
+	*/
         virtual ProvisioningStyle GetProvisioningStyle(void) override;
-        virtual bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo*) override;
-        virtual bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo*) override;
+        virtual bool GetAbpProvisioningInfo(
+        		Arduino_LoRaWAN::AbpProvisioningInfo *
+        		) override;
+        virtual bool GetOtaaProvisioningInfo(
+        		Arduino_LoRaWAN::OtaaProvisioningInfo *
+        		) override;
         virtual void NetSaveFCntUp(uint32_t uFCntUp) override;
         virtual void NetSaveFCntDown(uint32_t uFCntDown) override;
-        virtual void NetSaveSessionInfo(const SessionInfo &Info, const uint8_t *pExtraInfo, size_t nExtraInfo) override;
+        virtual void NetSaveSessionInfo(
+        		const SessionInfo &Info,
+        		const uint8_t *pExtraInfo,
+        		size_t nExtraInfo
+        		) override;
 
 private:
-	CatenaWingFram2k		*m_pCatena;
-
-        // initialize the commands
-        bool addCommands();
+	CatenaWingFram2k	*m_pCatena;
 	};
 
 } /* namespace McciCatena */

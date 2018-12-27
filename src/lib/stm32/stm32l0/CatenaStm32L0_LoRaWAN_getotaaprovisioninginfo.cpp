@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_getotaaprovisioninginfo.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_LoRaWAN_getotaaprovisioninginfo.cpp	Wed Dec 05 2018 14:36:22 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32L0::LoRaWAN::GetOtaaProvisioningInfo()
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:36:22 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:36:22  chwon
+	Use Catena provisioning method.
 
 */
 
@@ -95,37 +98,8 @@ CatenaStm32L0::LoRaWAN::GetOtaaProvisioningInfo(
         )
         {
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-	cFram::Cursor framAppEUI(pCatena->getFram()),
-		      framDevEUI(pCatena->getFram()),
-		      framAppKey(pCatena->getFram());
-	bool fResult;
 
-	fResult = false;
-
-	if (framAppEUI.locate(cFramStorage::vItemDefs[cFramStorage::kAppEUI]) &&
-	    framDevEUI.locate(cFramStorage::vItemDefs[cFramStorage::kDevEUI]) &&
-	    framAppKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppKey]))
-		fResult = true;
-
-	if (! fResult)
-		{
-		gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
-
-		if (pInfo != nullptr)
-			memset(pInfo, 0, sizeof(pInfo));
-
-		return false;
-		}
-
-	if (pInfo == nullptr)
-		return true;
-
-	/* copy the data */
-	framAppKey.get(pInfo->AppKey, sizeof(pInfo->AppKey));
-	framDevEUI.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
-	framAppEUI.get(pInfo->AppEUI, sizeof(pInfo->AppEUI));
-
-	return true;
+	return pCatena->GetOtaaProvisioningInfo(pInfo);
 	}
 
 #endif // ARDUINO_ARCH_STM32

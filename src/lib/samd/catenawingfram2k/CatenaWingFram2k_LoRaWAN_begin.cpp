@@ -1,4 +1,4 @@
-/* CatenaWingFram2k_LoRaWAN_begin.cpp	Sun Mar 12 2017 19:31:15 tmm */
+/* CatenaWingFram2k_LoRaWAN_begin.cpp	Wed Dec 05 2018 14:27:52 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaWingFram2k::LoRaWAN::begin()
 
 Version:
-	V0.5.0	Sun Mar 12 2017 19:31:15 tmm	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:27:52 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.5.0  Sun Mar 12 2017 19:31:15  tmm
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:27:52  chwon
+	Call Arduino_LoRaWAN::begin() and use Catena addLoRaWanCommands().
 
 */
 
@@ -65,25 +68,24 @@ CatenaWingFram2k::LoRaWAN::begin(
 	CatenaWingFram2k *pParent
 	)
 	{
-        static const char FUNCTION[] = "CatenaWingFram2k::LoRaWAN::begin";
+	gLog.printf(gLog.kTrace, "+CatenaWingFram2k::LoRaWAN::begin()\n");
 
-	/* set things up */
 	this->m_pCatena = pParent;
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
-        /* set up command processor */
-        this->addCommands();
-
-	/* call the base begin */
-	if (! this->Super::begin(pParent))
-                {
-                gLog.printf(
-                        gLog.kBug,
-                        "%s: Super::begin() failed\n",
-                        FUNCTION
-                        );
+	/* first call the base begin */
+	if (! this->Arduino_LoRaWAN::begin())
+		{
+		gLog.printf(
+			gLog.kError,
+			"?CatenaWingFram2k::LoRaWAN::begin:"
+			" Arduino_LoRaWAN:begin failed\n"
+			);
 		return false;
-                }
+		}
+
+        /* set up command processor */
+        pParent->addLoRaWanCommands();
 
 	/* indicate success to the client */
 	return true;

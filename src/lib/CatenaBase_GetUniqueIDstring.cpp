@@ -5,7 +5,7 @@
 Module:  GetUniqueIDstring.cpp
 
 Function:
-	CatenaStm32::GetUniqueIDstring()
+	CatenaBase::GetUniqueIDstring()
 
 Version:
 	V0.3.0	Thu Oct 27 2016 23:15:50 tmm	Edit level 2
@@ -31,13 +31,13 @@ Revision history:
 
 */
 
-#include <CatenaStm32.h>
+#include <CatenaBase.h>
 
 #include <stdio.h>
 
 using namespace McciCatena;
 
-char *CatenaStm32::GetUniqueIDstring(
+char *CatenaBase::GetUniqueIDstring(
         UniqueID_string_t *pStringBuf
         )
         {

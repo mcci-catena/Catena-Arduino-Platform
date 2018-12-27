@@ -1,4 +1,4 @@
-/* CatenaWingFram2k_begin.cpp	Sun Mar 12 2017 19:19:28 tmm */
+/* CatenaWingFram2k_begin.cpp	Wed Dec 05 2018 14:26:50 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaWingFram2k::begin()
 
 Version:
-	V0.5.0	Sun Mar 12 2017 19:19:28 tmm	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:26:50 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.5.0  Sun Mar 12 2017 19:19:28  tmm
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:26:51  chwon
+	Move common initialization code to CatenaBase class.
 
 */
 
@@ -61,7 +64,7 @@ Returns:
 bool CatenaWingFram2k::begin()
 	{
         delay(2000);
-        // gLog.printf(gLog.kAlways, "+CatenaWingFram2k::begin()\n");
+        gLog.printf(gLog.kTrace, "+CatenaWingFram2k::begin()\n");
 
         // we must initialize the FRAM before we call our parent, 
         // because FRAM is used for stable storage of platform info.
@@ -82,24 +85,28 @@ bool CatenaWingFram2k::begin()
 
         // do the platform selection.
 	if (! this->Super::begin())
+		{
+		gLog.printf(
+			gLog.kError, 
+			"?CatenaWingFram2k::begin:"
+			" Super::begin() failed\n"
+			);
 		return false;
-
-        // set up the command line collector
-	this->m_Collector.begin(&Serial, &this->m_SerialReady);
-        this->registerObject(&this->m_Collector);
-
-        // set up the command line processor
-        this->m_CommandStream.begin(
-                &this->m_Collector,
-                this
-                );
+		}
 
         // register all commands in this stack
         this->registerCommands();
 
         // and register the FRAM commands
         if (!this->m_Fram.addCommands())
-                return false;
+        	{
+		gLog.printf(
+			gLog.kError, 
+			"?CatenaWingFram2k::begin:"
+			" m_Fram.addCommands() failed\n"
+			);
+		return false;
+		}
 
         this->m_Fram.getField(
                 cFramStorage::StandardKeys::kBootCount,

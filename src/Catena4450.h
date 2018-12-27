@@ -1,4 +1,4 @@
-/* Catena4450.h	Wed Nov 21 2018 13:44:26 chwon */
+/* Catena4450.h	Wed Dec 05 2018 14:22:06 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class Catena4450: CatenaBase Platform to represent a Catena 4450
 
 Version:
-	V0.11.0	Wed Nov 21 2018 13:44:27 chwon	Edit level 3
+	V0.12.0	Wed Dec 05 2018 14:22:06 chwon	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -31,6 +31,9 @@ Revision history:
 
    0.11.0  Wed Nov 21 2018 13:44:27  chwon
 	Add CatenaName() method.
+
+   0.12.0  Wed Dec 05 2018 14:22:06  chwon
+	Add getCpuIdPlatformTable() method override.
 
 */
 
@@ -70,10 +73,18 @@ protected:
                 size_t &nvPlatforms
                 ) override;
 
+	virtual void getCpuIdPlatformTable(
+		const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
+		size_t &nvCpuIdToPlatform
+		) override;
+
 private:
         // the known platforms
         static const CATENA_PLATFORM (* const vPlatforms[]);
         static const size_t nvPlatforms;
+
+	static const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
+	static const size_t nvCpuIdToPlatform;
 	};
 
 } /* namespace McciCatena */

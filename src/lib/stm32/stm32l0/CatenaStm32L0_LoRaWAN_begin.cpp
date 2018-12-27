@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_begin.cpp	Mon Nov 26 2018 15:48:09 chwon */
+/* CatenaStm32L0_LoRaWAN_begin.cpp	Wed Dec 05 2018 14:27:41 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaStm32L0::LoRaWAN::begin()
 
 Version:
-	V0.12.0	Mon Nov 26 2018 15:48:10 chwon	Edit level 3
+	V0.12.0	Wed Dec 05 2018 14:27:41 chwon	Edit level 4
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -35,6 +35,9 @@ Revision history:
    0.12.0  Mon Nov 26 2018 15:48:10  chwon
 	Remvoe PIN_SX1276_ANT_SWITCH_TX_BOOST and PIN_SX1276_ANT_SWITCH_TX_RFO
 	pin initialization.
+
+   0.12.0  Wed Dec 05 2018 14:27:41  chwon
+	Use Catena addLoRaWanCommands().
 
 */
 
@@ -88,11 +91,7 @@ bool CatenaStm32L0::LoRaWAN::begin(
 	gLog.printf(gLog.kTrace, "+CatenaStm32L0::LoRaWAN::begin()\n");
 
 	this->m_pCatena = pParent;
-	this->m_pPlatform = pParent->GetPlatform();
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
-
-        /* set up command processor */
-        this->addCommands();
 
 	/* first call the base begin */
 	if (! this->Arduino_LoRaWAN::begin())
@@ -105,8 +104,8 @@ bool CatenaStm32L0::LoRaWAN::begin(
 		return false;
 		}
 
-	/* here's where we do any required post-processing */
-	/* (none at the moment) */
+        /* set up command processor */
+        pParent->addLoRaWanCommands();
 
 	/* indicate success to the client */
 	return true;

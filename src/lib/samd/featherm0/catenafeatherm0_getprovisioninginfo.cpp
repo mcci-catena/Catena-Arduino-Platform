@@ -5,7 +5,7 @@
 Module:  GetProvisioningInfo.cpp
 
 Function:
-	Catena4410::GetProvisioningInfo()
+	CatenaFeatherM0::GetProvisioningInfo()
 
 Version:
 	V0.3.0	Tue Nov  1 2016 11:58:03 tmm	Edit level 1
@@ -33,7 +33,7 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_SAMD
 
-#include <Catena4410.h>
+#include <CatenaFeatherM0.h>
 using namespace McciCatena;
 
 /****************************************************************************\
@@ -61,12 +61,13 @@ CatenaFeatherM0::GetProvisioningInfo(
         void
         )
         {
-        const Arduino_LoRaWAN::ProvisioningTable * const pTable = this->GetLoRaWANkeys();
+        const Arduino_LoRaWAN::ProvisioningTable * const
+        	pTable = this->GetLoRaWANkeys();
 
         const EUI64_buffer_t * const pSysEUI = this->GetSysEUI();
 
-        if (pSysEUI == NULL)
-                return NULL;
+        if (pTable == nullptr || pSysEUI == nullptr)
+                return nullptr;
 
         unsigned i;
         const Arduino_LoRaWAN::ProvisioningInfo *pInfo;
@@ -98,7 +99,7 @@ CatenaFeatherM0::GetProvisioningInfo(
                 }
 
         /* nothing matched */
-        return NULL;
+        return nullptr;
         }
 
 #endif // ARDUINO_ARCH_SAMD

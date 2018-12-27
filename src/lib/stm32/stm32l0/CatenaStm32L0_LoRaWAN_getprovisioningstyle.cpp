@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_getprovisioningstyle.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaStm32L0_LoRaWAN_getprovisioningstyle.cpp	Wed Dec 05 2018 14:36:35 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32L0::LoRaWAN::GetProvisioningStyle().
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:36:35 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.6.0  Fri Oct 13 2017 15:19:30  chwon
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:36:35  chwon
+	Use Catena provisioning method.
 
 */
 
@@ -69,41 +72,8 @@ CatenaStm32L0::LoRaWAN::GetProvisioningStyle(
 	)
 	{
         CatenaStm32L0 * const pCatena = this->m_pCatena;
-        cFram::Cursor framJoin(pCatena->getFram());
 
-        if (! framJoin.locate(cFramStorage::vItemDefs[cFramStorage::kJoin]))
-                {
-        	gLog.printf(gLog.kError, "%s: failing\n", __FUNCTION__);
-
-        	return ProvisioningStyle::kNone;
-                }
-
-        uint8_t uJoin;
-        if (! framJoin.get(&uJoin, sizeof(uJoin)))
-                {
-                gLog.printf(gLog.kError, "%s: get() failed\n", __FUNCTION__);
-                return ProvisioningStyle::kNone;
-                }
-
-        switch (uJoin)
-                {
-	/*
-	|| we use 0 as the "none" indicator, because that's the default
-	|| value when writing out the key.
-	*/
-        case 0:
-                return ProvisioningStyle::kNone;
-
-        case 1:
-                return ProvisioningStyle::kOTAA;
-
-        case 2:
-                return ProvisioningStyle::kABP;
-
-        default:
-                gLog.printf(gLog.kError, "%s: bad Join value: %u\n", __FUNCTION__, uJoin);
-                return ProvisioningStyle::kNone;
-                }
+	return pCatena->GetProvisioningStyle();
 	}
 
 #endif // ARDUINO_ARCH_STM32

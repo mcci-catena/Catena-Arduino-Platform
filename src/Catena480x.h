@@ -43,8 +43,6 @@ Revision history:
 # include "CatenaStm32L0.h"
 #endif
 
-#include <Arduino_LoRaWAN_ttn.h>
-
 namespace McciCatena {
 
 class Catena480x : public CatenaStm32L0
@@ -100,7 +98,7 @@ public:
 
 	/*
 	|| the constructor. We don't do anything at this level, the
-	|| Super constructor does most of the owrk.
+	|| Super constructor does most of the work.
 	*/
 	LoRaWAN() {};
 

@@ -1,4 +1,4 @@
-/* CatenaBase.cpp	Sun Mar 19 2017 15:53:34 tmm */
+/* CatenaBase.cpp	Wed Dec 05 2018 14:22:45 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Implemenation of class CatenaBase;
 
 Version:
-	V0.5.0	Sun Mar 19 2017 15:53:34 tmm	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:22:45 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017-2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.5.0  Sun Mar 19 2017 15:53:34  tmm
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:22:45  chwon
+	Move common code from child class.
 
 */
 
@@ -50,9 +53,27 @@ CatenaBase::CatenaBase()
 bool
 CatenaBase::begin(void)
 	{
+	UniqueID_buffer_t CpuID;
+
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 
 	this->m_PollingEngine.begin();
+
+	/* get the CPU ID */
+	this->GetUniqueID(&CpuID);
+	this->m_pPlatform = this->GetPlatformForID(
+				&CpuID,
+				&this->m_SysEUI,
+				&this->m_OperatingFlags
+				);
+
+	// set up the command line collector
+	this->m_Collector.begin(&Serial, &this->m_SerialReady);
+	this->registerObject(&this->m_Collector);
+
+	// set up the command line processor
+	this->m_CommandStream.begin(&this->m_Collector, this);
+
 	return true;
 	}
 
@@ -80,13 +101,4 @@ CatenaBase::addCommands(
 	)
 	{
 	this->m_CommandStream.registerCommands(&dispatch, pContext);
-	}
-
-/* register all the commands for this level and above */
-/* protected virtual */
-void
-CatenaBase::registerCommands(void)
-	{
-	/* TODO(tmm@mcci.com): add the syseui command */
-	return;
 	}

@@ -1,17 +1,17 @@
-/* CatenaStm32L0_LoRaWAN_commands.cpp	Fri Oct 13 2017 15:19:30 chwon */
+/* CatenaBase_addLoRaWanCommands.cpp	Mon Dec 03 2018 13:33:11 chwon */
 
 /*
 
-Module:  CatenaStm32L0_LoRaWAN_commands.cpp
+Module:  CatenaBase_addLoRaWanCommands.cpp
 
 Function:
-	The command engine for lorawan commands on the Catena STM32 L0 platform
+	The command engine for lorawan commands on the Catena base platform
 
 Version:
-	V0.6.0	Fri Oct 13 2017 15:19:30 chwon	Edit level 1
+	V0.12.0	Mon Dec 03 2018 13:33:11 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -20,20 +20,18 @@ Copyright notice:
 	An unpublished work.  All rights reserved.
 
 	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
+	ChaeHee Won, MCCI Corporation	December 2018
 
 Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
+   0.12.0  Mon Dec 03 2018 13:33:11  chwon
 	Module created.
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
-
-#include "CatenaStm32L0.h"
+#include "CatenaBase.h"
 
 #include "Catena_Log.h"
 
@@ -80,13 +78,13 @@ static KeyMap sKeyMap[] =
 
 /*
 
-Name:	CatenaStm32L0::LoRaWAN::addCommands()
+Name:	CatenaBase::addLoRaWanCommands()
 
 Function:
 	Add the lorawan commands to the Catena command table.
 
 Definition:
-	private: bool CatenaStm32L0::LoRaWAN::addCommands();
+	private: bool CatenaBase::addLoRaWanCommands(void);
 
 Description:
 	All the commands are added to the system command table.
@@ -97,12 +95,28 @@ Returns:
 */
 
 bool
-CatenaStm32L0::LoRaWAN::addCommands()
+CatenaBase::addLoRaWanCommands(
+	void
+	)
 	{
-	gLog.printf(gLog.kTrace, "CatenaStm32L0::LoRaWAN::addCommands(): adding\n");
-	this->m_pCatena->addCommands(
-		sDispatch, static_cast<void *>(this)
+	if (this->getFram() == nullptr)
+		{
+		gLog.printf(
+			gLog.kError,
+			"?CatenaBase::addLoRaWanCommands(): no FRAM\n"
+			);
+		return false;
+		}
+
+	gLog.printf(
+		gLog.kTrace,
+		"CatenaBase::addLoRaWanCommands(): adding\n"
 		);
+	this->addCommands(
+		sDispatch,
+		static_cast<void *>(this)
+		);
+	return true;
 	}
 
 /*
@@ -146,9 +160,7 @@ doConfigure(
 	char **argv
 	)
 	{
-	CatenaStm32L0::LoRaWAN * const pLoRaWAN =
-		static_cast<CatenaStm32L0::LoRaWAN *>(pContext);
-	CatenaStm32L0 * const pCatena = pLoRaWAN->getCatena();
+	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
 	uint8_t databuf[16];
 
 	if (argc < 2)
@@ -246,6 +258,4 @@ doConfigure(
 		}
 	}
 
-#endif // ARDUINO_ARCH_STM32
-
-/**** end of CatenaStm32L0_LoRaWAN_commands.cpp ****/
+/**** end of CatenaBase_addLoRaWanCommands.cpp ****/

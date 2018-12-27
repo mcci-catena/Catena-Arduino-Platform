@@ -1,4 +1,4 @@
-/* Catena4420.h	Wed Nov 21 2018 13:41:45 chwon */
+/* Catena4420.h	Wed Dec 05 2018 14:20:58 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	class Catena4420 (Aduino header file)
 
 Version:
-	V0.11.0	Wed Nov 21 2018 13:41:45 chwon	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:20:58 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2016 by
+	This file copyright (C) 2016, 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -32,6 +32,9 @@ Revision history:
    0.11.0  Wed Nov 21 2018 13:41:46  chwon
 	Add CatenaName() method.
 
+   0.12.0  Wed Dec 05 2018 14:20:58  chwon
+	Add getCpuIdPlatformTable() method override.
+
 */
 
 #ifndef _CATENA4420_H_		/* prevent multiple includes */
@@ -48,15 +51,6 @@ namespace McciCatena {
 class Catena4420 : public CatenaFeatherM0
 	{
 public:
-	enum DIGITAL_PINS
-		{
-		PIN_SX1276_NSS = 6,
-		PIN_SX1276_NRESET = 5,
-		PIN_SX1276_DIO0 = 12,    // pin assignment for DIO0 (aka IRQ)
-		PIN_SX1276_DIO1 = 11,
-		PIN_SX1276_DIO2 = 10,
-		};
-	
 	/*
 	|| Methods
 	*/
@@ -71,11 +65,20 @@ public:
 
 protected:
 	using Super = CatenaFeatherM0;
-        virtual const Arduino_LoRaWAN::ProvisioningTable *GetLoRaWANkeys(void) const;
+        virtual const Arduino_LoRaWAN::ProvisioningTable *
+        	GetLoRaWANkeys(void) const override;
+
+	virtual void getCpuIdPlatformTable(
+		const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
+		size_t &nvCpuIdToPlatform
+		) override;
 
 private:
         static const Arduino_LoRaWAN::ProvisioningTable gk_LoRaWAN_Keys
                 /* __attribute__((__weak__)) */;
+
+	static const CPUID_PLATFORM_MAP vCpuIdToPlatform[];
+	static const size_t nvCpuIdToPlatform;
 	};
 
 /*
@@ -101,7 +104,7 @@ public:
 
 protected:
 	/*
-	|| we use the defaults
+	|| we use the CatenaFeatherM0 defaults
 	*/
 	// ProvisioningStyle GetProvisioningStyle(void);
 

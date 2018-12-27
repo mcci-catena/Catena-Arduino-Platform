@@ -1,4 +1,4 @@
-/* CatenaStm32_begin.cpp	Wed Jan 17 2018 15:35:49 chwon */
+/* CatenaStm32_begin.cpp	Wed Dec 05 2018 14:25:11 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaStm32::begin().
 
 Version:
-	V0.7.0	Wed Jan 17 2018 15:35:49 chwon	Edit level 2
+	V0.12.0	Wed Dec 05 2018 14:25:11 chwon	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -32,6 +32,9 @@ Revision history:
    0.7.0  Wed Jan 17 2018 15:35:49  chwon
 	Remove serial port raindance code because Serial.begin() will
 	reinitialize USB module.
+
+   0.12.0  Wed Dec 05 2018 14:25:11  chwon
+	Move common initialization code to CatenaBase class.
 
 */
 
@@ -122,7 +125,6 @@ bool CatenaStm32::begin(
 	uint32_t uSetMask
 	)
 	{
-	UniqueID_buffer_t CpuID;
 	uint32_t OperatingFlags;
 
 	/* do the platform begin */
@@ -138,14 +140,9 @@ bool CatenaStm32::begin(
 		return false;
 		}
 
-	/* get the CPU ID */
-	this->GetUniqueID(&CpuID);
-	this->m_pPlatform = this->GetPlatformForID(
-				&CpuID,
-				&this->m_SysEUI,
-				&OperatingFlags
-				);
-	this->m_OperatingFlags = (OperatingFlags & ~uClearMask) | uSetMask;
+	OperatingFlags = this->GetOperatingFlags();
+	OperatingFlags = (OperatingFlags & ~uClearMask) | uSetMask;
+	this->SetOperatingFlags(OperatingFlags);
 
 	return true;
 	}

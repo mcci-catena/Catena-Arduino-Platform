@@ -1,4 +1,4 @@
-/* CatenaStm32L0_begin.cpp	Wed Oct 31 2018 10:57:42 chwon */
+/* CatenaStm32L0_begin.cpp	Wed Dec 05 2018 14:27:07 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Home for CatenaStm32L0::begin()
 
 Version:
-	V0.11.0	Wed Oct 31 2018 10:57:42 chwon	Edit level 1
+	V0.12.0	Wed Dec 05 2018 14:27:07 chwon	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2018 by
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.11.0  Wed Oct 31 2018 10:57:42  chwon
 	Module created.
+
+   0.12.0  Wed Dec 05 2018 14:27:07  chwon
+	Move common initialization code to CatenaBase class.
 
 */
 
@@ -128,16 +131,6 @@ bool CatenaStm32L0::begin()
 		gLog.printf(gLog.kError, "?CatenaStm32L0::Super::begin failed\n");
 		return false;
 		}
-
-	// set up the command line collector
-	this->m_Collector.begin(&Serial, &this->m_SerialReady);
-	this->registerObject(&this->m_Collector);
-
-	// set up the command line processor
-	this->m_CommandStream.begin(
-		&this->m_Collector,
-		this
-		);
 
 	// register all commands in this stack
 	this->registerCommands();

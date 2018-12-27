@@ -1,4 +1,4 @@
-/* CatenaBase.h	Mon Nov 19 2018 12:07:02 chwon */
+/* CatenaBase.h	Wed Dec 05 2018 14:01:28 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
         class CatenaBase interfaces.
 
 Version:
-        V0.11.0	Mon Nov 19 2018 12:07:02 chwon	Edit level 5
+        V0.12.0	Wed Dec 05 2018 14:01:28 chwon	Edit level 6
 
 Copyright notice:
         This file copyright (C) 2016-2018 by
@@ -43,6 +43,10 @@ Revision history:
    0.11.0  Mon Nov 19 2018 12:07:02  chwon
 	Add Sleep() virtual method.
 
+   0.12.0  Wed Dec 05 2018 14:01:29  chwon
+	Add getFram() method and FRAM access methods. Move CPUID_PLATFORM_MAP
+	structure and related methods.
+
 */
 
 #ifndef _CATENABASE_H_		/* prevent multiple includes */
@@ -73,6 +77,12 @@ Revision history:
 # include "mcciadk_guid.h"
 #endif
 
+#ifndef _CATENA_FRAM_H_
+# include "Catena_Fram.h"
+#endif
+
+#include <Arduino_LoRaWAN.h>
+
 namespace McciCatena {
 
 /* forward references */
@@ -85,7 +95,8 @@ public:
         virtual ~CatenaBase() {};
 
         /* an EUI64 */
-        struct EUI64_buffer_t {
+        struct EUI64_buffer_t
+                {
                 uint8_t	b[64/8];
                 };
         struct EUI64_string_t
@@ -93,13 +104,27 @@ public:
                 char	c[sizeof(EUI64_buffer_t) * 3 + 1];
                 };
 
+	struct	UniqueID_buffer_t
+		{
+		uint8_t b[128/8];
+		};
+
+	/* a buffer big enough to hold a stringified UniqueID_buffer_t */
+	struct UniqueID_string_t
+		{
+		char	c[sizeof(UniqueID_buffer_t) * 3 + 1];
+		};
+
+        /* forward references */
+        struct CPUID_PLATFORM_MAP;
+
         enum OPERATING_FLAGS : uint32_t
                 {
                 fUnattended = 1 << 0,
                 fManufacturingTest = 1 << 1,
                 };
 
-    // flags that describe generic platform capabilities
+        // flags that describe generic platform capabilities
         enum PLATFORM_FLAGS : uint32_t
                 {
                 // platform has LoRa
@@ -172,15 +197,55 @@ public:
                 const char *fmt, ...
                 );
 
-        virtual const EUI64_buffer_t *GetSysEUI(void)
-                {
-                return &this->m_SysEUI;
-                }
+        virtual const EUI64_buffer_t *GetSysEUI(void);
 
-        virtual bool begin();
+	const CATENA_PLATFORM *GetPlatformForID(
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI
+		)
+		{
+		return this->GetPlatformForID(pIdBuffer, pSysEUI, nullptr);
+		}
 
-	virtual const char *CatenaName() const = 0; // requires that an override be provided.
+	virtual const CATENA_PLATFORM *GetPlatformForID(
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI,
+		uint32_t *pOperatingFlags
+		);
+
+	virtual void GetUniqueID(
+		UniqueID_buffer_t *pIdBuffer
+		) = 0; // requires that an override be provided.
+
+	char *GetUniqueIDstring(
+		UniqueID_string_t *pIdStringBuffer
+		);
+
+	const inline CATENA_PLATFORM *GetPlatform(void)
+		{
+		return this->m_pPlatform;
+		}
+
+	inline uint32_t GetOperatingFlags(void)
+		{
+		return this->m_OperatingFlags;
+		}
+	inline void SetOperatingFlags(uint32_t OperatingFlags)
+		{
+		this->m_OperatingFlags = OperatingFlags;
+		}
+
+	inline uint32_t GetPlatformFlags(void);
+
+        virtual bool begin(void);
+
+	virtual const char *CatenaName(void) const = 0; // requires that an override be provided.
 	virtual void Sleep(uint32_t howLongInSeconds) = 0; // require a concrete method
+
+	virtual McciCatena::cFram *getFram(void)
+		{
+		return nullptr;
+		}
 
         // poll the engine
         void poll(void);
@@ -188,6 +253,20 @@ public:
 
         // command handling
         void addCommands(McciCatena::cCommandStream::cDispatch &, void *);
+
+	Arduino_LoRaWAN::ProvisioningStyle GetProvisioningStyle(void);
+	bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo *);
+	bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo *);
+
+	void NetSaveFCntUp(uint32_t uFCntUp);
+	void NetSaveFCntDown(uint32_t uFCntDown);
+	void NetSaveSessionInfo(
+		const Arduino_LoRaWAN::SessionInfo &Info,
+		const uint8_t *pExtraInfo,
+		size_t nExtraInfo
+		);
+
+	bool addLoRaWanCommands(void);
 
 /****************************************************************************\
 |
@@ -205,8 +284,40 @@ public:
 protected:
         virtual void registerCommands(void);
 
+	// subclasses override a method for getting the platform table
+	virtual void getPlatformTable(
+		const CATENA_PLATFORM * const * &vPlatforms,
+		size_t &nvPlatforms
+		)
+		{
+		vPlatforms = nullptr;
+		nvPlatforms = 0;
+		}
+
+	// subclasses override a method for getting the CPU ID platform table
+	virtual void getCpuIdPlatformTable(
+		const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
+		size_t &nvCpuIdToPlatform
+		)
+		{
+		vCpuIdToPlatform = nullptr;
+		nvCpuIdToPlatform = 0;
+		}
+
+	// help for the command-processing framework.
+	class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
+		{
+	public:
+		// return true if Serial is ready. Overridden because
+		// the Arduino !!Serial() delays 10ms unconditionally!
+		// so we need special business.
+		virtual bool isReady() const override;
+		};
+
+	// the callback object to use for commands (since we're on USB)
+	cSerialReady	m_SerialReady;
+
         // data objects
-protected:
         EUI64_buffer_t m_SysEUI;
         McciCatena::cPollingEngine m_PollingEngine;
 
@@ -215,8 +326,24 @@ protected:
 
         // the command processor
         McciCatena::cCommandStream              m_CommandStream;
-        };
 
+private:
+	uint32_t		m_OperatingFlags;
+	const CATENA_PLATFORM *	m_pPlatform;
+
+	// internal methods
+	void savePlatform(
+		const CATENA_PLATFORM &Platform,
+		const EUI64_buffer_t *pSysEUI,
+		const uint32_t *pOperatingFlags
+		);
+
+	const CATENA_PLATFORM *getPlatformForCpuId(
+		const UniqueID_buffer_t *pIdBuffer,
+		EUI64_buffer_t *pSysEUI,
+		uint32_t *pOperatingFlags
+		);
+	};
 
 /*
 
@@ -267,6 +394,96 @@ struct CATENA_PLATFORM
 	uint32_t		OperatingFlags;
 	};
 
+inline uint32_t CatenaBase::GetPlatformFlags(void)
+	{
+	const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
+
+	if (pPlatform != nullptr)
+		return pPlatform->PlatformFlags;
+	else
+		return 0;
+	}
+
+/*
+
+Type:	CatenaBase::CPUID_PLATFORM_MAP
+
+Function:
+	Simple structure to map a CPU ID to a Platform code.
+
+Description:
+	Many Catenas don't have NVRAM, and need to have information about
+	how the SAMD21 CPU is wired up and connected to the world. However,
+	all SAMD21s have a unique CPU ID. We take advantage of this, and the
+	relatively large Flash memory of the SAMD21, to map the unique CPU ID
+	onto a platform pointer. Unfortunately this requires manually adding
+	CPU IDs to the flash table, so this is only suitable for small volume;
+	but it works well if the number of CPUs is less than a hundred or so.
+
+	The file gk_WellKnownCpuBindings.cpp instantiates an array,
+	gk_WellKnownCpuBindings[], containing CPU ID => platform mappings.
+
+	For convenience, we also allow you to override operating flags on
+	a CPU-ID-by-CPU-ID basis.
+
+	Catenas with NVRAM use a similar concept, but the data in the NVRAM
+	provides a platform GUID, and the SysEUI, rather than mapping the
+	CPUID to a platform pointer. The platform GUID is used to find
+	a CATENA_PLATFORM, and the SysEUI provides the identity.
+
+Contents:
+	CatenaBase::UniqueID_buffer_t	CpuID;
+		The Unique CPU ID.
+
+	const CATENA_PLATFORM *pPlatform;
+		A pointer to the platform that defines this assembly.
+
+	CatenaBase::EUI64_buffer_t	SysEUI;
+		The EUI64 for this platform. If zero, then none is defined.
+
+	uint32_t OperatingFlagsClear;
+	uint32_t OperatingFlagsSet;
+		These two entries, taken together, are used to selectively
+		clear and set bits in the operating flags. Bits set in
+		OperatingFlagsClear will be cleared in the operating flags.
+		Bits set in OperatingFlagsSet will be set in the operating
+		flags. Clear is applied before set.
+
+Notes:
+	The following bash macro is generally used to generate the first
+	two lines of initiailization given the output from an MCCI test
+	program:
+
+.	function _cpuid {
+.	        echo "$1" |
+.	        sed -e 's/^/0x/' -e 's/-/, 0x/g' |
+.		awk '{
+.	                $1 = "        { CpuID:  { " $1;
+.		        $8 = $8 "\n\t\t   ";
+.			$16 = $16 " },";
+.	                print }' ;
+.	}
+
+	With this macro in scope, you can write (e.g.):
+
+.	_cpuid 05-25-dc-ef-54-53-4b-50-4a-31-2e-39-36-1a-07-ff
+
+	and you'll get the first two lines of a suitable table entry.
+
+See Also:
+	gk_WellKnownCpuBindings[], CATENA_PLATFORM
+
+*/
+
+struct CatenaBase::CPUID_PLATFORM_MAP
+	{
+	CatenaBase::UniqueID_buffer_t	CpuID;
+
+	const CATENA_PLATFORM		*pPlatform;
+	CatenaBase::EUI64_buffer_t	SysEUI;
+	uint32_t			OperatingFlagsClear;
+	uint32_t			OperatingFlagsSet;
+	};
 
 
 /*
