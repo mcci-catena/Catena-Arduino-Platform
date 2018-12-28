@@ -1,4 +1,4 @@
-/* CatenaStm32L0.h	Wed Dec 05 2018 14:10:13 chwon */
+/* CatenaStm32L0.h	Fri Dec 28 2018 14:03:19 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Class CatenaStm32L0
 
 Version:
-	V0.12.0	Wed Dec 05 2018 14:10:13 chwon	Edit level 2
+	V0.13.0	Fri Dec 28 2018 14:03:19 chwon	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -35,6 +35,9 @@ Revision history:
    0.12.0  Wed Dec 05 2018 14:10:13  chwon
 	Remove GetSysEUI() and GetPlatformForID() methods override.
 	Add getFRAM() method override.
+
+   0.13.0  Fri Dec 28 2018 14:03:19  chwon
+	Add ReadAnalog() method and add CatenaStm32L0_ReadAnalog() prototype.
 
 */
 
@@ -83,6 +86,12 @@ public:
 		bootCount = this->m_BootCount;
 		return true;
 		};
+
+	uint32_t ReadAnalog(
+			uint32_t Channel,
+			uint32_t ReadCount = 1,
+			uint32_t Multiplier = 1
+			) const;
 
 	// read the current battery voltage, in engineering units
 	virtual float ReadVbat(void) const = 0;
@@ -147,6 +156,21 @@ protected:
 private:
 	CatenaStm32L0		*m_pCatena;
 	};
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool CatenaStm32L0_ReadAnalog(
+	uint32_t Channel,
+	uint32_t ReadCount,
+	uint32_t Multiplier,
+	uint32_t *pValue
+	);
+
+#ifdef __cplusplus
+}
+#endif
 
 } // namespace McciCatena
 

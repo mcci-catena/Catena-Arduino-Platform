@@ -1,14 +1,14 @@
-/* Catena461x_ReadVoltage.cpp	Mon Nov 26 2018 16:18:29 chwon */
+/* Catena4610_ReadAnalog.cpp	Fri Dec 28 2018 14:01:42 chwon */
 
 /*
 
-Module:  Catena461x_ReadVoltage.cpp
+Module:  Catena4610_ReadAnalog.cpp
 
 Function:
-	Catena461x::ReadVbat() and Catena461x::ReadVbus()
+	Catena4610::ReadVbat() and Catena4610::ReadVbus()
 
 Version:
-	V0.12.0	Mon Nov 26 2018 16:18:29 chwon	Edit level 1
+	V0.13.0	Fri Dec 28 2018 14:01:42 chwon	Edit level 1
 
 Copyright notice:
 	This file copyright (C) 2018 by
@@ -23,17 +23,18 @@ Copyright notice:
 	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	November 2018
+	ChaeHee Won, MCCI Corporation	December 2018
 
 Revision history:
-   0.12.0  Mon Nov 26 2018 16:18:29  chwon
+   0.13.0  Fri Dec 28 2018 14:01:42  chwon
 	Module created.
 
 */
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena461x.h"
+#include "Catena4610.h"
+#include "Catena_Log.h"
 
 #include <Arduino.h>
 using namespace McciCatena;
@@ -74,19 +75,42 @@ using namespace McciCatena;
 \****************************************************************************/
 
 float
-Catena461x::ReadVbat(void) const
+Catena4610::ReadVbat(void) const
 	{
-	float rawVoltage = analogRead(Catena461x::APIN_VBAT_SENSE);
-	return rawVoltage * 3.3 / 1024;
+	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBAT, 1, 2);
+	return volt / 1000;
 	}
 
 float
-Catena461x::ReadVbus(void) const
+Catena4610::ReadVbus(void) const
 	{
-	float rawVoltage = analogRead(Catena461x::APIN_VBUS_SENSE);
-	return rawVoltage * 3.3 / 1024;
+	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 1, 3);
+	return volt / 1000;
 	}
+
+#if defined(ARDUINO_MCCI_CATENA_4610) && defined(USBD_LL_ConnectionState_WEAK)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+uint32_t USBD_LL_ConnectionState(void)
+	{
+	uint32_t vBus;
+	bool fStatus;
+
+	fStatus = CatenaStm32L0_ReadAnalog(
+			Catena461x::ANALOG_CHANNEL_VBUS, 1, 3, &vBus
+			);
+	return (fStatus && vBus < 3000) ? 0 : 1;
+	}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // ARDUINO_MCCI_CATENA_4610
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena461x_ReadVoltage.cpp ****/
+/**** end of Catena4610_ReadAnalog.cpp ****/

@@ -1,4 +1,4 @@
-/* Catena461x.h	Mon Nov 26 2018 15:50:21 chwon */
+/* Catena461x.h	Fri Dec 28 2018 13:54:46 chwon */
 
 /*
 
@@ -9,7 +9,7 @@ Function:
 	(4610, 4611, 4612, etc.)
 
 Version:
-	V0.12.0	Mon Nov 26 2018 15:50:21 chwon	Edit level 2
+	V0.13.0	Fri Dec 28 2018 13:54:47 chwon	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2018 by
@@ -32,6 +32,10 @@ Revision history:
 
    0.12.0  Mon Nov 26 2018 15:50:21  chwon
 	Change from CatenaStm32L0LoRa to CatenaStm32L0 class.
+
+   0.13.0  Fri Dec 28 2018 13:54:47  chwon
+	Add ANALOG_CHANNELS definition and move ReadVbat() and ReadVbus()
+	override to Catena4610/11/12.
 
 */
 
@@ -71,6 +75,18 @@ public:
 		APIN_VBUS_SENSE = A4,
 		};
 
+	enum ANALOG_CHANNELS
+		{
+		ANALOG_CHANNEL_A0 = 0,
+		ANALOG_CHANNEL_A1 = 5,
+		ANALOG_CHANNEL_A2 = 4,
+		ANALOG_CHANNEL_A3 = 3,
+		ANALOG_CHANNEL_A4 = 2,
+		ANALOG_CHANNEL_VBAT = ANALOG_CHANNEL_A3,
+		ANALOG_CHANNEL_VBUS = ANALOG_CHANNEL_A4,
+		ANALOG_CHANNEL_VREF = 17,
+		};
+
 	enum DIGITAL_PINS
 		{
 		PIN_STATUS_LED = D13,
@@ -82,8 +98,6 @@ public:
 
 	// methods
 	virtual bool begin() override;
-	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
 
 protected:
 
