@@ -1,4 +1,4 @@
-/* CatenaWingFram2k_LoRaWAN_begin.cpp	Wed Dec 05 2018 14:27:52 chwon */
+/* CatenaWingFram2k_LoRaWAN_begin.cpp	Wed Jan 09 2019 14:24:20 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaWingFram2k::LoRaWAN::begin()
 
 Version:
-	V0.12.0	Wed Dec 05 2018 14:27:52 chwon	Edit level 2
+	V0.13.0	Wed Jan 09 2019 14:24:20 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017-2018 by
+	This file copyright (C) 2017-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.12.0  Wed Dec 05 2018 14:27:52  chwon
 	Call Arduino_LoRaWAN::begin() and use Catena addLoRaWanCommands().
+
+   0.13.0  Wed Jan 09 2019 14:24:20  chwon
+	Need to set up LoRaWan command before call Arduino_LoRaWAN::begin().
 
 */
 
@@ -73,7 +76,10 @@ CatenaWingFram2k::LoRaWAN::begin(
 	this->m_pCatena = pParent;
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
-	/* first call the base begin */
+        /* first set up command processor -- just in case begin() failed */
+        pParent->addLoRaWanCommands();
+
+	/* call the base begin */
 	if (! this->Arduino_LoRaWAN::begin())
 		{
 		gLog.printf(
@@ -83,9 +89,6 @@ CatenaWingFram2k::LoRaWAN::begin(
 			);
 		return false;
 		}
-
-        /* set up command processor */
-        pParent->addLoRaWanCommands();
 
 	/* indicate success to the client */
 	return true;
