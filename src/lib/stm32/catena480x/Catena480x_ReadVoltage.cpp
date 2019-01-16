@@ -1,4 +1,4 @@
-/* Catena480x_ReadVoltage.cpp	Mon Nov 26 2018 16:18:29 chwon */
+/* Catena480x_ReadVoltage.cpp	Wed Jan 16 2019 10:40:07 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Catena480x::ReadVbat() and Catena480x::ReadVbus()
 
 Version:
-	V0.12.0	Mon Nov 26 2018 16:18:29 chwon	Edit level 1
+	V0.13.0	Wed Jan 16 2019 10:40:07 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2018 by
+	This file copyright (C) 2018-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.12.0  Mon Nov 26 2018 16:18:29  chwon
 	Module created.
+
+   0.13.0  Wed Jan 16 2019 10:40:07  chwon
+	Use CatenaStm32L0::ReadAnalog() method.
 
 */
 
@@ -76,8 +79,8 @@ using namespace McciCatena;
 float
 Catena480x::ReadVbat(void) const
 	{
-	float rawVoltage = analogRead(Catena480x::APIN_VBAT_SENSE);
-	return rawVoltage * 3.3 / 1024;
+	float volt = this->ReadAnalog(Catena480x::ANALOG_CHANNEL_VBAT, 1, 1);
+	return volt / 1000;
 	}
 
 float
