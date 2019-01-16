@@ -1,4 +1,4 @@
-/* CatenaStm32L0_LoRaWAN_begin.cpp	Wed Dec 05 2018 14:27:41 chwon */
+/* CatenaStm32L0_LoRaWAN_begin.cpp	Mon Jan 07 2019 11:36:38 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaStm32L0::LoRaWAN::begin()
 
 Version:
-	V0.12.0	Wed Dec 05 2018 14:27:41 chwon	Edit level 4
+	V0.13.0	Mon Jan 07 2019 11:36:38 chwon	Edit level 5
 
 Copyright notice:
 	This file copyright (C) 2017-2018 by
@@ -38,6 +38,9 @@ Revision history:
 
    0.12.0  Wed Dec 05 2018 14:27:41  chwon
 	Use Catena addLoRaWanCommands().
+
+   0.13.0  Mon Jan 07 2019 11:36:39  chwon
+	Need to set up LoRaWan command before call Arduino_LoRaWAN::begin().
 
 */
 
@@ -93,7 +96,10 @@ bool CatenaStm32L0::LoRaWAN::begin(
 	this->m_pCatena = pParent;
 	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
-	/* first call the base begin */
+        /* first set up command processor -- just in case begin() failed */
+        pParent->addLoRaWanCommands();
+
+	/* call the base begin */
 	if (! this->Arduino_LoRaWAN::begin())
 		{
 		gLog.printf(
@@ -103,9 +109,6 @@ bool CatenaStm32L0::LoRaWAN::begin(
 			);
 		return false;
 		}
-
-        /* set up command processor */
-        pParent->addLoRaWanCommands();
 
 	/* indicate success to the client */
 	return true;
