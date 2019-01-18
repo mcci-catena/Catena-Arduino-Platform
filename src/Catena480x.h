@@ -1,4 +1,4 @@
-/* Catena480x.h	Mon Nov 26 2018 15:50:44 chwon */
+/* Catena480x.h	Wed Jan 16 2019 10:39:33 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	class Catena480x: CatenaBase Platform to represent a Catena 480x
 
 Version:
-	V0.12.0	Mon Nov 26 2018 15:50:44 chwon	Edit level 2
+	V0.13.0	Wed Jan 16 2019 10:39:33 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2018 by
+	This file copyright (C) 2018-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.12.0  Mon Nov 26 2018 15:50:44  chwon
 	Change from CatenaStm32L0LoRa to CatenaStm32L0 class.
+
+   0.13.0  Wed Jan 16 2019 10:39:33  chwon
+	Add ANALOG_CHANNELS definition.
 
 */
 
@@ -67,6 +70,17 @@ public:
 	enum ANALOG_PINS
 		{
 		APIN_VBAT_SENSE = A0,
+		};
+
+	enum ANALOG_CHANNELS
+		{
+		ANALOG_CHANNEL_A0 = 0,
+		ANALOG_CHANNEL_A1 = 5,
+		ANALOG_CHANNEL_A2 = 4,
+		ANALOG_CHANNEL_A3 = 3,
+		ANALOG_CHANNEL_A4 = 2,
+		ANALOG_CHANNEL_VBAT = ANALOG_CHANNEL_A0,
+		ANALOG_CHANNEL_VREF = 17,
 		};
 
 	enum DIGITAL_PINS

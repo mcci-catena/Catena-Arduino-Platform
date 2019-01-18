@@ -1,4 +1,4 @@
-/* Catena4610.h	Thu Nov 15 2018 15:07:23 chwon */
+/* Catena4610.h	Fri Dec 28 2018 13:58:16 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	class Catena4610: CatenaBase Platform to represent a Catena 4610
 
 Version:
-	V0.11.0	Thu Nov 15 2018 15:07:23 chwon	Edit level 1
+	V0.13.0	Fri Dec 28 2018 13:58:16 chwon	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2018 by
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.11.0  Thu Nov 15 2018 15:07:23 chwon
 	Module created.
+
+   0.13.0  Fri Dec 28 2018 13:58:16  chwon
+	Add ReadVbat() and ReadVbus() override.
 
 */
 
@@ -59,6 +62,8 @@ public:
 	Catena4610& operator=(const Catena4610&&) = delete;
 
 	virtual const char *CatenaName() const override { return "Catena 4610"; };
+	virtual float ReadVbat(void) const override;
+	virtual float ReadVbus(void) const override;
 
 protected:
 	// we are required to provide a table of platforms

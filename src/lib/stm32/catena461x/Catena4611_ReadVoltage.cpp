@@ -1,17 +1,17 @@
-/* Catena480x_ReadVoltage.cpp	Wed Jan 16 2019 10:40:07 chwon */
+/* Catena4611_ReadAnalog.cpp	Fri Dec 28 2018 14:01:42 chwon */
 
 /*
 
-Module:  Catena480x_ReadVoltage.cpp
+Module:  Catena4611_ReadAnalog.cpp
 
 Function:
-	Catena480x::ReadVbat() and Catena480x::ReadVbus()
+	Catena4611::ReadVbat() and Catena4611::ReadVbus()
 
 Version:
-	V0.13.0	Wed Jan 16 2019 10:40:07 chwon	Edit level 2
+	V0.13.0	Fri Dec 28 2018 14:01:42 chwon	Edit level 1
 
 Copyright notice:
-	This file copyright (C) 2018-2019 by
+	This file copyright (C) 2018 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -23,20 +23,18 @@ Copyright notice:
 	copied without the prior permission of MCCI Corporation
 
 Author:
-	ChaeHee Won, MCCI Corporation	November 2018
+	ChaeHee Won, MCCI Corporation	December 2018
 
 Revision history:
-   0.12.0  Mon Nov 26 2018 16:18:29  chwon
+   0.13.0  Fri Dec 28 2018 14:01:42  chwon
 	Module created.
-
-   0.13.0  Wed Jan 16 2019 10:40:07  chwon
-	Use CatenaStm32L0::ReadAnalog() method.
 
 */
 
 #ifdef ARDUINO_ARCH_STM32
 
-#include "Catena480x.h"
+#include "Catena4611.h"
+#include "Catena_Log.h"
 
 #include <Arduino.h>
 using namespace McciCatena;
@@ -77,18 +75,42 @@ using namespace McciCatena;
 \****************************************************************************/
 
 float
-Catena480x::ReadVbat(void) const
+Catena4611::ReadVbat(void) const
 	{
-	float volt = this->ReadAnalog(Catena480x::ANALOG_CHANNEL_VBAT, 1, 1);
+	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBAT, 1, 1);
 	return volt / 1000;
 	}
 
 float
-Catena480x::ReadVbus(void) const
+Catena4611::ReadVbus(void) const
 	{
-	return 0.0;
+	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 1, 3);
+	return volt / 1000;
 	}
+
+#if defined(ARDUINO_MCCI_CATENA_4611) && defined(USBD_LL_ConnectionState_WEAK)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+uint32_t USBD_LL_ConnectionState(void)
+	{
+	uint32_t vBus;
+	bool fStatus;
+
+	fStatus = CatenaStm32L0_ReadAnalog(
+			Catena461x::ANALOG_CHANNEL_VBUS, 1, 3, &vBus
+			);
+	return (fStatus && vBus < 3000) ? 0 : 1;
+	}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // ARDUINO_MCCI_CATENA_4611
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena480x_ReadVoltage.cpp ****/
+/**** end of Catena4611_ReadAnalog.cpp ****/
