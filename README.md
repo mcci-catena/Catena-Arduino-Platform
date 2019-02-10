@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.13.0...master) [![Build Status](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.14.0...master) [![Build Status](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.org/mcci-catena/Catena-Arduino-Platform)
 
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
@@ -238,10 +238,16 @@ The solution is a hack: undefine `min()` prior to including `<functional>`, and 
 | Library | Version | Comments |
 |---------|:-------:|----------|
 | [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.3.1 | Needed in order to support the Murata module used in the Catena 4551 |
+| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.5.3 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
 | [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- v0.14.0 (2019-02-10) includes changes for the following issues.
+
+  - [#65](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/65) refactors the stm32/samd code so that code common for the two ports only appears once.
+  - [#117](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/117) adds `Catena::ReadAnalog()` method for STM32 that reads the analog reference and adjust the raw ADC counts.
+  - [#119](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/119) corrects an error that prevented provisioning on MCCI Catena 4612 and 4801 boards.
 
 - v0.13.0 incorporates recent bug fixes and enhancements. We added our own implementation of the RTC class, to avoid the hacks we were using with the RTCzero library (issue [#86](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/86). We updated the UML docs (issue [#111](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/111)). We refactored the STM32 classes (issue [#99](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/99) and [#103](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/103)). A few other minor changes ([754f4b](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/754f4bd9048f12edbd89906daea483eec31a9468) and [71d45d0](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/71d45d0882b00cc0f18458a35a1f6b320e106433)).
 
