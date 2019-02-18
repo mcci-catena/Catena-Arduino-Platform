@@ -78,9 +78,7 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 static volatile uint32_t *gs_pAlarm;
 static RTC_HandleTypeDef *gs_phRtc;
@@ -157,10 +155,7 @@ uint32_t HAL_AddTick(
 	return tickCount;
 	}
 
-
-#ifdef __cplusplus
-}
-#endif
+} /* extern "C" */
 
 bool CatenaStm32L0Rtc::begin(bool fResetTime)
 	{

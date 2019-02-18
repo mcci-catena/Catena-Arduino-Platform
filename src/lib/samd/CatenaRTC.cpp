@@ -76,9 +76,7 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 static volatile uint32_t *gs_pAlarm;
 
@@ -98,9 +96,7 @@ static inline void RtcWaitSynchronize(void)
 		;
 	}
 
-#ifdef __cplusplus
-}
-#endif
+} /* extern "C" */
 
 bool CatenaRTC::begin(bool fResetTime)
 	{
