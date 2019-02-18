@@ -90,9 +90,7 @@ Catena4611::ReadVbus(void) const
 
 #if defined(ARDUINO_MCCI_CATENA_4611) && defined(USBD_LL_ConnectionState_WEAK)
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 uint32_t USBD_LL_ConnectionState(void)
 	{
@@ -105,9 +103,7 @@ uint32_t USBD_LL_ConnectionState(void)
 	return (fStatus && vBus < 3000) ? 0 : 1;
 	}
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif // ARDUINO_MCCI_CATENA_4611
 
