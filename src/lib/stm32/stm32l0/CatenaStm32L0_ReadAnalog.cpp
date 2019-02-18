@@ -30,7 +30,7 @@ Revision history:
 	Module created.
 
    0.14.0  Mon Feb 18 2019 09:56:32  chwon
-	Turn on nad off HSI clock if system clock use MSI clock.
+	Turn on and off HSI clock if system clock use MSI clock.
 
 */
 
@@ -53,6 +53,7 @@ using namespace McciCatena;
 \****************************************************************************/
 
 constexpr unsigned long ADC_TIMEOUT = 10;
+constexpr unsigned long ADC_CALIBRATE_TIME = 2000;
 constexpr int STM32L0_ADC_CHANNEL_VREFINT = 17;
 constexpr int STM32L0_ADC_CHANNEL_TEMPSENSOR = 18;
 
@@ -233,12 +234,12 @@ static bool AdcDisable(void)
 		{
 		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
-			gLog.printf(
-				gLog.kError,
-				"?AdcDisable:"
-				" CR=%x\n",
-				ADC1->CR
-				);
+//			gLog.printf(
+//				gLog.kError,
+//				"?AdcDisable:"
+//				" CR=%x\n",
+//				ADC1->CR
+//				);
 			return false;
 			}
 		}
@@ -249,12 +250,12 @@ static bool AdcDisable(void)
 		{
 		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
-			gLog.printf(
-				gLog.kError,
-				"?AdcDisable:"
-				" CR=%x\n",
-				ADC1->CR
-				);
+//			gLog.printf(
+//				gLog.kError,
+//				"?AdcDisable:"
+//				" CR=%x\n",
+//				ADC1->CR
+//				);
 			return false;
 			}
 		}
@@ -275,7 +276,7 @@ static bool AdcCalibrate(void)
 		}
 
 	uTime = millis();
-	if ((uTime - s_uLastCalibTime) < 2000)
+	if ((uTime - s_uLastCalibTime) < ADC_CALIBRATE_TIME)
 		return true;
 
 	s_uLastCalibTime = uTime;
@@ -288,14 +289,14 @@ static bool AdcCalibrate(void)
 		{
 		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
-			gLog.printf(
-				gLog.kError,
-				"?AdcCalibrate:"
-				" CCR=%x CR=%x ISR=%x\n",
-				ADC->CCR,
-				ADC1->CR,
-				ADC1->ISR
-				);
+//			gLog.printf(
+//				gLog.kError,
+//				"?AdcCalibrate:"
+//				" CCR=%x CR=%x ISR=%x\n",
+//				ADC->CCR,
+//				ADC1->CR,
+//				ADC1->ISR
+//				);
 			return false;
 			}
 		}
@@ -326,13 +327,13 @@ static bool AdcEnable(void)
 		{
 		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
-			gLog.printf(
-				gLog.kError,
-				"?AdcEnable:"
-				" CR=%x ISR=%x\n",
-				ADC1->CR,
-				ADC1->ISR
-				);
+//			gLog.printf(
+//				gLog.kError,
+//				"?AdcEnable:"
+//				" CR=%x ISR=%x\n",
+//				ADC1->CR,
+//				ADC1->ISR
+//				);
 			return false;
 			}
 		}
@@ -350,12 +351,12 @@ static bool AdcGetValue(uint32_t *value)
 		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
 			*value = 0x0FFFu;
-			gLog.printf(
-				gLog.kError,
-				"?AdcGetValue:"
-				" ISR=%x\n",
-				rAdcIsr
-				);
+//			gLog.printf(
+//				gLog.kError,
+//				"?AdcGetValue:"
+//				" ISR=%x\n",
+//				rAdcIsr
+//				);
 			return false;
 			}
 		}
@@ -377,12 +378,12 @@ static bool AdcGetValue(uint32_t *value)
 		return true;
 		}
 
-	gLog.printf(
-		gLog.kError,
-		"?AdcGetValue:"
-		" ISR=%x\n",
-		rAdcIsr
-		);
+//	gLog.printf(
+//		gLog.kError,
+//		"?AdcGetValue:"
+//		" ISR=%x\n",
+//		rAdcIsr
+//		);
 	// no more data in this sequence
 	*value = 0x0FFFu;
 	return false;
