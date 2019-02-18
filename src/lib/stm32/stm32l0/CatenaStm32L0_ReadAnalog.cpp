@@ -45,29 +45,22 @@ using namespace McciCatena;
 
 /****************************************************************************\
 |
-|		Manifest constants & typedefs.
+|	Manifest constants & typedefs.
 |
 |	This is strictly for private types and constants which will not
 |	be exported.
 |
 \****************************************************************************/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#define STM32L0_ADC_CHANNEL_VREFINT	17
-#define STM32L0_ADC_CHANNEL_TEMPSENSOR	18
+constexpr unsigned long ADC_TIMEOUT = 10;
+constexpr int STM32L0_ADC_CHANNEL_VREFINT = 17;
+constexpr int STM32L0_ADC_CHANNEL_TEMPSENSOR = 18;
 
 static bool AdcCalibrate(void);
 static bool AdcDisable(void);
 static bool AdcEnable(void);
 static bool AdcGetValue(uint32_t *value);
 static void AdcStart(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 
 /****************************************************************************\
@@ -94,11 +87,9 @@ static void AdcStart(void);
 |
 \****************************************************************************/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-bool CatenaStm32L0_ReadAnalog(
+// because this is defined inside the McciCatena namespace in the header file
+// we need to explicitly add the namespace tag here.
+bool McciCatena::CatenaStm32L0_ReadAnalog(
 	uint32_t Channel,
 	uint32_t ReadCount,
 	uint32_t Multiplier,
@@ -108,10 +99,20 @@ bool CatenaStm32L0_ReadAnalog(
 	uint32_t	vRef;
 	uint32_t	vChannel;
 	bool		fStatusOk;
+	constexpr uint32_t AdcClockModeAsync = 0;
+	constexpr uint32_t AdcClockModePclk2 = ADC_CFGR2_CKMODE_0;
+	/* the clock we'll use: */
+	constexpr uint32_t AdcClockMode = AdcClockModeAsync;
 
-	if (Channel > STM32L0_ADC_CHANNEL_VREFINT || pValue == NULL)
+
+	if (pValue == NULL)
 		return false;
 
+	*pValue = 0;
+	if (Channel > STM32L0_ADC_CHANNEL_VREFINT)
+		return false;
+
+	/* make sure that the RCC is generating the low-frequency clock */
 	__HAL_RCC_ADC1_CLK_ENABLE();
 
 #if CATENA_CFG_SYSCLK < 16
@@ -126,18 +127,32 @@ bool CatenaStm32L0_ReadAnalog(
 		}
 #endif
 
-	fStatusOk = AdcCalibrate();
+	fStatusOk = true;
 
 	if (fStatusOk)
 		{
-		// ADC enable
-		ADC1->CFGR2 &= ~ADC_CFGR2_CKMODE;
+		*pValue = 2;
+
+		// make sure the clock is configured
+		// ADC1->CFGR2 = (ADC1->CFGR2 & ~ADC_CFGR2_CKMODE) | AdcClockMode;
+
+		fStatusOk = AdcCalibrate();
+		}
+
+	// calibration turns off the ADC. Turn it back on.
+	if (fStatusOk)
+		{
+		*pValue = 3;
+
+		// Set the ADC clock source
+		ADC1->CFGR2 = (ADC1->CFGR2 & ~ADC_CFGR2_CKMODE) | AdcClockMode;
 		ADC1->CR = ADC_CR_ADVREGEN;
 		fStatusOk = AdcEnable();
 		}
 
 	if (fStatusOk)
 		{
+		*pValue = 4;
 		ADC1->CFGR1 = ADC_CFGR1_WAIT | ADC_CFGR1_SCANDIR;
 		ADC1->CHSELR = (1u << STM32L0_ADC_CHANNEL_VREFINT) |
 			       (1u << Channel);
@@ -150,6 +165,7 @@ bool CatenaStm32L0_ReadAnalog(
 		fStatusOk = AdcGetValue(&vRef);
 		if (fStatusOk)
 			{
+			*pValue = 5;
 			if (Channel != STM32L0_ADC_CHANNEL_VREFINT)
 				fStatusOk = AdcGetValue(&vChannel);
 			else
@@ -158,9 +174,13 @@ bool CatenaStm32L0_ReadAnalog(
 
 		if (fStatusOk)
 			{
+			*pValue = 6;
+
 			ADC1->CHSELR = (1u << Channel);
 			for (auto i = 1; i < ReadCount; ++i)
 				{
+				++*pValue;
+
 				AdcStart();
 				fStatusOk = AdcGetValue(&vChannel);
 				if (! fStatusOk)
@@ -211,7 +231,7 @@ static bool AdcDisable(void)
 	uTime = millis();
 	while (ADC1->CR & ADC_CR_ADSTP)
 		{
-		if ((millis() - uTime) > 10)
+		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
 			gLog.printf(
 				gLog.kError,
@@ -227,7 +247,7 @@ static bool AdcDisable(void)
 	uTime = millis();
 	while (ADC1->CR & ADC_CR_ADEN)
 		{
-		if ((millis() - uTime) > 10)
+		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
 			gLog.printf(
 				gLog.kError,
@@ -247,7 +267,12 @@ static bool AdcCalibrate(void)
 	uint32_t uTime;
 
 	if (ADC1->CR & ADC_CR_ADEN)
-		AdcDisable();
+		{
+		ADC1->CR &= ~ADC_CR_ADEN;
+
+		// if (! AdcDisable())
+		// 	return false;
+		}
 
 	uTime = millis();
 	if ((uTime - s_uLastCalibTime) < 2000)
@@ -261,7 +286,7 @@ static bool AdcCalibrate(void)
 
 	while (! (ADC1->ISR & ADC_ISR_EOCAL))
 		{
-		if ((millis() - uTime) > 10)
+		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
 			gLog.printf(
 				gLog.kError,
@@ -275,7 +300,9 @@ static bool AdcCalibrate(void)
 			}
 		}
 
-	uint32_t calData = ADC1->DR;
+	// uint32_t calData = ADC1->DR;
+
+	/* turn off eocal */
 	ADC1->ISR = ADC_ISR_EOCAL;
 	return true;
 	}
@@ -297,7 +324,7 @@ static bool AdcEnable(void)
 	uTime = millis();
 	while (!(ADC1->ISR & ADC_ISR_ADRDY))
 		{
-		if ((millis() - uTime) > 10)
+		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
 			gLog.printf(
 				gLog.kError,
@@ -320,7 +347,7 @@ static bool AdcGetValue(uint32_t *value)
 	uTime = millis();
 	while (! ((rAdcIsr = ADC1->ISR) & (ADC_ISR_EOC | ADC_ISR_EOSEQ)))
 		{
-		if ((millis() - uTime) > 10)
+		if ((millis() - uTime) > ADC_TIMEOUT)
 			{
 			*value = 0x0FFFu;
 			gLog.printf(
@@ -366,10 +393,6 @@ static void AdcStart(void)
 	ADC1->ISR = (ADC_ISR_EOC | ADC_ISR_EOSEQ);
 	ADC1->CR |= ADC_CR_ADSTART;
 	}
-
-#ifdef __cplusplus
-}
-#endif
 
 /*
 
@@ -413,8 +436,9 @@ uint32_t CatenaStm32L0::ReadAnalog(
 		gLog.printf(
 			gLog.kError,
 			"?CatenaStm32L0::ReadAnalog(%u):"
-			" CatenaStm32L0_ReadAnalog() failed\n",
-			Channel
+			" CatenaStm32L0_ReadAnalog() failed (%u)\n",
+			Channel,
+			vResult
 			);
 		vResult = 0x0FFFu;
 		}
