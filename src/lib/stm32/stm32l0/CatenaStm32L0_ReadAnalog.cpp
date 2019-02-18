@@ -1,4 +1,4 @@
-/* CatenaStm32L0_ReadAnalog.cpp	Tue Dec 18 2018 15:41:52 chwon */
+/* CatenaStm32L0_ReadAnalog.cpp	Mon Feb 18 2019 09:56:32 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	CatenaStm32L0::ReadAnalog()
 
 Version:
-	V0.13.0	Tue Dec 18 2018 15:41:52 chwon	Edit level 1
+	V0.14.0	Mon Feb 18 2019 09:56:32 chwon	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2018 by
+	This file copyright (C) 2018-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.13.0  Tue Dec 18 2018 15:41:52  chwon
 	Module created.
+
+   0.14.0  Mon Feb 18 2019 09:56:32  chwon
+	Turn on nad off HSI clock if system clock use MSI clock.
 
 */
 
@@ -111,6 +114,18 @@ bool CatenaStm32L0_ReadAnalog(
 
 	__HAL_RCC_ADC1_CLK_ENABLE();
 
+#if CATENA_CFG_SYSCLK < 16
+	/* Set the Low Frequency Mode */
+	/* ADC->CCR = ADC_CCR_LFMEN; -- it's not working with MSI clock */
+
+	/* ADC requires HSI clock, so enable it now */
+	LL_RCC_HSI_Enable();
+	while (LL_RCC_HSI_IsReady() != 1U)
+		{
+		/* Wait for HSI ready */
+		}
+#endif
+
 	fStatusOk = AdcCalibrate();
 
 	if (fStatusOk)
@@ -158,6 +173,10 @@ bool CatenaStm32L0_ReadAnalog(
 	ADC1->CR &= ~ADC_CR_ADVREGEN;
 	ADC->CCR &= ~ADC_CCR_VREFEN;
 
+#if CATENA_CFG_SYSCLK < 16
+	LL_RCC_HSI_Disable();
+#endif
+
 	__HAL_RCC_ADC1_FORCE_RESET();
 	__HAL_RCC_ADC1_RELEASE_RESET();
 	__HAL_RCC_ADC1_CLK_DISABLE();
@@ -193,7 +212,15 @@ static bool AdcDisable(void)
 	while (ADC1->CR & ADC_CR_ADSTP)
 		{
 		if ((millis() - uTime) > 10)
+			{
+			gLog.printf(
+				gLog.kError,
+				"?AdcDisable:"
+				" CR=%x\n",
+				ADC1->CR
+				);
 			return false;
+			}
 		}
 
 	ADC1->CR |= ADC_CR_ADDIS;
@@ -201,27 +228,51 @@ static bool AdcDisable(void)
 	while (ADC1->CR & ADC_CR_ADEN)
 		{
 		if ((millis() - uTime) > 10)
+			{
+			gLog.printf(
+				gLog.kError,
+				"?AdcDisable:"
+				" CR=%x\n",
+				ADC1->CR
+				);
 			return false;
+			}
 		}
 	return true;
 	}
 
 static bool AdcCalibrate(void)
 	{
+	static uint32_t s_uLastCalibTime = 0;
 	uint32_t uTime;
 
 	if (ADC1->CR & ADC_CR_ADEN)
 		AdcDisable();
 
+	uTime = millis();
+	if ((uTime - s_uLastCalibTime) < 2000)
+		return true;
+
+	s_uLastCalibTime = uTime;
+
 	/* turn on the cal bit */
 	ADC1->ISR = ADC_ISR_EOCAL;
 	ADC1->CR |= ADC_CR_ADCAL;
 
-	uTime = millis();
 	while (! (ADC1->ISR & ADC_ISR_EOCAL))
 		{
 		if ((millis() - uTime) > 10)
+			{
+			gLog.printf(
+				gLog.kError,
+				"?AdcCalibrate:"
+				" CCR=%x CR=%x ISR=%x\n",
+				ADC->CCR,
+				ADC1->CR,
+				ADC1->ISR
+				);
 			return false;
+			}
 		}
 
 	uint32_t calData = ADC1->DR;
@@ -247,7 +298,16 @@ static bool AdcEnable(void)
 	while (!(ADC1->ISR & ADC_ISR_ADRDY))
 		{
 		if ((millis() - uTime) > 10)
+			{
+			gLog.printf(
+				gLog.kError,
+				"?AdcEnable:"
+				" CR=%x ISR=%x\n",
+				ADC1->CR,
+				ADC1->ISR
+				);
 			return false;
+			}
 		}
 	return true;
 	}
@@ -263,6 +323,12 @@ static bool AdcGetValue(uint32_t *value)
 		if ((millis() - uTime) > 10)
 			{
 			*value = 0x0FFFu;
+			gLog.printf(
+				gLog.kError,
+				"?AdcGetValue:"
+				" ISR=%x\n",
+				rAdcIsr
+				);
 			return false;
 			}
 		}
@@ -284,6 +350,12 @@ static bool AdcGetValue(uint32_t *value)
 		return true;
 		}
 
+	gLog.printf(
+		gLog.kError,
+		"?AdcGetValue:"
+		" ISR=%x\n",
+		rAdcIsr
+		);
 	// no more data in this sequence
 	*value = 0x0FFFu;
 	return false;
