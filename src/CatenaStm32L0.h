@@ -157,20 +157,14 @@ private:
 	CatenaStm32L0		*m_pCatena;
 	};
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+// this function is called from a trampoline C function that
+// needs to invoke analog reads for checking USB presence.
 bool CatenaStm32L0_ReadAnalog(
 	uint32_t Channel,
 	uint32_t ReadCount,
 	uint32_t Multiplier,
 	uint32_t *pValue
 	);
-
-#ifdef __cplusplus
-}
-#endif
 
 } // namespace McciCatena
 

@@ -122,6 +122,10 @@ public:
                 {
                 fUnattended = 1 << 0,
                 fManufacturingTest = 1 << 1,
+		fConfirmedUplink = 1 << 16,
+		fDisableDeepSleep = 1 << 17,
+		fQuickLightSleep = 1 << 18,
+		fDeepSleepTest = 1 << 19,
                 };
 
         // flags that describe generic platform capabilities
