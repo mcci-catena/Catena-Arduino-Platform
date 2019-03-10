@@ -1,4 +1,4 @@
-/* CatenaStm32L0_Sleep.cpp	Wed Oct 31 2018 10:57:42 chwon */
+/* CatenaStm32L0_Sleep.cpp	Fri Mar 08 2019 18:05:26 dhineshkumar */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Home for CatenaStm32L0::Sleep()
 
 Version:
-	V0.11.0	Wed Oct 31 2018 10:57:42 chwon	Edit level 1
+	V0.11.1	Fri Mar 08 2019 18:05:26 dhineshkumar	Edit level 2
 
 Copyright notice:
 	This file copyright (C) 2018 by
@@ -29,6 +29,9 @@ Revision history:
    0.11.0  Wed Oct 31 2018 10:57:42  chwon
 	Module created.
 
+   0.11.1  Fri Mar 08 2019 18:05:26 dhineshkumar
+	Call SleepForAlarm with SleepMode StopWithLowPowerRegulator.
+
 */
 
 #ifdef ARDUINO_ARCH_STM32
@@ -45,7 +48,6 @@ using namespace McciCatena;
 |	be exported.
 |
 \****************************************************************************/
-
 
 
 /****************************************************************************\
@@ -72,6 +74,7 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+
 
 /*
 
@@ -96,7 +99,7 @@ Returns:
 void CatenaStm32L0::Sleep(uint32_t howLongInSeconds)
 	{
 	this->m_Rtc.SetAlarm(howLongInSeconds);
-	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::Standby);
+	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::StopWithLowPowerRegulator);
 
 	// add the number of ms that we were asleep to the millisecond timer.
 	// we don't need extreme accuracy.

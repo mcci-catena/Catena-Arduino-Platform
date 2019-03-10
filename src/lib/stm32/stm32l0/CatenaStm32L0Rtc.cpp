@@ -1,4 +1,4 @@
-/* CatenaStm32L0Rtc.cpp	Wed Jan 03 2018 11:04:33 chwon */
+/* CatenaStm32L0Rtc.cpp	Fri Mar 08 2019 18:40:03 dhineshkumar */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	Class CatenaStm32L0Rtc
 
 Version:
-	V0.7.0	Wed Jan 03 2018 11:04:33 chwon	Edit level 4
+	V0.8.0	Fri Mar 08 2019 18:40:03 dhineshkumar	Edit level 5
 
 Copyright notice:
 	This file copyright (C) 2017 by
@@ -38,6 +38,12 @@ Revision history:
    0.7.0  Wed Jan 03 2018 11:04:33  chwon
 	Need to call HAL_RTCEx_EnableBypassShadow() to support USB.
 
+   0.8.0  Fri Mar 08 2019 18:40:03 dhineshkumar
+	Save, Reset and Restore GPIO state during Stop mode.
+
+   0.8.0  Fri Mar 08 2019 19:54:48 dhineshkumar
+	Set and Clear Power interface clock enable bit in Stop mode.
+
 */
 
 #ifdef ARDUINO_ARCH_STM32
@@ -54,6 +60,13 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+#define HAL_GPIO_PORT_COUNT 		4
+#define HAL_GPIO_GROUP_COUNT 		8
+#define GPIOA_MODE_REG_RESET 		0xEBFFFCFF
+#define GPIOA_PUPD_REG_RESET 		0x24000000
+#define GPIOBCH_MODE_REG_RESET 		0xFFFFFFFF
+#define GPIOBCH_PUPD_REG_RESET 		0x00000000
+#define GPIOA_OFFSET			0
 
 /****************************************************************************\
 |
@@ -78,10 +91,76 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 static volatile uint32_t *gs_pAlarm;
 static RTC_HandleTypeDef *gs_phRtc;
+static GPIO_TypeDef s_gpio_state[HAL_GPIO_PORT_COUNT];
+
+static void CatenaStm32L0_Save_GPIO_State()
+	{
+	GPIO_TypeDef *GPIO;
+	uint32_t group, port;
+
+	for (port = GPIOA_OFFSET; port < HAL_GPIO_PORT_COUNT; port++)
+		{
+		group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
+
+		GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
+
+		RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
+		RCC->IOPENR;
+
+		s_gpio_state[port].MODER = GPIO->MODER;
+		s_gpio_state[port].PUPDR = GPIO->PUPDR;
+		}
+	}
+
+static void CatenaStm32L0_Restore_GPIO_State()
+	{
+	GPIO_TypeDef *GPIO;
+	uint32_t group, port;
+
+	for (port = GPIOA_OFFSET; port < HAL_GPIO_PORT_COUNT; port++)
+		{
+		group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
+
+		GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
+
+		RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
+		RCC->IOPENR;
+
+		GPIO->MODER = s_gpio_state[port].MODER;
+		GPIO->PUPDR = s_gpio_state[port].PUPDR;
+		}
+	}
+
+static void CatenaStm32L0_Reset_GPIO_State()
+	{
+	GPIO_TypeDef *GPIO;
+	uint32_t group, port;
+
+	for (port = GPIOA_OFFSET; port < HAL_GPIO_PORT_COUNT; port++)
+		{
+		group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
+
+		GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
+
+		if (port == GPIOA_OFFSET)
+			{
+			GPIO->MODER = GPIOA_MODE_REG_RESET;
+			GPIO->PUPDR = GPIOA_PUPD_REG_RESET;
+			}
+
+		else
+			{
+			GPIO->MODER = GPIOBCH_MODE_REG_RESET;
+			GPIO->PUPDR = GPIOBCH_PUPD_REG_RESET;
+			}
+		}
+	}
 
 void RTC_IRQHandler(void)
 	{
@@ -109,7 +188,7 @@ void HAL_RTC_MspInit(
 		__HAL_RCC_RTC_ENABLE();
 		/* USER CODE BEGIN RTC_MspInit 1 */
 		HAL_NVIC_SetPriority(RTC_IRQn, TICK_INT_PRIORITY, 0U);
-		HAL_NVIC_EnableIRQ(RTC_IRQn); 
+		HAL_NVIC_EnableIRQ(RTC_IRQn);
 		/* USER CODE END RTC_MspInit 1 */
 		}
 	}
@@ -121,7 +200,7 @@ void HAL_RTC_MspDeInit(
 	if (hRtc->Instance == RTC)
 		{
 		/* USER CODE BEGIN RTC_MspDeInit 0 */
-		HAL_NVIC_DisableIRQ(RTC_IRQn); 
+		HAL_NVIC_DisableIRQ(RTC_IRQn);
 		/* USER CODE END RTC_MspDeInit 0 */
 		/* Peripheral clock disable */
 		__HAL_RCC_RTC_DISABLE();
@@ -155,7 +234,10 @@ uint32_t HAL_AddTick(
 	return tickCount;
 	}
 
-} /* extern "C" */
+
+#ifdef __cplusplus
+}
+#endif
 
 bool CatenaStm32L0Rtc::begin(bool fResetTime)
 	{
@@ -210,13 +292,13 @@ bool CatenaStm32L0Rtc::begin(bool fResetTime)
 			Serial.println("HAL_RTC_SetTime() failed");
 			return false;
 			}
-	
+
 		/* Sunday 1st January 2017 */
 		Date.WeekDay = RTC_WEEKDAY_SUNDAY;
 		Date.Month = RTC_MONTH_JANUARY;
 		Date.Date = 0x1;
 		Date.Year = 0x0;
-	
+
 		if (HAL_RTC_SetDate(
 			&this->m_hRtc,
 			&Date,
@@ -408,6 +490,12 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 		break;
 
 	case SleepMode::StopWithLowPowerRegulator:
+		CatenaStm32L0_Save_GPIO_State();
+		CatenaStm32L0_Reset_GPIO_State();
+
+		/* Set Power interface clock enable bit */
+  		RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+
 		while (! m_Alarm)
 			{
 			++nWakes;
@@ -417,6 +505,27 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 				PWR_SLEEPENTRY_WFI
 				);
 			}
+
+		/* Set Power interface clock enable bit */
+  		RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+
+		CatenaStm32L0_Restore_GPIO_State();
+
+#if CATENA_CFG_SYSCLK < 16
+		/* MSI clock, enable and ready */
+		LL_RCC_MSI_Enable();
+		while (LL_RCC_MSI_IsReady() != 1U)
+			{
+				/* Wait for MSI ready */
+			}
+#else
+		/* HSI clock, enable and ready */
+		LL_RCC_HSI_Enable();
+		while (LL_RCC_HSI_IsReady() != 1U)
+			{
+				/* Wait for HSI ready */
+			}
+#endif
 		break;
 
 	case SleepMode::Standby:
