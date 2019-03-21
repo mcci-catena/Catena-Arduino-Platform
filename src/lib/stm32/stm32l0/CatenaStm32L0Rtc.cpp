@@ -62,10 +62,8 @@ using namespace McciCatena;
 
 #define HAL_GPIO_PORT_COUNT 		4
 #define HAL_GPIO_GROUP_COUNT 		8
-#define GPIOA_MODE_REG_RESET 		0xEBFFFCFF
-#define GPIOA_PUPD_REG_RESET 		0x24000000
-#define GPIOBCH_MODE_REG_RESET 		0xFFFFFFFF
-#define GPIOBCH_PUPD_REG_RESET 		0x00000000
+#define GPIOB13_MODE_REG_RESET 		0x03000000
+#define GPIOB13_PUPD_REG_RESET 		0xFCFFFFFF
 #define GPIOA_OFFSET			0
 
 /****************************************************************************\
@@ -104,18 +102,17 @@ static void CatenaStm32L0_Save_GPIO_State()
 	GPIO_TypeDef *GPIO;
 	uint32_t group, port;
 
-	for (port = GPIOA_OFFSET; port < HAL_GPIO_PORT_COUNT; port++)
-		{
-		group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
+	port = GPIOA_OFFSET + 1;
 
-		GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
+	group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
 
-		RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
-		RCC->IOPENR;
+	GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
 
-		s_gpio_state[port].MODER = GPIO->MODER;
-		s_gpio_state[port].PUPDR = GPIO->PUPDR;
-		}
+	RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
+	RCC->IOPENR;
+
+	s_gpio_state[port].MODER = GPIO->MODER;
+	s_gpio_state[port].PUPDR = GPIO->PUPDR;
 	}
 
 static void CatenaStm32L0_Restore_GPIO_State()
@@ -123,18 +120,17 @@ static void CatenaStm32L0_Restore_GPIO_State()
 	GPIO_TypeDef *GPIO;
 	uint32_t group, port;
 
-	for (port = GPIOA_OFFSET; port < HAL_GPIO_PORT_COUNT; port++)
-		{
-		group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
+	port = GPIOA_OFFSET + 1;
 
-		GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
+	group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
 
-		RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
-		RCC->IOPENR;
+	GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
 
-		GPIO->MODER = s_gpio_state[port].MODER;
-		GPIO->PUPDR = s_gpio_state[port].PUPDR;
-		}
+	RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
+	RCC->IOPENR;
+
+	GPIO->MODER = s_gpio_state[port].MODER;
+	GPIO->PUPDR = s_gpio_state[port].PUPDR;
 	}
 
 static void CatenaStm32L0_Reset_GPIO_State()
@@ -142,24 +138,14 @@ static void CatenaStm32L0_Reset_GPIO_State()
 	GPIO_TypeDef *GPIO;
 	uint32_t group, port;
 
-	for (port = GPIOA_OFFSET; port < HAL_GPIO_PORT_COUNT; port++)
-		{
-		group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
+	port = GPIOA_OFFSET + 1;
 
-		GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
+	group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
 
-		if (port == GPIOA_OFFSET)
-			{
-			GPIO->MODER = GPIOA_MODE_REG_RESET;
-			GPIO->PUPDR = GPIOA_PUPD_REG_RESET;
-			}
+	GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
 
-		else
-			{
-			GPIO->MODER = GPIOBCH_MODE_REG_RESET;
-			GPIO->PUPDR = GPIOBCH_PUPD_REG_RESET;
-			}
-		}
+	GPIO->MODER |= GPIOB13_MODE_REG_RESET;
+	GPIO->PUPDR &= GPIOB13_PUPD_REG_RESET;
 	}
 
 void RTC_IRQHandler(void)
