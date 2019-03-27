@@ -1,4 +1,4 @@
-/* Catena_Mx25v8035f.cpp	Fri Dec 01 2017 13:56:52 chwon */
+/* Catena_Mx25v8035f.cpp	Wed Mar 27 2019 11:07:13 chwon */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Class for Catena_Mx25v8035f.
 
 Version:
-	V0.6.0	Fri Dec 01 2017 13:56:52 chwon	Edit level 2
+	V0.14.0	Wed Mar 27 2019 11:07:13 chwon	Edit level 3
 
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017, 2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -31,6 +31,9 @@ Revision history:
 
    0.6.0  Fri Dec 01 2017 13:56:52  chwon
 	Add debug message and fix reading status register.
+
+   0.14.0  Wed Mar 27 2019 11:07:13  chwon
+	Make CS pin to input when power down.
 
 */
 
@@ -180,6 +183,9 @@ void Catena_Mx25v8035f::end(
 	)
 	{
 	this->m_pSpi->endTransaction(this->m_CS);
+
+	pinMode(this->m_CS, INPUT);
+	digitalWrite(this->m_CS, 0);
 	}
 
 /*
@@ -642,12 +648,24 @@ void Catena_Mx25v8035f::powerDown(
 	SPIClass * const pSpi = this->m_pSpi;
 	uint32_t uSec;
 
+	if (this->m_PowerDown)
+		{
+		digitalWrite(this->m_CS, 1);
+		pinMode(this->m_CS, OUTPUT);
+
+		uSec = micros();
+		while ((micros() - uSec) < 10);
+		}
+
 	pSpi->transfer(this->m_CS, MX25V8035F_CMD_DP);
 
 	/* tDP == Max 10us */
 	uSec = micros();
 	this->m_PowerDown = true;
 	while ((micros() - uSec) < 10);
+
+	pinMode(this->m_CS, INPUT);
+	digitalWrite(this->m_CS, 0);
 	}
 
 /*
@@ -679,6 +697,7 @@ void Catena_Mx25v8035f::powerUp(
 		{
 		uint32_t uSec;
 
+		pinMode(this->m_CS, OUTPUT);
 		digitalWrite(this->m_CS, 0);
 
 		/* tCRDP == Min 20ns */
