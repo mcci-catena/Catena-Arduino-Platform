@@ -39,9 +39,6 @@ Revision history:
 	Need to call HAL_RTCEx_EnableBypassShadow() to support USB.
 
    0.8.0  Fri Mar 08 2019 18:40:03 dhineshkumar
-	Save, Reset and Restore GPIO state during Stop mode.
-
-   0.8.0  Fri Mar 08 2019 19:54:48 dhineshkumar
 	Set and Clear Power interface clock enable bit in Stop mode.
 
 */
@@ -60,11 +57,6 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-#define HAL_GPIO_PORT_COUNT 		4
-#define HAL_GPIO_GROUP_COUNT 		8
-#define GPIOB13_MODE_REG_RESET 		0x03000000
-#define GPIOB13_PUPD_REG_RESET 		0xFCFFFFFF
-#define GPIOA_OFFSET			0
 
 /****************************************************************************\
 |
@@ -89,64 +81,10 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 static volatile uint32_t *gs_pAlarm;
 static RTC_HandleTypeDef *gs_phRtc;
-static GPIO_TypeDef s_gpio_state[HAL_GPIO_PORT_COUNT];
-
-static void CatenaStm32L0_Save_GPIO_State()
-	{
-	GPIO_TypeDef *GPIO;
-	uint32_t group, port;
-
-	port = GPIOA_OFFSET + 1;
-
-	group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
-
-	GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
-
-	RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
-	RCC->IOPENR;
-
-	s_gpio_state[port].MODER = GPIO->MODER;
-	s_gpio_state[port].PUPDR = GPIO->PUPDR;
-	}
-
-static void CatenaStm32L0_Restore_GPIO_State()
-	{
-	GPIO_TypeDef *GPIO;
-	uint32_t group, port;
-
-	port = GPIOA_OFFSET + 1;
-
-	group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
-
-	GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
-
-	RCC->IOPENR |= (RCC_IOPENR_IOPAEN << group);
-	RCC->IOPENR;
-
-	GPIO->MODER = s_gpio_state[port].MODER;
-	GPIO->PUPDR = s_gpio_state[port].PUPDR;
-	}
-
-static void CatenaStm32L0_Reset_GPIO_State()
-	{
-	GPIO_TypeDef *GPIO;
-	uint32_t group, port;
-
-	port = GPIOA_OFFSET + 1;
-
-	group = ((port == (HAL_GPIO_PORT_COUNT -1)) ? (HAL_GPIO_GROUP_COUNT -1) : port);
-
-	GPIO = (GPIO_TypeDef *)(GPIOA_BASE + (GPIOB_BASE - GPIOA_BASE) * group);
-
-	GPIO->MODER |= GPIOB13_MODE_REG_RESET;
-	GPIO->PUPDR &= GPIOB13_PUPD_REG_RESET;
-	}
 
 void RTC_IRQHandler(void)
 	{
@@ -220,10 +158,7 @@ uint32_t HAL_AddTick(
 	return tickCount;
 	}
 
-
-#ifdef __cplusplus
-}
-#endif
+} /* extern "C" */
 
 bool CatenaStm32L0Rtc::begin(bool fResetTime)
 	{
@@ -476,9 +411,7 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 		break;
 
 	case SleepMode::StopWithLowPowerRegulator:
-		CatenaStm32L0_Save_GPIO_State();
-		CatenaStm32L0_Reset_GPIO_State();
-
+		{
 		/* Set Power interface clock enable bit */
   		RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 
@@ -495,23 +428,25 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 		/* Set Power interface clock enable bit */
   		RCC->APB1ENR |= RCC_APB1ENR_PWREN;
 
-		CatenaStm32L0_Restore_GPIO_State();
-
-#if CATENA_CFG_SYSCLK < 16
-		/* MSI clock, enable and ready */
-		LL_RCC_MSI_Enable();
-		while (LL_RCC_MSI_IsReady() != 1U)
+		if (HAL_RCC_GetHCLKFreq() < 16000000)
 			{
+			/* MSI clock, enable and ready */
+			LL_RCC_MSI_Enable();
+			while (LL_RCC_MSI_IsReady() != 1U)
+				{
 				/* Wait for MSI ready */
+				}
 			}
-#else
-		/* HSI clock, enable and ready */
-		LL_RCC_HSI_Enable();
-		while (LL_RCC_HSI_IsReady() != 1U)
+		else
 			{
+			/* HSI clock, enable and ready */
+			LL_RCC_HSI_Enable();
+			while (LL_RCC_HSI_IsReady() != 1U)
+				{
 				/* Wait for HSI ready */
+				}
 			}
-#endif
+		}
 		break;
 
 	case SleepMode::Standby:
