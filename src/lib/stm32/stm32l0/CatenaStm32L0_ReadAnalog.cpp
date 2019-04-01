@@ -1,4 +1,4 @@
-/* CatenaStm32L0_ReadAnalog.cpp	Mon Feb 18 2019 09:56:32 chwon */
+/* CatenaStm32L0_ReadAnalog.cpp	Wed Mar 27 2019 11:06:04 chwon */
 
 /*
 
@@ -8,7 +8,7 @@ Function:
 	CatenaStm32L0::ReadAnalog()
 
 Version:
-	V0.14.0	Mon Feb 18 2019 09:56:32 chwon	Edit level 2
+	V0.14.0	Wed Mar 27 2019 11:06:04 chwon	Edit level 3
 
 Copyright notice:
 	This file copyright (C) 2018-2019 by
@@ -31,6 +31,9 @@ Revision history:
 
    0.14.0  Mon Feb 18 2019 09:56:32  chwon
 	Turn on and off HSI clock if system clock use MSI clock.
+
+   0.14.0  Wed Mar 27 2019 11:06:04  chwon
+	Use HAL_RCC_GetHCLKFreq() instead of CATENA_CFG_SYSCLK.
 
 */
 
@@ -116,17 +119,18 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 	/* make sure that the RCC is generating the low-frequency clock */
 	__HAL_RCC_ADC1_CLK_ENABLE();
 
-#if CATENA_CFG_SYSCLK < 16
-	/* Set the Low Frequency Mode */
-	/* ADC->CCR = ADC_CCR_LFMEN; -- it's not working with MSI clock */
-
-	/* ADC requires HSI clock, so enable it now */
-	LL_RCC_HSI_Enable();
-	while (LL_RCC_HSI_IsReady() != 1U)
+	if (HAL_RCC_GetHCLKFreq() < 16000000)
 		{
-		/* Wait for HSI ready */
+		/* Set the Low Frequency Mode */
+		/* ADC->CCR = ADC_CCR_LFMEN; -- it's not working with MSI clock */
+
+		/* ADC requires HSI clock, so enable it now */
+		LL_RCC_HSI_Enable();
+		while (LL_RCC_HSI_IsReady() != 1U)
+			{
+			/* Wait for HSI ready */
+			}
 		}
-#endif
 
 	fStatusOk = true;
 
@@ -194,9 +198,10 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 	ADC1->CR &= ~ADC_CR_ADVREGEN;
 	ADC->CCR &= ~ADC_CCR_VREFEN;
 
-#if CATENA_CFG_SYSCLK < 16
-	LL_RCC_HSI_Disable();
-#endif
+	if (HAL_RCC_GetHCLKFreq() < 16000000)
+		{
+		LL_RCC_HSI_Disable();
+		}
 
 	__HAL_RCC_ADC1_FORCE_RESET();
 	__HAL_RCC_ADC1_RELEASE_RESET();
