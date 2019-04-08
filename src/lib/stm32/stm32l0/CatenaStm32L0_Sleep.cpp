@@ -1,4 +1,4 @@
-/* CatenaStm32L0_Sleep.cpp	Wed Oct 31 2018 10:57:42 chwon */
+/* CatenaStm32L0_Sleep.cpp	Mon Apr 08 2019 16:32:20 dhineshkumar */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	Home for CatenaStm32L0::Sleep()
 
 Version:
-	V0.11.0	Wed Oct 31 2018 10:57:42 chwon	Edit level 1
+	V0.11.1	Mon Apr 08 2019 16:32:20 dhineshkumar	Edit level 2
 
 Copyright notice:
-	This file copyright (C) 2018 by
+	This file copyright (C) 2018-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -28,6 +28,9 @@ Author:
 Revision history:
    0.11.0  Wed Oct 31 2018 10:57:42  chwon
 	Module created.
+
+   0.11.1  Mon Apr 08 2019 16:32:20  dhineshkumarr
+	Call SleepForAlarm with SleepMode StopWithLowPowerRegulator.
 
 */
 
@@ -96,7 +99,7 @@ Returns:
 void CatenaStm32L0::Sleep(uint32_t howLongInSeconds)
 	{
 	this->m_Rtc.SetAlarm(howLongInSeconds);
-	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::Standby);
+	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::StopWithLowPowerRegulator);
 
 	// add the number of ms that we were asleep to the millisecond timer.
 	// we don't need extreme accuracy.
