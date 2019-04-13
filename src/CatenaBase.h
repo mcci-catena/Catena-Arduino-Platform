@@ -83,6 +83,10 @@ Revision history:
 
 #include <Arduino_LoRaWAN.h>
 
+#if ! (defined(ARDUINO_LORAWAN_VERSION) && ARDUINO_LORAWAN_VERSION >= ARDUINO_LORAWAN_VERSION_CALC(0,5,3,50))
+# error Arduino_LoRaWAN library is out of date. Check ARDUINO_LORAWAN_VERSION.
+#endif
+
 namespace McciCatena {
 
 /* forward references */

@@ -1,5 +1,3 @@
-/* CatenaBase_registerCommands.cpp	Mon Dec 03 2018 14:35:39 chwon */
-
 /*
 
 Module:  CatenaBase_registerCommands.cpp
@@ -7,27 +5,12 @@ Module:  CatenaBase_registerCommands.cpp
 Function:
 	CatenaBase::registerCommands()
 
-Version:
-	V0.12.0	Mon Dec 03 2018 14:35:39 chwon	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying LICENSE file.
 
 Author:
+	Terry Moore, MCCI Corporation	2016
 	ChaeHee Won, MCCI Corporation	December 2018
-
-Revision history:
-   0.12.0  Mon Dec 03 2018 14:35:39  chwon
-	Module created.
 
 */
 
@@ -39,7 +22,7 @@ using namespace McciCatena;
 
 /****************************************************************************\
 |
-|	Manifest constants
+|	Manifest constants and forward references
 |
 \****************************************************************************/
 
@@ -54,10 +37,12 @@ static cCommandStream::CommandFn doSysEUI;
 \****************************************************************************/
 
 static cCommandStream::CommandFn doConfigure;
+static cCommandStream::CommandFn doReset;
 
 static const cCommandStream::cEntry sDispatchEntries[] =
 	{
 	{ "configure", doConfigure },
+	{ "reset", doReset },
 	};
 
 static cCommandStream::cDispatch
@@ -79,7 +64,7 @@ static KeyMap sKeyMap[] =
 
 /****************************************************************************\
 |
-|	The method function
+|	The method function that registers these commands
 |
 \****************************************************************************/
 
@@ -92,7 +77,7 @@ CatenaBase::registerCommands()
 
 /****************************************************************************\
 |
-|	The commands
+|	The commands (called back from parser)
 |
 \****************************************************************************/
 
@@ -232,6 +217,56 @@ doConfigure(
 				;
 			}
 		}
+	}
+
+/*
+
+Name:	doReset()
+
+Function:
+	Implement the system reset command
+
+Definition:
+	static cCommandStream::CommandFn doReset;
+
+	static cCommandStream::CommandStatus
+		doReset(
+			cCommandStream *pThis,
+			void *pContext,
+			int argc,
+			char **argv
+			);
+
+Description:
+	This function dispatches the various commands, parsing the input
+	parameters if any to set the corresponding value, or displaying
+	the values.
+
+	The parsed syntax:
+
+.		system reset
+
+Returns:
+	Command status (always an error if it returns; otherwise the
+	system gets rebooted).
+
+*/
+
+
+static cCommandStream::CommandStatus
+doReset(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+	if (argc != 1)
+		{
+		return cCommandStream::CommandStatus::kInvalidParameter;
+		}
+
+	NVIC_SystemReset();
 	}
 
 /**** end of CatenaBase_registerCommands.cpp ****/
