@@ -3,13 +3,13 @@
 Module:  Catena_FramStorage.h
 
 Function:
-	class McciCatena::cFramStorage
+        class McciCatena::cFramStorage
 
 Copyright notice:
-	See accompanying LICENSE file.
+        See accompanying LICENSE file.
 
 Author:
-	Terry Moore, MCCI Corporation	March 2017
+        Terry Moore, MCCI Corporation	March 2017
 
 */
 
@@ -25,13 +25,13 @@ Author:
 namespace McciCatena {
 
 class cFramStorage
-	{
+        {
 public:
         // the standard objects= tags.
-	enum StandardKeys : uint8_t
-		{
-		kHeader = 0,
-		kSysEUI = 1,
+        enum StandardKeys : uint8_t
+                {
+                kHeader = 0,
+                kSysEUI = 1,
                 kPlatformGuid = 2,
                 kDevEUI = 3,
                 kAppEUI = 4,
@@ -46,10 +46,10 @@ public:
                 kAppKey = 13,
                 kBootCount = 14,
                 kOperatingFlags = 15,
-		kBme680Cal = 16,
+                kBme680Cal = 16,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
-		};
+                };
 
         class StandardItem
                 {
@@ -98,12 +98,12 @@ public:
 
         class Object;
 
-	enum : uint32_t
-		{
-		SIZE_MASK = 0xFFFFu,
-		NONSTD_MASK = 0x80000000u,
-		DATASIZE_MASK = 0x7FFF0000u,
-		};
+        enum : uint32_t
+                {
+                SIZE_MASK = 0xFFFFu,
+                NONSTD_MASK = 0x80000000u,
+                DATASIZE_MASK = 0x7FFF0000u,
+                };
 
         struct ObjectRaw
                 {
@@ -123,13 +123,13 @@ public:
                 // believe it, otherwise we think that either v1 or v2 was corrupted
                 // during write, and instead use v3.
 
-		// the discriminator images.
+                // the discriminator images.
                 uint8_t		uVer[3];
 
- 	        bool isStandard() const
-		        {
-		        return (this->uSizeKey & NONSTD_MASK) == 0;
-		        }
+                 bool isStandard() const
+                        {
+                        return (this->uSizeKey & NONSTD_MASK) == 0;
+                        }
 
                 Object *getStandardObject()
                         {
@@ -141,69 +141,69 @@ public:
                };
 
         static MCCIADK_GUID_WIRE const skFramGuid;
-	static constexpr size_t kObjectQuantum = sizeof(uint32_t);
-	static constexpr size_t kObjectStandardClicks =
-				(sizeof(ObjectRaw) + kObjectQuantum - 1) /
-					kObjectQuantum;
-	static constexpr size_t kObjectStandardSize = kObjectQuantum * kObjectStandardClicks;
+        static constexpr size_t kObjectQuantum = sizeof(uint32_t);
+        static constexpr size_t kObjectStandardClicks =
+                                (sizeof(ObjectRaw) + kObjectQuantum - 1) /
+                                        kObjectQuantum;
+        static constexpr size_t kObjectStandardSize = kObjectQuantum * kObjectStandardClicks;
 
-	static uint32_t constexpr getField(uint32_t v, uint32_t mask)
-		{
-		return (v & mask) / (mask & (~mask + 1u));
-		}
-	static uint32_t constexpr setField(
-		uint32_t oldv, uint32_t fv, uint32_t mask
-		)
-		{
-		return (oldv & ~mask) +
-		       (fv * (mask & (~mask + 1u)));
-		}
+        static uint32_t constexpr getField(uint32_t v, uint32_t mask)
+                {
+                return (v & mask) / (mask & (~mask + 1u));
+                }
+        static uint32_t constexpr setField(
+                uint32_t oldv, uint32_t fv, uint32_t mask
+                )
+                {
+                return (oldv & ~mask) +
+                       (fv * (mask & (~mask + 1u)));
+                }
 
-	// get the maximum value for a field
-	static uint32_t constexpr getMaxValue(uint32_t mask)
-		{
-		return getField(mask, mask);
-		}
+        // get the maximum value for a field
+        static uint32_t constexpr getMaxValue(uint32_t mask)
+                {
+                return getField(mask, mask);
+                }
 
-	static uint32_t constexpr uSizeKey_GetSize(uint32_t uSizeKey)
-		{
-		return (uSizeKey & SIZE_MASK) * kObjectQuantum;
-		}
+        static uint32_t constexpr uSizeKey_GetSize(uint32_t uSizeKey)
+                {
+                return (uSizeKey & SIZE_MASK) * kObjectQuantum;
+                }
 
-	static size_t constexpr getClicks(size_t nBytes)
-		{
-		return (nBytes + kObjectQuantum - 1) / kObjectQuantum;
-		}
+        static size_t constexpr getClicks(size_t nBytes)
+                {
+                return (nBytes + kObjectQuantum - 1) / kObjectQuantum;
+                }
         static constexpr uint32_t uSizeKey_SetClicks(
-			uint32_t uSizeKey, uint32_t v
-			)
+                        uint32_t uSizeKey, uint32_t v
+                        )
                 {
                 return (1 <= v && v <= SIZE_MASK)
                         ? (uSizeKey & ~SIZE_MASK) | v
                         : 0;
                 }
-	static uint32_t constexpr uSizeKey_SetSize(
-		uint32_t uSizeKey,
-		size_t sizeInBytes
-		)
-		{
+        static uint32_t constexpr uSizeKey_SetSize(
+                uint32_t uSizeKey,
+                size_t sizeInBytes
+                )
+                {
                 return uSizeKey_SetClicks(
                         uSizeKey, getClicks(sizeInBytes)
                         );
-		}
-	// set the data key size, clamping at max value.
-	static uint32_t constexpr uSizeKey_SetDataSize(
-		size_t oldSizeKey,
-		size_t nBytes
-		)
-		{
-		return setField(
+                }
+        // set the data key size, clamping at max value.
+        static uint32_t constexpr uSizeKey_SetDataSize(
+                size_t oldSizeKey,
+                size_t nBytes
+                )
+                {
+                return setField(
                         oldSizeKey,
                         nBytes <= getMaxValue(DATASIZE_MASK) ? nBytes
                                                              : getMaxValue(DATASIZE_MASK),
                         DATASIZE_MASK
                         );
-		}
+                }
         // get the index to the data field given a replicant index
         static uint32_t constexpr dataOffset(
                 size_t dataSize,
@@ -213,17 +213,17 @@ public:
                 return kObjectStandardSize + (dataReplicant ? getClicks(dataSize) * kObjectQuantum
                                                             : 0);
                 }
-	};
+        };
 
 
 struct cFramStorage::Object : public cFramStorage::ObjectRaw
-	{
+        {
 public:
 
-	uint16_t getObjectSize(void) const
-		{
-		return uSizeKey_GetSize(this->uSizeKey);
-		}
+        uint16_t getObjectSize(void) const
+                {
+                return uSizeKey_GetSize(this->uSizeKey);
+                }
         uint16_t nextObjectOffset(void) const
                 {
                 uint16_t size = uSizeKey_GetSize(this->uSizeKey);
@@ -231,157 +231,157 @@ public:
                         size = kObjectQuantum;
                 return size;
                 }
-	uint16_t getObjectClicks(void) const
-		{
-		return this->uSizeKey & SIZE_MASK;
-		}
-	bool setObjectSize(uint32_t sizeInBytes)
-		{
-		uint32_t const uSizeKey = uSizeKey_SetSize(
-						this->uSizeKey,
-						sizeInBytes
-						);
-		if (uSizeKey != 0)
-			{
-			this->uSizeKey = uSizeKey;
-			return true;
-			}
-		else
-			{
-			return false;
-			}
-		}
-	uint16_t hasValidSize() const
-		{
-		// standard object... check the data size
-		return this->validDataSize(this->getDataSize());
-		}
-	uint16_t getDataSize() const
-		{
-		return (uint16_t) getField(this->uSizeKey, DATASIZE_MASK);
-		}
+        uint16_t getObjectClicks(void) const
+                {
+                return this->uSizeKey & SIZE_MASK;
+                }
+        bool setObjectSize(uint32_t sizeInBytes)
+                {
+                uint32_t const uSizeKey = uSizeKey_SetSize(
+                                                this->uSizeKey,
+                                                sizeInBytes
+                                                );
+                if (uSizeKey != 0)
+                        {
+                        this->uSizeKey = uSizeKey;
+                        return true;
+                        }
+                else
+                        {
+                        return false;
+                        }
+                }
+        uint16_t hasValidSize() const
+                {
+                // standard object... check the data size
+                return this->validDataSize(this->getDataSize());
+                }
+        uint16_t getDataSize() const
+                {
+                return (uint16_t) getField(this->uSizeKey, DATASIZE_MASK);
+                }
 
         // compare this object's guid to another
-	bool matchesGuid(const MCCIADK_GUID_WIRE &guid) const;
+        bool matchesGuid(const MCCIADK_GUID_WIRE &guid) const;
 
-	int getKey() const
-		{
-		return this->uKey;
-		}
-	uint16_t static neededClicks(size_t nBytes, bool fReplicated)
-		{
-		size_t nClicks;
+        int getKey() const
+                {
+                return this->uKey;
+                }
+        uint16_t static neededClicks(size_t nBytes, bool fReplicated)
+                {
+                size_t nClicks;
 
-		nClicks = getClicks(nBytes);
-		if (fReplicated)
-			nClicks *= 2;
+                nClicks = getClicks(nBytes);
+                if (fReplicated)
+                        nClicks *= 2;
 
-		if (nClicks > SIZE_MASK - kObjectStandardClicks)
-			return 0;
-		else
-			return (uint16_t) nClicks + kObjectStandardClicks;
-		}
+                if (nClicks > SIZE_MASK - kObjectStandardClicks)
+                        return 0;
+                else
+                        return (uint16_t) nClicks + kObjectStandardClicks;
+                }
 
-	bool validDataSize(size_t nBytes) const
-		{
-		uint16_t const n = neededClicks(nBytes, false);
-		return (n <= this->getObjectClicks());
-		}
+        bool validDataSize(size_t nBytes) const
+                {
+                uint16_t const n = neededClicks(nBytes, false);
+                return (n <= this->getObjectClicks());
+                }
 
-	bool isReplicated() const
-		{
-		const uint16_t dataSize = this->getDataSize();
-		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
+        bool isReplicated() const
+                {
+                const uint16_t dataSize = this->getDataSize();
+                const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
-		return (2 * dataClicks + kObjectStandardClicks <=
-				this->getObjectClicks());
-		}
-	unsigned nReplicants() const
-		{
-		const uint16_t dataSize = this->getDataSize();
-		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
+                return (2 * dataClicks + kObjectStandardClicks <=
+                                this->getObjectClicks());
+                }
+        unsigned nReplicants() const
+                {
+                const uint16_t dataSize = this->getDataSize();
+                const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
-		if (dataClicks == 0)
-			return 0;
+                if (dataClicks == 0)
+                        return 0;
 
-		return (this->getObjectClicks() - kObjectStandardClicks) /
-				dataClicks;
-		}
+                return (this->getObjectClicks() - kObjectStandardClicks) /
+                                dataClicks;
+                }
 
-	// offset to the i-th repliant from the base of this object.
-	// zero means error.
-	uint32_t offsetOfReplicant(unsigned i) const
-		{
-		const uint16_t dataSize = this->getDataSize();
-		const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
+        // offset to the i-th repliant from the base of this object.
+        // zero means error.
+        uint32_t offsetOfReplicant(unsigned i) const
+                {
+                const uint16_t dataSize = this->getDataSize();
+                const uint16_t dataClicks = (uint16_t) getClicks(dataSize);
 
-		return kObjectStandardSize + i * dataClicks * kObjectQuantum;
-		}
+                return kObjectStandardSize + i * dataClicks * kObjectQuantum;
+                }
 
 
-	// get current discriminator; use voting algorigthm
-	uint8_t getCurrent() const
-		{
-		uint8_t const v1 = this->uVer[0];
+        // get current discriminator; use voting algorigthm
+        uint8_t getCurrent() const
+                {
+                uint8_t const v1 = this->uVer[0];
 
-		if (v1 == this->uVer[1])
-			return v1;
-		else
-			return this->uVer[2];
-		}
+                if (v1 == this->uVer[1])
+                        return v1;
+                else
+                        return this->uVer[2];
+                }
 
-	// set discriminator (only in local image, of cousre)
-	void setCurrent(uint8_t v)
-		{
-		this->uVer[0] = v;
-		this->uVer[1] = v;
-		this->uVer[2] = v;
-		}
+        // set discriminator (only in local image, of cousre)
+        void setCurrent(uint8_t v)
+                {
+                this->uVer[0] = v;
+                this->uVer[1] = v;
+                this->uVer[2] = v;
+                }
 
-	// get the pointer to the vector of discriminators
-	uint8_t *getDiscriminatorBuffer()
-		{
-		return this->uVer;
-		}
+        // get the pointer to the vector of discriminators
+        uint8_t *getDiscriminatorBuffer()
+                {
+                return this->uVer;
+                }
 
-	// get the size of the vector of discriminators
-	size_t constexpr getDiscriminatorBufferSize()
-		{
-		return sizeof(this->uVer);
-		}
+        // get the size of the vector of discriminators
+        size_t constexpr getDiscriminatorBufferSize()
+                {
+                return sizeof(this->uVer);
+                }
 
-	// get the offset of the vector of discriminators
-	static size_t constexpr offsetOfDiscriminator()
-		{
-		return offsetof(ObjectRaw, uVer);
-		}
+        // get the offset of the vector of discriminators
+        static size_t constexpr offsetOfDiscriminator()
+                {
+                return offsetof(ObjectRaw, uVer);
+                }
 
-	// return the size of the object taken as a buffer
-	static constexpr size_t getBufferSize()
-		{
-		return kObjectStandardSize;
-		}
+        // return the size of the object taken as a buffer
+        static constexpr size_t getBufferSize()
+                {
+                return kObjectStandardSize;
+                }
 
-	uint8_t *getBuffer()
-		{
-		return (uint8_t *) &this->uSizeKey;
-		}
+        uint8_t *getBuffer()
+                {
+                return (uint8_t *) &this->uSizeKey;
+                }
 
-	// methods that are not in-line
+        // methods that are not in-line
 
-	// initialize a standard object image.
-	bool initialize(
-		const MCCIADK_GUID_WIRE &Guid,
-		uint8_t uKey,
-		size_t valueSizeInBytes,
-		bool fReplicated
-		);
+        // initialize a standard object image.
+        bool initialize(
+                const MCCIADK_GUID_WIRE &Guid,
+                uint8_t uKey,
+                size_t valueSizeInBytes,
+                bool fReplicated
+                );
 
         bool initialize(StandardItem);
 
         // check whether the object is formally valid
         bool isValid(void) const;
-	};
+        };
 
 }; // namespace McciCatena
 
