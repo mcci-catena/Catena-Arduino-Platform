@@ -55,9 +55,9 @@ public:
                 {
         private:
                 static uint32_t constexpr makeValue(
-                        uint8_t a_uKey, 
-                        uint16_t a_uSize, 
-                        bool a_fNumber, 
+                        uint8_t a_uKey,
+                        uint16_t a_uSize,
+                        bool a_fNumber,
                         bool a_fReplicated
                         )
                         {
@@ -65,7 +65,7 @@ public:
                         }
         public:
                 StandardItem() : uValue(0) {};
-                StandardItem(uint8_t a_uKey, uint16_t a_uSize, bool a_fNumber, bool a_fReplicated = true) 
+                StandardItem(uint8_t a_uKey, uint16_t a_uSize, bool a_fNumber, bool a_fReplicated = true)
                         : uValue(makeValue(a_uKey, a_uSize, a_fNumber, a_fReplicated)) {};
                 uint16_t getSize() const
                         {
@@ -93,12 +93,12 @@ public:
 
         typedef uint32_t Offset;
         enum : Offset { kInvalidOffset = ~UINT32_C(0) };
-       
+
         static const StandardItem vItemDefs[kMAX];
 
         class Object;
 
-	enum : uint32_t 
+	enum : uint32_t
 		{
 		SIZE_MASK = 0xFFFFu,
 		NONSTD_MASK = 0x80000000u,
@@ -178,7 +178,7 @@ public:
 			uint32_t uSizeKey, uint32_t v
 			)
                 {
-                return (1 <= v && v <= SIZE_MASK) 
+                return (1 <= v && v <= SIZE_MASK)
                         ? (uSizeKey & ~SIZE_MASK) | v
                         : 0;
                 }
@@ -198,9 +198,9 @@ public:
 		)
 		{
 		return setField(
-                        oldSizeKey, 
-                        nBytes <= getMaxValue(DATASIZE_MASK) ? nBytes 
-                                                             : getMaxValue(DATASIZE_MASK), 
+                        oldSizeKey,
+                        nBytes <= getMaxValue(DATASIZE_MASK) ? nBytes
+                                                             : getMaxValue(DATASIZE_MASK),
                         DATASIZE_MASK
                         );
 		}
@@ -271,7 +271,7 @@ public:
 	uint16_t static neededClicks(size_t nBytes, bool fReplicated)
 		{
 		size_t nClicks;
-		
+
 		nClicks = getClicks(nBytes);
 		if (fReplicated)
 			nClicks *= 2;
@@ -287,7 +287,7 @@ public:
 		uint16_t const n = neededClicks(nBytes, false);
 		return (n <= this->getObjectClicks());
 		}
-	
+
 	bool isReplicated() const
 		{
 		const uint16_t dataSize = this->getDataSize();
@@ -337,7 +337,7 @@ public:
 		this->uVer[1] = v;
 		this->uVer[2] = v;
 		}
-	
+
 	// get the pointer to the vector of discriminators
 	uint8_t *getDiscriminatorBuffer()
 		{
