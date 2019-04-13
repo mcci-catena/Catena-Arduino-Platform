@@ -29,6 +29,11 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
 		- [The command parser](#the-command-parser)
 	- [`Catena_functional.h`](#catena_functionalh)
+- [Command Summary](#command-summary)
+	- [Standard commands](#standard-commands)
+	- [FRAM commands](#fram-commands)
+	- [LoRaWAN commands](#lorawan-commands)
+		- [LoRaWAN Parameters](#lorawan-parameters)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
@@ -223,6 +228,46 @@ typedef void (cStreamLineCollector::ReadCompleteCbFn)(
 
 #### The command parser
 
+A command parser is initialized with a reference to a  `cStreamLineCollector` instance and a convenience reference to the governing `cCatena` instance. It is initialized with
+
+```c++
+bool cCommandParser::begin(cStreamLineCollector *pStream, cCatena *pCatena)`
+```
+
+The command parser works by parsing the input line into words, and then finding the command in _command tables_, which the client registers at run time using the following function:
+
+```c++
+void cCommandParser::registerCommands(cDispatch *pDispatch, void *pContext);
+```
+
+Multiple command tables can be registered dynamically; this allows modules to add commands as they are initailized. There's no need to edit a central command table.
+
+The command tables consist of a top-level `cCommandParser::cDispatch` instance. This is **not** a `const` -- it has bookkeeping entries to help with building the tables at runtime without requiring `malloc()`. The dispatch instance points in turn to a
+
+```c++
+static cCommandStream::cDispatch myTable(/* cCommandStream::cEntry * */&table, sizeof(table));
+```
+
+or
+
+```c++
+static cCommandStream::cDispatch myTable(/* cCommandStream::cEntry * */&table, sizeof(table), "groupname");
+```
+
+In the first case, the commands are each entered into the top-level name space.  In the second case, a top-level command named `groupname` is entered, and each of the commands in the table is entered as a secondary command.
+
+The command tables themselves are simple arrays of name/function pointer pairs.
+
+```c++
+static cCommandStream::CommandFn function1, function2 /*, etc. */;
+
+static const cCommandStream::cEntry table[] = {
+	"cmd1", function1,
+	"cmd2", function2,
+	// ...
+};
+```
+
 ### `Catena_functional.h`
 
 This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
@@ -231,17 +276,70 @@ The technical problem is that the `arduino.h` header file defines `min()` and `m
 
 The solution is a hack: undefine `min()` prior to including `<functional>`, and then redefine them using the well-known definitions.
 
+## Command Summary
+
+### Standard commands
+
+The following commands are supported by the Catena command parser.
+
+| Command | Description |
+|-------------|----------------------------------|
+| `echo` _args_ | write arguments to the log stream
+| `help` | list the known commands |
+| `system configure operatingflags` _[&nbsp;uint32 ]_ | display or set the operating flags for this system. |
+| `system configure platformguid`  _[&nbsp;hexGuid ]_ | display or set the platform GUID for this system |
+| `system configure syseui` _[ eui64 ]_ | display or set the system serial number, a 64-bit number.
+| `system reset` | dynamically restart the system, as if the reset button were pressed |
+
+### FRAM commands
+
+| Command | Description |
+|-------------|----------------------------------|
+| `fram reset` _[_ `hard` _]_ | reset the contents of the FRAM. A soft reset assumes that the datastructures are correct, and resets values to defaults. A hard reset invalidates the FRAM, so that the next boot will fully reconstruct it. |
+| `fram dump` _[ base [ len ] ]_ | dump the contents of FRAM, starting at _base_ for _len_ bytes. If _len_ is absent, a length of 32 bytes is assumed. If _base_ is also absent, then 32 bytes are dumpped starting at byte zero.
+
+### LoRaWAN commands
+
+The following commmands are added by the Catena LoRawAN module.
+
+| Command | Description |
+|-------------|----------------------------------|
+| `lorawan configure` _param [ value ]_  | Display or set a LoRaWAN parameter.
+
+#### LoRaWAN Parameters
+
+Notes that these parameters are generall not loaded into the LMIC immediately. They are primarily used at boot time and at join time.
+
+| Command     | Target device type | Description |
+|-------------|---------------------|----------------------------------|
+`lorawan configure deveui` _[ value ]_	| OTAA | Set the devEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
+`lorawan configure appeui` _[ value ]_	| OTAA |Set the AppEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
+`lorawan configure appkey` _[ value ]_	| OTAA |Set the AppKey for this device to _value_, a 128-bit value given in big-endian (natrual) form.
+`lorawan configure nwkskey` _[ value ]_	| ABP | Set the NwkSKey for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure appskey` _[ value ]_	| ABP |Set the AppSKey for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure devaddr` _[ value ]_	| either | Set the device address, a 32-bit number, in big-endian form. **_Setting devaddr to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure netid` _[ value ]_	| either | Set the network ID, in big-endian form. For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure fcntup` _[ value ]_	| either | the curent uplink framecount, `FCntUp` in the LoRaWAN spec.
+`lorawan configure fcntdown` _[ value ]_ | either | the current downlink framecount, `FCntDown` in the LoRaWAN spec.
+`lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
+
 ## Board Support Dependencies
 
 ## Other Libraries and Versions Required
 
-| Library | Version | Comments |
-|---------|:-------:|----------|
-| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.5.3 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
-| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | Needed for miscellaneous definitions |
+| Library | Recommended Version | Minimum Version | Comments |
+|---------|:-------:|:----:|----------|
+| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | HEAD | 0.5.3 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
+| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- HEAD includes the following changes.
+
+  - [#136](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/136) Makes CS pin an input when powering down; use HAL_RCC_GetHCLKFreq().
+  - [#125](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/125) Turn on and off HSI clock as needed if system clock is using MSI clock.
+  - [#127](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/127) Improve，stabilize AnalogRead() API.
 
 - v0.14.0 (2019-02-10) includes changes for the following issues.
 
