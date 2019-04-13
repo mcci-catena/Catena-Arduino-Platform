@@ -32,7 +32,7 @@ bool gfSuccess;
 bool gfTxStarted;
 bool gfTxDone;
 
-uint8_t uplinkBuffer[] = { /* port */ 0x10, 0xCA, 0xFE, 0xBA,0xBE };
+uint8_t uplinkBuffer[] = { 0xCA, 0xFE, 0xBA, 0xBE };
 
 void setup()
         {
@@ -55,7 +55,7 @@ void setup()
         else
                 {
                 // send a confirmed uplink
-                if (gLoRaWAN.SendBuffer(uplinkBuffer, sizeof(uplinkBuffer), uplinkDone, nullptr, true))
+                if (gLoRaWAN.SendBuffer(uplinkBuffer, sizeof(uplinkBuffer), uplinkDone, nullptr, true, /* port */ 16))
                         gfTxStarted = true;
                 else
                         gCatena.SafePrintf("SendBuffer failed!\n");

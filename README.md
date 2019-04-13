@@ -335,7 +335,7 @@ This is a very simple sketch without LoRaWAN support. It shows the minimal boile
 
 ### `catena_hello_lora`
 
-This sketch adds LoRaWAN uplink to the basic hello-world application. If the LoRaWAN system is provisioned, the app transmits a single message to port 1, containing the bytes `0xCA`, `0xFE`, `0xBA`, and `0xBE`, in sequence.
+This sketch adds LoRaWAN uplink to the basic hello-world application. If the LoRaWAN system is provisioned, the app transmits a single message to port 16, containing the bytes `0xCA`, `0xFE`, `0xBA`, and `0xBE`, in sequence.
 
 If the LoRaWAN system is not provisioned, the application enteres an idle loop; you can use the LoRaWAN commands to set things up.
 
