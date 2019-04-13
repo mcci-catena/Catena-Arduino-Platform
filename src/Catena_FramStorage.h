@@ -1,5 +1,3 @@
-/* Catena_FramStorage.h	Sun Mar 19 2017 17:34:08 tmm */
-
 /*
 
 Module:  Catena_FramStorage.h
@@ -7,27 +5,11 @@ Module:  Catena_FramStorage.h
 Function:
 	class McciCatena::cFramStorage
 
-Version:
-	V0.5.0	Sun Mar 19 2017 17:34:08 tmm	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2017 by
+	See accompanying LICENSE file.
 
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
 Author:
 	Terry Moore, MCCI Corporation	March 2017
-
-Revision history:
-   0.5.0  Sun Mar 19 2017 17:34:08  tmm
-	Module created.
 
 */
 
