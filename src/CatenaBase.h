@@ -87,6 +87,25 @@ Revision history:
 # error Arduino_LoRaWAN library is out of date. Check ARDUINO_LORAWAN_VERSION.
 #endif
 
+// Catena-Arduino-Platform Version
+#define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)	\
+	(((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
+
+#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 50)	/* v0.14.0.50 */
+
+#define	CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)	\
+	(((v) >> 24u) & 0xFFu)
+
+#define	CATENA_ARDUINO_PLATFORM_VERSION_GET_MINOR(v)	\
+	(((v) >> 16u) & 0xFFu)
+
+#define	CATENA_ARDUINO_PLATFORM_VERSION_GET_PATCH(v)	\
+	(((v) >> 8u) & 0xFFu)
+
+#define	CATENA_ARDUINO_PLATFORM_VERSION_GET_LOCAL(v)	\
+	((v) & 0xFFu)
+
+
 namespace McciCatena {
 
 /* forward references */
