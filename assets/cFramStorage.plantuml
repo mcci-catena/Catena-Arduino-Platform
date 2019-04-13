@@ -44,7 +44,7 @@ class cFramStorage::Object {
   +unsigned nReplicants();
   +uint32_t offsetOfReplicant();
   +uint8_t getCurrent();
-  +uint8_t setCurrent();
+  +void setCurrent();
   +uint8_t *getDiscriminatorBuffer();
   +size_t getDiscriminatorBufferSize();
   +size_t offsetOfDiscriminator();

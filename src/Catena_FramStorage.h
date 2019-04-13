@@ -349,7 +349,7 @@ public:
 		}
 
 	// set discriminator (only in local image, of cousre)
-	uint8_t setCurrent(uint8_t v)
+	void setCurrent(uint8_t v)
 		{
 		this->uVer[0] = v;
 		this->uVer[1] = v;
