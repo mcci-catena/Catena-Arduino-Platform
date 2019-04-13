@@ -94,41 +94,6 @@ McciCatena::cFram::addCommands()
 |
 \****************************************************************************/
 
-static cCommandStream::CommandStatus
-getuint32(
-	int argc,
-	char **argv,
-	int iArg,
-	uint32_t& result,
-	uint32_t uDefault
-	)
-	{
-	bool fOverflow;
-
-	// substitute default if needed
-	if (iArg >= argc)
-		{
-		result = uDefault;
-		return cCommandStream::CommandStatus::kSuccess;
-		}
-
-	const char * const pArg = argv[iArg];
-	size_t nArg = std::strlen(pArg);
-
-	size_t const nc = McciAdkLib_BufferToUint32(
-				pArg,
-				nArg,
-				16,
-				&result,
-				&fOverflow
-				);
-
-	if (nc == 0 || nc != nArg || fOverflow)
-		return cCommandStream::CommandStatus::kError;
-	else
-		return cCommandStream::CommandStatus::kSuccess;
-	}
-
 cCommandStream::CommandStatus 
 McciCatena::cFram::doDump(
 	cCommandStream *pThis,
@@ -143,13 +108,13 @@ McciCatena::cFram::doDump(
 	cCommandStream::CommandStatus status;
 
 	// get arg 2 as length; default is 32 bytes
-	status = getuint32(argc, argv, 2, uLength, 32);
+	status = cCommandStream::getuint32(argc, argv, 2, 16, uLength, 32);
 
 	if (status != cCommandStream::CommandStatus::kSuccess)
 		return status;
 
 	// get arg 1 as base; default is 0
-	status = getuint32(argc, argv, 1, uBase, 0);
+	status = cCommandStream::getuint32(argc, argv, 1, 16, uBase, 0);
 
 	if (status != cCommandStream::CommandStatus::kSuccess)
 		return status;

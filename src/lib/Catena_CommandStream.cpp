@@ -368,3 +368,74 @@ McciCatena::cCommandStream::printf(
         (void)this->m_pCollector->vprintf(pFmt, ap);
         va_end(ap);
         }
+
+/*
+
+Name:	McciCatena::cCommandStream::getuint32()
+
+Function:
+	Convert argument from C-style number to uint32_t
+
+Definition:
+	static cCommandStream::CommandStatus
+		McciCatena::cCommandStream::getuint32(
+			int argc,
+			char **argv,
+			int iArg,
+			unsigned radix,
+			uint32_t& result,
+			uint32_t uDefault
+			);
+
+Description:
+	`argc`, `argv` are the base and length of the command argument
+	vector. `iArg` is the index of the argument in question. `uDefault`
+	is the value to be used if `iArg` is out of range (indicating that
+	the argument wasn't supplied).  `radix` is the input radix; if in the
+	range 2..36, it's the explicit radix. If 0, C-language rules are
+	followed for determining the radix.
+
+	The argument is parsed, and if valid, `result` is set to the value.
+	If any errors occur, `result` is not changed.
+
+Returns:
+
+
+*/
+
+cCommandStream::CommandStatus
+McciCatena::cCommandStream::getuint32(
+	int argc,
+	char **argv,
+	int iArg,
+	unsigned radix,
+	uint32_t& result,
+	uint32_t uDefault
+	)
+	{
+	bool fOverflow;
+
+	// substitute default if needed
+	if (iArg >= argc)
+		{
+		result = uDefault;
+		return cCommandStream::CommandStatus::kSuccess;
+		}
+
+	const char * const pArg = argv[iArg];
+	size_t nArg = std::strlen(pArg);
+
+	size_t const nc = McciAdkLib_BufferToUint32(
+				pArg,
+				nArg,
+				radix,
+				&result,
+				&fOverflow
+				);
+
+	if (nc == 0 || nc != nArg || fOverflow)
+		return cCommandStream::CommandStatus::kError;
+	else
+		return cCommandStream::CommandStatus::kSuccess;
+	}
+

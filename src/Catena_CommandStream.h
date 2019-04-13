@@ -104,6 +104,16 @@ public:
                 __attribute__((__format__(__printf__, 2, 3)));
                 /* format counts start with 2 for non-static C++ member fns */
 
+	// convert parameter from argument vector to uint32_t.
+	static CommandStatus getuint32(
+		int argc,
+		char **argv,
+		int iArg,
+		unsigned radix,
+		uint32_t& result,
+		uint32_t uDefault
+		);
+
 protected:
 
 private:
