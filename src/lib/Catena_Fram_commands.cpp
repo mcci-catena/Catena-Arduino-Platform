@@ -1,5 +1,3 @@
-/* Catena_Fram_commands.cpp	Wed Mar 22 2017 23:02:50 tmm */
-
 /*
 
 Module:  Catena_Fram_commands.cpp
@@ -7,27 +5,11 @@ Module:  Catena_Fram_commands.cpp
 Function:
 	McciCatena::cFram::addCommands() and command processors.
 
-Version:
-	V0.5.0	Wed Mar 22 2017 23:02:50 tmm	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2017 by
+	See accompanying LICENSE file.
 
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
 Author:
 	Terry Moore, MCCI Corporation	March 2017
-
-Revision history:
-   0.5.0  Wed Mar 22 2017 23:02:50  tmm
-	Module created.
 
 */
 
