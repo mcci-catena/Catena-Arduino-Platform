@@ -46,15 +46,15 @@ doEcho(cCommandStream *pThis, void *pContext, int argc, char**argv)
         for (int i = 1; i < argc; ++i)
                 {
                 pThis->printf(
-                        "%s%c", 
-                        argv[i], 
+                        "%s%c",
+                        argv[i],
                         (i < argc - 1) ? ' ' : '\n'
                         );
                 }
         return cCommandStream::kSuccess;
         }
 
-bool 
+bool
 McciCatena::cCommandStream::begin(
 	cStreamLineCollector *pCollector, // the command line reader
 	CatenaBase *pCatena		  // the owning Catena object
@@ -72,7 +72,7 @@ McciCatena::cCommandStream::begin(
 	return true;
 	}
 
-void 
+void
 McciCatena::cCommandStream::readComplete(
 	cStreamLineCollector::ErrorCode uStatus,
 	uint8_t *pBuffer,
@@ -93,7 +93,7 @@ McciCatena::cCommandStream::readComplete(
 		}
 	}
 
-void 
+void
 McciCatena::cCommandStream::poll(void)
 	{
 	if (this->m_fReadComplete)
@@ -139,8 +139,8 @@ McciCatena::cCommandStream::parseAndDispatch()
 	pBuffer = this->m_buffer;
 	pEndBuffer = pBuffer + this->m_nRead;
 
-	for (argc = 0; 
-             argc < sizeof(this->m_argv)/sizeof(this->m_argv[0]) - 1; 
+	for (argc = 0;
+             argc < sizeof(this->m_argv)/sizeof(this->m_argv[0]) - 1;
              ++argc)
 		{
 		uint8_t c;
@@ -219,7 +219,7 @@ McciCatena::cCommandStream::dispatch(
 		{
 		auto pThis = pHead;
 
-		// iterate over all command tables.		
+		// iterate over all command tables.
 		do
 			{
 			const char * const pGroupName = pThis->m_pGroupName;
@@ -258,7 +258,7 @@ McciCatena::cCommandStream::dispatch(
                                 status = pEntry->pDispatch(
 						this,
 						pThis->m_pContext,
-						argc, 
+						argc,
 						argv
 						);
 
@@ -285,7 +285,7 @@ McciCatena::cCommandStream::dispatchHelp(
 		{
 		auto pThis = pHead;
 
-		// iterate over all command tables.		
+		// iterate over all command tables.
 		do
 			{
 			const char * const pGroupName = pThis->m_pGroupName;
@@ -308,12 +308,12 @@ McciCatena::cCommandStream::dispatchHelp(
         return 0;
         }
 
-const cCommandStream::cEntry * 
+const cCommandStream::cEntry *
 McciCatena::cCommandStream::cDispatch::search(const char *pCommand) const
 	{
 	auto pEntry = this->m_pEntries;
-	for (unsigned i = 0; 
-	     i < this->m_nEntries; 
+	for (unsigned i = 0;
+	     i < this->m_nEntries;
 	     ++i, ++pEntry)
 		{
 		if (std::strcmp(pEntry->pName, pCommand) == 0)

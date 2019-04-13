@@ -69,7 +69,7 @@ public:
 	typedef CommandStatus (CommandFn)(
 		cCommandStream *pThis,
 		void *pContext,
-		int argc, 
+		int argc,
 		char **argv
 		);
 
@@ -136,7 +136,7 @@ private:
 	uint8_t m_buffer[128];
 
 	// the status of the operation
-	
+
 	size_t m_nRead;			// how many bytes were read
 	bool m_fReadPending = false;	// is a read pending?
 	bool m_fReadComplete = false;	// is a read complete?
@@ -162,7 +162,7 @@ public:
 		const cEntry *pEntries,
 		unsigned sizeofEntries,
 		const char *pGroupName = nullptr
-		) 
+		)
 		{
 		this->m_pEntries = pEntries;
 		this->m_nEntries = sizeofEntries / sizeof(pEntries[0]);

@@ -61,7 +61,7 @@ Returns:
 
 */
 
-bool 
+bool
 McciCatena::cFram::addCommands()
 	{
 	CatenaBase::pCatenaBase->addCommands(
@@ -76,11 +76,11 @@ McciCatena::cFram::addCommands()
 |
 \****************************************************************************/
 
-cCommandStream::CommandStatus 
+cCommandStream::CommandStatus
 McciCatena::cFram::doDump(
 	cCommandStream *pThis,
 	void *pContext,
-	int argc, 
+	int argc,
 	char **argv
 	)
 	{
@@ -122,11 +122,11 @@ McciCatena::cFram::doDump(
 	return status;
 	}
 
-cCommandStream::CommandStatus 
+cCommandStream::CommandStatus
 McciCatena::cFram::doReset(
 	cCommandStream *pThis,
 	void *pContext,
-	int argc, 
+	int argc,
 	char **argv
 	)
 	{
