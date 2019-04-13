@@ -3,13 +3,13 @@
 Module:  Catena_Fram_commands.cpp
 
 Function:
-	McciCatena::cFram::addCommands() and command processors.
+        McciCatena::cFram::addCommands() and command processors.
 
 Copyright notice:
-	See accompanying LICENSE file.
+        See accompanying LICENSE file.
 
 Author:
-	Terry Moore, MCCI Corporation	March 2017
+        Terry Moore, MCCI Corporation	March 2017
 
 */
 
@@ -35,10 +35,10 @@ using namespace McciCatena;
 \****************************************************************************/
 
 static const cCommandStream::cEntry sDefaultEntries[] =
-	{
-	{ "dump", cFram::doDump },
+        {
+        { "dump", cFram::doDump },
         { "reset", cFram::doReset },
-	};
+        };
 
 static cCommandStream::cDispatch
 sDispatch(sDefaultEntries, sizeof(sDefaultEntries), "fram");
@@ -48,27 +48,27 @@ sDispatch(sDefaultEntries, sizeof(sDefaultEntries), "fram");
 Name:	McciCatena::cFram::addCommands()
 
 Function:
-	Add the FRAM commands to the Catena command table.
+        Add the FRAM commands to the Catena command table.
 
 Definition:
-	bool McciCatena::cFram::addCommands();
+        bool McciCatena::cFram::addCommands();
 
 Description:
-	All the commands are added to the system command table.
+        All the commands are added to the system command table.
 
 Returns:
-	true for success.
+        true for success.
 
 */
 
 bool
 McciCatena::cFram::addCommands()
-	{
-	CatenaBase::pCatenaBase->addCommands(
-		sDispatch, static_cast<void *>(this)
-		);
-	return true;
-	}
+        {
+        CatenaBase::pCatenaBase->addCommands(
+                sDispatch, static_cast<void *>(this)
+                );
+        return true;
+        }
 
 /****************************************************************************\
 |
@@ -78,59 +78,59 @@ McciCatena::cFram::addCommands()
 
 cCommandStream::CommandStatus
 McciCatena::cFram::doDump(
-	cCommandStream *pThis,
-	void *pContext,
-	int argc,
-	char **argv
-	)
-	{
-	cFram * const pFram = static_cast<cFram *>(pContext);
-	uint32_t uLength;
-	uint32_t uBase;
-	cCommandStream::CommandStatus status;
+        cCommandStream *pThis,
+        void *pContext,
+        int argc,
+        char **argv
+        )
+        {
+        cFram * const pFram = static_cast<cFram *>(pContext);
+        uint32_t uLength;
+        uint32_t uBase;
+        cCommandStream::CommandStatus status;
 
-	// get arg 2 as length; default is 32 bytes
-	status = cCommandStream::getuint32(argc, argv, 2, 16, uLength, 32);
+        // get arg 2 as length; default is 32 bytes
+        status = cCommandStream::getuint32(argc, argv, 2, 16, uLength, 32);
 
-	if (status != cCommandStream::CommandStatus::kSuccess)
-		return status;
+        if (status != cCommandStream::CommandStatus::kSuccess)
+                return status;
 
-	// get arg 1 as base; default is 0
-	status = cCommandStream::getuint32(argc, argv, 1, 16, uBase, 0);
+        // get arg 1 as base; default is 0
+        status = cCommandStream::getuint32(argc, argv, 1, 16, uBase, 0);
 
-	if (status != cCommandStream::CommandStatus::kSuccess)
-		return status;
+        if (status != cCommandStream::CommandStatus::kSuccess)
+                return status;
 
-	// dump the FRAM
-	uint8_t buffer[16];
-	for (uint32_t here = 0; here < uLength; here += sizeof(buffer))
-		{
-		char line[80];
-		size_t n;
+        // dump the FRAM
+        uint8_t buffer[16];
+        for (uint32_t here = 0; here < uLength; here += sizeof(buffer))
+                {
+                char line[80];
+                size_t n;
 
-		n = uLength - here;
-		if (n > sizeof(buffer))
-			n = sizeof(buffer);
+                n = uLength - here;
+                if (n > sizeof(buffer))
+                        n = sizeof(buffer);
 
-		std::memset(buffer, 0, n);
-		pFram->read(uBase + here, buffer, n);
+                std::memset(buffer, 0, n);
+                pFram->read(uBase + here, buffer, n);
 
-		McciAdkLib_FormatDumpLine(line, sizeof(line), 0, uBase + here, buffer, n);
-		pThis->printf("%s\n", line);
-		}
+                McciAdkLib_FormatDumpLine(line, sizeof(line), 0, uBase + here, buffer, n);
+                pThis->printf("%s\n", line);
+                }
 
-	return status;
-	}
+        return status;
+        }
 
 cCommandStream::CommandStatus
 McciCatena::cFram::doReset(
-	cCommandStream *pThis,
-	void *pContext,
-	int argc,
-	char **argv
-	)
-	{
-	cFram * const pFram = static_cast<cFram *>(pContext);
+        cCommandStream *pThis,
+        void *pContext,
+        int argc,
+        char **argv
+        )
+        {
+        cFram * const pFram = static_cast<cFram *>(pContext);
         cCommandStream::CommandStatus status;
         bool fResult;
 
