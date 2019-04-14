@@ -34,6 +34,10 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [FRAM commands](#fram-commands)
 	- [LoRaWAN commands](#lorawan-commands)
 		- [LoRaWAN Parameters](#lorawan-parameters)
+- [Example sketches](#example-sketches)
+	- [`catena_hello`](#catena_hello)
+	- [`catena_hello_lora`](#catena_hello_lora)
+	- [`catena_usercommand`](#catena_usercommand)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
@@ -322,6 +326,22 @@ Notes that these parameters are generall not loaded into the LMIC immediately. T
 `lorawan configure fcntup` _[ value ]_	| either | the curent uplink framecount, `FCntUp` in the LoRaWAN spec.
 `lorawan configure fcntdown` _[ value ]_ | either | the current downlink framecount, `FCntDown` in the LoRaWAN spec.
 `lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
+
+## Example sketches
+
+### `catena_hello`
+
+This is a very simple sketch without LoRaWAN support. It shows the minimal boilerplate needed to use this library. Although it's not obvious, while looping, the program automatically flashes the LED and accepts commands from the console.
+
+### `catena_hello_lora`
+
+This sketch adds LoRaWAN uplink to the basic hello-world application. If the LoRaWAN system is provisioned, the app transmits a single message to port 16, containing the bytes `0xCA`, `0xFE`, `0xBA`, and `0xBE`, in sequence.
+
+If the LoRaWAN system is not provisioned, the application enteres an idle loop; you can use the LoRaWAN commands to set things up.
+
+### `catena_usercommand`
+
+This sketch is very similar to `cathea_hello`. It shows how to add a user-defined comamand, `application hello`, that prints "`Hello, world!`".
 
 ## Board Support Dependencies
 
