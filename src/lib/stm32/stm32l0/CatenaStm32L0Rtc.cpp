@@ -366,7 +366,6 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 		while (! m_Alarm)
 			{
 			++nWakes;
-			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
 			HAL_PWR_EnterSTOPMode(
 				PWR_MAINREGULATOR_ON,
 				PWR_SLEEPENTRY_WFI
@@ -378,7 +377,6 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 		while (! m_Alarm)
 			{
 			++nWakes;
-			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
 			HAL_PWR_EnterSTOPMode(
 				PWR_LOWPOWERREGULATOR_ON,
 				PWR_SLEEPENTRY_WFI
