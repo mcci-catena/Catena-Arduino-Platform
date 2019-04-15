@@ -309,6 +309,7 @@ The following commmands are added by the Catena LoRawAN module.
 | Command | Description |
 |-------------|----------------------------------|
 | `lorawan configure` _param [ value ]_  | Display or set a LoRaWAN parameter.
+| `lorawan join` | unjoin if joined, then start a new join session.
 
 #### LoRaWAN Parameters
 
@@ -357,7 +358,16 @@ This sketch is very similar to `cathea_hello`. It shows how to add a user-define
 
 - HEAD includes the following changes.
 
-  - [#136](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/136) Makes CS pin an input when powering down; use HAL_RCC_GetHCLKFreq().
+  - [#157](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157), [#153](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/153) Map SleepMode::Standby to STOP, and remove ineffective calls to `__HAL_PWR_CLEAR_FLAG()` in STM32 SleepForAlarm(). [#150](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/150) change STM32 Sleep() to request STOP mode instead of STANDBY mode.
+  - [#28](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/28) add `lorawan join` command.
+  - [#145](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/145) Fix errors in `catena_hello_lora` example.
+  - [#143](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/143) clean up a compile warning for `cFramStorage::setCurrent()`.
+  - [#142](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/141) add `CATENA_ARDUINO_PLATFORM_VERSION` to allow careful clients to `#error` rather than die with obscure compile problems.
+  - [#141](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/141) add `cCommandStream::getuint32()`.
+  - [#140](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/140) Add example sketch for user commands.
+  - [#138](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/138) Check `ARDUINO_LORAWAN_VERSION`.
+  - [#137](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/137) Document command parser and commands.
+  - [#136](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/136) Add `system reset` command.
   - [#125](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/125) Turn on and off HSI clock as needed if system clock is using MSI clock.
   - [#127](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/127) Improve，stabilize AnalogRead() API.
 
