@@ -33,6 +33,8 @@ Revision history:
 
 #include "CatenaBase.h"
 
+#include <Arduino_LoRaWAN_lmic.h>
+
 #include "Catena_Log.h"
 
 #include <cstring>
@@ -46,10 +48,12 @@ using namespace McciCatena;
 \****************************************************************************/
 
 static cCommandStream::CommandFn doConfigure;
+static cCommandStream::CommandFn doJoin;
 
 static const cCommandStream::cEntry sDispatchEntries[] =
 	{
 	{ "configure", doConfigure },
+	{ "join", doJoin },
 	};
 
 static cCommandStream::cDispatch
@@ -256,6 +260,57 @@ doConfigure(
 				;
 			}
 		}
+	}
+
+/*
+
+Name:	doJoin()
+
+Function:
+	Implement the LoRaWAN join command
+
+Definition:
+	static cCommandStream::CommandFn doJoin;
+
+	static cCommandStream::CommandStatus
+		doJoin(
+			cCommandStream *pThis,
+			void *pContext,
+			int argc,
+			char **argv
+			);
+
+Description:
+	This function checks arguments, then forces an unjoin, followed by
+	a join. If the device is not configured for OTAA mode, it
+	does nothing. FRAM is not reset unless the join succeeds.
+	A `lorawan configure reset` may be more along the lines
+	of what you want, if you want to ship a device.
+
+	The parsed syntax:
+
+	lorawan join
+
+Returns:
+	Command status
+
+*/
+
+static cCommandStream::CommandStatus
+doJoin(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+
+	if (argc > 1)
+		return cCommandStream::CommandStatus::kInvalidParameter;
+
+	LMIC_unjoin();
+	LMIC_startJoining();
+	return cCommandStream::CommandStatus::kSuccess;
 	}
 
 /**** end of CatenaBase_addLoRaWanCommands.cpp ****/
