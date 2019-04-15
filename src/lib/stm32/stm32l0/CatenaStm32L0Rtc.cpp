@@ -1,5 +1,3 @@
-/* CatenaStm32L0Rtc.cpp	Wed Jan 03 2018 11:04:33 chwon */
-
 /*
 
 Module:  CatenaStm32L0Rtc.cpp
@@ -7,36 +5,11 @@ Module:  CatenaStm32L0Rtc.cpp
 Function:
 	Class CatenaStm32L0Rtc
 
-Version:
-	V0.7.0	Wed Jan 03 2018 11:04:33 chwon	Edit level 4
-
 Copyright notice:
-	This file copyright (C) 2017 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	See accompanying LICENSE file.
 
 Author:
 	ChaeHee Won, MCCI Corporation	October 2017
-
-Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
-	Module created.
-
-   0.6.0  Fri Dec 01 2017 13:55:23  chwon
-	Remove debug code.
-
-   0.6.0  Wed Dec 06 2017 15:32:22  chwon
-	Change clock division setting.
-
-   0.7.0  Wed Jan 03 2018 11:04:33  chwon
-	Need to call HAL_RTCEx_EnableBypassShadow() to support USB.
 
 */
 
@@ -47,10 +20,7 @@ using namespace McciCatena;
 
 /****************************************************************************\
 |
-|		Manifest constants & typedefs.
-|
-|	This is strictly for private types and constants which will not
-|	be exported.
+|	Manifest constants & typedefs.
 |
 \****************************************************************************/
 
@@ -59,22 +29,19 @@ using namespace McciCatena;
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only
-|	using the ROM storage class; they may be global.
+\****************************************************************************/
+
+
+/****************************************************************************\
+|
+|	Variables.
 |
 \****************************************************************************/
 
 
 /****************************************************************************\
 |
-|	VARIABLES:
-|
-|	If program is to be ROM-able, these must be initialized
-|	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those
-|	variables owned by this module should be declared here, using the BSS
-|	keyword; this allows for linkers that dislike multiple declarations
-|	of objects.
+|	Overrides for "weak" definitions in core HAL.
 |
 \****************************************************************************/
 
