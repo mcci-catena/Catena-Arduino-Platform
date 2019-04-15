@@ -366,7 +366,6 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 		while (! m_Alarm)
 			{
 			++nWakes;
-			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
 			HAL_PWR_EnterSTOPMode(
 				PWR_MAINREGULATOR_ON,
 				PWR_SLEEPENTRY_WFI
@@ -374,23 +373,20 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 			}
 		break;
 
+	// NOTE(tmm@mcci.com) STANDBY would cause a reboot,
+	// which is a bad idea for an API named "SleepForAlarm".
+	// So we map it to StopWithLowPowerRegulator. Please DO NOT
+	// change this, becuase you risk breaking old code. Add
+	// a new API instead (StandbyForAlarm(), for example).
+	case SleepMode::Standby:
 	case SleepMode::StopWithLowPowerRegulator:
 		while (! m_Alarm)
 			{
 			++nWakes;
-			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
 			HAL_PWR_EnterSTOPMode(
 				PWR_LOWPOWERREGULATOR_ON,
 				PWR_SLEEPENTRY_WFI
 				);
-			}
-		break;
-
-	case SleepMode::Standby:
-		while (! m_Alarm)
-			{
-			++nWakes;
-			HAL_PWR_EnterSTANDBYMode();
 			}
 		break;
 		}
