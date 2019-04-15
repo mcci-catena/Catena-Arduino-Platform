@@ -419,12 +419,10 @@ void CatenaStm32L0Rtc::SleepForAlarm(
 			}
 		break;
 
+	/* Standby mode is special; it reboots. So.. no point in looping */
 	case SleepMode::Standby:
-		while (! m_Alarm)
-			{
-			++nWakes;
-			HAL_PWR_EnterSTANDBYMode();
-			}
+		HAL_PWR_EnterTrueSTANDBYMode();
+		/* unreachable */
 		break;
 		}
 
