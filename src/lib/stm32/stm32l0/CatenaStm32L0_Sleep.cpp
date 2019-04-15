@@ -1,5 +1,3 @@
-/* CatenaStm32L0_Sleep.cpp	Wed Oct 31 2018 10:57:42 chwon */
-
 /*
 
 Module:  CatenaStm32L0_Sleep.cpp
@@ -7,27 +5,11 @@ Module:  CatenaStm32L0_Sleep.cpp
 Function:
 	Home for CatenaStm32L0::Sleep()
 
-Version:
-	V0.11.0	Wed Oct 31 2018 10:57:42 chwon	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying LICENSE file.
 
 Author:
 	ChaeHee Won, MCCI Corporation	October 2018
-
-Revision history:
-   0.11.0  Wed Oct 31 2018 10:57:42  chwon
-	Module created.
 
 */
 
