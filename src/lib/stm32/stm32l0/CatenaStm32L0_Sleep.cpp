@@ -95,8 +95,9 @@ Returns:
 
 void CatenaStm32L0::Sleep(uint32_t howLongInSeconds)
 	{
+		
 	this->m_Rtc.SetAlarm(howLongInSeconds);
-	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::Standby);
+	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::StopWithLowPowerRegulator);
 
 	// add the number of ms that we were asleep to the millisecond timer.
 	// we don't need extreme accuracy.
