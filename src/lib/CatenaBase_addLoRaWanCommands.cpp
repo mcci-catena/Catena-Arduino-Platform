@@ -1,5 +1,3 @@
-/* CatenaBase_addLoRaWanCommands.cpp	Mon Dec 03 2018 13:33:11 chwon */
-
 /*
 
 Module:  CatenaBase_addLoRaWanCommands.cpp
@@ -7,27 +5,12 @@ Module:  CatenaBase_addLoRaWanCommands.cpp
 Function:
 	The command engine for lorawan commands on the Catena base platform
 
-Version:
-	V0.12.0	Mon Dec 03 2018 13:33:11 chwon	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying LICENSE file.
 
 Author:
+	Terry Moore, MCCI Corporation	July 2017
 	ChaeHee Won, MCCI Corporation	December 2018
-
-Revision history:
-   0.12.0  Mon Dec 03 2018 13:33:11  chwon
-	Module created.
 
 */
 
