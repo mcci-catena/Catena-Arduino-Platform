@@ -1,5 +1,3 @@
-/* CatenaBase_addLoRaWanCommands.cpp	Mon Dec 03 2018 13:33:11 chwon */
-
 /*
 
 Module:  CatenaBase_addLoRaWanCommands.cpp
@@ -7,31 +5,18 @@ Module:  CatenaBase_addLoRaWanCommands.cpp
 Function:
 	The command engine for lorawan commands on the Catena base platform
 
-Version:
-	V0.12.0	Mon Dec 03 2018 13:33:11 chwon	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying LICENSE file.
 
 Author:
+	Terry Moore, MCCI Corporation	July 2017
 	ChaeHee Won, MCCI Corporation	December 2018
-
-Revision history:
-   0.12.0  Mon Dec 03 2018 13:33:11  chwon
-	Module created.
 
 */
 
 #include "CatenaBase.h"
+
+#include <Arduino_LoRaWAN_lmic.h>
 
 #include "Catena_Log.h"
 
@@ -46,10 +31,12 @@ using namespace McciCatena;
 \****************************************************************************/
 
 static cCommandStream::CommandFn doConfigure;
+static cCommandStream::CommandFn doJoin;
 
 static const cCommandStream::cEntry sDispatchEntries[] =
 	{
 	{ "configure", doConfigure },
+	{ "join", doJoin },
 	};
 
 static cCommandStream::cDispatch
@@ -150,7 +137,6 @@ Returns:
 	Command status
 
 */
-
 
 static cCommandStream::CommandStatus
 doConfigure(
@@ -256,6 +242,57 @@ doConfigure(
 				;
 			}
 		}
+	}
+
+/*
+
+Name:	doJoin()
+
+Function:
+	Implement the LoRaWAN join command
+
+Definition:
+	static cCommandStream::CommandFn doJoin;
+
+	static cCommandStream::CommandStatus
+		doJoin(
+			cCommandStream *pThis,
+			void *pContext,
+			int argc,
+			char **argv
+			);
+
+Description:
+	This function checks arguments, then forces an unjoin, followed by
+	a join. If the device is not configured for OTAA mode, it
+	does nothing. FRAM is not reset unless the join succeeds.
+	A `lorawan configure reset` may be more along the lines
+	of what you want, if you want to ship a device.
+
+	The parsed syntax:
+
+	lorawan join
+
+Returns:
+	Command status
+
+*/
+
+static cCommandStream::CommandStatus
+doJoin(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+
+	if (argc > 1)
+		return cCommandStream::CommandStatus::kInvalidParameter;
+
+	LMIC_unjoin();
+	LMIC_startJoining();
+	return cCommandStream::CommandStatus::kSuccess;
 	}
 
 /**** end of CatenaBase_addLoRaWanCommands.cpp ****/
