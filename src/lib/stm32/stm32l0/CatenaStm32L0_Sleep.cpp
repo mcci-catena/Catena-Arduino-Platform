@@ -95,7 +95,7 @@ Returns:
 
 void CatenaStm32L0::Sleep(uint32_t howLongInSeconds)
 	{
-		
+
 	this->m_Rtc.SetAlarm(howLongInSeconds);
 	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::StopWithLowPowerRegulator);
 

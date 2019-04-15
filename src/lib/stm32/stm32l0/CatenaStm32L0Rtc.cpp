@@ -109,7 +109,7 @@ void HAL_RTC_MspInit(
 		__HAL_RCC_RTC_ENABLE();
 		/* USER CODE BEGIN RTC_MspInit 1 */
 		HAL_NVIC_SetPriority(RTC_IRQn, TICK_INT_PRIORITY, 0U);
-		HAL_NVIC_EnableIRQ(RTC_IRQn); 
+		HAL_NVIC_EnableIRQ(RTC_IRQn);
 		/* USER CODE END RTC_MspInit 1 */
 		}
 	}
@@ -121,7 +121,7 @@ void HAL_RTC_MspDeInit(
 	if (hRtc->Instance == RTC)
 		{
 		/* USER CODE BEGIN RTC_MspDeInit 0 */
-		HAL_NVIC_DisableIRQ(RTC_IRQn); 
+		HAL_NVIC_DisableIRQ(RTC_IRQn);
 		/* USER CODE END RTC_MspDeInit 0 */
 		/* Peripheral clock disable */
 		__HAL_RCC_RTC_DISABLE();
@@ -210,13 +210,13 @@ bool CatenaStm32L0Rtc::begin(bool fResetTime)
 			Serial.println("HAL_RTC_SetTime() failed");
 			return false;
 			}
-	
+
 		/* Sunday 1st January 2017 */
 		Date.WeekDay = RTC_WEEKDAY_SUNDAY;
 		Date.Month = RTC_MONTH_JANUARY;
 		Date.Date = 0x1;
 		Date.Year = 0x0;
-	
+
 		if (HAL_RTC_SetDate(
 			&this->m_hRtc,
 			&Date,
