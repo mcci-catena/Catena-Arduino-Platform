@@ -1,5 +1,3 @@
-/* CatenaStm32L0_Sleep.cpp	Wed Oct 31 2018 10:57:42 chwon */
-
 /*
 
 Module:  CatenaStm32L0_Sleep.cpp
@@ -7,27 +5,11 @@ Module:  CatenaStm32L0_Sleep.cpp
 Function:
 	Home for CatenaStm32L0::Sleep()
 
-Version:
-	V0.11.0	Wed Oct 31 2018 10:57:42 chwon	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying LICENSE file.
 
 Author:
 	ChaeHee Won, MCCI Corporation	October 2018
-
-Revision history:
-   0.11.0  Wed Oct 31 2018 10:57:42  chwon
-	Module created.
 
 */
 
@@ -39,10 +21,7 @@ using namespace McciCatena;
 
 /****************************************************************************\
 |
-|		Manifest constants & typedefs.
-|
-|	This is strictly for private types and constants which will not
-|	be exported.
+|	Manifest constants & typedefs.
 |
 \****************************************************************************/
 
@@ -52,23 +31,13 @@ using namespace McciCatena;
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only
-|	using the ROM storage class; they may be global.
-|
 \****************************************************************************/
 
 
 
 /****************************************************************************\
 |
-|	VARIABLES:
-|
-|	If program is to be ROM-able, these must be initialized
-|	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those
-|	variables owned by this module should be declared here, using the BSS
-|	keyword; this allows for linkers that dislike multiple declarations
-|	of objects.
+|	Variables.
 |
 \****************************************************************************/
 
@@ -95,8 +64,9 @@ Returns:
 
 void CatenaStm32L0::Sleep(uint32_t howLongInSeconds)
 	{
+
 	this->m_Rtc.SetAlarm(howLongInSeconds);
-	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::Standby);
+	this->m_Rtc.SleepForAlarm(CatenaStm32L0Rtc::SleepMode::StopWithLowPowerRegulator);
 
 	// add the number of ms that we were asleep to the millisecond timer.
 	// we don't need extreme accuracy.
