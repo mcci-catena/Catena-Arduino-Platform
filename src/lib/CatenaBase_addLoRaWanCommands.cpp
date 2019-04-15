@@ -155,7 +155,6 @@ Returns:
 
 */
 
-
 static cCommandStream::CommandStatus
 doConfigure(
 	cCommandStream *pThis,
