@@ -109,24 +109,74 @@ McciCatena::cCommandStream::poll(void)
                         //	"received: %s\n",
                         //	this->m_buffer
                         //	);
+                        this->m_fCmdActive = true;
+                        this->m_CmdStatus = kPending;
 
-                        int status = this->parseAndDispatch();
-                        if (status == 0)
-                                this->printf("\rOK\n");
+                        auto const status = this->parseAndDispatch();
+                        if (this->m_CmdStatus != kPending)
+                                {
+                                if (status != kPending)
+                                        {
+                                        // log an error, should have returned pending.
+                                        }
+                                else
+                                        {
+                                        // correct. command completed asynch and returned
+                                        // pending on the synch path.
+                                        }
+                                }
                         else
-                                this->printf("\r?%d\n", status);
+                                {
+                                // command is still pending, so status can be used.
+                                // we're being careful to avoid unneeded writes to
+                                // m_CmdStatus so that a data breakpoint can work
+                                // to catch "real" updates.
+                                if (status != kPending)
+                                        this->m_CmdStatus = CommandStatus(status);
+                                else
+                                        {
+                                        // this->printf("(asynch operation started)\n");
+                                        }
+                                }
                         }
                 else
                         {
                         this->printf(
-                                "?*** error %u ***\n",
+                                "\r?*** read error %u ***\n",
                                 this->m_ReadStatus
                                 );
                         }
                 }
 
-        if (! this->m_fReadPending)
+        if (this->m_fCmdActive && this->m_CmdStatus != kPending)
+                {
+                this->m_fCmdActive = false;
+                if (this->m_CmdStatus == kSuccess)
+                        this->printf("\rOK\n");
+                else
+                        this->printf("\r?%d\n", this->m_CmdStatus);
+                }
+
+        if (! this->m_fCmdActive && ! this->m_fReadPending)
                 this->launchRead();
+        }
+
+void
+McciCatena::cCommandStream::completeCommand(
+        cCommandStream::CommandStatus status
+        )
+        {
+        if (! this->m_fCmdActive)
+                // command not active, ignore.
+                ;
+        else if (! (this->m_CmdStatus == kPending))
+                // already completed, ignore.
+                ;
+        else if (status == kPending)
+                // can't complete with pending!
+                ;
+        else
+                this->m_CmdStatus = status;
         }
 
 int
