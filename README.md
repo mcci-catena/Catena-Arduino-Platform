@@ -34,6 +34,7 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [FRAM commands](#fram-commands)
 	- [LoRaWAN commands](#lorawan-commands)
 		- [LoRaWAN Parameters](#lorawan-parameters)
+- [Adding your own commands](#adding-your-own-commands)
 - [Example sketches](#example-sketches)
 	- [`catena_hello`](#catena_hello)
 	- [`catena_hello_lora`](#catena_hello_lora)
@@ -328,6 +329,66 @@ Notes that these parameters are generall not loaded into the LMIC immediately. T
 `lorawan configure fcntdown` _[ value ]_ | either | the current downlink framecount, `FCntDown` in the LoRaWAN spec.
 `lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
 
+## Adding your own commands
+
+Here's a step-by-step procedure
+
+- Include the header file.
+
+```c++
+#include <Catena_CommandStream.h>
+
+// for simplicity, we always assume this:
+using namespace McciCatena;
+```
+
+- Declare your command functions.
+
+```c++
+// forward references to the command functions
+cCommandStream::CommandFn cmdOne, cmdTwo /*, .. etc. */;
+```
+
+- Create a table of commands.  In this example, we use `static`, but that's not required.
+
+```c++
+// the individual commmands are put in this table
+static const cCommandStream::cEntry sMyExtraCommmands[] =
+        {
+        { "hello", cmdHello },
+        // other commands go here....
+        };
+```
+
+- Create the top-level structure that represents the command table to the parser. This cannot be `const`, becuase internal fields are used for linkage (to avoid run-time memory allocation in the library).
+
+```c++
+// a top-level structure wraps the above and connects to the system table
+// it optionally includes a "first word" so you can for sure avoid name clashes
+// with commands defined by the framework.
+static cCommandStream::cDispatch
+sMyExtraCommands_top(
+        sMyExtraCommmands,          // this is the pointer to the table
+        sizeof(sMyExtraCommmands),  // this is the size of the table
+        "application"               // this is the "first word" for all the commands
+                                    // in this table. If nullptr, then the commands
+                                    // are added to the main table.
+        );
+```
+
+- Register the table with the framework. As usual, we assume `gCatena` names the global top-level object.
+
+```c++
+gCatena.addCommands(
+    // app dispatch table, passed by reference
+    sMyExtraCommands_top,
+    // optionally a context pointer using static_cast<void *>().
+    // normally only libraries (needing to be reentrant) need
+    // to use the context pointer.
+    nullptr
+    );
+```
+
 ## Example sketches
 
 ### `catena_hello`
@@ -358,6 +419,7 @@ This sketch is very similar to `cathea_hello`. It shows how to add a user-define
 
 - HEAD includes the following changes.
 
+  - [#160](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157) add section in README.md: [Adding Your Own Commands](#adding-your-own-commands).
   - [#157](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157), [#153](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/153) Map SleepMode::Standby to STOP, and remove ineffective calls to `__HAL_PWR_CLEAR_FLAG()` in STM32 SleepForAlarm(). [#150](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/150) change STM32 Sleep() to request STOP mode instead of STANDBY mode.
   - [#28](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/28) add `lorawan join` command.
   - [#145](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/145) Fix errors in `catena_hello_lora` example.
