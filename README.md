@@ -479,7 +479,7 @@ This sketch is very similar to `cathea_hello`. It shows how to add a user-define
 
 - HEAD includes the following changes.
 
-  - [#161](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/161) adds asynchronous command processing.
+  - [#161](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/161) adds asynchronous command processing. v0.14.0.60.
   - [#160](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/160) add section in README.md: [Adding Your Own Commands](#adding-your-own-commands).
   - [#157](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157), [#153](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/153) Map SleepMode::Standby to STOP, and remove ineffective calls to `__HAL_PWR_CLEAR_FLAG()` in STM32 SleepForAlarm(). [#150](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/150) change STM32 Sleep() to request STOP mode instead of STANDBY mode.
   - [#28](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/28) add `lorawan join` command.
