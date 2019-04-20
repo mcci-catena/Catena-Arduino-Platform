@@ -28,6 +28,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
 		- [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
 		- [The command parser](#the-command-parser)
+		- [Command stream methods for use by functions](#command-stream-methods-for-use-by-functions)
+		- [Synchronous Command Functions](#synchronous-command-functions)
+		- [Asynchronous Command Functions](#asynchronous-command-functions)
 	- [`Catena_functional.h`](#catena_functionalh)
 - [Command Summary](#command-summary)
 	- [Standard commands](#standard-commands)
@@ -273,6 +276,41 @@ static const cCommandStream::cEntry table[] = {
 };
 ```
 
+The signature of each function is:
+
+```c++
+cCommandStream::CommandStatus function1(
+    cCommandStream *pThis,
+    void *pContext,
+    int argc,
+    char **argv
+    );
+```
+
+`pThis` points to the parent `cCommandStream` instance. `pContext` is the user data from the relevant `cCommandStream::cDispatch` object. `argc` and `argv` are very much like the command arguments to a C `main()` function. `argv[0]` is the matching command, and `argv[1..argc-1]` are the parsed arguments from the command line.
+
+A commmand function may operate synchronously or asynchronously.
+
+#### Command stream methods for use by functions
+
+Command stream functions may call any of these functions:
+
+- `pThis->printf()` formats results to pass back to the command source.
+- `pThis->getuint32()` scans an argument and converts to `uint32_t`.
+- `pThis->completeCommand(CommandStatus)` signals the completion of an [asynchronous command](asynchronous-command-functions).
+
+#### Synchronous Command Functions
+
+A synchronous command function does all of its work in the initial function call, and returns a status code.  The status code can be any value _except_ `CommandStatus::kPending`. Synchronous commands must not call `pThis->completeCommand(CommandStatus)`.
+
+#### Asynchronous Command Functions
+
+An asynchronous command function allows for work to continue after the initial function call. The main command function typically has two parts.
+
+1. The first part of the command is normally coded synchronously; it checks parameters, etc., and retuns non-`kPending` status. In this part of the command, there's no chance of `pThis->completeCommand` being called.
+
+2. The second part of the command is coded asynchronously. The asynchronous paths each call `pThis->completeCommand()` when all work has been done. Once the function has established at least one asynchronous completion path, the main function must return `kPending` (and must ensure that all the completion paths call `completeCommand()`).
+
 ### `Catena_functional.h`
 
 This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
@@ -331,7 +369,7 @@ Notes that these parameters are generall not loaded into the LMIC immediately. T
 
 ## Adding your own commands
 
-Here's a step-by-step procedure
+Here's a step-by-step procedure. There's a fully worked example, [catena_usercommand](#catenausercommand).
 
 - Include the header file.
 
@@ -353,9 +391,10 @@ cCommandStream::CommandFn cmdOne, cmdTwo /*, .. etc. */;
 
 ```c++
 // the individual commmands are put in this table
-static const cCommandStream::cEntry sMyExtraCommmands[] =
+static const cCommandStream::cEntry sMyCommmandTable[] =
         {
-        { "hello", cmdHello },
+        { "one", cmdOne },
+        { "two", cmdTwo },
         // other commands go here....
         };
 ```
@@ -366,14 +405,13 @@ static const cCommandStream::cEntry sMyExtraCommmands[] =
 // a top-level structure wraps the above and connects to the system table
 // it optionally includes a "first word" so you can for sure avoid name clashes
 // with commands defined by the framework.
-static cCommandStream::cDispatch
-sMyExtraCommands_top(
-        sMyExtraCommmands,          // this is the pointer to the table
-        sizeof(sMyExtraCommmands),  // this is the size of the table
-        "application"               // this is the "first word" for all the commands
-                                    // in this table. If nullptr, then the commands
-                                    // are added to the main table.
-        );
+static cCommandStream::cDispatch sMyCommands(
+    sMyCommmandTable,          	// this is the pointer to the table
+    sizeof(sMyCommmandTable),  	// this is the size of the table
+    "application"               // this is the "first word" for all the commands
+                                // in this table. If nullptr, then the commands
+                                // are added to the main table.
+    );
 ```
 
 - Register the table with the framework. As usual, we assume `gCatena` names the global top-level object.
@@ -381,12 +419,34 @@ sMyExtraCommands_top(
 ```c++
 gCatena.addCommands(
     // app dispatch table, passed by reference
-    sMyExtraCommands_top,
+    sMyCommands,
     // optionally a context pointer using static_cast<void *>().
     // normally only libraries (needing to be reentrant) need
     // to use the context pointer.
     nullptr
     );
+```
+
+- Write your command functions. Here's an example.
+
+```c+++
+// process the command "application one"
+// argv[0] is "one" (the matching word)
+// argv[1..argc-1] are the arguments, if any
+cCommandStream::CommandStatus cmdOne(
+    cCommandStream *pThis,
+    void *pContext,
+    int argc,
+    char **argv
+    )
+    {
+    // output your response using pThis->printf(), so that if there
+    // are multiple command sources, the answers will go to the right
+    // place.
+    pThis->printf("Hello, world!\n");
+
+    return cCommandStream::CommandStatus::kSuccess;
+    }
 ```
 
 ## Example sketches
@@ -419,7 +479,8 @@ This sketch is very similar to `cathea_hello`. It shows how to add a user-define
 
 - HEAD includes the following changes.
 
-  - [#160](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157) add section in README.md: [Adding Your Own Commands](#adding-your-own-commands).
+  - [#161](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/161) adds asynchronous command processing. v0.14.0.60.
+  - [#160](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/160) add section in README.md: [Adding Your Own Commands](#adding-your-own-commands).
   - [#157](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157), [#153](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/153) Map SleepMode::Standby to STOP, and remove ineffective calls to `__HAL_PWR_CLEAR_FLAG()` in STM32 SleepForAlarm(). [#150](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/150) change STM32 Sleep() to request STOP mode instead of STANDBY mode.
   - [#28](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/28) add `lorawan join` command.
   - [#145](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/145) Fix errors in `catena_hello_lora` example.

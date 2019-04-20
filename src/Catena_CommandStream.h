@@ -64,6 +64,7 @@ public:
                 kReadError = 5,
                 kWriteError = 6,
                 kCreateError = 7,
+                kPending = 8,
                 };
 
         typedef CommandStatus (CommandFn)(
@@ -95,6 +96,9 @@ public:
                 uint32_t& result,
                 uint32_t uDefault
                 );
+
+        // complete an asynchronous command.
+        void completeCommand(CommandStatus status);
 
 protected:
 
@@ -141,6 +145,8 @@ private:
         bool m_fReadPending = false;	// is a read pending?
         bool m_fReadComplete = false;	// is a read complete?
         uint8_t m_ReadStatus;		// status of last read.
+        bool m_fCmdActive = false;       // is a command being processed.
+	CommandStatus m_CmdStatus;	// status of this operation.
 
         // the argument vector
         char *(m_argv[sizeof(m_buffer)/4]);
