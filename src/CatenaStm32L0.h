@@ -93,6 +93,9 @@ public:
 			uint32_t Multiplier = 1
 			) const;
 
+	// get system clock rate in Hz; must be overridden
+	virtual uint64_t GetSystemClockRate(void) const override;
+
 	// read the current battery voltage, in engineering units
 	virtual float ReadVbat(void) const = 0;
 	virtual float ReadVbus(void) const = 0;
