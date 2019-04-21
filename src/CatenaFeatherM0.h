@@ -81,6 +81,12 @@ public:
 		PIN_STATUS_LED = 13,
 		};
 
+	// get system clock rate in Hz. Always fixed for Feathers.
+	virtual uint64_t GetSystemClockRate(void) const override
+		{
+		return 48 * 1000 * 1000;
+		}
+
 	// methods
 	virtual bool begin() override;
 

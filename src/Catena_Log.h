@@ -71,21 +71,60 @@ public:
 		this->m_uDebugFlags = uDebugFlags;
 		}
 
-	// check whether flags are enabled ... inline for speed
+	// old, incorrect polarity: return false if isEnabled() is true..
+	[[deprecated("use isEnabled(), check polarities; see issue #165")]]
 	bool isenabled(DebugFlags uDebugFlags) const
 		{
-		return ((uDebugFlags & this->m_uDebugFlags) == 0 &&
-		         uDebugFlags != kAlways && 
-			 uDebugFlags != kFatal);
+		return !this->isEnabled(uDebugFlags);
 		}
 
-	// log	
+	// check whether flags are enabled ... inline for speed
+	bool isEnabled(DebugFlags uDebugFlags) const
+		{
+		return ((uDebugFlags & this->m_uDebugFlags) != 0 ||
+		         uDebugFlags == kAlways ||
+			 uDebugFlags == kFatal);
+		}
+
+	// log, using debug flags. Note that args are evaluated even if no print.
 	void printf(
 		DebugFlags uDebugFlags,
 		const char *pFmt,
 		...
 		) __attribute__((__format__(__printf__, 3, 4)));
 		/* format counts start with 2 for non-static C++ member fns */
+
+	// log, using debug flags and a template; you can write:
+	//  gLog.cond(gLog.kTrace,
+	//	[&](){gCatena.SafePrintf("message", arg1, arg2); })
+	// and the debug code will only be called if trace is enabled.
+	// But it may be nicer to write:
+	// if (gLog.isEnabled(gLog.kTrace))
+	//	gCatena.SafePrintf("message", arg1, arg2...);
+	template <typename Functor>
+	void cond(
+		DebugFlags uDebugFlags,
+		Functor &f
+		)
+		{
+		if (this->isEnabled(uDebugFlags))
+			f();
+		}
+
+	// fetch current log flags
+	DebugFlags getFlags(void) const
+		{
+		return this->m_uDebugFlags;
+		}
+
+	// set log flags and return previous value
+	DebugFlags setFlags(DebugFlags flags)
+		{
+		DebugFlags const oldFlags = this->m_uDebugFlags;
+
+		this->m_uDebugFlags = flags;
+		return oldFlags;
+		}
 
 private:
 	DebugFlags m_uDebugFlags;

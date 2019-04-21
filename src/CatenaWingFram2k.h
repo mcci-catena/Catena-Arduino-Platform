@@ -52,6 +52,12 @@ Revision history:
 
 #include <Arduino_LoRaWAN_ttn.h>
 
+//
+// TODO(tmm@mcci.com)
+// For some reason CatenaWingFram2k doesn't depend on CatenaFeatherM0.
+// This seems wrong, and should be straightened out.
+//
+
 namespace McciCatena {
 
 class CatenaWingFram2k : public CatenaSamd21
@@ -85,6 +91,12 @@ public:
 		};
 
 	// methods
+	// get system clock rate in Hz. Always fixed for Feathers.
+	virtual uint64_t GetSystemClockRate(void) const override
+		{
+		return 48 * 1000 * 1000;
+		}
+
 	virtual bool begin() override;
 
         virtual McciCatena::cFram *getFram(void) override

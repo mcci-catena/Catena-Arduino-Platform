@@ -91,7 +91,7 @@ Revision history:
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)	\
 	(((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
-#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 60)	/* v0.14.0.60 */
+#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 62)	/* v0.14.0.62 */
 
 #define	CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)	\
 	(((v) >> 24u) & 0xFFu)
@@ -264,6 +264,10 @@ public:
 
 	inline uint32_t GetPlatformFlags(void);
 
+	// get system clock rate in Hz; must be overridden
+	virtual uint64_t GetSystemClockRate(void) const = 0;
+
+	// start the Catena framework.
         virtual bool begin(void);
 
 	virtual const char *CatenaName(void) const = 0; // requires that an override be provided.
