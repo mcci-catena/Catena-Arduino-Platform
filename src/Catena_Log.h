@@ -87,6 +87,21 @@ public:
 		) __attribute__((__format__(__printf__, 3, 4)));
 		/* format counts start with 2 for non-static C++ member fns */
 
+	// fetch current log flags
+	DebugFlags getFlags(void) const
+		{
+		return this->m_uDebugFlags;
+		}
+
+	// set log flags and return previous value
+	DebugFlags setFlags(DebugFlags flags)
+		{
+		DebugFlags const oldFlags = this->m_uDebugFlags;
+
+		this->m_uDebugFlags = flags;
+		return oldFlags;
+		}
+
 private:
 	DebugFlags m_uDebugFlags;
 	};
