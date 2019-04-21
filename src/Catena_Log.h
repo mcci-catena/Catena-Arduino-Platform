@@ -94,6 +94,23 @@ public:
 		) __attribute__((__format__(__printf__, 3, 4)));
 		/* format counts start with 2 for non-static C++ member fns */
 
+	// log, using debug flags and a template; you can write:
+	//  gLog.cond(gLog.kTrace,
+	//	[&](){gCatena.SafePrintf("message", arg1, arg2); })
+	// and the debug code will only be called if trace is enabled.
+	// But it may be nicer to write:
+	// if (gLog.isEnabled(gLog.kTrace))
+	//	gCatena.SafePrintf("message", arg1, arg2...);
+	template <typename Functor>
+	void cond(
+		DebugFlags uDebugFlags,
+		Functor &f
+		)
+		{
+		if (this->isEnabled(uDebugFlags))
+			f();
+		}
+
 	// fetch current log flags
 	DebugFlags getFlags(void) const
 		{

@@ -131,6 +131,7 @@ cStreamLineCollector	KEYWORD1
 cTotalizer	KEYWORD1
 clock_seq_hi_and_reserved	KEYWORD2
 clock_seq_low	KEYWORD2
+cond	KEYWORD2
 configure	KEYWORD2
 create	KEYWORD2
 dataOffset	KEYWORD2
