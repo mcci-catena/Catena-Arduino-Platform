@@ -71,15 +71,22 @@ public:
 		this->m_uDebugFlags = uDebugFlags;
 		}
 
-	// check whether flags are enabled ... inline for speed
+	// old, incorrect polarity: return false if isEnabled() is true..
+	[[deprecated("use isEnabled(), check polarities; see issue #165")]]
 	bool isenabled(DebugFlags uDebugFlags) const
 		{
-		return ((uDebugFlags & this->m_uDebugFlags) == 0 &&
-		         uDebugFlags != kAlways && 
-			 uDebugFlags != kFatal);
+		return !this->isEnabled(uDebugFlags);
 		}
 
-	// log	
+	// check whether flags are enabled ... inline for speed
+	bool isEnabled(DebugFlags uDebugFlags) const
+		{
+		return ((uDebugFlags & this->m_uDebugFlags) != 0 ||
+		         uDebugFlags == kAlways ||
+			 uDebugFlags == kFatal);
+		}
+
+	// log, using debug flags. Note that args are evaluated even if no print.
 	void printf(
 		DebugFlags uDebugFlags,
 		const char *pFmt,

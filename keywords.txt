@@ -190,7 +190,7 @@ isReplicated	KEYWORD2
 isStandard	KEYWORD2
 isValid	KEYWORD2
 isbound	KEYWORD2
-isenabled	KEYWORD2
+isEnabled	KEYWORD2
 islocated	KEYWORD2
 locate	KEYWORD2
 loop	KEYWORD2

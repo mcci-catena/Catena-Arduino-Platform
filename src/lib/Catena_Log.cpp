@@ -53,7 +53,7 @@ cLog::printf(
 		return;
 
 	// either inbound mask must be zero or must match
-	if (this->isenabled(uDebugFlags))
+	if (! this->isEnabled(uDebugFlags))
 		return;
 
 	char buf[128];
