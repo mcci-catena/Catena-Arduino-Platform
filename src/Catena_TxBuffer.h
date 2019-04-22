@@ -1,43 +1,15 @@
-/* Catena_TxBuffer.h	Wed Nov 21 2018 12:33:24 chwon */
-
 /*
 
 Module:  Catena_TxBuffer.h
 
 Function:
-	namespace McciCatena, class TxBuffer_t;
-
-Version:
-	V0.11.0	Wed Nov 21 2018 12:33:24 chwon	Edit level 5
+        namespace McciCatena, class TxBuffer_t;
 
 Copyright notice:
-	This file copyright (C) 2016-2018 by
+        See accompanying license file.
 
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
 Author:
-	Terry Moore, MCCI Corporation	December 2016
-
-Revision history:
-   0.4.0  Mon Dec  5 2016 00:02:11  tmm
-	Module created.
-
-   0.6.1  Wed Nov 08 2017 22:35:02  tmm
-        #7: Fix error in handling of negative args to 
-        TxBuffer_t::put2(int32_t) and TxBuffer_t::put2(int32_t).
-
-   0.8.0 Sat Feb 03 2018 16:48:02 vel
-    	Added 0x16 Format.
-
-   0.11.0  Wed Nov 21 2018 12:33:24  chwon
-	Added FormatSensor6 (0x18) format.
+        Terry Moore, MCCI Corporation	December 2016
 
 */
 
@@ -49,13 +21,14 @@ Revision history:
 namespace McciCatena {
 
 // build a transmit buffer
-class TxBuffer_t
+template <std::size_t N=32>
+class AbstractTxBuffer_t
         {
 private:
-        uint8_t buf[32];   // this sets the largest buffer size
+        uint8_t buf[N];    // this sets the largest buffer size
         uint8_t *p;
 public:
-        TxBuffer_t() : p(buf) {};
+        AbstractTxBuffer_t() : p(buf) {};
         void begin()
                 {
                 p = buf;
@@ -118,18 +91,46 @@ public:
                 put((uint8_t)(v >> 16));
                 put((uint8_t)(v >> 8));
                 put((uint8_t)v);
-        }
+                }
+        // put a 4-byte unsigned integer.
+        void put4u(uint32_t v)
+                {
+                put((uint8_t)(v >> 24));
+                put((uint8_t)(v >> 16));
+                put((uint8_t)(v >> 8));
+                put((uint8_t)v);
+                }
+        // put a 4-byte signed integer
+        void put4s(int32_t v)
+                {
+                // just treat the same as uint32_t.
+                put4u((uint32_t)v);
+                }
+        // put a 4-byte IEEE floating point
+        void put4f(float v)
+                {
+                union { uint32_t ui; float f; } x;
+                x.f = v;
+                put4u(x.ui);
+                }
+        // get address of next byte to be filled
         uint8_t *getp(void)
                 {
                 return p;
                 }
-        size_t getn(void)
+        std::size_t getn(void)
                 {
                 return p - buf;
                 }
         uint8_t *getbase(void)
                 {
                 return buf;
+                }
+        uint8_t *putflag(uint8_t v)
+                {
+                uint8_t * const pResult = p;
+                put(v);
+                return pResult;
                 }
         void put2sf(float v)
                 {
@@ -172,7 +173,7 @@ public:
                 }
         void putT(float T)
                 {
-                put2sf(T * 256.0f + 0.5f);                
+                put2sf(T * 256.0f + 0.5f);
                 }
         void putRH(float RH)
                 {
@@ -206,7 +207,16 @@ public:
                 {
                 put2u(fracAsFloat12);
                 }
+
+        // convert a float in [0..1) to unsigned 16-bit float.
+        static uint16_t f2sflt12(float f);
+        static uint16_t f2sflt16(float f);
+        static uint16_t f2uflt12(float f);
+        static uint16_t f2uflt16(float f);
         };
+
+// for backwards compatibilty
+using TxBuffer_t = AbstractTxBuffer_t<32>;
 
 /* the magic byte at the front of the buffer */
 enum : uint8_t   {
@@ -216,6 +226,7 @@ enum : uint8_t   {
         FormatSensor4 = 0x16,
         FormatSensor5 = 0x17,
         FormatSensor6 = 0x18,
+        FormatSensor7 = 0x19,
         };
 
 /* the flags for the second byte of the buffer */
@@ -228,7 +239,7 @@ enum  FlagsSensor1 : uint8_t  {
         FlagSoilTH = 1 << 5,
         };
 
-enum class FlagsSensor2 : uint8_t 
+enum class FlagsSensor2 : uint8_t
         {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
@@ -244,13 +255,13 @@ constexpr FlagsSensor2 operator| (const FlagsSensor2 lhs, const FlagsSensor2 rhs
         return FlagsSensor2(uint8_t(lhs) | uint8_t(rhs));
         };
 
-FlagsSensor2 operator|= (FlagsSensor2 &lhs, const FlagsSensor2 &rhs)
+inline FlagsSensor2 operator|= (FlagsSensor2 &lhs, const FlagsSensor2 &rhs)
         {
         lhs = lhs | rhs;
         return lhs;
         };
 
-enum class FlagsSensor3 : uint8_t 
+enum class FlagsSensor3 : uint8_t
         {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
@@ -266,13 +277,13 @@ constexpr FlagsSensor3 operator| (const FlagsSensor3 lhs, const FlagsSensor3 rhs
         return FlagsSensor3(uint8_t(lhs) | uint8_t(rhs));
         };
 
-FlagsSensor3 operator|= (FlagsSensor3 &lhs, const FlagsSensor3 &rhs)
+inline FlagsSensor3 operator|= (FlagsSensor3 &lhs, const FlagsSensor3 &rhs)
         {
         lhs = lhs | rhs;
         return lhs;
         };
 
-enum class FlagsSensor4 : uint8_t 
+enum class FlagsSensor4 : uint8_t
         {
         FlagVbat = 1 << 0,
         FlagVcc = 1 << 1,
@@ -287,12 +298,12 @@ constexpr FlagsSensor4 operator| (const FlagsSensor4 lhs, const FlagsSensor4 rhs
         return FlagsSensor4(uint8_t(lhs) | uint8_t(rhs));
         };
 
-FlagsSensor4 operator|= (FlagsSensor4 &lhs, const FlagsSensor4 &rhs)
+inline FlagsSensor4 operator|= (FlagsSensor4 &lhs, const FlagsSensor4 &rhs)
         {
         lhs = lhs | rhs;
         return lhs;
         };
-	
+
 enum class FlagsSensor5 : uint8_t
         {
         FlagVbat = 1 << 0,
@@ -302,7 +313,7 @@ enum class FlagsSensor5 : uint8_t
         FlagLux = 1 << 4,
         FlagAqi = 1 << 5,
         FlagLogGasR = 1 << 6,
-	FlagAqiAccuracyMisc = 1 << 7,
+        FlagAqiAccuracyMisc = 1 << 7,
         };
 
 constexpr FlagsSensor5 operator| (const FlagsSensor5 lhs, const FlagsSensor5 rhs)
@@ -310,7 +321,7 @@ constexpr FlagsSensor5 operator| (const FlagsSensor5 lhs, const FlagsSensor5 rhs
         return FlagsSensor5(uint8_t(lhs) | uint8_t(rhs));
         };
 
-FlagsSensor5 operator|= (FlagsSensor5 &lhs, const FlagsSensor5 &rhs)
+inline FlagsSensor5 operator|= (FlagsSensor5 &lhs, const FlagsSensor5 &rhs)
         {
         lhs = lhs | rhs;
         return lhs;
@@ -328,7 +339,29 @@ constexpr FlagsSensor6 operator| (const FlagsSensor6 lhs, const FlagsSensor6 rhs
         return FlagsSensor6(uint8_t(lhs) | uint8_t(rhs));
         };
 
-FlagsSensor6 operator|= (FlagsSensor6 &lhs, const FlagsSensor6 &rhs)
+inline FlagsSensor6 operator|= (FlagsSensor6 &lhs, const FlagsSensor6 &rhs)
+        {
+        lhs = lhs | rhs;
+        return lhs;
+        };
+
+enum class FlagsSensor7 : uint8_t
+        {
+        FlagVbat  = 1 << 0,
+        FlagBoot  = 1 << 1,
+        FlagError = 1 << 2,
+        FlagMainPower = 1 << 3,
+        FlagMainDemand = 1 << 4,
+        FlagBranchPower = 1 << 5,
+        FlagBranchDemand = 1 << 6,
+        };
+
+constexpr FlagsSensor7 operator| (const FlagsSensor7 lhs, const FlagsSensor7 rhs)
+        {
+        return FlagsSensor7(uint8_t(lhs) | uint8_t(rhs));
+        };
+
+inline FlagsSensor7 operator|= (FlagsSensor7 &lhs, const FlagsSensor7 &rhs)
         {
         lhs = lhs | rhs;
         return lhs;
