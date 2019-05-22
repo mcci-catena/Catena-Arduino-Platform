@@ -18,7 +18,7 @@ Copyright notice:
                 Ithaca, NY  14850
 
         An unpublished work.  All rights reserved.
-        
+
         This file is released under terms of the accompanying LICENSE file.
 
 Author:
@@ -91,7 +91,7 @@ Revision history:
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)	\
 	(((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
-#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 63)	/* v0.14.0.63 */
+#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 70)	/* v0.14.0.70 */
 
 #define	CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)	\
 	(((v) >> 24u) & 0xFFu)
@@ -188,7 +188,7 @@ public:
 		fHasLuxSi1113 = fHasLuxSi1133,
 		// platform has BME680
 		fHasBme680 = 1 << 15,
-		// platform has RS485 on Serial1, with A3 
+		// platform has RS485 on Serial1, with A3
 		// controlling power and A4 controlling TXE
 		fHasRS485 = 1 << 16,
 		// platform uses A2 to control VOUT1 (on terminals)
