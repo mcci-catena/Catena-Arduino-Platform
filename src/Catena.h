@@ -1,4 +1,4 @@
-/* Catena.h	Thu Nov 15 2018 15:06:41 chwon */
+/* Catena.h	Tue Jun 18 2019 15:26:41 lakshmipriyan */
 
 /*
 
@@ -9,10 +9,10 @@ Function:
         the target Catena for this build.
 
 Version:
-	V0.11.0	Thu Nov 15 2018 15:06:42 chwon	Edit level 4
+	V0.12.0	Tue Jun 18 2019 15:26:41 lakshmipriyan	Edit level 5
 
 Copyright notice:
-	This file copyright (C) 2017-2018 by
+	This file copyright (C) 2017-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -38,6 +38,9 @@ Revision history:
 
    0.11.0  Thu Nov 15 2018 15:06:42  chwon
 	Add Catena 461x support.
+
+   0.12.0  Tue Jun 18 2019 15:26:41  lakshmipriyan
+	Add Catena 4617 & 4618 support.
 
 */
 
@@ -76,6 +79,12 @@ Revision history:
 #elif defined(ARDUINO_MCCI_CATENA_4612) || defined(ARDUINO_CATENA_4612)
 # include "Catena4612.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4612
+#elif defined(ARDUINO_MCCI_CATENA_4617)
+# include "Catena4617.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4617
+#elif defined(ARDUINO_MCCI_CATENA_4618)
+# include "Catena4618.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4618
 #elif defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
 # include "Catena4801.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4801

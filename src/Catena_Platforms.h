@@ -1,4 +1,4 @@
-/* Catena_Platforms.h	Thu Nov 15 2018 15:24:45 chwon */
+/* Catena_Platforms.h	Tue Jun 18 2019 12:30:18 lakshmipriyan */
 
 /*
 
@@ -8,10 +8,10 @@ Function:
 	The global platform definitions.
 
 Version:
-	V0.11.0	Thu Nov 15 2018 15:24:45 chwon	Edit level 9
+	V0.12.0	Tue Jun 18 2019 12:30:18 lakshmipriyan	Edit level 9
 
 Copyright notice:
-	This file copyright (C) 2016-2018 by
+	This file copyright (C) 2016-2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -46,6 +46,9 @@ Revision history:
 
    0.11.0  Thu Nov 15 2018 15:24:45  chwon
 	Add Catena 461x support.
+
+   0.12.0  Tue Jun 18 2019 12:30:18  lakshmipriyan
+	Add Catena 4617 & 4618 support.
 
 */
 
@@ -104,6 +107,8 @@ extern const CATENA_PLATFORM	gkPlatformCatena4612_m101;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m102;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m103;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m104;
+extern const CATENA_PLATFORM	gkPlatformCatena4617;
+extern const CATENA_PLATFORM	gkPlatformCatena4618;
 
 extern const CATENA_PLATFORM	gkPlatformCatena4801;
 

@@ -1,4 +1,4 @@
-/* CatenaBase.h	Wed Dec 05 2018 14:01:28 chwon */
+/* CatenaBase.h	Tue Jun 18 2019 12:05:25 lakshmipriyan */
 
 /*
 
@@ -8,17 +8,17 @@ Function:
         class CatenaBase interfaces.
 
 Version:
-        V0.12.0	Wed Dec 05 2018 14:01:28 chwon	Edit level 6
+        V0.12.0	Tue Jun 18 2019 12:05:25 lakshmipriyan	Edit level 7
 
 Copyright notice:
-        This file copyright (C) 2016-2018 by
+        This file copyright (C) 2016-2019 by
 
                 MCCI Corporation
                 3520 Krums Corners Road
                 Ithaca, NY  14850
 
         An unpublished work.  All rights reserved.
-
+        
         This file is released under terms of the accompanying LICENSE file.
 
 Author:
@@ -46,6 +46,9 @@ Revision history:
    0.12.0  Wed Dec 05 2018 14:01:29  chwon
 	Add getFram() method and FRAM access methods. Move CPUID_PLATFORM_MAP
 	structure and related methods.
+
+   0.13.0  Tue Jun 18 2019 12:05:25  lakshmipriyan
+	Add support for fHasHS001 & fHasSHT3x.
 
 */
 
@@ -91,7 +94,7 @@ Revision history:
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)	\
 	(((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
-#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 70)	/* v0.14.0.70 */
+#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 63)	/* v0.14.0.63 */
 
 #define	CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)	\
 	(((v) >> 24u) & 0xFFu)
@@ -188,11 +191,15 @@ public:
 		fHasLuxSi1113 = fHasLuxSi1133,
 		// platform has BME680
 		fHasBme680 = 1 << 15,
-		// platform has RS485 on Serial1, with A3
+		// platform has RS485 on Serial1, with A3 
 		// controlling power and A4 controlling TXE
 		fHasRS485 = 1 << 16,
 		// platform uses A2 to control VOUT1 (on terminals)
 		fHasVout1 = 1 << 17,
+		//platform has IDT HS001
+		fHasHS001 = 1 << 18,
+		//platform has SHT3x sensirion
+		fHasSHT3x = 1 << 19,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7

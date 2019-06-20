@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-
+	
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
-
+ 
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -46,7 +46,7 @@ using namespace McciCatena;
 
 const MCCIADK_GUID_WIRE McciCatena::cFramStorage::skFramGuid = GUID_FRAM_CATENA_V1(WIRE);
 
-const cFramStorage::StandardItem
+const cFramStorage::StandardItem 
 McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
         {
         cFramStorage::StandardItem(kHeader, sizeof(uint32_t), /* number */ true),
@@ -66,7 +66,7 @@ McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
         cFramStorage::StandardItem(kBootCount, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kOperatingFlags, sizeof(uint32_t), /* number */ true),
 
-	/* the size field should match BSEC_MAX_STATE_BLOB_SIZE, whcich is 139 */
+	/* the size field should match BSEC_MAX_STATE_BLOB_SIZE, whcich is 65 */
 	cFramStorage::StandardItem(kBme680Cal, 139, /* number */ false),
         };
 
@@ -162,13 +162,13 @@ Function:
 	Check whether this object is identified by given GUID.
 
 Definition:
-	public: bool
+	public: bool 
 		McciCatena::cFramStorage::Object::matchesGuid(
 			const MCCIADK_GUID_WIRE &guid
 			) const;
 
 Description:
-	Simply compares the GUID to the one in the object.
+	Simply compares the GUID to the one in the object. 
 
 Returns:
 	true for equality.
@@ -183,7 +183,7 @@ Notes:
 
 */
 
-bool
+bool 
 McciCatena::cFramStorage::Object::matchesGuid(
 	const MCCIADK_GUID_WIRE &guid
 	) const
