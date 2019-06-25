@@ -1,51 +1,18 @@
-/* Catena_Platforms.h	Thu Nov 15 2018 15:24:45 chwon */
-
 /*
 
 Module:  Catena_Platforms.h
 
 Function:
-	The global platform definitions.
-
-Version:
-	V0.11.0	Thu Nov 15 2018 15:24:45 chwon	Edit level 9
+        The global platform definitions.
 
 Copyright notice:
-	This file copyright (C) 2016-2018 by
+       See accompanying LICENSE file.
 
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
 Author:
-	Terry Moore, MCCI Corporation	October 2016
+        Terry Moore, MCCI Corporation	October 2016
 
 Revision history:
-   0.1.0  Mon Oct 17 2016 03:35:01  tmm
-	Module created.
-
-   0.3.0  Mon Oct 31 2016 13:52:28  tmm
-	Add anatolian platform.
-
-   0.4.0  Wed Mar  8 2017 18:11:46  tmm
-	Add Catena 4450 platforms.
-
-   0.5.0  Sat Mar 11 2017 13:57:05  tmm
-	Revise to match naming standards; add McciCatena namespace.
-
-   0.7.0  Wed Dec 06 2017 19:27:10  tmm
-	Add Catena 455x support.
-
-   0.9.0  Sat Mar 31 2018 19:28:30  tmm
-	Add Catena 4460 support.
-
-   0.11.0  Thu Nov 15 2018 15:24:45  chwon
-	Add Catena 461x support.
+        See https://github.com/mcci-catena/Catena-Arduino-Platform
 
 */
 
@@ -65,7 +32,7 @@ extern const CATENA_PLATFORM	gkPlatformCatena4410;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_anatolian;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_gh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_mh;
-extern const CATENA_PLATFORM	gkPlatformCatena4410_swh; 
+extern const CATENA_PLATFORM	gkPlatformCatena4410_swh;
 extern const CATENA_PLATFORM	gkPlatformCatena4410_pond;
 extern const CATENA_PLATFORM	gkPlatformCatena4450;
 extern const CATENA_PLATFORM	gkPlatformCatena4450_m101;
@@ -104,6 +71,10 @@ extern const CATENA_PLATFORM	gkPlatformCatena4612_m101;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m102;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m103;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m104;
+extern const CATENA_PLATFORM	gkPlatformCatena4617;
+extern const CATENA_PLATFORM	gkPlatformCatena4618;
+
+extern const CATENA_PLATFORM	gkPlatformCatena4630;
 
 extern const CATENA_PLATFORM	gkPlatformCatena4801;
 
