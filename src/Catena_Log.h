@@ -72,7 +72,8 @@ public:
 		}
 
 	// old, incorrect polarity: return false if isEnabled() is true..
-	[[deprecated("use isEnabled(), check polarities; see issue #165")]]
+	// [[deprecated("use isEnabled(), check polarities; see issue #165")]]
+	__attribute__((deprecated("use isEnabled(), check polarities; see issue #165")))
 	bool isenabled(DebugFlags uDebugFlags) const
 		{
 		return !this->isEnabled(uDebugFlags);
