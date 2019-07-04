@@ -37,8 +37,8 @@ public:
 		kInfo		= 0x00000010u,
 		};
 
-	cLog(DebugFlags flags = DebugFlags(0)) 
-                : m_uDebugFlags(flags) 
+	cLog(DebugFlags flags = DebugFlags(0))
+                : m_uDebugFlags(flags)
                 {};
 
 	// neither copyable nor movable.
