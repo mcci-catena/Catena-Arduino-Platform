@@ -137,6 +137,12 @@ script:
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4611) $THISLIB/examples/catena_hello/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello/catena_hello.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4617) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4617) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4618) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4618) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4630) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4630) $THISLIB/examples/catena_hello/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello_lora.ino
 

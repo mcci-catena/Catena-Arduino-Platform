@@ -1,43 +1,16 @@
-/* Catena.h	Thu Nov 15 2018 15:06:41 chwon */
-
 /*
 
 Module:  Catena.h
 
 Function:
-	class Catena: virtual CatenaBase derivative representing
+        class Catena: virtual CatenaBase derivative representing
         the target Catena for this build.
 
-Version:
-	V0.11.0	Thu Nov 15 2018 15:06:42 chwon	Edit level 4
-
 Copyright notice:
-	This file copyright (C) 2017-2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+        See accompanying LICENSE file.
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
-
-Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
-	Module created.
-
-   0.7.0  Wed Dec 13 2017 17:29:35  tmm
-	Refactor.
-
-   0.9.0  Sat Mar 31 2018 19:28:30  tmm
-	Add Catena 4460 support, use BSP symbols.
-
-   0.11.0  Thu Nov 15 2018 15:06:42  chwon
-	Add Catena 461x support.
+        ChaeHee Won, MCCI Corporation	October 2017
 
 */
 
@@ -76,6 +49,15 @@ Revision history:
 #elif defined(ARDUINO_MCCI_CATENA_4612) || defined(ARDUINO_CATENA_4612)
 # include "Catena4612.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4612
+#elif defined(ARDUINO_MCCI_CATENA_4630)
+# include "Catena4630.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4630
+#elif defined(ARDUINO_MCCI_CATENA_4617)
+# include "Catena4617.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4617
+#elif defined(ARDUINO_MCCI_CATENA_4618)
+# include "Catena4618.h"
+# define CATENA_H_SUPER_  McciCatena::Catena4618
 #elif defined(ARDUINO_MCCI_CATENA_4801) || defined(ARDUINO_CATENA_4801)
 # include "Catena4801.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4801

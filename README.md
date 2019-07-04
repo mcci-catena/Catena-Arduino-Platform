@@ -117,6 +117,9 @@ Class                 | Header File             | Description
 `Catena4610`          | `Catena4610.h`          | MCCI Catena 4610 second-generation Murata-based board with LiPo charging
 `Catena4611`          | `Catena4611.h`          | MCCI Catena 4611 second-generation Murata-based board with fixed Vdd, no charging
 `Catena4612`          | `Catena4612.h`          | MCCI Catena 4612 second-generation Murata-based board with variable Vdd, no charging.
+`Catena4617`          | `Catena4617.h`          | MCCI Catena 4617 second-generation Murata-based board with variable Vdd, no charging
+`Catena4618`          | `Catena4618.h`          | MCCI Catena 4618 second-generation Murata-based board with variable Vdd, no charging.
+`Catena4630`          | `Catena4630.h`          | MCCI Catena 4630 Murata-based board with Air Quality Sensor.
 `Catena4801`          | `Catena4801.h`          | MCCI Catena 4801 Murata-based board with Modbus.
 
 ### Class derivation

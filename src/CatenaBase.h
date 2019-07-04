@@ -1,5 +1,3 @@
-/* CatenaBase.h	Wed Dec 05 2018 14:01:28 chwon */
-
 /*
 
 Module:  CatenaBase.h
@@ -7,45 +5,11 @@ Module:  CatenaBase.h
 Function:
         class CatenaBase interfaces.
 
-Version:
-        V0.12.0	Wed Dec 05 2018 14:01:28 chwon	Edit level 6
-
 Copyright notice:
-        This file copyright (C) 2016-2018 by
-
-                MCCI Corporation
-                3520 Krums Corners Road
-                Ithaca, NY  14850
-
-        An unpublished work.  All rights reserved.
-
-        This file is released under terms of the accompanying LICENSE file.
+        See accompanying LICENSE file.
 
 Author:
         Terry Moore, MCCI Corporation	October 2016
-
-Revision history:
-   0.1.0  Tue Oct 25 2016 01:58:25  tmm
-        Module created.
-
-   0.3.0  Thu Oct 27 2016 22:46:30  tmm
-        Change buffer types away from array, types are just not intuitive.
-
-   0.5.0  Sun Mar 19 2017 15:00:21  tmm
-        Major update for comamand support, etc.
-
-   0.9.0  Sat Mar 31 2018 19:28:30  tmm
-	Add fHasBme680.
-
-   0.9.1  Sat Apr 28 2018 16:52:31  tmm
-	Add support for RS485 (for Catena 4470).
-
-   0.11.0  Mon Nov 19 2018 12:07:02  chwon
-	Add Sleep() virtual method.
-
-   0.12.0  Wed Dec 05 2018 14:01:29  chwon
-	Add getFram() method and FRAM access methods. Move CPUID_PLATFORM_MAP
-	structure and related methods.
 
 */
 
@@ -91,7 +55,7 @@ Revision history:
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)	\
 	(((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
-#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 0, 70)	/* v0.14.0.70 */
+#define	CATENA_ARDUINO_PLATFORM_VERSION	CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 14, 70, 0)	/* v0.14.70.0 */
 
 #define	CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)	\
 	(((v) >> 24u) & 0xFFu)
@@ -193,6 +157,12 @@ public:
 		fHasRS485 = 1 << 16,
 		// platform uses A2 to control VOUT1 (on terminals)
 		fHasVout1 = 1 << 17,
+		// platform has ZMOD4410 Air Quality sensor
+		fHasZMOD4410 = 1 << 18,
+		//platform has IDT HS001
+		fHasHS001 = 1 << 19,
+		//platform has SHT3x sensirion
+		fHasSHT3x = 1 << 20,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
