@@ -1,5 +1,3 @@
-/* Catena_Log.h	Sun Mar 19 2017 01:40:10 tmm */
-
 /*
 
 Module:  Catena_Log.h
@@ -7,27 +5,11 @@ Module:  Catena_Log.h
 Function:
 	McciCatena::cLog and associated functions.
 
-Version:
-	V0.5.0	Sun Mar 19 2017 01:40:10 tmm	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2017 by
+	See accompanying LICENSE file.
 
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
 Author:
 	Terry Moore, MCCI Corporation	March 2017
-
-Revision history:
-   0.5.0  Sun Mar 19 2017 01:40:10  tmm
-	Module created.
 
 */
 
