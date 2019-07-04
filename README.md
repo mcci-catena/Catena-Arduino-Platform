@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.14.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.15.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
@@ -655,8 +655,14 @@ This sketch is very similar to `cathea_hello`. It shows how to add a user-define
 
 ## Library Release History
 
-- HEAD includes the following changes.
+- v0.15.0 includes the following changes.
 
+  - [#135](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/135), [#178](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/178) add platform support for Catena 4617, 4618 and 4630.
+  - [#176](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/176) add documentation on platform GUIDs.
+  - [#170](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/170) increased size of BME680 key to allow support of recent BSEC library versions.
+  - [#168](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/168) updates `TxBuffer_t` for usability.
+  - [#158](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/158) add clock info to `CatenaWingFram2k`, and add API to get configured clock rate.
+  - [#164](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/164), [#165](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/165), [#163](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/163) enhance logging APIs.
   - [#161](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/161) adds asynchronous command processing. v0.14.0.60.
   - [#160](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/160) add section in README.md: [Adding Your Own Commands](#adding-your-own-commands).
   - [#157](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/157), [#153](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/153) Map SleepMode::Standby to STOP, and remove ineffective calls to `__HAL_PWR_CLEAR_FLAG()` in STM32 SleepForAlarm(). [#150](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/150) change STM32 Sleep() to request STOP mode instead of STANDBY mode.
