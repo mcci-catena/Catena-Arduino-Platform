@@ -277,7 +277,7 @@ Name | GUID | Description
 
 ##### Catena 4630
 
-The Catena 4630 is a variant of the Catena 4610. It deletes the Si1131 light sensor, and adds an IDT MOX4410 atmospheric gas sensor, plus a connection for an external Plantower PMS7003 PM2.5/dust sensor.
+The Catena 4630 is a variant of the Catena 4610. It deletes the Si1131 light sensor, and adds an IDT ZMOD4410 atmospheric gas sensor, plus a connection for an external Plantower PMS7003 PM2.5/dust sensor.
 
 Name | GUID | Description
 -----|------|------------
