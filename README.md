@@ -23,6 +23,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 			- [Catena 4610](#catena-4610)
 			- [Catena 4611](#catena-4611)
 			- [Catena 4612](#catena-4612)
+			- [Catena 4617](#catena-4617)
+			- [Catena 4618](#catena-4618)
+			- [Catena 4630](#catena-4630)
 		- [GUIDs for the Catena 4450/4460/4470 family](#guids-for-the-catena-445044604470-family)
 			- [Catena 4450](#catena-4450)
 			- [Catena 4460](#catena-4460)
@@ -252,6 +255,30 @@ Name | GUID | Description
 `CATENA_4612_M102` | `7fa9709d-17af-463e-ae7f-8210e49acd7a` | Catena 4612 M102, configured for environmental monitoring.
 `CATENA_4612_M103` | `ff8b2ac6-75cd-4ed3-980b-50b209e64551` | Catena 4612 M103 -- contact MCCI
 `CATENA_4612_M104` | `dea48489-cdac-43f4-b8ad-edb08ce21546` | Catena 4612 M103 -- contact MCCI
+
+##### Catena 4617
+
+The Catena 4617 is a variant of the Catena 4612 with a IDT HS3001 temperature/humidity sensor in place of the Bosch BME280.
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4617_BASE` | `6767c2f6-d5d5-43f4-81af-db0d4d08815a` | Base Catena 4617, assuming no modifications or customizations.
+
+##### Catena 4618
+
+The Catena 4618 is a variant of the Catena 4612 with a Sensirion SHT31-DIS-F temperature/humidity sensor in place of the Bosch BME280.
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4618_BASE` | `b75ed77b-b06e-4b26-a968-9c15f222dfb2` | Base Catena 4618, assuming no modifications or customizations.
+
+##### Catena 4630
+
+The Catena 4630 is a variant of the Catena 4610. It deletes the Si1131 light sensor, and adds an IDT MOX4410 atmospheric gas sensor, plus a connection for an external Plantower PMS7003 PM2.5/dust sensor.
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4630_BASE` | `17281c12-d78a-4e4f-9c42-c8bbc5499c91` | Base Catena 4618, assuming no modifications or customizations.
 
 #### GUIDs for the Catena 4450/4460/4470 family
 
