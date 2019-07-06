@@ -45,6 +45,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
 		- [Implement the FSM intialization](#implement-the-fsm-intialization)
 	- [LoRaWAN Support](#lorawan-support)
+		- [Sending an uplink message](#sending-an-uplink-message)
+		- [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
+		- [LoRaWAN Class Structure](#lorawan-class-structure)
 	- [FRAM Storage Management](#fram-storage-management)
 		- [FRAM Storage Formats](#fram-storage-formats)
 			- [Object Storage Structure](#object-storage-structure)
@@ -651,7 +654,115 @@ void Turnstile::begin() {
 
 ### LoRaWAN Support
 
-*To be supplied*
+The Catena Arduino Platform includes C++ wrappers for LoRaWAN support, based on the MCCI version of the [Arduino LMIC](https://github.com/mcci-catena/Arduino-LMIC)  library and MCCI's [Arduino LoRaWAN](https://github.com/mcci-catena/Arduino-LoRaWAN) library. It includes command processing from the `Serial` console for run-time (not compile-time) provisioning, and uses the non-volatile storage provided by the Catena FRAM to store connection parameters and uplink/downlink counts.
+
+The `Catena::LoRaWAN` class is derived from the `Arduino_LoRaWAN` class defined by `<Arduino_LoRaWAN.h>`.
+
+The example [`catena_hello_lora.ino`](examples/catena_hello_lora/) is a complete working example.
+
+To use LoRaWAN in a sketch, do the following.
+
+1. Instantiate the global Catena object, with the name `gCatena`.
+
+    ```c++
+    #include <Catena.h>
+
+    using namespace McciCatena; // to save typing
+
+    Catena gCatena;  // instantiate the Catena platform object.
+    ```
+
+2. Instantiate the global LoRaWAN object, with the name `gLoRaWAN`:
+
+    ```c++
+    Catena::LoRaWAN gLoRaWAN;  // the LoRaWAN function.
+    ```
+
+3. In your setup function, initialize gCatena, gLoRaWAN, and register gLoRaWAN as a pollable object (see [Polling Framework](#polling-framework)).
+
+    ```c++
+    void setup() {
+      // other things
+
+      // set up Catena platform.
+      gCatena.begin();
+
+      // set up LoRaWAN
+      gLoRaWAN.begin(&gCatena);
+      gCatena.registerObject(&gLoRaWAN);
+
+      // other things
+    }
+    ```
+
+#### Sending an uplink message
+
+Use the `Catena::LoRaWAN::SendBuffer()` method to send an uplink message. Usually it's best to send it with an asynchronous callback, so that's what we'll show.
+
+Definitions:
+
+```c++
+typedef void (Arduino_LoRaWAN::SendBufferCbFn)(
+  void *pClientData,
+  bool fSuccess
+);
+
+bool Catena::LoRaWAN::SendBuffer(
+  const std::uint8_t *pUplinkBuffer,
+  size_t nBuffer,
+  Arduino_LoRaWAN::SendBufferCbFn *pDoneFn,
+  void *pClientData,
+  bool fConfirmed,
+  std::uint8_t port
+);
+```
+
+`SendBuffer` attempts to start ths transmission of a buffer. This attempt might fail for several reasons, for example:
+
+- A transmission might already be in progress.
+- The LoRaWAN system might not be properly provisioned with device identity and suitable keys.
+- The LoRaWAN system might be shut down.
+
+If the transmission is not accepted, `SendBuffer()` returns `false`.
+
+If the transmission is accepted, then the following steps are taken:
+
+- `pDoneFn` and `pClientData` are saved internally for use when the transmission completes.
+- The data from `pUplinkBuffer` is copied into an internal buffer (so you can immediately start reusing the buffer in your own code).
+- If the device is provisioned for OTAA mode, and the device is not yet joined to a network, a JOIN attempt is initiated; and the message is transmitted if the JOIN attempt succeeds.
+- The message is transmitted on the uplink port specified by `port`. If `fConfirmed` is `true`, a confirmed (acknolwedged) uplink is used; otherwise unconfirmed uplinks are used.
+- Control then returns to the caller (with the result `true`).
+
+When the transmission attempt finishes, the LoRaWAN subsystem calls `pDoneFn(pClientData, fSuccess)`, with `fSuccess` true if the uplink seemed to be successful. Success means different things in different circumstances.
+
+- For an unconfirmed uplink, success means that the device is joined to a network, and was able to transmit the message without any local errors. If not joined, and the join attempt fails, then `fSuccess` will be false.
+- For a confirmed uplink, success means that the message was sent, *and* a confirmation downlink was received. Failure doesn't necessarily mean that the network didn't receive the message; it only means that we didn't get an acknowledgement.
+
+#### Registering to receive downlink messages
+
+Receiving a message is a somewhat passive operation. The client registers a callback with `gLoRaWAN`; later, whenever a downlink message is received, the client's callback is called.
+
+```c++
+typedef void Arduino_LoRaWAN::ReceivePortBufferCbFn(
+  void *pCtx,
+  uint8_t uPort,
+  const uint8_t *pBuffer,
+  size_t nBuffer
+  );
+
+void Arduino_LoRaWAN::SetReceiveBufferBufferCb(
+  ReceivePortBufferCbFn *pReceivePortBufferFn,
+  void *pCtx
+  );
+```
+
+#### LoRaWAN Class Structure
+
+In order to allow code to be portable across networks and regions, we've done a lot of work with abstraction classes. If you're curious, here's a somewhat simplified diagram.
+
+[![**LoRaWAN class structure**](http://www.plantuml.com/plantuml/png/bPNFRkCs4CRFcgSOvBANjToaQ92uFQpXzG8fx7JhTD5ZCA8c4XkH5FXdNM6xxrv9hBfg6idmKJFy3R-Fd17VEK_M1rN1yWt0tkIXubMo8S-Q7dVcGB-lxzEw8jslWGz12o-DNa7oiGj-sk_GyXDRreBHcM05uvEn62kiLl-KG56HSvXBAYof51BOcBgniYXzM-g16Ka8eshIZTG5xkuss_k7BJx9Yf4y9ANtjLkjbij2-Z9aQRjsgOIG2z7liupRBTOs3rARHQlDjoeK9B0ElZIstUGtjhR1lJ6Mt-9-ixd3ZR6riTJvINuELODNtrtU0jmRpsviK2egsA7KUDYkz--tgSgHB6F1cbkSSymQhCdvJhelfOkwfVO64byoEhQVsI9vx7oqBex7ux-7sdiPFjuYwHmBIraMYp4abbse-jgV3ZkN0hnP0fGoPsHL-mOLguoj0wX9F5F1E9p2SFRayA8pF2HmIEnaPias5_W5A7FUal3neeQLGmV0YVoZ8b5ApRy-PkIutp1D_nky03Y11dTx-SE87KLFmYS5Ug_7skBtjAm8SBYvlXaHCN0nGumzV0lC4HHkhov7H0pC4kxswliH4GDpXDGtrzSZ8WRch0Ey2E9FVoqMyzT-6XbV1CpMYknygy1ykYsHfjCDeurdx7z0Q3HMKZy3ue4BsNuvhbXqSqqUkxzIDyrUAWRi9ltk_HQDxHAATDwX3Anpx2e2JFYDZgQxx7mkkZoVYmrsFXVRx7mkDXl0fFLNBYgcOTBrMKWqV1OIlPw5H9lJo5S0JOfTJO9nBuICJnP-6QPGV3HLHLd5lsH_iF0n-l8T7RKj83uOnNs3Llodz0sMCizP_zXbGjRpx31dgl0eVOavVvQ24R1bz9CiGdpx-YVdms6z1yJWgE1qrCulL7Mt_3zDa4vDMJoEIG_ZqSDxzaTZd-U6RsBwKlmcE7tbx5zN0L_XNOi5LVqD)](https://www.plantuml.com/plantuml/svg/bPNFRkCs4CRFcgSOvBANjToaQ92uFQpXzG8fx7JhTD5ZCA8c4XkH5FXdNM6xxrv9hBfg6idmKJFy3R-Fd17VEK_M1rN1yWt0tkIXubMo8S-Q7dVcGB-lxzEw8jslWGz12o-DNa7oiGj-sk_GyXDRreBHcM05uvEn62kiLl-KG56HSvXBAYof51BOcBgniYXzM-g16Ka8eshIZTG5xkuss_k7BJx9Yf4y9ANtjLkjbij2-Z9aQRjsgOIG2z7liupRBTOs3rARHQlDjoeK9B0ElZIstUGtjhR1lJ6Mt-9-ixd3ZR6riTJvINuELODNtrtU0jmRpsviK2egsA7KUDYkz--tgSgHB6F1cbkSSymQhCdvJhelfOkwfVO64byoEhQVsI9vx7oqBex7ux-7sdiPFjuYwHmBIraMYp4abbse-jgV3ZkN0hnP0fGoPsHL-mOLguoj0wX9F5F1E9p2SFRayA8pF2HmIEnaPias5_W5A7FUal3neeQLGmV0YVoZ8b5ApRy-PkIutp1D_nky03Y11dTx-SE87KLFmYS5Ug_7skBtjAm8SBYvlXaHCN0nGumzV0lC4HHkhov7H0pC4kxswliH4GDpXDGtrzSZ8WRch0Ey2E9FVoqMyzT-6XbV1CpMYknygy1ykYsHfjCDeurdx7z0Q3HMKZy3ue4BsNuvhbXqSqqUkxzIDyrUAWRi9ltk_HQDxHAATDwX3Anpx2e2JFYDZgQxx7mkkZoVYmrsFXVRx7mkDXl0fFLNBYgcOTBrMKWqV1OIlPw5H9lJo5S0JOfTJO9nBuICJnP-6QPGV3HLHLd5lsH_iF0n-l8T7RKj83uOnNs3Llodz0sMCizP_zXbGjRpx31dgl0eVOavVvQ24R1bz9CiGdpx-YVdms6z1yJWgE1qrCulL7Mt_3zDa4vDMJoEIG_ZqSDxzaTZd-U6RsBwKlmcE7tbx5zN0L_XNOi5LVqD "Click for SVG version")
+
+As the diagram shows, Catena::LoRaWAN objects are primarily `Arduino_LoRaWAN` derivatives, but they also can be viewed as `McciCatena::cPollableObject` instances, and therefore can participate in [polling](#polling-framework).
 
 ### FRAM Storage Management
 
