@@ -122,8 +122,9 @@ script:
  - _notsamd    || arduino --verify $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_hello/catena_hello.ino
 
  #
- # test the user-command exapmle on the 4470
+ # test the user-command example & the fsm example on the 4470
  - _notsamd    || arduino --verify $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_usercommand/catena_usercommand.ino
+ - _notsamd    || arduino --verify $(_samdopts mcci_catena_4470) $THISLIB/examples/catena_fsm/catena_fsm.ino
 
  #
  # test each of the regions on the 4450.
@@ -157,8 +158,9 @@ script:
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello_lora.ino
 
  #
- # test the user-command exapmle on the 4610
+ # test the user-command and fsm examples on the 4610
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_usercommand/catena_usercommand.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_fsm/catena_fsm.ino
 
  # test each of the regions for 4610 (using it as an example). us915 already tested
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 eu868  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino

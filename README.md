@@ -23,14 +23,31 @@ _Apologies_: This document is a work in progress, and is published in this inter
 			- [Catena 4610](#catena-4610)
 			- [Catena 4611](#catena-4611)
 			- [Catena 4612](#catena-4612)
+			- [Catena 4617](#catena-4617)
+			- [Catena 4618](#catena-4618)
+			- [Catena 4630](#catena-4630)
 		- [GUIDs for the Catena 4450/4460/4470 family](#guids-for-the-catena-445044604470-family)
 			- [Catena 4450](#catena-4450)
 			- [Catena 4460](#catena-4460)
 			- [Catena 4470](#catena-4470)
 		- [GUIDs for the Catena 4801 family](#guids-for-the-catena-4801-family)
 		- [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
-	- [Pollable Interface](#pollable-interface)
+	- [Polling Framework](#polling-framework)
+		- [Making a class pollable](#making-a-class-pollable)
+		- [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
+	- [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
+		- [Getting ready](#getting-ready)
+		- [Defining the state enum](#defining-the-state-enum)
+		- [Identify the parent class](#identify-the-parent-class)
+		- [Add the state enum to the parent class](#add-the-state-enum-to-the-parent-class)
+		- [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
+		- [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
+		- [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
+		- [Implement the FSM intialization](#implement-the-fsm-intialization)
 	- [LoRaWAN Support](#lorawan-support)
+		- [Sending an uplink message](#sending-an-uplink-message)
+		- [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
+		- [LoRaWAN Class Structure](#lorawan-class-structure)
 	- [FRAM Storage Management](#fram-storage-management)
 		- [FRAM Storage Formats](#fram-storage-formats)
 			- [Object Storage Structure](#object-storage-structure)
@@ -55,6 +72,7 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [`catena_hello`](#catena_hello)
 	- [`catena_hello_lora`](#catena_hello_lora)
 	- [`catena_usercommand`](#catena_usercommand)
+	- [`catena_fsm`](#catena_fsm)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
@@ -128,7 +146,7 @@ The following figures gives the class derivation hierarchy for the board classes
 
 The tree is too big to show in one diagram here. So we split according to the two families: STM32-based CPUs, and SAMD-based CPUS.
 
-<!-- 
+<!--
 
 For all these, see assets/CatenaBase.plantuml. for some bizarre reason github won't render these unless image links are http (not https).
 
@@ -242,6 +260,30 @@ Name | GUID | Description
 `CATENA_4612_M103` | `ff8b2ac6-75cd-4ed3-980b-50b209e64551` | Catena 4612 M103 -- contact MCCI
 `CATENA_4612_M104` | `dea48489-cdac-43f4-b8ad-edb08ce21546` | Catena 4612 M103 -- contact MCCI
 
+##### Catena 4617
+
+The Catena 4617 is a variant of the Catena 4612 with a IDT HS3001 temperature/humidity sensor in place of the Bosch BME280.
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4617_BASE` | `6767c2f6-d5d5-43f4-81af-db0d4d08815a` | Base Catena 4617, assuming no modifications or customizations.
+
+##### Catena 4618
+
+The Catena 4618 is a variant of the Catena 4612 with a Sensirion SHT31-DIS-F temperature/humidity sensor in place of the Bosch BME280.
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4618_BASE` | `b75ed77b-b06e-4b26-a968-9c15f222dfb2` | Base Catena 4618, assuming no modifications or customizations.
+
+##### Catena 4630
+
+The Catena 4630 is a variant of the Catena 4610. It deletes the Si1131 light sensor, and adds an IDT ZMOD4410 atmospheric gas sensor, plus a connection for an external Plantower PMS7003 PM2.5/dust sensor.
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4630_BASE` | `17281c12-d78a-4e4f-9c42-c8bbc5499c91` | Base Catena 4618, assuming no modifications or customizations.
+
 #### GUIDs for the Catena 4450/4460/4470 family
 
 ##### Catena 4450
@@ -295,13 +337,433 @@ Name | GUID | Description
 `FEATHER_M0_PROTO` | `f6a15678-c7f3-43f4-ac57-67ef5cf75541` | A Feather M0 Proto.
 `FEATHER_M0` | `2e6dfed4-f577-47d5-9137-b3e63976ae92` | Some unspecified member of the Feather M0 family.
 
-### Pollable Interface
+### Polling Framework
 
-*To be supplied*
+When composing software from components, it's inconvenient and bug-prone to have to manually edit the Arduino `loop()` function to poll each component.
+
+To compensate, the Catena platform defines a framework for polling, and allows components to register to be polled.
+
+The foundation of the framework is `cPollableInterface`, an abstract class. Any object inheriting from `cPollableInterface` will provide a `poll()` method; this provides a standard way to poll an object.
+
+Pollable objects are managed via a central instance of `cPollingEngine`, which works on objects that are derived from `cPollableObject`. You create your pollable class by arranging for it to inherit from `cPollableObject`; then at run time you arrange to register  and normally created by arranging for them to inherit from `cPollableObject`. This adds a few tracking fields to your class, and makes them available to the `cPollingEngine` when you register the object with the polling engine.
+
+The abstract relationships are shown below.
+
+[![**Pollable framework UML Class Diagram **](http://www.plantuml.com/plantuml/png/bL9DRziw43nhVyN2btoyM4voUquG94_nGrDOQP2FSx4IrnOBYXH8oggGfh-zb0p7RjGswCNMahCpiyEzT9wihqi5aps0r8XQyJHAoBEc_yXnN2dI_JtyN-lSIwEd4DrrXq_f72qlsBBE6PsfRVXR68lvdL6ACiKtshDTK3ZE5Jc7GjBIKXb318cfMYkNXGzi3yn8UMxAYdGhzHBdDydizc662wauOAzgNnWRW8ziROkfCPQFC4sI6qoChOobpbRqiLOjdXwV_0jmQpoxNP-of2Kxb1hlPrVfzImk1P9bNBBcqCu2inOhShwJzuLqlNR0UmEHBnWTsnLR98-5zzLqCccQvZMRE7YVR8eZ92qmp9bbQpA6oBAhLS_zT3ztCU9ZqJ6HGsymOnH6Tn91WHHwMR8xmaRw0eLSz05xY5QaQdR8GWQxlREE6rTaPPUr2ppAD76WPWn-oj2q6VWwxGQ6g94gq7FuQKsDJV2mvr0p2nOnmDu4e922aSlAjrXocR5r09g2dufonZJFvNery1b0RbztyE3XFlhdcJBdBUN-1RyF8Vi7FqDMHWgi0ch_u0nU0DOhq_U5u6PwAJNZ-Vc6v-AYrzZjsfGP1-nERKFjWkgdx0ldVl_Lohh6mmuv7foMdwiFJABtid69MrCxs86hNvBTybV_Ew4vEN_sJXp3ZC-_ZSTl0lepRAiARt8rumiS7KyFHmFW2wndVd9ia-xhv9r763IS8ZaSnN4ymdTRjniM3q8EOuntRFm5zXJWahMeImK_0000)](https://www.plantuml.com/plantuml/svg/bL9DRziw43nhVyN2btoyM4voUquG94_nGrDOQP2FSx4IrnOBYXH8oggGfh-zb0p7RjGswCNMahCpiyEzT9wihqi5aps0r8XQyJHAoBEc_yXnN2dI_JtyN-lSIwEd4DrrXq_f72qlsBBE6PsfRVXR68lvdL6ACiKtshDTK3ZE5Jc7GjBIKXb318cfMYkNXGzi3yn8UMxAYdGhzHBdDydizc662wauOAzgNnWRW8ziROkfCPQFC4sI6qoChOobpbRqiLOjdXwV_0jmQpoxNP-of2Kxb1hlPrVfzImk1P9bNBBcqCu2inOhShwJzuLqlNR0UmEHBnWTsnLR98-5zzLqCccQvZMRE7YVR8eZ92qmp9bbQpA6oBAhLS_zT3ztCU9ZqJ6HGsymOnH6Tn91WHHwMR8xmaRw0eLSz05xY5QaQdR8GWQxlREE6rTaPPUr2ppAD76WPWn-oj2q6VWwxGQ6g94gq7FuQKsDJV2mvr0p2nOnmDu4e922aSlAjrXocR5r09g2dufonZJFvNery1b0RbztyE3XFlhdcJBdBUN-1RyF8Vi7FqDMHWgi0ch_u0nU0DOhq_U5u6PwAJNZ-Vc6v-AYrzZjsfGP1-nERKFjWkgdx0ldVl_Lohh6mmuv7foMdwiFJABtid69MrCxs86hNvBTybV_Ew4vEN_sJXp3ZC-_ZSTl0lepRAiARt8rumiS7KyFHmFW2wndVd9ia-xhv9r763IS8ZaSnN4ymdTRjniM3q8EOuntRFm5zXJWahMeImK_0000 "Click for SVG version")
+
+#### Making a class pollable
+
+Let's say that `UserClass1` exists and has the following definition.
+
+```c++
+class UserClass1 : public ParentClass {
+public:
+  // constructor
+  UserClass1() {}
+  void begin();
+};
+```
+
+To make `UserClass1` pollable, you change the class declaration as follows:
+
+1. Change `UserClass1` to inherit from `McciCatena::cPollableObject`, using multiple inheritance if needed. List `McciCatena::cPollableObject` last. No need to make it `public`.
+
+2. Declare a new public virtual method `void poll()`. We recommend that you use the `override` keyword to make it clear that this is an override for a method declared in the parent class.
+
+You also, of cousre, must supply an implementaion of `UserClass::poll()`.
+
+Here's an example of the transformed `UserClass1`:
+
+```c++
+class UserClass1 : public ParentClass, McciCatena::cPollableObject {
+public:
+  // constructor
+  UserClass1() {}
+  void begin();
+
+  // <<Pollable>> requirements:
+  virtual void poll() override;
+};
+```
+
+#### Using pollable objects in sketches
+
+Each instance of your pollable class (in our example, each instance of type `UserClass1`) must be *registered* with a polling engine. The most convenient polling engine to use is the once provided by the `CatenaBase` class, which is normally instantiated as `gCatena`.  Simply call `gCatena.registerObject()` to register your object with the Catena polling engine. So for example:
+
+```c++
+#include <Catena.h>
+
+// create the gCatena instance.
+McciCatena::Catena gCatena;
+
+// create an instance of my object.
+UserClass1 myUserObject;
+
+void setup() {
+  // conventionally, we call gCatena.begin() first:
+  gCatena.begin();
+
+  // now register the object.
+  gCatena.registerObject(&myUserObject);
+}
+
+void loop() {
+  // poll all the objects registered with gCatena.
+  gCatena.poll();
+  // do any other work...
+}
+```
+
+If you're not using the full `Catena` class framework, you still can use polling; just declare your own `cPollingEngine` instance.  For example:
+
+```c++
+#include <Arduino.h>
+#include <Catena_PollableInterface.h>
+
+// create the polling engine instance.
+McciCatena::cPollingEngine gPollingEngine;
+
+// create an instance of my object.
+UserClass1 myUserObject;
+
+void setup() {
+  // conventionally, we call gPollingEngine.begin() first:
+  gPollingEngine.begin();
+
+  // now register the object.
+  gPollingEngine.registerObject(&myUserObject);
+}
+
+void loop() {
+  // poll all the objects registered with gCatena.
+  gPollingEngine.poll();
+  // do any other work...
+}
+```
+
+### Finite State Machine (FSM) Framework
+
+Finite state machines are very useful when implementing non-blocking asynchronous programs, or modeling external hardware that changes state independently of the system.
+
+We've ported an implementation of MCCI's standard FSM approach. It's good for Mealy or Moore designs, and is intended to be easy to implement and maintain.  This version is C++ oriented; it assumes that each FSM instance is associated with a C++ class object (the "parent" object). The work of implementing the FSM is divided between the parent object and the FSM object. The FSM object does all the bookkeeping and handling of corner conditions; the parent object provides a method function, which the FSM calls whenever it seems appropriate to do so.
+
+Here's what you need:
+
+- an `enum class` type with all of your states, and a couple of distinguished states. This type is referred to as `TState`; and
+- an associated C++ `class` type (referred to as `TParent`), containing...
+- a method that will be used as the dispatcher by the evaluator, of signature `TParent::someName(TState currentState, bool fEntry) -> TState`.
+
+In addition to the states relevant to your problem, `TState` must have three distinct values with well-known names.
+
+- `TState::stNoChange` does not correspond to any state. Instead, it's the value retured by the dispatch routine when the state is not to be changed. (Returning the current state will cause the FSM to transition from the current state to the current state.)
+
+- `TState::stInitial` is the initial state of your FSM.
+
+- `TState::stFinal` is the final state of your FSM. Once the FSM reaches this state, it will remain there until another call to `fsm.init()` is made.
+
+We'll use the [coin-operated turnsile](https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile) example from Wikipedia to make things more concrete.
+
+#### Getting ready
+
+The author usually starts by drawing a diagram, labled with the states and transitions.
+
+For example, here's the turnstile state diagram:
+
+[![**Coin Operated Turnstile State Diagram](http://www.plantuml.com/plantuml/png/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_)](https://www.plantuml.com/plantuml/svg/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_ "Click for SVG view")
+
+#### Defining the state enum
+
+Define an `enum class` as follows:
+
+```c++
+enum class MyStateEnum {
+  stNoChange = 0,    // this name must be present: indicates "no change of state"
+  stInitial,         // this name must be presnt: it's the starting state.
+  // use-case-specific states
+  // ...
+  stFinal,           // this name must be present, it's the terminal state.
+};
+```
+
+For example, for the turnstile diagram:
+
+```c++
+enum class State {
+  stNoChange = 0,    // this name must be present: indicates "no change of state"
+  stInitial,         // this name must be presnt: it's the starting state.
+  stLocked,
+  stUnlocked,
+  stFinal,           // this name must be present, it's the terminal state.
+};
+```
+
+#### Identify the parent class
+
+This means finding the class name for the class that is going to contain this FSM. One class can contain many FSMs, but each FSM class has only one parent class.
+
+For our example, we'll say that the class modeling turnstiles is `Turnstile`.
+
+#### Add the state enum to the parent class
+
+Add the enum you defined above, and add it to the parent class. For example:
+
+```c++
+class Turnstile {
+
+  // states for FSM
+  enum class State {
+    stNoChange = 0,    // this name must be present: indicates "no change of state"
+    stInitial,         // this name must be presnt: it's the starting state.
+    stLocked,
+    stUnlocked,
+    stFinal,           // this name must be present, it's the terminal state.
+  };
+
+};
+```
+
+#### Define the FSM instance in the parent class
+
+Add an FSM instance as a member of the parent class. It's up to you whether to make it `public`, `private`, or `protected`.
+
+```c++
+class Turnstile {
+
+  // states for FSM
+  enum class State {
+    stNoChange = 0,    // this name must be present: indicates "no change of state"
+    stInitial,         // this name must be presnt: it's the starting state.
+    stLocked,
+    stUnlocked,
+    stFinal,           // this name must be present, it's the terminal state.
+  };
+
+  // the FSM instance
+  McciCatena::cFSM<Turnstile, State>  m_fsm;
+};
+```
+
+#### Declare a method function in the parent class
+
+Finally, we have to declare a method function that the FSM can call.  Extending the turnstile example again:
+
+```c++
+class Turnstile {
+
+  // states for FSM
+  enum class State {
+    stNoChange = 0,    // this name must be present: indicates "no change of state"
+    stInitial,         // this name must be presnt: it's the starting state.
+    stLocked,
+    stUnlocked,
+    stFinal,           // this name must be present, it's the terminal state.
+  };
+
+  // the FSM instance
+  McciCatena::cFSM<Turnstile, State>  m_fsm;
+
+  // the FSM dispatch function called by this->m_fsm.
+  State fsmDispatch(State currentState, bool fEntry);
+};
+```
+
+#### Implement the FSM dispatch function
+
+Your FSM dispatch function will look like this.
+
+```c++
+void Turnstile::fsmDispatch(Turnstile::State currentState, bool fEntry) {
+  State newState = State::stNoChange;
+
+  switch (currentState) {
+
+  case State::stInitial:
+    if (fEntry) {
+      // entry is not considered in this state, always move on.
+    }
+    digitalWrite(LOCK, 1);
+    pinMode(LOCK, OUTPUT);
+    newState = State::stLocked;
+    break;
+
+  case State::stLocked:
+    if (fEntry) {
+      digitalWrite(LOCK, 1);
+    }
+    if (this->m_evShutdown) {
+      this->m_evShutdown = false;
+      newState = State::stFinal;
+    } else if (this->m_evCoin) {
+      this->m_evCoin = false;
+      newState = State::stUnlocked;
+    } else if (this->m_evPush) {
+      this->m_evPush = false;
+      // stay in this state.
+    } else {
+      // stay in this state.
+    }
+    break;
+
+  case State::stUnlocked:
+    if (fEntry) {
+      digitalWrite(LOCK, 0);
+    }
+    if (this->m_evShutdown) {
+      this->m_evShutdown = false;
+      newState = State::stFinal;
+    } else if (this->m_evCoin) {
+      this->m_evCoin = false;
+      // stay in this state.
+    } else if (this->m_evPush) {
+      this->m_evPush = false;
+      newState = State::stLocked;
+    } else {
+      // stay in this state.
+    }
+    break;
+
+  case State::stFinal:
+    // by policy, we idle with the turnstile locked.
+    digitalWrite(LOCK, 1);
+    // stay in this state.
+    break;
+
+  default:
+    // the default means unknown state.
+    // transition to locket.
+    newState = State::stLocked;
+    break;
+  }
+  return newState;
+}
+```
+
+#### Implement the FSM intialization
+
+Somewhere in your initialization for `Turnstile`, add the following code. For example, if `Turnstile` has a `Turnstile::begin()` method, you could write:
+
+```c++
+void Turnstile::begin() {
+  // other init code...
+
+  // set up FSM
+  this->m_fsm.init(*this, fsmDispatch);
+
+  // remaining init code...
+}
+```
 
 ### LoRaWAN Support
 
-*To be supplied*
+The Catena Arduino Platform includes C++ wrappers for LoRaWAN support, based on the MCCI version of the [Arduino LMIC](https://github.com/mcci-catena/Arduino-LMIC)  library and MCCI's [Arduino LoRaWAN](https://github.com/mcci-catena/Arduino-LoRaWAN) library. It includes command processing from the `Serial` console for run-time (not compile-time) provisioning, and uses the non-volatile storage provided by the Catena FRAM to store connection parameters and uplink/downlink counts.
+
+The `Catena::LoRaWAN` class is derived from the `Arduino_LoRaWAN` class defined by `<Arduino_LoRaWAN.h>`.
+
+The example [`catena_hello_lora.ino`](examples/catena_hello_lora/) is a complete working example.
+
+To use LoRaWAN in a sketch, do the following.
+
+1. Instantiate the global Catena object, with the name `gCatena`.
+
+    ```c++
+    #include <Catena.h>
+
+    using namespace McciCatena; // to save typing
+
+    Catena gCatena;  // instantiate the Catena platform object.
+    ```
+
+2. Instantiate the global LoRaWAN object, with the name `gLoRaWAN`:
+
+    ```c++
+    Catena::LoRaWAN gLoRaWAN;  // the LoRaWAN function.
+    ```
+
+3. In your setup function, initialize gCatena, gLoRaWAN, and register gLoRaWAN as a pollable object (see [Polling Framework](#polling-framework)).
+
+    ```c++
+    void setup() {
+      // other things
+
+      // set up Catena platform.
+      gCatena.begin();
+
+      // set up LoRaWAN
+      gLoRaWAN.begin(&gCatena);
+      gCatena.registerObject(&gLoRaWAN);
+
+      // other things
+    }
+    ```
+
+#### Sending an uplink message
+
+Use the `Catena::LoRaWAN::SendBuffer()` method to send an uplink message. Usually it's best to send it with an asynchronous callback, so that's what we'll show.
+
+Definitions:
+
+```c++
+typedef void (Arduino_LoRaWAN::SendBufferCbFn)(
+  void *pClientData,
+  bool fSuccess
+);
+
+bool Catena::LoRaWAN::SendBuffer(
+  const std::uint8_t *pUplinkBuffer,
+  size_t nBuffer,
+  Arduino_LoRaWAN::SendBufferCbFn *pDoneFn,
+  void *pClientData,
+  bool fConfirmed,
+  std::uint8_t port
+);
+```
+
+`SendBuffer` attempts to start ths transmission of a buffer. This attempt might fail for several reasons, for example:
+
+- A transmission might already be in progress.
+- The LoRaWAN system might not be properly provisioned with device identity and suitable keys.
+- The LoRaWAN system might be shut down.
+
+If the transmission is not accepted, `SendBuffer()` returns `false`.
+
+If the transmission is accepted, then the following steps are taken:
+
+- `pDoneFn` and `pClientData` are saved internally for use when the transmission completes.
+- The data from `pUplinkBuffer` is copied into an internal buffer (so you can immediately start reusing the buffer in your own code).
+- If the device is provisioned for OTAA mode, and the device is not yet joined to a network, a JOIN attempt is initiated; and the message is transmitted if the JOIN attempt succeeds.
+- The message is transmitted on the uplink port specified by `port`. If `fConfirmed` is `true`, a confirmed (acknolwedged) uplink is used; otherwise unconfirmed uplinks are used.
+- Control then returns to the caller (with the result `true`).
+
+When the transmission attempt finishes, the LoRaWAN subsystem calls `pDoneFn(pClientData, fSuccess)`, with `fSuccess` true if the uplink seemed to be successful. Success means different things in different circumstances.
+
+- For an unconfirmed uplink, success means that the device is joined to a network, and was able to transmit the message without any local errors. If not joined, and the join attempt fails, then `fSuccess` will be false.
+- For a confirmed uplink, success means that the message was sent, *and* a confirmation downlink was received. Failure doesn't necessarily mean that the network didn't receive the message; it only means that we didn't get an acknowledgement.
+
+#### Registering to receive downlink messages
+
+Receiving a message is a somewhat passive operation. The client registers a callback with `gLoRaWAN`; later, whenever a downlink message is received, the client's callback is called.
+
+```c++
+typedef void Arduino_LoRaWAN::ReceivePortBufferCbFn(
+  void *pCtx,
+  uint8_t uPort,
+  const uint8_t *pBuffer,
+  size_t nBuffer
+  );
+
+void Arduino_LoRaWAN::SetReceiveBufferBufferCb(
+  ReceivePortBufferCbFn *pReceivePortBufferFn,
+  void *pCtx
+  );
+```
+
+#### LoRaWAN Class Structure
+
+In order to allow code to be portable across networks and regions, we've done a lot of work with abstraction classes. If you're curious, here's a somewhat simplified diagram.
+
+[![**LoRaWAN class structure**](http://www.plantuml.com/plantuml/png/bPNFRkCs4CRFcgSOvBANjToaQ92uFQpXzG8fx7JhTD5ZCA8c4XkH5FXdNM6xxrv9hBfg6idmKJFy3R-Fd17VEK_M1rN1yWt0tkIXubMo8S-Q7dVcGB-lxzEw8jslWGz12o-DNa7oiGj-sk_GyXDRreBHcM05uvEn62kiLl-KG56HSvXBAYof51BOcBgniYXzM-g16Ka8eshIZTG5xkuss_k7BJx9Yf4y9ANtjLkjbij2-Z9aQRjsgOIG2z7liupRBTOs3rARHQlDjoeK9B0ElZIstUGtjhR1lJ6Mt-9-ixd3ZR6riTJvINuELODNtrtU0jmRpsviK2egsA7KUDYkz--tgSgHB6F1cbkSSymQhCdvJhelfOkwfVO64byoEhQVsI9vx7oqBex7ux-7sdiPFjuYwHmBIraMYp4abbse-jgV3ZkN0hnP0fGoPsHL-mOLguoj0wX9F5F1E9p2SFRayA8pF2HmIEnaPias5_W5A7FUal3neeQLGmV0YVoZ8b5ApRy-PkIutp1D_nky03Y11dTx-SE87KLFmYS5Ug_7skBtjAm8SBYvlXaHCN0nGumzV0lC4HHkhov7H0pC4kxswliH4GDpXDGtrzSZ8WRch0Ey2E9FVoqMyzT-6XbV1CpMYknygy1ykYsHfjCDeurdx7z0Q3HMKZy3ue4BsNuvhbXqSqqUkxzIDyrUAWRi9ltk_HQDxHAATDwX3Anpx2e2JFYDZgQxx7mkkZoVYmrsFXVRx7mkDXl0fFLNBYgcOTBrMKWqV1OIlPw5H9lJo5S0JOfTJO9nBuICJnP-6QPGV3HLHLd5lsH_iF0n-l8T7RKj83uOnNs3Llodz0sMCizP_zXbGjRpx31dgl0eVOavVvQ24R1bz9CiGdpx-YVdms6z1yJWgE1qrCulL7Mt_3zDa4vDMJoEIG_ZqSDxzaTZd-U6RsBwKlmcE7tbx5zN0L_XNOi5LVqD)](https://www.plantuml.com/plantuml/svg/bPNFRkCs4CRFcgSOvBANjToaQ92uFQpXzG8fx7JhTD5ZCA8c4XkH5FXdNM6xxrv9hBfg6idmKJFy3R-Fd17VEK_M1rN1yWt0tkIXubMo8S-Q7dVcGB-lxzEw8jslWGz12o-DNa7oiGj-sk_GyXDRreBHcM05uvEn62kiLl-KG56HSvXBAYof51BOcBgniYXzM-g16Ka8eshIZTG5xkuss_k7BJx9Yf4y9ANtjLkjbij2-Z9aQRjsgOIG2z7liupRBTOs3rARHQlDjoeK9B0ElZIstUGtjhR1lJ6Mt-9-ixd3ZR6riTJvINuELODNtrtU0jmRpsviK2egsA7KUDYkz--tgSgHB6F1cbkSSymQhCdvJhelfOkwfVO64byoEhQVsI9vx7oqBex7ux-7sdiPFjuYwHmBIraMYp4abbse-jgV3ZkN0hnP0fGoPsHL-mOLguoj0wX9F5F1E9p2SFRayA8pF2HmIEnaPias5_W5A7FUal3neeQLGmV0YVoZ8b5ApRy-PkIutp1D_nky03Y11dTx-SE87KLFmYS5Ug_7skBtjAm8SBYvlXaHCN0nGumzV0lC4HHkhov7H0pC4kxswliH4GDpXDGtrzSZ8WRch0Ey2E9FVoqMyzT-6XbV1CpMYknygy1ykYsHfjCDeurdx7z0Q3HMKZy3ue4BsNuvhbXqSqqUkxzIDyrUAWRi9ltk_HQDxHAATDwX3Anpx2e2JFYDZgQxx7mkkZoVYmrsFXVRx7mkDXl0fFLNBYgcOTBrMKWqV1OIlPw5H9lJo5S0JOfTJO9nBuICJnP-6QPGV3HLHLd5lsH_iF0n-l8T7RKj83uOnNs3Llodz0sMCizP_zXbGjRpx31dgl0eVOavVvQ24R1bz9CiGdpx-YVdms6z1yJWgE1qrCulL7Mt_3zDa4vDMJoEIG_ZqSDxzaTZd-U6RsBwKlmcE7tbx5zN0L_XNOi5LVqD "Click for SVG version")
+
+As the diagram shows, Catena::LoRaWAN objects are primarily `Arduino_LoRaWAN` derivatives, but they also can be viewed as `McciCatena::cPollableObject` instances, and therefore can participate in [polling](#polling-framework).
 
 ### FRAM Storage Management
 
@@ -641,7 +1103,11 @@ If the LoRaWAN system is not provisioned, the application enteres an idle loop; 
 
 ### `catena_usercommand`
 
-This sketch is very similar to `cathea_hello`. It shows how to add a user-defined comamand, `application hello`, that prints "`Hello, world!`".
+This sketch is very similar to `catena_hello`. It shows how to add a user-defined comamand, `application hello`, that prints "`Hello, world!`".
+
+### `catena_fsm`
+
+This sketch demonstrates the use of the Catena FSM class to implement the `Turnstile` example described in [Finite State Machine Framework](#finite-state-machine-fsm-framework).
 
 ## Board Support Dependencies
 
@@ -649,11 +1115,21 @@ This sketch is very similar to `cathea_hello`. It shows how to add a user-define
 
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
-| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | HEAD | 0.5.3 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
 | [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- HEAD includes the following changes.
+
+  - [#189](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/189) Add Catena FSM class, example, documentation.
+  - [#190](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/190) document the polling framework.
+  - [#191](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/191) Document the LoRaWAN framework.
+  - [#192](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/192) Document platform GUIDs for 4617, 4618, 4630.
+  - [#187](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/187), [#184](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/184), [#183](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/183), [#182](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/182) CI improvements.
+  - [#185](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/185) eliminate warnings from `gLog.isenabled()` declaration.
+  - Miscellaneous documentation cleanups.
 
 - v0.15.0 includes the following changes.
 
