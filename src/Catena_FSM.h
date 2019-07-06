@@ -212,8 +212,10 @@ void cFSM<TParent, TState>::eval(void)
         {
         this->flags.f.Reevaluate = false;
 
+        // get the current state; if final, and not transitioning to final,
+        // don't evaluate; FSM is shut down.
         auto const oldState = this->getState();
-        if (oldState == TState::stFinal)
+        if (oldState == TState::stFinal && !fStateChanged)
             break;
 
         // call the state dispatcher.
