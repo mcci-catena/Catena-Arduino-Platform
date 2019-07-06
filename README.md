@@ -29,7 +29,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 			- [Catena 4470](#catena-4470)
 		- [GUIDs for the Catena 4801 family](#guids-for-the-catena-4801-family)
 		- [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
-	- [Pollable Interface](#pollable-interface)
+	- [Polling Framework](#polling-framework)
+		- [Making a class pollable](#making-a-class-pollable)
+		- [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
 	- [LoRaWAN Support](#lorawan-support)
 	- [FRAM Storage Management](#fram-storage-management)
 		- [FRAM Storage Formats](#fram-storage-formats)
@@ -295,9 +297,110 @@ Name | GUID | Description
 `FEATHER_M0_PROTO` | `f6a15678-c7f3-43f4-ac57-67ef5cf75541` | A Feather M0 Proto.
 `FEATHER_M0` | `2e6dfed4-f577-47d5-9137-b3e63976ae92` | Some unspecified member of the Feather M0 family.
 
-### Pollable Interface
+### Polling Framework
 
-*To be supplied*
+When composing software from components, it's inconvenient and bug-prone to have to manually edit the Arduino `loop()` function to poll each component.
+
+To compensate, the Catena platform defines a framework for polling, and allows components to register to be polled.
+
+The foundation of the framework is `cPollableInterface`, an abstract class. Any object inheriting from `cPollableInterface` will provide a `poll()` method; this provides a standard way to poll an object.
+
+Pollable objects are managed via a central instance of `cPollingEngine`, which works on objects that are derived from `cPollableObject`. You create your pollable class by arranging for it to inherit from `cPollableObject`; then at run time you arrange to register  and normally created by arranging for them to inherit from `cPollableObject`. This adds a few tracking fields to your class, and makes them available to the `cPollingEngine` when you register the object with the polling engine.
+
+The abstract relationships are shown below.
+
+[![**Pollable framework UML Class Diagram **](http://www.plantuml.com/plantuml/png/bL9DRziw43nhVyN2btoyM4voUquG94_nGrDOQP2FSx4IrnOBYXH8oggGfh-zb0p7RjGswCNMahCpiyEzT9wihqi5aps0r8XQyJHAoBEc_yXnN2dI_JtyN-lSIwEd4DrrXq_f72qlsBBE6PsfRVXR68lvdL6ACiKtshDTK3ZE5Jc7GjBIKXb318cfMYkNXGzi3yn8UMxAYdGhzHBdDydizc662wauOAzgNnWRW8ziROkfCPQFC4sI6qoChOobpbRqiLOjdXwV_0jmQpoxNP-of2Kxb1hlPrVfzImk1P9bNBBcqCu2inOhShwJzuLqlNR0UmEHBnWTsnLR98-5zzLqCccQvZMRE7YVR8eZ92qmp9bbQpA6oBAhLS_zT3ztCU9ZqJ6HGsymOnH6Tn91WHHwMR8xmaRw0eLSz05xY5QaQdR8GWQxlREE6rTaPPUr2ppAD76WPWn-oj2q6VWwxGQ6g94gq7FuQKsDJV2mvr0p2nOnmDu4e922aSlAjrXocR5r09g2dufonZJFvNery1b0RbztyE3XFlhdcJBdBUN-1RyF8Vi7FqDMHWgi0ch_u0nU0DOhq_U5u6PwAJNZ-Vc6v-AYrzZjsfGP1-nERKFjWkgdx0ldVl_Lohh6mmuv7foMdwiFJABtid69MrCxs86hNvBTybV_Ew4vEN_sJXp3ZC-_ZSTl0lepRAiARt8rumiS7KyFHmFW2wndVd9ia-xhv9r763IS8ZaSnN4ymdTRjniM3q8EOuntRFm5zXJWahMeImK_0000)](https://www.plantuml.com/plantuml/svg/bL9DRziw43nhVyN2btoyM4voUquG94_nGrDOQP2FSx4IrnOBYXH8oggGfh-zb0p7RjGswCNMahCpiyEzT9wihqi5aps0r8XQyJHAoBEc_yXnN2dI_JtyN-lSIwEd4DrrXq_f72qlsBBE6PsfRVXR68lvdL6ACiKtshDTK3ZE5Jc7GjBIKXb318cfMYkNXGzi3yn8UMxAYdGhzHBdDydizc662wauOAzgNnWRW8ziROkfCPQFC4sI6qoChOobpbRqiLOjdXwV_0jmQpoxNP-of2Kxb1hlPrVfzImk1P9bNBBcqCu2inOhShwJzuLqlNR0UmEHBnWTsnLR98-5zzLqCccQvZMRE7YVR8eZ92qmp9bbQpA6oBAhLS_zT3ztCU9ZqJ6HGsymOnH6Tn91WHHwMR8xmaRw0eLSz05xY5QaQdR8GWQxlREE6rTaPPUr2ppAD76WPWn-oj2q6VWwxGQ6g94gq7FuQKsDJV2mvr0p2nOnmDu4e922aSlAjrXocR5r09g2dufonZJFvNery1b0RbztyE3XFlhdcJBdBUN-1RyF8Vi7FqDMHWgi0ch_u0nU0DOhq_U5u6PwAJNZ-Vc6v-AYrzZjsfGP1-nERKFjWkgdx0ldVl_Lohh6mmuv7foMdwiFJABtid69MrCxs86hNvBTybV_Ew4vEN_sJXp3ZC-_ZSTl0lepRAiARt8rumiS7KyFHmFW2wndVd9ia-xhv9r763IS8ZaSnN4ymdTRjniM3q8EOuntRFm5zXJWahMeImK_0000 "Click for SVG version")
+
+#### Making a class pollable
+
+Let's say that `UserClass1` exists and has the following definition.
+
+```c++
+class UserClass1 : public ParentClass {
+public:
+  // constructor
+  UserClass1() {}
+  void begin();
+};
+```
+
+To make `UserClass1` pollable, you change the class declaration as follows:
+
+1. Change `UserClass1` to inherit from `McciCatena::cPollableObject`, using multiple inheritance if needed. List `McciCatena::cPollableObject` last. No need to make it `public`.
+
+2. Declare a new public virtual method `void poll()`. We recommend that you use the `override` keyword to make it clear that this is an override for a method declared in the parent class.
+
+You also, of cousre, must supply an implementaion of `UserClass::poll()`.
+
+Here's an example of the transformed `UserClass1`:
+
+```c++
+class UserClass1 : public ParentClass, McciCatena::cPollableObject {
+public:
+  // constructor
+  UserClass1() {}
+  void begin();
+
+  // <<Pollable>> requirements:
+  virtual void poll() override;
+};
+```
+
+#### Using pollable objects in sketches
+
+Each instance of your pollable class (in our example, each instance of type `UserClass1`) must be *registered* with a polling engine. The most convenient polling engine to use is the once provided by the `CatenaBase` class, which is normally instantiated as `gCatena`.  Simply call `gCatena.registerObject()` to register your object with the Catena polling engine. So for example:
+
+```c++
+#include <Catena.h>
+
+// create the gCatena instance.
+McciCatena::Catena gCatena;
+
+// create an instance of my object.
+UserClass1 myUserObject;
+
+void setup() {
+  // conventionally, we call gCatena.begin() first:
+  gCatena.begin();
+
+  // now register the object.
+  gCatena.registerObject(&myUserObject);
+}
+
+void loop() {
+  // poll all the objects registered with gCatena.
+  gCatena.poll();
+  // do any other work...
+}
+```
+
+If you're not using the full `Catena` class framework, you still can use polling; just declare your own `cPollingEngine` instance.  For example:
+
+```c++
+#include <Arduino.h>
+#include <Catena_PollableInterface.h>
+
+// create the polling engine instance.
+McciCatena::cPollingEngine gPollingEngine;
+
+// create an instance of my object.
+UserClass1 myUserObject;
+
+void setup() {
+  // conventionally, we call gPollingEngine.begin() first:
+  gPollingEngine.begin();
+
+  // now register the object.
+  gPollingEngine.registerObject(&myUserObject);
+}
+
+void loop() {
+  // poll all the objects registered with gCatena.
+  gPollingEngine.poll();
+  // do any other work...
+}
+```
+
 
 ### LoRaWAN Support
 
