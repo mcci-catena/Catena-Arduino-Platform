@@ -32,6 +32,15 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [Polling Framework](#polling-framework)
 		- [Making a class pollable](#making-a-class-pollable)
 		- [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
+	- [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
+		- [Getting ready](#getting-ready)
+		- [Defining the state enum](#defining-the-state-enum)
+		- [Identify the parent class](#identify-the-parent-class)
+		- [Add the state enum to the parent class](#add-the-state-enum-to-the-parent-class)
+		- [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
+		- [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
+		- [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
+		- [Implement the FSM intialization](#implement-the-fsm-intialization)
 	- [LoRaWAN Support](#lorawan-support)
 	- [FRAM Storage Management](#fram-storage-management)
 		- [FRAM Storage Formats](#fram-storage-formats)
@@ -401,6 +410,217 @@ void loop() {
 }
 ```
 
+### Finite State Machine (FSM) Framework
+
+Finite state machines are very useful when implementing non-blocking asynchronous programs, or modeling external hardware that changes state independently of the system.
+
+We've ported an implementation of MCCI's standard FSM approach. It's good for Mealy or Moore designs, and is intended to be easy to implement and maintain.  This version is C++ oriented; it assumes that each FSM instance is associated with a C++ class object (the "parent" object). The work of implementing the FSM is divided between the parent object and the FSM object. The FSM object does all the bookkeeping and handling of corner conditions; the parent object provides a method function, which the FSM calls whenever it seems appropriate to do so.
+
+Here's what you need:
+
+- an `enum class` type with all of your states, and a couple of distinguished states. This type is referred to as `TState`; and
+- an associated C++ `class` type (referred to as `TParent`), containing...
+- a method that will be used as the dispatcher by the evaluator, of signature `TParent::someName(TState currentState, bool fEntry) -> TState`.
+
+In addition to the states relevant to your problem, `TState` must have three distinct values with well-known names.
+
+- `TState::stNoChange` does not correspond to any state. Instead, it's the value retured by the dispatch routine when the state is not to be changed. (Returning the current state will cause the FSM to transition from the current state to the current state.)
+
+- `TState::stInitial` is the initial state of your FSM.
+
+- `TState::stFinal` is the final state of your FSM. Once the FSM reaches this state, it will remain there until another call to `fsm.init()` is made.
+
+We'll use the [coin-operated turnsile](https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile) example from Wikipedia to make things more concrete.
+
+#### Getting ready
+
+The author usually starts by drawing a diagram, labled with the states and transitions.
+
+For example, here's the turnstile state diagram:
+
+[![**Coin Operated Turnstile State Diagram](http://www.plantuml.com/plantuml/png/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_)](https://www.plantuml.com/plantuml/svg/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_ "Click for SVG view")
+
+#### Defining the state enum
+
+Define an `enum class` as follows:
+
+```c++
+enum class MyStateEnum {
+  stNoChange = 0,    // this name must be present: indicates "no change of state"
+  stInitial,         // this name must be presnt: it's the starting state.
+  // use-case-specific states
+  // ...
+  stFinal,           // this name must be present, it's the terminal state.
+};
+```
+
+For example, for the turnstile diagram:
+
+```c++
+enum class State {
+  stNoChange = 0,    // this name must be present: indicates "no change of state"
+  stInitial,         // this name must be presnt: it's the starting state.
+  stLocked,
+  stUnlocked,
+  stFinal,           // this name must be present, it's the terminal state.
+};
+```
+
+#### Identify the parent class
+
+This means finding the class name for the class that is going to contain this FSM. One class can contain many FSMs, but each FSM class has only one parent class.
+
+For our example, we'll say that the class modeling turnstiles is `Turnstile`.
+
+#### Add the state enum to the parent class
+
+Add the enum you defined above, and add it to the parent class. For example:
+
+```c++
+class Turnstile {
+
+  // states for FSM
+  enum class State {
+    stNoChange = 0,    // this name must be present: indicates "no change of state"
+    stInitial,         // this name must be presnt: it's the starting state.
+    stLocked,
+    stUnlocked,
+    stFinal,           // this name must be present, it's the terminal state.
+  };
+
+};
+```
+
+#### Define the FSM instance in the parent class
+
+Add an FSM instance as a member of the parent class. It's up to you whether to make it `public`, `private`, or `protected`.
+
+```c++
+class Turnstile {
+
+  // states for FSM
+  enum class State {
+    stNoChange = 0,    // this name must be present: indicates "no change of state"
+    stInitial,         // this name must be presnt: it's the starting state.
+    stLocked,
+    stUnlocked,
+    stFinal,           // this name must be present, it's the terminal state.
+  };
+
+  // the FSM instance
+  McciCatena::cFSM<Turnstile, State>  m_fsm;
+};
+```
+
+#### Declare a method function in the parent class
+
+Finally, we have to declare a method function that the FSM can call.  Extending the turnstile example again:
+
+```c++
+class Turnstile {
+
+  // states for FSM
+  enum class State {
+    stNoChange = 0,    // this name must be present: indicates "no change of state"
+    stInitial,         // this name must be presnt: it's the starting state.
+    stLocked,
+    stUnlocked,
+    stFinal,           // this name must be present, it's the terminal state.
+  };
+
+  // the FSM instance
+  McciCatena::cFSM<Turnstile, State>  m_fsm;
+
+  // the FSM dispatch function called by this->m_fsm.
+  State fsmDispatch(State currentState, bool fEntry);
+};
+```
+
+#### Implement the FSM dispatch function
+
+Your FSM dispatch function will look like this.
+
+```c++
+void Turnstile::fsmDispatch(Turnstile::State currentState, bool fEntry) {
+  State newState = State::stNoChange;
+
+  switch (currentState) {
+
+  case State::stInitial:
+    if (fEntry) {
+      // entry is not considered in this state, always move on.
+    }
+    digitalWrite(LOCK, 1);
+    pinMode(LOCK, OUTPUT);
+    newState = State::stLocked;
+    break;
+
+  case State::stLocked:
+    if (fEntry) {
+      digitalWrite(LOCK, 1);
+    }
+    if (this->m_evShutdown) {
+      this->m_evShutdown = false;
+      newState = State::stFinal;
+    } else if (this->m_evCoin) {
+      this->m_evCoin = false;
+      newState = State::stUnlocked;
+    } else if (this->m_evPush) {
+      this->m_evPush = false;
+      // stay in this state.
+    } else {
+      // stay in this state.
+    }
+    break;
+
+  case State::stUnlocked:
+    if (fEntry) {
+      digitalWrite(LOCK, 0);
+    }
+    if (this->m_evShutdown) {
+      this->m_evShutdown = false;
+      newState = State::stFinal;
+    } else if (this->m_evCoin) {
+      this->m_evCoin = false;
+      // stay in this state.
+    } else if (this->m_evPush) {
+      this->m_evPush = false;
+      newState = State::stLocked;
+    } else {
+      // stay in this state.
+    }
+    break;
+
+  case State::stFinal:
+    // by policy, we idle with the turnstile locked.
+    digitalWrite(LOCK, 1);
+    // stay in this state.
+    break;
+
+  default:
+    // the default means unknown state.
+    // transition to locket.
+    newState = State::stLocked;
+    break;
+  }
+  return newState;
+}
+```
+
+#### Implement the FSM intialization
+
+Somewhere in your initialization for `Turnstile`, add the following code. For example, if `Turnstile` has a `Turnstile::begin()` method, you could write:
+
+```c++
+void Turnstile::begin() {
+  // other init code...
+
+  // set up FSM
+  this->m_fsm.init(*this, fsmDispatch);
+
+  // remaining init code...
+}
+```
 
 ### LoRaWAN Support
 
