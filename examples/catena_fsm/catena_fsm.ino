@@ -32,7 +32,8 @@ using namespace McciCatena;
 
 /****************************************************************************\
 |
-|   The Turnstile class and FSM
+|   The Turnstile class and FSM. Refer to the overall README.md for a
+|   description of the FSM.
 |
 \****************************************************************************/
 
@@ -50,57 +51,78 @@ public:
                 {
                 stNoChange = 0, // this name must be present: indicates "no change of state"
                 stInitial,      // this name must be presnt: it's the starting state.
-                stLocked,
-                stUnlocked,
-                stFinal, // this name must be present, it's the terminal state.
+                stLocked,       // the turnstile is locked.
+                stUnlocked,     // the turnstile is unlocked.
+                stFinal,        // this name must be present, it's the terminal state.
                 };
 
         // the begin method initializes the fsm
         void begin() 
                 {
-                this->m_fsm.init(*this, &Turnstile::fsmDispatch);
+                if (! this->m_fRunning)
+                        this->m_fsm.init(*this, &Turnstile::fsmDispatch);
+                else
+                        this->m_Catena.SafePrintf("already running!\n");
                 }
 
         // the end method shuts it down
         void end()
                 {
-                this->m_evShutdown = true;
-                while (this->m_fsm.getState() != State::stFinal)
-                        this->m_fsm.eval();
+                if (this->checkRunning())
+                        {
+                        this->m_evShutdown = true;
+                        while (this->m_fRunning)
+                                this->m_fsm.eval();
+                        }
                 }
 
         // coin event
         void evCoin()
                 {
-                this->m_evCoin = true;
-                this->m_fsm.eval();
+                if (this->checkRunning())
+                        {
+                        this->m_evCoin = true;
+                        this->m_fsm.eval();
+                        }
                 }
 
         // coin event
         void evPush()
                 {
-                this->m_evPush = true;
-                this->m_fsm.eval();
+                if (this->checkRunning())
+                        {
+                        this->m_evPush = true;
+                        this->m_fsm.eval();
+                        }
                 }
 
         // stop event
         void evStop()
                 {
-                this->m_evShutdown = true;
-                this->m_fsm.eval();
+                if (this->checkRunning())
+                        {
+                        this->m_evShutdown = true;
+                        this->m_fsm.eval();
+                        }
                 }
-
 
 private:
         // the FSM instance
        cFSM<Turnstile, State> m_fsm;
 
-        // the FSM dispatch function called by this->m_fsm.
-        // this example is here, so we write it here, but in
-        // any more complex example you'd have this outside
-        // the Class definition, possibly compiled separately.
-        static constexpr unsigned LOCK = Catena::PIN_STATUS_LED;
+        // verify that FSM is running, and print a message if not.
+        bool checkRunning() const
+                {
+                if (this->m_fRunning)
+                        return true;
+                else
+                        {
+                        this->m_Catena.SafePrintf("not running!\n");
+                        return false;
+                        }
+                }
 
+        // "set the lock" - which means display a message
         void setLock(bool fState)
                 {
                 if (fState)
@@ -115,6 +137,10 @@ private:
                         }
                 }
 
+        // the FSM dispatch function called by this->m_fsm.
+        // this example is here, so we write it here, but in
+        // any more complex application you'd have this outside
+        // the Class definition, possibly compiled separately.
         State fsmDispatch(State currentState, bool fEntry)
                 {
                 State newState = State::stNoChange;
@@ -127,6 +153,7 @@ private:
                                 {
                                 // entry is not considered in this state, always move on.
                                 }
+                        this->m_fRunning = true;
                         newState = State::stLocked;
                         break;
 
@@ -148,7 +175,7 @@ private:
                         else if (this->m_evPush)
                                 {
                                 this->m_evPush = false;
-                                m_Catena.SafePrintf("Please deposit a coin.\n");
+                                m_Catena.SafePrintf("Sorry, turnstile is locked. Please deposit a coin.\n");
                                 // stay in this state.
                                 }
                         else
@@ -164,8 +191,7 @@ private:
                                 }
                         if (this->m_evShutdown)
                                 {
-                                this->m_evShutdown = false;
-                                newState = State::stFinal;
+                                newState = State::stLocked;
                                 }
                         else if (this->m_evCoin)
                                 {
@@ -176,6 +202,7 @@ private:
                         else if (this->m_evPush)
                                 {
                                 this->m_evPush = false;
+                                m_Catena.SafePrintf("You've passed the turnstile! Have a nice day!\n");
                                 newState = State::stLocked;
                                 }
                         else
@@ -185,18 +212,27 @@ private:
                         break;
 
                 case State::stFinal:
-                        // by policy, we idle with the turnstile locked.
+                        // This is called just once; we just clear the
+                        // running flag.  The core FSM is responsible for
+                        // determining if we're locked or unlocked on
+                        // exit. Since we always get here via the stLocked
+                        // state, we will, in fact, be locked.
                         if (fEntry)
                                 {
-                                this->setLock(false);
+                                m_Catena.SafePrintf("turnstile stopped!\n");
+                                this->m_fRunning = false;
                                 }
-                        m_Catena.SafePrintf("turnstile stopped!\n");
+                        else
+                                {
+                                m_Catena.SafePrintf("stFinal but not fEntry shouldn't happen.\n");
+                                }
+
                         // stay in this state.
                         break;
 
                 default:
                         // the default means unknown state.
-                        // transition to locket.
+                        // transition to locked.
                         m_Catena.SafePrintf("unknown state %u!\n", static_cast<unsigned>(currentState));
                         newState = State::stLocked;
                         break;
@@ -209,10 +245,19 @@ private:
         Catena &m_Catena;
         StatusLed &m_Led;
 
-        // the event flags
+        // the event flags:
+
+        // a coin has been dropped
         bool m_evCoin : 1;
+
+        // someone has pushed on the turnstile.
         bool m_evPush : 1;
+
+        // a shutdown has been requested
         bool m_evShutdown : 1;
+
+        // state flag: true iff the FSM is running.
+        bool m_fRunning: 1;
         };
 
 /****************************************************************************\
@@ -238,14 +283,16 @@ Turnstile gTurnstile (gCatena, gLed);
 // forward reference to the command function
 cCommandStream::CommandFn cmdCoin;
 cCommandStream::CommandFn cmdPush;
-cCommandStream::CommandFn cmdStop;
+cCommandStream::CommandFn cmdBegin;
+cCommandStream::CommandFn cmdEnd;
 
 // the individual commmands are put in this table
 static const cCommandStream::cEntry sMyExtraCommmands[] =
         {
+        { "begin", cmdBegin },
         { "coin", cmdCoin },
         { "push", cmdPush },
-        { "stop", cmdStop },
+        { "end", cmdEnd },
         // other commands go here....
         };
 
@@ -258,11 +305,11 @@ sMyExtraCommands_top(
         nullptr                     /* this is no "first word" for all the commands in this table */
         );
 
-
-
-/*
-|| finally, the code.
-*/
+/****************************************************************************\
+|
+|   The code
+|
+\****************************************************************************/
 
 // setup is called once.
 void setup()
@@ -308,6 +355,13 @@ void loop()
         gCatena.poll();
         }
 
+/****************************************************************************\
+|
+|   The commands -- called automatically from the framework after receiving
+|   and parsing a command from the Serial console.
+|
+\****************************************************************************/
+
 /* process "coin" -- args are ignored */
 // argv[0] is "coin"
 // argv[1..argc-1] are the (ignored) arguments
@@ -340,10 +394,10 @@ cCommandStream::CommandStatus cmdPush(
         return cCommandStream::CommandStatus::kSuccess;
         }
 
-/* process "stop" -- args are ignored */
+/* process "begin" -- args are ignored */
 // argv[0] is "stop"
 // argv[1..argc-1] are the (ignored) arguments
-cCommandStream::CommandStatus cmdStop(
+cCommandStream::CommandStatus cmdBegin(
         cCommandStream *pThis,
         void *pContext,
         int argc,
@@ -351,8 +405,23 @@ cCommandStream::CommandStatus cmdStop(
         )
         {
         pThis->printf("%s\n", argv[0]);
-        gTurnstile.evStop();
+        gTurnstile.begin();
 
         return cCommandStream::CommandStatus::kSuccess;
         }
 
+/* process "end" -- args are ignored */
+// argv[0] is "end"
+// argv[1..argc-1] are the (ignored) arguments
+cCommandStream::CommandStatus cmdEnd(
+        cCommandStream *pThis,
+        void *pContext,
+        int argc,
+        char **argv
+        )
+        {
+        pThis->printf("%s\n", argv[0]);
+        gTurnstile.end();
+
+        return cCommandStream::CommandStatus::kSuccess;
+        }

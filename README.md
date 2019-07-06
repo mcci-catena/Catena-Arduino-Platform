@@ -72,6 +72,7 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [`catena_hello`](#catena_hello)
 	- [`catena_hello_lora`](#catena_hello_lora)
 	- [`catena_usercommand`](#catena_usercommand)
+	- [`catena_fsm`](#catena_fsm)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
@@ -1102,7 +1103,11 @@ If the LoRaWAN system is not provisioned, the application enteres an idle loop; 
 
 ### `catena_usercommand`
 
-This sketch is very similar to `cathea_hello`. It shows how to add a user-defined comamand, `application hello`, that prints "`Hello, world!`".
+This sketch is very similar to `catena_hello`. It shows how to add a user-defined comamand, `application hello`, that prints "`Hello, world!`".
+
+### `catena_fsm`
+
+This sketch demonstrates the use of the Catena FSM class to implement the `Turnstile` example described in [Finite State Machine Framework](#finite-state-machine-fsm-framework).
 
 ## Board Support Dependencies
 
