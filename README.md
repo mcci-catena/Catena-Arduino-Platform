@@ -1115,11 +1115,21 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
-| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.1.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | HEAD | 0.5.3 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
 | [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- HEAD includes the following changes.
+
+  - [#189](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/189) Add Catena FSM class, example, documentation.
+  - [#190](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/190) document the polling framework.
+  - [#191](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/191) Document the LoRaWAN framework.
+  - [#192](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/192) Document platform GUIDs for 4617, 4618, 4630.
+  - [#187](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/187), [#184](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/184), [#183](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/183), [#182](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/182) CI improvements.
+  - [#185](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/185) eliminate warnings from `gLog.isenabled()` declaration.
+  - Miscellaneous documentation cleanups.
 
 - v0.15.0 includes the following changes.
 
