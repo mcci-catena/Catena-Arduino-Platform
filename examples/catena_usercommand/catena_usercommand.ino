@@ -89,7 +89,7 @@ void setup()
                 );
 
 
-        gCatena.SafePrintf("This is a the user-command demo program for the MCCI Catena-Arduino-Platform library.\n");
+        gCatena.SafePrintf("This is the user-command demo program for the MCCI Catena-Arduino-Platform library.\n");
         gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
         gCatena.SafePrintf("Enter 'application hello' to exercise the minimial extra command.\n");
         gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
