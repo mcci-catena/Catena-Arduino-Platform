@@ -145,7 +145,7 @@ The following figures gives the class derivation hierarchy for the board classes
 
 The tree is too big to show in one diagram here. So we split according to the two families: STM32-based CPUs, and SAMD-based CPUS.
 
-<!-- 
+<!--
 
 For all these, see assets/CatenaBase.plantuml. for some bizarre reason github won't render these unless image links are http (not https).
 
