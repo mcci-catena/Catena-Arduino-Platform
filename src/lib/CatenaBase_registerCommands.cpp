@@ -17,6 +17,9 @@ Author:
 #include "CatenaBase.h"
 
 #include "Catena_CommandStream.h"
+#include <mcciadk_env.h>
+#include <Arduino_LoRaWAN.h>
+#include <Arduino_LoRaWAN_lmic.h>
 
 using namespace McciCatena;
 
@@ -38,11 +41,13 @@ static cCommandStream::CommandFn doSysEUI;
 
 static cCommandStream::CommandFn doConfigure;
 static cCommandStream::CommandFn doReset;
+static cCommandStream::CommandFn doVersion;
 
 static const cCommandStream::cEntry sDispatchEntries[] =
 	{
 	{ "configure", doConfigure },
 	{ "reset", doReset },
+	{ "version", doVersion },
 	};
 
 static cCommandStream::cDispatch
@@ -268,5 +273,96 @@ doReset(
 
 	NVIC_SystemReset();
 	}
+
+/*
+
+Name:	doVersion()
+
+Function:
+	Implement the system reset command
+
+Definition:
+	static cCommandStream::CommandFn doVersion;
+
+	static cCommandStream::CommandStatus
+		doVersion(
+			cCommandStream *pThis,
+			void *pContext,
+			int argc,
+			char **argv
+			);
+
+Description:
+	This function dispatches the command, parsing the input
+	parameters if any to set the corresponding value, or displaying
+	the values.
+
+	The parsed syntax:
+
+.		system version
+
+	The output:
+
+		Board: name
+		Platform-version: X.Y.Z[.local]
+		Arduino-LoRaWAN-version: X.Y.Z[.local]
+		Arduino-LMIC-version: X.Y.Z[.local]
+		MCCIADK-version: X.Y.Z[.local]
+
+Returns:
+	Command status.
+
+*/
+
+/* common code to display a version */
+static void
+printVersion(
+	cCommandStream *pThis,
+	const char *pLabel,
+	uint32_t packedVersion
+	)
+	{
+	pThis->printf("%s-Version: %d.%d.%d%s",
+		pLabel,
+		(packedVersion >> 24) & 0xFF,
+		(packedVersion >> 16) & 0xFF,
+		(packedVersion >> 8) & 0xFF,
+		(packedVersion & 0xFF) ? "." : "\n"
+		);
+
+	if (packedVersion & 0xFF)
+		pThis->printf("%d\n", packedVersion & 0xFF);
+	}
+
+/* Older versions of MCCI ADK don't have a version. Accomodate that. */
+#ifdef MCCIADK_VERSION
+static constexpr uint32_t mcciadk_version = MCCIADK_VERSION;
+#else
+static constexpr uint32_t mcciadk_version = 0;
+#endif
+
+static cCommandStream::CommandStatus
+doVersion(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
+
+	if (argc != 1)
+		{
+		return cCommandStream::CommandStatus::kInvalidParameter;
+		}
+
+	pThis->printf("Board: %s\n", pCatena->CatenaName());
+	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION);
+	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION);
+	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION);
+	printVersion(pThis, "MCCIADK", mcciadk_version);
+	return cCommandStream::CommandStatus::kSuccess;
+	}
+
 
 /**** end of CatenaBase_registerCommands.cpp ****/

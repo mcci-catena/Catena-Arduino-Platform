@@ -973,6 +973,7 @@ The following commands are supported by the Catena command parser.
 | `system configure platformguid`  _[&nbsp;hexGuid ]_ | display or set the platform GUID for this system |
 | `system configure syseui` _[ eui64 ]_ | display or set the system serial number, a 64-bit number.
 | `system reset` | dynamically restart the system, as if the reset button were pressed |
+| `system version` | display the board type and platform library versions. |
 
 ### FRAM commands
 
@@ -1117,9 +1118,13 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 |---------|:-------:|:----:|----------|
 | [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
-| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.1.2 | 0.1.2 | Needed for miscellaneous definitions |
+| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- HEAD includes the following changes
+
+   - [#197](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/197) Add `system version` command.
 
 - v0.16.0 includes the following changes.
 
