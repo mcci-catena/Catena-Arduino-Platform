@@ -40,49 +40,11 @@ using namespace McciCatena;
 
 
 /*
-function _makeentry {
-./ttnctl devices info $1 | awk '
-function revhex(s,     r, i) 
-   { # r, i are local variables
-   r = ""; 
-   for (i = 1; i < length(s); i += 2) 
-      { 
-      r = "0x" substr(s, i, 2) ", " r; 
-      } 
-   # strip off the trailing ", ", and then convert to the 
-   # declaration needed by arduino-lmic sketches.
-   return "{ " substr(r, 1, length(r)-2) " }"; 
-   } 
-function friendlyHex(s,  r, i)
-   { # r, i are local variables
-   r = ""; 
-   for (i = 1; i < length(s); i += 2) 
-      {
-      if (r != "")
-         r = r "-" substr(s, i, 2);
-      else
-         r = substr(s, i, 2);
-      }
-  return r;
-  }
- /AppEUI/ { AppEUI = revhex($2) } 
- /DevEUI/ { DevEUI = revhex($2); DevEUIfriendly = $2; } 
- /AppKey/ { getline; AppKey = substr($0, 11) }
- END {
-     printf("%8s{  // %s\n", "", friendlyHex(DevEUIfriendly));
-     printf("%8sStyle:  Arduino_LoRaWAN::ProvisioningStyle::kOTAA,\n", "");
-     printf("%8sAbpInfo: {},\n", "");
-     printf("%8sOtaaInfo:\n", "");
-     printf("%16s{\n", "");
-     printf("%16sAppKey: %s,\n", "", AppKey);
-     printf("%16sDevEUI: %s,\n", "", DevEUI);
-     printf("%16sAppEUI: %s,\n", "", AppEUI);
-     printf("%16s},\n", "");
-     printf("%8s},\n", "");
-     }
- '
-}
- */
+
+Use the script extra/make-lorawan-keys-entry.sh to generate
+the entries in this table.
+
+*/
 
 static const Arduino_LoRaWAN::ProvisioningInfo
 skProvisioningInfo[] =
