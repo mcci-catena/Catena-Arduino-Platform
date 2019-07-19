@@ -128,20 +128,32 @@ bool CatenaStm32L0Rtc::begin(bool fResetTime)
 	{
 	RTC_TimeTypeDef	Time;
 	RTC_DateTypeDef	Date;
+	uint32_t RtcClock;
 
 //	memset(&this->m_hRtc, 0, sizeof(this->m_hRtc));
 
 	this->m_hRtc.Instance = RTC;
 	this->m_hRtc.Init.HourFormat = RTC_HOURFORMAT_24;
-//	this->m_hRtc.Init.AsynchPrediv = 37 - 1; /* 37kHz / 37 = 1000Hz */
-//	this->m_hRtc.Init.SynchPrediv = 1000 - 1; /* 1000Hz / 1000 = 1Hz */
+	RtcClock = __HAL_RCC_GET_RTC_SOURCE();
+	if (RtcClock == RCC_RTCCLKSOURCE_LSI)
+		{
+		this->m_hRtc.Init.AsynchPrediv = 37 - 1; /* 37kHz / 37 = 1000Hz */
+		this->m_hRtc.Init.SynchPrediv = 1000 - 1; /* 1000Hz / 1000 = 1Hz */
+		}
+	else if (RtcClock == RCC_RTCCLKSOURCE_LSE)
+		{
+		this->m_hRtc.Init.AsynchPrediv = 128 - 1; /* 32768Hz / 128 = 256Hz */
+		this->m_hRtc.Init.SynchPrediv = 256 - 1; /* 256Hz / 256 = 1Hz */
+		}
+	else
+		{
+		/* use HSE clock -- not defined HSE input clock value */
+//		this->m_hRtc.Init.AsynchPrediv = 64 - 1; /* 40kHz / 64 = 625Hz */
+//		this->m_hRtc.Init.SynchPrediv = 625 - 1; /* 625Hz / 625 = 1Hz */
+		Serial.println("RTC clock use HSE and not supported yet!");
+		return false;
+		}
 
-//	this->m_hRtc.Init.AsynchPrediv = 64 - 1; /* 40kHz / 64 = 625Hz */
-//	this->m_hRtc.Init.SynchPrediv = 625 - 1; /* 625Hz / 625 = 1Hz */
-
-	this->m_hRtc.Init.AsynchPrediv = 128 - 1; /* 32768Hz / 128 = 256Hz */
-//	this->m_hRtc.Init.SynchPrediv = 256 - 1; /* 256Hz / 256 = 1Hz */
-	this->m_hRtc.Init.SynchPrediv = 256; /* 256Hz / 256 = 1Hz */
 
 	this->m_hRtc.Init.OutPut = RTC_OUTPUT_DISABLE;
 	this->m_hRtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;

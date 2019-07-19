@@ -83,6 +83,11 @@ public:
 
 	virtual void Sleep(uint32_t howLongInSeconds) override;
 
+	CatenaRTC::CalendarTime GetCalendarTime(void)
+		{
+		return this->m_Rtc.GetTime();
+		}
+
 protected:
 	virtual void registerCommands(void);
 
