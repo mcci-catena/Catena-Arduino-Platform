@@ -102,6 +102,11 @@ public:
 
 	virtual void Sleep(uint32_t howLongInSeconds) override;
 
+	CatenaStm32L0Rtc::CalendarTime GetCalendarTime(void)
+		{
+		return this->m_Rtc.GetTime();
+		}
+
 protected:
 	// methods
 	virtual void registerCommands(void);
