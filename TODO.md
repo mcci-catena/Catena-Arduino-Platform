@@ -13,6 +13,7 @@
 ## Useful info
 
 - [x] update `keywords.txt`.  Used `arduino-keywords` with a filter, as follows:
+
     ```console
     $ pip install arduinokeywords
     $ arduino-keywords -o /c/tmp src
@@ -56,22 +57,14 @@
 
 7. Allow enabling of ADR (and test adr)
 
-8. change the mote-provisioning tool to support configuring Catenas, and to support registering the catena
+8. add reference to [mcci-catena-provision](https://github.com/mcci-catena/mcci-catena-provision)
 
 9. Write a test app that tests the radio at all channels and all drs.
 
 10. add command echo option (so can see what you've done)
 
-11. change the mote-provisioning tool to support configuring Catenas, and to support registering the catena
+11. If things are configured but join isn't set, don't try to join (bug).
 
-12. Write a test app that tests the radio at all channels and all drs.
+12. if appkey is changed, reset nwskey and appskey (and request a join)
 
-13. change the mote-provisioning tool to support configuring Catenas, and to support registering the catena
-
-14. Write a test app that tests the radio at all channels and all drs.
-
-15. If things are configured but join isn't set, don't try to join (bug).
-
-16. if appkey is changed, reset nwskey and appskey (and request a join)
-
-17. pull out the older Catena code and support for non-FRAM systems.
+13. pull out the older Catena code and support for non-FRAM systems.
