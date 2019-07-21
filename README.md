@@ -6,6 +6,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 
 [![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.16.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable -->
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
 - [Overview](#overview)
@@ -76,8 +79,13 @@ _Apologies_: This document is a work in progress, and is published in this inter
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
+- [Meta](#meta)
+	- [License](#license)
+	- [Support Open Source Hardware and Software](#support-open-source-hardware-and-software)
+	- [Trademarks](#trademarks)
 
 <!-- /TOC -->
+<!-- markdownlint-restore -->
 <!-- Due to a bug in Markdown TOC, the table is formatted incorrectly if tab indentation is set other than 4. Due to another bug, this comment must be *after* the TOC entry. -->
 
 ## Overview
@@ -910,9 +918,9 @@ The command tables themselves are simple arrays of name/function pointer pairs.
 static cCommandStream::CommandFn function1, function2 /*, etc. */;
 
 static const cCommandStream::cEntry table[] = {
-	"cmd1", function1,
-	"cmd2", function2,
-	// ...
+    "cmd1", function1,
+    "cmd2", function2,
+    // ...
 };
 ```
 
@@ -997,14 +1005,14 @@ Notes that these parameters are generall not loaded into the LMIC immediately. T
 
 | Command     | Target device type | Description |
 |-------------|---------------------|----------------------------------|
-`lorawan configure deveui` _[ value ]_	| OTAA | Set the devEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
-`lorawan configure appeui` _[ value ]_	| OTAA |Set the AppEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
-`lorawan configure appkey` _[ value ]_	| OTAA |Set the AppKey for this device to _value_, a 128-bit value given in big-endian (natrual) form.
-`lorawan configure nwkskey` _[ value ]_	| ABP | Set the NwkSKey for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure appskey` _[ value ]_	| ABP |Set the AppSKey for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure devaddr` _[ value ]_	| either | Set the device address, a 32-bit number, in big-endian form. **_Setting devaddr to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure netid` _[ value ]_	| either | Set the network ID, in big-endian form. For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure fcntup` _[ value ]_	| either | the curent uplink framecount, `FCntUp` in the LoRaWAN spec.
+`lorawan configure deveui` _[ value ]_  | OTAA | Set the devEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
+`lorawan configure appeui` _[ value ]_  | OTAA |Set the AppEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
+`lorawan configure appkey` _[ value ]_  | OTAA |Set the AppKey for this device to _value_, a 128-bit value given in big-endian (natrual) form.
+`lorawan configure nwkskey` _[ value ]_ | ABP | Set the NwkSKey for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure appskey` _[ value ]_ | ABP |Set the AppSKey for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure devaddr` _[ value ]_ | either | Set the device address, a 32-bit number, in big-endian form. **_Setting devaddr to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure netid` _[ value ]    | either | Set the network ID, in big-endian form. For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure fcntup` _[ value ]_  | either | the curent uplink framecount, `FCntUp` in the LoRaWAN spec.
 `lorawan configure fcntdown` _[ value ]_ | either | the current downlink framecount, `FCntDown` in the LoRaWAN spec.
 `lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
 
@@ -1047,8 +1055,8 @@ static const cCommandStream::cEntry sMyCommmandTable[] =
 // it optionally includes a "first word" so you can for sure avoid name clashes
 // with commands defined by the framework.
 static cCommandStream::cDispatch sMyCommands(
-    sMyCommmandTable,          	// this is the pointer to the table
-    sizeof(sMyCommmandTable),  	// this is the size of the table
+    sMyCommmandTable,           // this is the pointer to the table
+    sizeof(sMyCommmandTable),   // this is the size of the table
     "application"               // this is the "first word" for all the commands
                                 // in this table. If nullptr, then the commands
                                 // are added to the main table.
@@ -1124,7 +1132,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes
 
-   - [#197](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/197) Add `system version` command.
+  - [#129](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/129) Improve accuracy of `CatenaSTM32L0::Sleep()` timing.
+  - [#197](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/197) Add `system version` command.
 
 - v0.16.0 includes the following changes.
 
@@ -1180,3 +1189,19 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 - v0.8.0 has some minor changes (add the Catena4551 m101/m102/m103/m104 platform, add the Catena4450 m103/m104), and a flag change which effectively changes the API (hence the bump). We add `CatenaBase::fHasLuxS1113`, which indicates the presence of a SI 1113 Lux sensor (as distinct from the BH1750 or the TSL2561 lux sensor used in the Catena4410). Further, we correct the platform flags for the 4551, as it doesn't have an I2C mux. Also incorporates some minor bug fixes for USB serial.
 
 - v0.7.0 is a major refactoring adding support for the `Catena 4551`, which is based on the STM32L0. Although we think that there are no breaking changes, there might be a few, especially if code relied on structured defined internally to the MCCI-Catena-Arduino library `Catena...` classes.
+
+## Meta
+
+### License
+
+This repository is released under the [MIT](./LICENSE) license. Commercial licenses are also available from MCCI Corporation.
+
+### Support Open Source Hardware and Software
+
+MCCI invests time and resources providing this open source code, please support MCCI and open-source hardware by purchasing products from MCCI, Adafruit and other open-source hardware/software vendors!
+
+For information about MCCI's products, please visit [store.mcci.com](https://store.mcci.com/).
+
+### Trademarks
+
+MCCI and MCCI Catena are registered trademarks of MCCI Corporation. All other marks are the property of their respective owners.
