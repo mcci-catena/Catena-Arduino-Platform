@@ -50,6 +50,7 @@ Revision history:
 
 #include <Catena_Log.h>
 #include <mcciadk_baselib.h>
+#include <arduino_lmic.h>
 
 using namespace McciCatena;
 
@@ -108,6 +109,11 @@ bool CatenaStm32L0::LoRaWAN::begin(
 			" Arduino_LoRaWAN:begin failed\n"
 			);
 		return false;
+		}
+
+	if (pParent->GetSystemClockRate() < 16000000)
+		{
+		LMIC_setClockError(5*65536/100);
 		}
 
 	/* indicate success to the client */

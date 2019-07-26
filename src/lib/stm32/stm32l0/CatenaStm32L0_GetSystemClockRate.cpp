@@ -56,9 +56,7 @@ Definition:
 		) const override;
 
 Description:
-	The clock rate returned is the value set at compile time
-	by CATENA_CFG_SYSCLK. The value we return is the correct
-	nominal value, in Hz.
+	This function returns the system clock rate in Hz.
 
 Returns:
 	Analog value
@@ -69,20 +67,7 @@ uint64_t CatenaStm32L0::GetSystemClockRate(
 	void
 	) const
 	{
-	switch (CATENA_CFG_SYSCLK)
-		{
-	case 2:
-		return 2097 * 1000;
-	case 4:
-		return 4194 * 1000;
-	case 16:
-		return 16 * 1000 * 1000;
-	case 24:
-		return 24 * 1000 * 1000;
-	default:
-	case 32:
-		return 32 * 1000 * 1000;
-		}
+	return HAL_RCC_GetHCLKFreq();
 	}
 
 #endif // ARDUINO_ARCH_STM32

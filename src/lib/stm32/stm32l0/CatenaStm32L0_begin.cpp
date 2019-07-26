@@ -51,7 +51,6 @@ using namespace McciCatena;
 \****************************************************************************/
 
 
-
 /****************************************************************************\
 |
 |	Read-only data.
@@ -102,6 +101,12 @@ Returns:
 bool CatenaStm32L0::begin()
 	{
 	gLog.printf(gLog.kTrace, "+CatenaStm32L0::begin()\n");
+
+	if (! this->m_Rtc.begin())
+		{
+		// error message already printed
+		return false;
+		}
 
 	// we must initialize the FRAM before we call our parent,
 	// because FRAM is used for stable storage of platform info.
@@ -155,7 +160,9 @@ bool CatenaStm32L0::begin()
 		this->m_BootCount
 		);
 
-	return this->m_Rtc.begin();
+	// Calibrate system clock
+	this->CalibrateSystemClock(false, 0);
+	return true;
 	}
 
 #endif // ARDUINO_ARCH_STM32

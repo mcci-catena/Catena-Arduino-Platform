@@ -107,6 +107,8 @@ public:
 		return this->m_Rtc.GetTime();
 		}
 
+	uint32_t CalibrateSystemClock(bool fSetCalibVal, uint32_t CalibVal);
+
 protected:
 	// methods
 	virtual void registerCommands(void);
