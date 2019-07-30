@@ -269,6 +269,13 @@ public:
 
         bool addLoRaWanCommands(void);
 
+        // calibrate the system clock, if possible
+        virtual uint32_t CalibrateSystemClock(void)
+                {
+                // if it's not possible; do nothing and return 0.
+                return 0;
+                }
+
 /****************************************************************************\
 |
 |       The global CatenaBase pointer.
