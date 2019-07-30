@@ -39,6 +39,7 @@ Revision history:
 #include "CatenaStm32L0.h"
 
 #include "Catena_CommandStream.h"
+#include "Catena_Log.h"
 
 using namespace McciCatena;
 
@@ -48,6 +49,15 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+static cCommandStream::CommandFn doCalibration;
+
+static const cCommandStream::cEntry sStm32L0Entries[] =
+	{
+	{ "calibrate", doCalibration },
+	};
+
+static cCommandStream::cDispatch
+sStm32L0Dispatch(sStm32L0Entries, sizeof(sStm32L0Entries), "system");
 
 /****************************************************************************\
 |
@@ -67,6 +77,39 @@ void
 CatenaStm32L0::registerCommands()
 	{
 	this->Super::registerCommands();
+	if (this->usesLseClock())
+		{
+		this->addCommands(
+			sStm32L0Dispatch,
+			static_cast<void *>(this)
+			);
+		}
+	}
+
+static cCommandStream::CommandStatus
+doCalibration(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+	CatenaStm32L0 * const pCatena = static_cast<CatenaStm32L0 *>(pContext);
+
+	if (argc <= 1)
+		{
+		uint32_t Calib;
+
+		Calib = pCatena->CalibrateSystemClock();
+		pThis->printf("calibration result: %u\n", Calib);
+
+		return cCommandStream::CommandStatus::kSuccess;
+		}
+	else
+		{
+		return cCommandStream::CommandStatus::kInvalidParameter;
+		}
+
 	}
 
 #endif // ARDUINO_ARCH_STM32
