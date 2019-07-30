@@ -161,12 +161,9 @@ bool CatenaStm32L0::begin()
 		);
 
 	/* don't calibarate unless the BSP is using LSE clock */
-#if defined(_mcci_arduino_version) && _mcci_arduino_version > _mcci_arduino_version_calc(2,4,0,0)
-
 	// Calibrate system clock
-	this->CalibrateSystemClock();
-
-#endif
+	if (this->usesLseClock())
+		this->CalibrateSystemClock();
 
 	return true;
 	}

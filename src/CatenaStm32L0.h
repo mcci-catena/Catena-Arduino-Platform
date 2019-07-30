@@ -114,6 +114,24 @@ protected:
 	virtual void registerCommands(void);
 
 private:
+	// In future versions, this might change; some STM32L0 implementations
+	// might not have a crystal so LSE won't work. But for now, we assume
+	// that there's a crystal for LSE.
+#if defined(_mcci_arduino_version) 
+# if _mcci_arduino_version >= _mcci_arduino_version_calc(2,4,0,90)
+	static constexpr bool kUsesLSE = true;		// _mcci_arduino_version indicates that LSE clock is used.
+# else
+	// versions before 2.4.0.90 use LSI clock. Can't calibrate.
+	static constexpr bool kUsesLSE = false;		// _mcci_arduino_version defined, too small
+# endif
+#else
+	// versions before 2.4.0.90 use LSI clock. Can't calibrate.
+	static constexpr bool kUsesLSE = false;		// _mcci_arduino_version not defined
+#endif
+
+	// return true if this BSP is using the LSE clock.
+	static bool usesLseClock() { return kUsesLSE; }
+
 	// the FRAM instance
 	McciCatena::cFram8k		m_Fram;
         uint32_t			m_BootCount;

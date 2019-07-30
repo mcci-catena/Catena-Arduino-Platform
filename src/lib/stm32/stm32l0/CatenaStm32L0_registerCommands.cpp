@@ -77,10 +77,13 @@ void
 CatenaStm32L0::registerCommands()
 	{
 	this->Super::registerCommands();
-	this->addCommands(
-		sStm32L0Dispatch,
-		static_cast<void *>(this)
-		);
+	if (this->usesLseClock())
+		{
+		this->addCommands(
+			sStm32L0Dispatch,
+			static_cast<void *>(this)
+			);
+		}
 	}
 
 static cCommandStream::CommandStatus
