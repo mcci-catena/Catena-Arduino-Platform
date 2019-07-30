@@ -64,9 +64,11 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Command stream methods for use by functions](#command-stream-methods-for-use-by-functions)
 		- [Synchronous Command Functions](#synchronous-command-functions)
 		- [Asynchronous Command Functions](#asynchronous-command-functions)
+	- [Clock Management and Calibration](#clock-management-and-calibration)
 	- [`Catena_functional.h`](#catena_functionalh)
 - [Command Summary](#command-summary)
 	- [Standard commands](#standard-commands)
+	- [STM32L0 commands](#stm32l0-commands)
 	- [FRAM commands](#fram-commands)
 	- [LoRaWAN commands](#lorawan-commands)
 		- [LoRaWAN Parameters](#lorawan-parameters)
@@ -959,6 +961,10 @@ An asynchronous command function allows for work to continue after the initial f
 
 2. The second part of the command is coded asynchronously. The asynchronous paths each call `pThis->completeCommand()` when all work has been done. Once the function has established at least one asynchronous completion path, the main function must return `kPending` (and must ensure that all the completion paths call `completeCommand()`).
 
+### Clock Management and Calibration
+
+On some platforms, the system clock needs to be calibrated explicitly in order for the real-time ticks from `micros()` and `millis()` to be accurate. Do this by calling `uint32_t gCatena.CalibrateSystemClock()`. This function updates the clock calibration, and returns a platform-specific value indicative of the calibration. On platforms that don't support (or that don't need) calibration, a dummy implementation is provided that returns 0.
+
 ### `Catena_functional.h`
 
 This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
@@ -981,7 +987,13 @@ The following commands are supported by the Catena command parser.
 | `system configure platformguid`  _[&nbsp;hexGuid ]_ | display or set the platform GUID for this system |
 | `system configure syseui` _[ eui64 ]_ | display or set the system serial number, a 64-bit number.
 | `system reset` | dynamically restart the system, as if the reset button were pressed |
-| `system version` | display the board type and platform library versions. |
+| `system version` | display the board type, and versions of the required libraries. Includes the MCCI Arduino BSP version, if known. |
+
+### STM32L0 commands
+
+| Command | Description |
+|-------------|----------------------------------|
+| `system calibrate` | calibrate the system clock and print the result.
 
 ### FRAM commands
 
@@ -1134,6 +1146,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
   - [#129](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/129) Improve accuracy of `CatenaSTM32L0::Sleep()` timing.
   - [#197](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/197) Add `system version` command.
+  - [#202](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/202) Add system clock calibration for STM32L0 platforms, and add `system calibrate` command. Version 0.16.0.50.
 
 - v0.16.0 includes the following changes.
 
