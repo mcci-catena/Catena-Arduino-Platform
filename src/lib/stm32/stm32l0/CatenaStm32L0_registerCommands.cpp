@@ -95,21 +95,18 @@ doCalibration(
 
 	if (argc <= 1)
 		{
-		pCatena->CalibrateSystemClock(false, 0);
+		uint32_t Calib;
+
+		Calib = pCatena->CalibrateSystemClock();
+		pThis->printf("calibration result: %u\n", Calib);
+
+		return cCommandStream::CommandStatus::kSuccess;
 		}
 	else
 		{
-		char *pValue;
-		uint32_t CalibVal;
-
-		pValue = argv[1];
-		for (CalibVal = 0; '0' <= *pValue && *pValue <= '9'; ++pValue)
-			CalibVal = (CalibVal * 10) + (*pValue - '0');
-
-		pCatena->CalibrateSystemClock(true, CalibVal);
+		return cCommandStream::CommandStatus::kInvalidParameter;
 		}
 
-	return cCommandStream::CommandStatus::kSuccess;
 	}
 
 #endif // ARDUINO_ARCH_STM32

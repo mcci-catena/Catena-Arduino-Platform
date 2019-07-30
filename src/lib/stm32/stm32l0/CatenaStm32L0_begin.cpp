@@ -160,8 +160,14 @@ bool CatenaStm32L0::begin()
 		this->m_BootCount
 		);
 
+	/* don't calibarate unless the BSP is using LSE clock */
+#if defined(_mcci_arduino_version) && _mcci_arduino_version > _mcci_arduino_version_calc(2,4,0,0)
+
 	// Calibrate system clock
-	this->CalibrateSystemClock(false, 0);
+	this->CalibrateSystemClock();
+
+#endif
+
 	return true;
 	}
 
