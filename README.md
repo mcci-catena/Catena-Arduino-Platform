@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.16.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.17.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-capture -->
@@ -1142,10 +1142,11 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Library Release History
 
-- HEAD includes the following changes
+- v0.17.0 includes the following changes
 
   - [#129](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/129) Improve accuracy of `CatenaSTM32L0::Sleep()` timing.
-  - [#197](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/197) Add `system version` command.
+  - [#197](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/197), [#204](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/204) Add `system version` command.
+  - [#199](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/199) extract key-making script to own file and adapt for latest `ttnctl`, update comments. See [mcci-catena-provision](https://github.com/mcci-catena/mcci-catena-provision) for USB-based provisioning, using a variant of the same script.
   - [#202](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/202) Add system clock calibration for STM32L0 platforms, and add `system calibrate` command. Version 0.16.0.50.
 
 - v0.16.0 includes the following changes.
