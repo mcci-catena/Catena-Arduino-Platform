@@ -57,7 +57,7 @@ static const cCommandStream::cEntry sStm32L0Entries[] =
 	};
 
 static cCommandStream::cDispatch
-sStm32L0Dispatch(sStm32L0Entries, sizeof(sStm32L0Entries), "stm32l0");
+sStm32L0Dispatch(sStm32L0Entries, sizeof(sStm32L0Entries), "system");
 
 /****************************************************************************\
 |
