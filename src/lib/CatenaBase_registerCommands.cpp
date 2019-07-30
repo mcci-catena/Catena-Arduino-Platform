@@ -361,6 +361,11 @@ doVersion(
 	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION);
 	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION);
 	printVersion(pThis, "MCCIADK", mcciadk_version);
+
+	/* include the MCCI Arduino version, if known */
+	if (pCatena->kMcciArduinoVersion != 0)
+		printVersion(pThis, "MCCI-Arduino-BSP", pCatena->kMcciArduinoVersion);
+
 	return cCommandStream::CommandStatus::kSuccess;
 	}
 

@@ -72,6 +72,7 @@ Author:
 
 namespace McciCatena {
 
+
 /* forward references */
 struct CATENA_PLATFORM;
 
@@ -80,6 +81,20 @@ class CatenaBase
 public:
         CatenaBase();
         virtual ~CatenaBase() {};
+
+        /*
+        || CatenaBase::kMcciArduinoVersion is the MCCI Arduino version, if known
+        || If not known, it's zero.
+        */
+#if defined(_mcci_arduino_version)
+        static constexpr uint32_t kMcciArduinoVersion = _mcci_arduino_version;
+#else
+        static constexpr uint32_t kMcciArduinoVersion = 0;
+#endif
+        static constexpr uint32_t versionCalc(uint8_t major, uint8_t minor, uint8_t patch, uint8_t local)
+                {
+                return (major << 24u) | (minor << 16u) | (patch << 8u) | local;
+                }
 
         /* an EUI64 */
         struct EUI64_buffer_t
