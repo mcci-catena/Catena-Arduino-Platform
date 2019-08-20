@@ -63,15 +63,59 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+// this table has one row per mode, and 4 columns:
+//		  ADCCONFIGx	ADCSENSx	ADCPOSTx	MEASCONGIGx
+
 static const uint8_t	sk_Si1133AdcConfig[][4] =
 	{
+		// small IR: 
+		//	normal decimation
+		//	normal measurement, sw gain 1, hw gain 1
+		//	16 bit out, no shift, no threshold
+		//	use meascount 1 (unless nChannel == 0)
 		{ SI1133_ADCMUX_SMALL_IR,    0x00, 0x00, 0x40 },
+
+		// medium IR: 
+		//	normal decimation
+		//	normal measurement, sw gain 1, hw gain 1
+		//	16 bit out, post shift 1, no threshold
+		//	use meascount 1 (unless nChannel == 0)
 		{ SI1133_ADCMUX_MEDIUM_IR,   0x00, 0x08, 0x40 },
+
+		// large IR: 
+		//	normal decimation
+		//	normal measurement, sw gain 1, hw gain 1
+		//	16 bit out, post shift 2, no threshold
+		//	use meascount 1 (unless nChannel == 0)
 		{ SI1133_ADCMUX_LARGE_IR,    0x00, 0x10, 0x40 },
+
+		// white: 
+		//	normal decimation
+		//	normal measurement, sw gain 1, hw gain 1
+		//	16 bit out, post shift 0, no threshold
+		//	use meascount 2 (unless nChannel == 0)
 		{ SI1133_ADCMUX_WHITE,       0x00, 0x00, 0x80 },
-		{ SI1133_ADCMUX_LARGE_WHITE, 0x00, 0x08, 0x80 },
-		{ SI1133_ADCMUX_UV,          0x0b, 0x00, 0xC0 },
-		{ SI1133_ADCMUX_UV_DEEP,     0x0b, 0x00, 0xC0 },
+
+		// large white: 
+		//	slow decimation (195 us)
+		//	normal measurement, sw gain 1, hw gain 1
+		//	16 bit out, post shift 1, no threshold
+		//	use meascount 2 (unless nChannel == 0)
+		{ SI1133_ADCMUX_LARGE_WHITE | 0x40, 0x00, 0x08, 0x80 },
+
+		// UV: 
+		//	fastest decimation
+		//	normal measurement, sw gain 1, hw gain 9
+		//	16 bit out, post shift 0, no threshold
+		//	use meascount 3 (unless nChannel == 0)
+		{ SI1133_ADCMUX_UV | 0x60,    0x09, 0x00, 0xC0 },
+
+		// UV deep: 
+		//	normal decimation
+		//	normal measurement, sw gain 1, hw gain 11
+		//	16 bit out, post shift 0, no threshold
+		//	use meascount 3 (unless nChannel == 0)
+		{ SI1133_ADCMUX_UV_DEEP | 0x60, 0x0b, 0x00, 0xC0 },
 	};
 
 
@@ -120,6 +164,9 @@ boolean Catena_Si1133::begin(uint8_t DeviceAddress, TwoWire *pWire)
 		uResponse = this->getResponse();
 		} while (uResponse & SI1133_RSP_CMD_ERR);
 
+	// per sample code, we need a 10ms delay
+	delay(10);
+
 	this->writeParam(
 		SI1133_PARAM_MEASRATE_H,
 		CATENA_SI1133_MEASUREMENT_RATE >> 8
@@ -146,6 +193,7 @@ boolean Catena_Si1133::begin(uint8_t DeviceAddress, TwoWire *pWire)
         return true;
 	}
 
+// configure the channel. if uMeasurementCount is zero, 
 boolean Catena_Si1133::configure(
 	uint8_t uChannel,
 	uint8_t uMode,
@@ -180,7 +228,7 @@ boolean Catena_Si1133::configure(
 	this->writeParam(uChannelBase,   sk_Si1133AdcConfig[uMode][0]);
 	this->writeParam(uChannelBase+1, sk_Si1133AdcConfig[uMode][1]);
 	this->writeParam(uChannelBase+2, sk_Si1133AdcConfig[uMode][2]);
-	this->writeParam(uChannelBase+3, sk_Si1133AdcConfig[uMode][3]);
+	this->writeParam(uChannelBase+3, uMeasurementCount ? sk_Si1133AdcConfig[uMode][3] : 0);
 
 	if (uMeasurementCount != 0)
 		{
@@ -199,6 +247,9 @@ boolean Catena_Si1133::start(boolean fOneTime)
 		return false;
 
 	this->writeParam(SI1133_PARAM_CHAN_LIST, this->m_ChannelEnabled);
+	if (fOneTime)
+		this->writeReg(SI1133_REG_IRQ_ENABLE, this->m_ChannelEnabled);
+
 	this->writeReg(
 		SI1133_REG_COMMAND,
 		fOneTime ? SI1133_CMD_FORCE : SI1133_CMD_START
@@ -289,6 +340,14 @@ void Catena_Si1133::readMultiChannelData(uint16_t *pChannelData, uint32_t nChann
 			/* loop */;
 		*pChannelData |= this->m_pWire->read();
 		}
+	}
+
+bool Catena_Si1133::isOneTimeReady()
+	{
+	if (this->m_fOneTime)
+		return (this->readReg(SI1133_REG_IRQ_STATUS) & this->m_ChannelEnabled) == this->m_ChannelEnabled;
+	else
+		return false;
 	}
 
 uint8_t Catena_Si1133::readReg(uint8_t uReg)

@@ -40,13 +40,13 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
 	- [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
 		- [Getting ready](#getting-ready)
-		- [Defining the state enum](#defining-the-state-enum)
+		- [Defining the state `enum class`](#defining-the-state-enum-class)
 		- [Identify the parent class](#identify-the-parent-class)
-		- [Add the state enum to the parent class](#add-the-state-enum-to-the-parent-class)
+		- [Add the state type to the parent class](#add-the-state-type-to-the-parent-class)
 		- [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
 		- [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
 		- [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
-		- [Implement the FSM intialization](#implement-the-fsm-intialization)
+		- [Implement the FSM initialization](#implement-the-fsm-initialization)
 	- [LoRaWAN Support](#lorawan-support)
 		- [Sending an uplink message](#sending-an-uplink-message)
 		- [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
@@ -65,6 +65,12 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Synchronous Command Functions](#synchronous-command-functions)
 		- [Asynchronous Command Functions](#asynchronous-command-functions)
 	- [Clock Management and Calibration](#clock-management-and-calibration)
+	- [Si1133 driver](#si1133-driver)
+	- [`cTimer` Timer object](#ctimer-timer-object)
+		- [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
+		- [cTimer begin() and end()](#ctimer-begin-and-end)
+		- [Checking for `cTimer` events](#checking-for-ctimer-events)
+		- [`cTimer` Utility routines](#ctimer-utility-routines)
 	- [`Catena_functional.h`](#catena_functionalh)
 - [Command Summary](#command-summary)
 	- [Standard commands](#standard-commands)
@@ -102,7 +108,7 @@ In order to assist people who are not everyday readers and writer of C++, this l
 
 3. We tend to use the `m_...` prefix on the names of class member fields.
 
-4. We tend to use `this->m_...` to refer to class members (rather than omitting `this->`). We do this for emphasis, and to avoid visual ambituity.
+4. We tend to use `this->m_...` to refer to class members (rather than omitting `this->`). We do this for emphasis, and to avoid visual ambiguity.
 
 5. We tend to name classes starting with a lower-case letter `c`, i.e., <code><strong>c</strong><em><u>ClassName</u></em></code>. For the `Catena...` classes, we don't follow this rule, however.
 
@@ -158,7 +164,7 @@ The tree is too big to show in one diagram here. So we split according to the tw
 
 <!--
 
-For all these, see assets/CatenaBase.plantuml. for some bizarre reason github won't render these unless image links are http (not https).
+For all these, see assets/CatenaBase.plantuml. for some bizarre reason GitHub won't render these unless image links are http (not https).
 
 Each image is structured as a reference to the image, plus a link. Both must be updated; only the link may be https; the image must be http.
 
@@ -170,7 +176,7 @@ Also note that the link is SVG, but the image is PNG.
 
 The first figure just gives relationships; the second has details about the members of each class.
 
-**Catena STM32 Class Relationshiops:**
+**Catena STM32 Class Relationships:**
 <!-- $enableStm32 = 1, $enableSamd = 0,  $enableMembers = 0 -->
 
 [![**Catena STM32 Class Relationships**:](http://www.plantuml.com/plantuml/png/xLdhSzf64F_C_HMNIQUn7Jy0nuz9cvaG6JnC0JE0cm-P37EI5b0jwTIx4uIc_j-xEX1w65bsEqdicNunQFUtZ_snktVWzr8neKBF9KUl2EboEtJXRSLW2dpsWKau35pcQprfXRwb7Ew_9PL-9BpkTgY02GZmBQ2IXm9V9bpGGRDnqMqUUZQD89RBfAIsmwQ2UOUaGWmUB8KpdIbqD0IWpBAu5p1_wVXJscaRpTwmIIUE2uXjX6h61G978CIITZaNi4-xXj6c1XS15opAgDBZS_1C4BHUhPqJqkCAP3fDnsDJaDJnezow5pet9e1EmGTq0JOrbpHWKaKfg9aZTNp4AqugQeRLWPYZUwReJAdWxT7HOh7OK7E8-H_53_kK-JR5MarpvGpB4213L_k-7dJa8QMZMUI9IQeuDO7Qt8z2O0JcKkLu8FVfmb4pP6sY-LMaCcTkY2M0xM2wEhF8DvqpuJ3JHOq9BbySeckWc8-7Hb71oOT1AWl7HVU0VvOyf0lCuPMaFe0DzY4Xhuu8UV4J-96thcPJqdUqkf4DbNTSHqajaJ3FrX3YCymvO1RGhcKvg-wXNmbXfbI2MMhT14bRePBIrwWCKTcyRf--6PjXLEjO_N97Wm_8NLPpxJj_Xj2-s9Xz-hnD7Tl6Ql13ZrxrcuF6gDsx7BSwZSjXekXt6gFMrQ2Rad-LYYd7kWsHyUFwM57iAOLDxhLSDfNZIr0uCxqmecjdDsDXSkvIY_jImPT0PErUZziIxP3ujT6SEpOTiWdqCLqrMKiZwvY43-iwwHx672ubIkE0CSktAxpH63LxZN5SZ3ROHEUYVN77JaT7LCnQ77x615edyXMPiROqs1gueGvLLq4qR-X4qv0fla2PjivmkBqA4wQENq3Cgfvr5_QO1pkxL6ksEHgw0C5THot1FBet1HMzIUSVSDTDFmjCH2eGL-OVOAcrXjcsWRF9V3jElo_ut94Ezx7ieLgweElC2zTWtLAeRvX16jBs9po7k5AC5K1qTZrGGpQ7be7xCIXGNF25lqKr11avpGV5qZfym3uoFrTXF0-fuTyBaeS8ypB7VSnTrbCUDKqQOXIjeqAK4OHjUnlK6e9mc3i0PYyhtZZrfDNPlKGHeCTkPThdhel4DdtiDq1T-dcwzgu4CA_jenmCL8Ebk43evlqAjgvoXKPrvZc27CGpWChiZ6XjmI1wuo2kMSCq6vBD8HdFH3xDh0XDMAI-9I-S2Tt9x7iy0NQtB_P8Nw_HhzcHeRezqdEP4cmgutCGmh6Xo-JD1dMJHuM62qn4c7sQ28UW4hE2NPQVwOUrtC6giC78GEe7ojACW8_7CacOISx6Ocequ4aoKqv4GT6bxT02fcOWkbMiEpvX6xr6v-fot6_tKiVkHVkoFMfq4kaTNYOkPuf6a_cxoLHwRR_CB_dyrjCdqjrLM6ghzuGsrckjqRk1vPgCxUL-HAFeKAZVVCjwN-TFeCG1YZvmhWmU-chdPpD-kohrlYQtrcbZZxV4tPMpSVhVkh-3VP0lzbzNb9cZ0hQAGQ7CWFAxePoiytAoj29JFkwFP8iKDD6RavCltxHzYcYuBKhejFRK4Zf-OWcTLtz8GkLREPFbcnhENt52wHlozWlooqViI4INNRuEudjXaTlfpNZjTVmRkjrYO_IlsnUR6y-us-ZJkGutud70Jv-ts4ddBnWhwkV14QKvqkgF9-r_qawGj0VIKtYHVpmPkGlmpXvToUUngVpqUVU-mcBS3sBjzF6iVLTIxcPyzjGpBh-kvCxUsaCA-iuqdzQUMMDWnhLdbt7zsMLyzkmoFdzk6Hy_jyaxhpxnoIk_jAP-9lprxuE3p4zB9Ukyo5WZokCcSRHn_bUCGaJonP_aJ69KV06_Nrz7VSvX5d1I1ZWj0vnL7qZXIfBdi5CbcQSO47zpBTRYzD-hFIxMwYzOX2HHSb5h90cH2rajLjrZLIzMdHMhpabIIwwsAaaAoHMsQUdR-1F9_GFk7QtkafbZ0_LMejZWFRw4dliF)](https://www.plantuml.com/plantuml/svg/xLdhSzf64F_C_HMNIQUn7Jy0nuz9cvaG6JnC0JE0cm-P37EI5b0jwTIx4uIc_j-xEX1w65bsEqdicNunQFUtZ_snktVWzr8neKBF9KUl2EboEtJXRSLW2dpsWKau35pcQprfXRwb7Ew_9PL-9BpkTgY02GZmBQ2IXm9V9bpGGRDnqMqUUZQD89RBfAIsmwQ2UOUaGWmUB8KpdIbqD0IWpBAu5p1_wVXJscaRpTwmIIUE2uXjX6h61G978CIITZaNi4-xXj6c1XS15opAgDBZS_1C4BHUhPqJqkCAP3fDnsDJaDJnezow5pet9e1EmGTq0JOrbpHWKaKfg9aZTNp4AqugQeRLWPYZUwReJAdWxT7HOh7OK7E8-H_53_kK-JR5MarpvGpB4213L_k-7dJa8QMZMUI9IQeuDO7Qt8z2O0JcKkLu8FVfmb4pP6sY-LMaCcTkY2M0xM2wEhF8DvqpuJ3JHOq9BbySeckWc8-7Hb71oOT1AWl7HVU0VvOyf0lCuPMaFe0DzY4Xhuu8UV4J-96thcPJqdUqkf4DbNTSHqajaJ3FrX3YCymvO1RGhcKvg-wXNmbXfbI2MMhT14bRePBIrwWCKTcyRf--6PjXLEjO_N97Wm_8NLPpxJj_Xj2-s9Xz-hnD7Tl6Ql13ZrxrcuF6gDsx7BSwZSjXekXt6gFMrQ2Rad-LYYd7kWsHyUFwM57iAOLDxhLSDfNZIr0uCxqmecjdDsDXSkvIY_jImPT0PErUZziIxP3ujT6SEpOTiWdqCLqrMKiZwvY43-iwwHx672ubIkE0CSktAxpH63LxZN5SZ3ROHEUYVN77JaT7LCnQ77x615edyXMPiROqs1gueGvLLq4qR-X4qv0fla2PjivmkBqA4wQENq3Cgfvr5_QO1pkxL6ksEHgw0C5THot1FBet1HMzIUSVSDTDFmjCH2eGL-OVOAcrXjcsWRF9V3jElo_ut94Ezx7ieLgweElC2zTWtLAeRvX16jBs9po7k5AC5K1qTZrGGpQ7be7xCIXGNF25lqKr11avpGV5qZfym3uoFrTXF0-fuTyBaeS8ypB7VSnTrbCUDKqQOXIjeqAK4OHjUnlK6e9mc3i0PYyhtZZrfDNPlKGHeCTkPThdhel4DdtiDq1T-dcwzgu4CA_jenmCL8Ebk43evlqAjgvoXKPrvZc27CGpWChiZ6XjmI1wuo2kMSCq6vBD8HdFH3xDh0XDMAI-9I-S2Tt9x7iy0NQtB_P8Nw_HhzcHeRezqdEP4cmgutCGmh6Xo-JD1dMJHuM62qn4c7sQ28UW4hE2NPQVwOUrtC6giC78GEe7ojACW8_7CacOISx6Ocequ4aoKqv4GT6bxT02fcOWkbMiEpvX6xr6v-fot6_tKiVkHVkoFMfq4kaTNYOkPuf6a_cxoLHwRR_CB_dyrjCdqjrLM6ghzuGsrckjqRk1vPgCxUL-HAFeKAZVVCjwN-TFeCG1YZvmhWmU-chdPpD-kohrlYQtrcbZZxV4tPMpSVhVkh-3VP0lzbzNb9cZ0hQAGQ7CWFAxePoiytAoj29JFkwFP8iKDD6RavCltxHzYcYuBKhejFRK4Zf-OWcTLtz8GkLREPFbcnhENt52wHlozWlooqViI4INNRuEudjXaTlfpNZjTVmRkjrYO_IlsnUR6y-us-ZJkGutud70Jv-ts4ddBnWhwkV14QKvqkgF9-r_qawGj0VIKtYHVpmPkGlmpXvToUUngVpqUVU-mcBS3sBjzF6iVLTIxcPyzjGpBh-kvCxUsaCA-iuqdzQUMMDWnhLdbt7zsMLyzkmoFdzk6Hy_jyaxhpxnoIk_jAP-9lprxuE3p4zB9Ukyo5WZokCcSRHn_bUCGaJonP_aJ69KV06_Nrz7VSvX5d1I1ZWj0vnL7qZXIfBdi5CbcQSO47zpBTRYzD-hFIxMwYzOX2HHSb5h90cH2rajLjrZLIzMdHMhpabIIwwsAaaAoHMsQUdR-1F9_GFk7QtkafbZ0_LMejZWFRw4dliF "Click for SVG image of Class Relationships")
@@ -183,7 +189,7 @@ The first figure just gives relationships; the second has details about the memb
 
 The first figure just gives relationships; the second has details about the members of each class.
 
-**Catena SAMD Class Relationshiops:**
+**Catena SAMD Class Relationships:**
 <!-- $enableStm32 = 0, $enableSamd = 1,  $enableMembers = 0 -->
 [![**Catena SAMD Class Relationships**:](http://www.plantuml.com/plantuml/png/xLbhRzfC5lxC_8gfkjecQIv0cekwMwdKWGWj40Ha-w6gqDW-W3UsnpipXhBT_FVtU63m9JYaglesaTulJJpFSoxdoJd70_qe5HCg3dnoyeQGBdTZ7zvNBAOWP9-OXEF8Pw76IIiE7UNny3sfz9F3ssw72fY0WD01AdaiyCU42pfeDgwwpUF0fGd5yPcKrFNOLB3Wc5I8nQEbyAOpXOw609Gv3WyY5YwzS4exRQlP6pRfnFC1kOrOpRX0uWY4MD8kvm8EQTUosjJY8kA29HbLUdmEWGs2rgkrIq9wN87Cfka5R0gIUc6IM_TAvyO4q2c4W2x0fVQIHaog90KrywIEZtp5IKNDi3eGStJF59qf5Rq_ELai5XjfZZ7_4_DmI5deKgpLjbVEi0m1ClQrxzj1HnvJEfebdfYaYbCRgCl390H6O3vLNW3oa2uyDKFL9bfVHIfpviTO0hWUfgipItpJEHCUitr4RF3vuXXT0yLy0ZJI1M_-6AIoy7nq3_ZFaiTqWJcyaJG4SC4z9kJD2I6l_WPXugshrPJq0wrkpeOgEAtdJrZWua6Da91XpX5pW7OTnrjr3_rE2BEb4inHwoP8smf1IjyY62FOl6sVlnlRSLBhMFtZ0O8Fg5qUkGsz_yRGljgOVVcw3JQs1eOm3kXDlpbeZDgzwt6hqxWUfa2_qnYrRWRTpFbtgPZodFiO5J-jZnN5dbBOv47BPrCvlWQ5CzEB4xdszdCMDkS-TNWe5NoBHDxkxRWjqGw5NnlDkUVI8Pj07zDLa_LfOcr4-BIkanvWpE5Iuga9Q5I-N_6jngZPQunDCTfW4vsBzjK3EnqTMKOr4tx615gdvoin3Reps9guaGwXcoYPDtIYPSWLNm9chNCQRg_2XgaNbWYpgcVTXJqMmDu-rSWsHqCV87heg2LOG0-ce99Vilb7tFUppm8JaGh4ZVqVSDGQOQvhuMooq3NfzmMVUzBZ8POzL4iVT9t5mpLPjnJY3JlAKjhXX1SODugn4ehEhWTgoERGid0_HYN05L-4Mw0XoCHfCIYMrk43zfc5fiB2F6I6_o1A7nBEwuBsHhkyfo9hcZR4A5b7fImhYjlkDgep1E4nVm3CNLQ2SUP9m_czH96WnsvbskU-Zy8sG-mtG2pxF5rxLm9Oq0xn72o4mL5S87Np-ugshdB5HZZtd52Ep0mWc9yHZPOCOZ2EJCsQfjMGR0xPyJJdqzoAq88by3rvvKteNcxVuyBVtxxO4xnUez_p8qDrUsJdCdEmgOpFGGZFXIwJTnlMNP4LMpumaN0EQNeu19MQbUoouam_hUMELeKDHXPAFr2ELWH2rvkGh3BctLWkZIOyIsLs2r5Qz8vsQ05JCn3TAjPjth2DNgDpSptkjtkPr-vL-xezQdJIqmUwJ7pE54qcyzysKzcr_Rguv8jRJx-H7gx2dRPwJsXZlTOQlJjOhiNONkvdD4fU2lMxNrdls-8RA7M0HvyuLnQFGxNtTzlykYhriIPtrcbZZxV4mvMpSVfptT_1FYWM-nCLPUQeHAroKYnpfE9ks2tMvMwnD90h7_T7kaLAckZTsTctNze-PJBSboLqNdjk2Pq-iuGkgxybeTrREPVbknhENtb2sHlozWlowoVlICtUTVawClV2ChVJk_7Qw_XVw7QBZTM_RLzjRZpZRgDFvphSY9k0NxvkiPFU_s2iQ5Wa9v8MHAl_9TgFYtQ6eZrHdlAB_0-BKRW0xntGrVdScCelN_SVAypmVfDgvp-lsYyLvM765yyzuztNbSAxj_RKWlv4cSzhBwmnCEFQYyku_k8oldXn6L--j8nFNzhaNLQV-UJjlhHclYRyv_-FZd9VBUrOvsN6ch4xRXf76nU_nIXbf1_yIS74iCm5_76yZdZ1OPvmjejmlejmKNsYXAkJeeQTAiaz6OBvv5gEulG_YfwMe_e35Y5fb4BK6ab3549Mow57hEhbq4KvT4dIMWgrLKbQIA6mJKlVcxz8uJ_WFj3gFfbvBj1WTMGCFkAFEF3_0000)](https://www.plantuml.com/plantuml/svg/xLbhRzfC5lxC_8gfkjecQIv0cekwMwdKWGWj40Ha-w6gqDW-W3UsnpipXhBT_FVtU63m9JYaglesaTulJJpFSoxdoJd70_qe5HCg3dnoyeQGBdTZ7zvNBAOWP9-OXEF8Pw76IIiE7UNny3sfz9F3ssw72fY0WD01AdaiyCU42pfeDgwwpUF0fGd5yPcKrFNOLB3Wc5I8nQEbyAOpXOw609Gv3WyY5YwzS4exRQlP6pRfnFC1kOrOpRX0uWY4MD8kvm8EQTUosjJY8kA29HbLUdmEWGs2rgkrIq9wN87Cfka5R0gIUc6IM_TAvyO4q2c4W2x0fVQIHaog90KrywIEZtp5IKNDi3eGStJF59qf5Rq_ELai5XjfZZ7_4_DmI5deKgpLjbVEi0m1ClQrxzj1HnvJEfebdfYaYbCRgCl390H6O3vLNW3oa2uyDKFL9bfVHIfpviTO0hWUfgipItpJEHCUitr4RF3vuXXT0yLy0ZJI1M_-6AIoy7nq3_ZFaiTqWJcyaJG4SC4z9kJD2I6l_WPXugshrPJq0wrkpeOgEAtdJrZWua6Da91XpX5pW7OTnrjr3_rE2BEb4inHwoP8smf1IjyY62FOl6sVlnlRSLBhMFtZ0O8Fg5qUkGsz_yRGljgOVVcw3JQs1eOm3kXDlpbeZDgzwt6hqxWUfa2_qnYrRWRTpFbtgPZodFiO5J-jZnN5dbBOv47BPrCvlWQ5CzEB4xdszdCMDkS-TNWe5NoBHDxkxRWjqGw5NnlDkUVI8Pj07zDLa_LfOcr4-BIkanvWpE5Iuga9Q5I-N_6jngZPQunDCTfW4vsBzjK3EnqTMKOr4tx615gdvoin3Reps9guaGwXcoYPDtIYPSWLNm9chNCQRg_2XgaNbWYpgcVTXJqMmDu-rSWsHqCV87heg2LOG0-ce99Vilb7tFUppm8JaGh4ZVqVSDGQOQvhuMooq3NfzmMVUzBZ8POzL4iVT9t5mpLPjnJY3JlAKjhXX1SODugn4ehEhWTgoERGid0_HYN05L-4Mw0XoCHfCIYMrk43zfc5fiB2F6I6_o1A7nBEwuBsHhkyfo9hcZR4A5b7fImhYjlkDgep1E4nVm3CNLQ2SUP9m_czH96WnsvbskU-Zy8sG-mtG2pxF5rxLm9Oq0xn72o4mL5S87Np-ugshdB5HZZtd52Ep0mWc9yHZPOCOZ2EJCsQfjMGR0xPyJJdqzoAq88by3rvvKteNcxVuyBVtxxO4xnUez_p8qDrUsJdCdEmgOpFGGZFXIwJTnlMNP4LMpumaN0EQNeu19MQbUoouam_hUMELeKDHXPAFr2ELWH2rvkGh3BctLWkZIOyIsLs2r5Qz8vsQ05JCn3TAjPjth2DNgDpSptkjtkPr-vL-xezQdJIqmUwJ7pE54qcyzysKzcr_Rguv8jRJx-H7gx2dRPwJsXZlTOQlJjOhiNONkvdD4fU2lMxNrdls-8RA7M0HvyuLnQFGxNtTzlykYhriIPtrcbZZxV4mvMpSVfptT_1FYWM-nCLPUQeHAroKYnpfE9ks2tMvMwnD90h7_T7kaLAckZTsTctNze-PJBSboLqNdjk2Pq-iuGkgxybeTrREPVbknhENtb2sHlozWlowoVlICtUTVawClV2ChVJk_7Qw_XVw7QBZTM_RLzjRZpZRgDFvphSY9k0NxvkiPFU_s2iQ5Wa9v8MHAl_9TgFYtQ6eZrHdlAB_0-BKRW0xntGrVdScCelN_SVAypmVfDgvp-lsYyLvM765yyzuztNbSAxj_RKWlv4cSzhBwmnCEFQYyku_k8oldXn6L--j8nFNzhaNLQV-UJjlhHclYRyv_-FZd9VBUrOvsN6ch4xRXf76nU_nIXbf1_yIS74iCm5_76yZdZ1OPvmjejmlejmKNsYXAkJeeQTAiaz6OBvv5gEulG_YfwMe_e35Y5fb4BK6ab3549Mow57hEhbq4KvT4dIMWgrLKbQIA6mJKlVcxz8uJ_WFj3gFfbvBj1WTMGCFkAFEF3_0000 "Click for SVG image of SAMD Class Relationships")
 
@@ -203,7 +209,7 @@ The hardware supported by this platform is generally similar. The architecture a
 
 Items 1-3 are to some degree known at compile time, based on the Catena model chosen. However, it's inconvenient to update the BSP for every possible modification, so we allow some variation at run time, guided by the contents of FRAM.
 
-The system is identified to the software by a platform object, of type `CATENA_PLATFORM`. Several platform objects are built into the firmware image, based on the known variations for component population and external sensors. The appropriate platform object is located at boot time by the Catena Arduino Platform framework. Some values representing possibly variation are stord as `PlatformFlags` in the `CATENA_PLATFORM`. This variable is of type`PLATFORM_FLAGS`.
+The system is identified to the software by a platform object, of type `CATENA_PLATFORM`. Several platform objects are built into the firmware image, based on the known variations for component population and external sensors. The appropriate platform object is located at boot time by the Catena Arduino Platform framework. Some values representing possibly variation are stored as `PlatformFlags` in the `CATENA_PLATFORM`. This variable is of type`PLATFORM_FLAGS`.
 
 #### Platform GUIDs
 
@@ -220,7 +226,7 @@ The designations "M103" and "M104" are reserved for use by MCCI.
 
 For boards with FRAM, the appropriate platform GUID should be selected and programmed into FRAM using the command `system configure platformguid`, followed by the GUID value. For boards without FRAM, the library has provisions for tying the GUID to the CPU serial number. Contact MCCI for details.
 
-The tables below were generated from `Catena_Guids.h` using a script, and then hand annotated. The script is a one-line shell command using awk:
+The tables below were generated from `Catena_Guids.h` using a script, and then hand annotated. The script is a one-line shell command using `awk`:
 
 ```bash
 awk '/^[/][/]/ {
@@ -242,7 +248,7 @@ Name | GUID | Description
 -----|------|------------
 `CATENA_4610_BASE` | `53ca094b-b888-465e-aa0e-e3064ec56d21` | Base Catena 4610, assuming no modifications or customizations.
 `CATENA_4610_M101` | `6a5d8d0c-d5ae-4143-adc7-8f84ec56a867` | Catena 4610 M101, configured for power monitoring and other pulse-input applications.
-`CATENA_4610_M102` | `18252b1c-3c0d-403e-8012-224d96c5af06` | Catena 4610 M102, configured for environental monitoring
+`CATENA_4610_M102` | `18252b1c-3c0d-403e-8012-224d96c5af06` | Catena 4610 M102, configured for environmental monitoring
 `CATENA_4610_M103` | `c2cf6cf4-a4c3-4611-941f-6955ffa5bfdc` | Catena 4610 M103 -- contact MCCI
 `CATENA_4610_M104` | `bfed4740-a58a-4ef6-933a-09cb22e93d00` | Catena 4610 M104 -- contact MCCI
 
@@ -337,7 +343,7 @@ Name | GUID | Description
 
 #### GUIDs for Adafruit Feather M0s
 
-MCCI also uses this libray with Feather M0s without MCCI hardware. These GUIDs are useful in that situation.
+MCCI also uses this library with Feather M0s without MCCI hardware. These GUIDs are useful in that situation.
 
 Name | GUID | Description
 -----|------|------------
@@ -380,7 +386,7 @@ To make `UserClass1` pollable, you change the class declaration as follows:
 
 2. Declare a new public virtual method `void poll()`. We recommend that you use the `override` keyword to make it clear that this is an override for a method declared in the parent class.
 
-You also, of cousre, must supply an implementaion of `UserClass::poll()`.
+You also, of course, must supply an implementation of `UserClass::poll()`.
 
 Here's an example of the transformed `UserClass1`:
 
@@ -465,23 +471,23 @@ Here's what you need:
 
 In addition to the states relevant to your problem, `TState` must have three distinct values with well-known names.
 
-- `TState::stNoChange` does not correspond to any state. Instead, it's the value retured by the dispatch routine when the state is not to be changed. (Returning the current state will cause the FSM to transition from the current state to the current state.)
+- `TState::stNoChange` does not correspond to any state. Instead, it's the value returned by the dispatch routine when the state is not to be changed. (Returning the current state will cause the FSM to transition from the current state to the current state.)
 
 - `TState::stInitial` is the initial state of your FSM.
 
 - `TState::stFinal` is the final state of your FSM. Once the FSM reaches this state, it will remain there until another call to `fsm.init()` is made.
 
-We'll use the [coin-operated turnsile](https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile) example from Wikipedia to make things more concrete.
+We'll use the [coin-operated turnstile](https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile) example from Wikipedia to make things more concrete.
 
 #### Getting ready
 
-The author usually starts by drawing a diagram, labled with the states and transitions.
+The author usually starts by drawing a diagram, labeled with the states and transitions.
 
 For example, here's the turnstile state diagram:
 
 [![**Coin Operated Turnstile State Diagram](http://www.plantuml.com/plantuml/png/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_)](https://www.plantuml.com/plantuml/svg/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_ "Click for SVG view")
 
-#### Defining the state enum
+#### Defining the state `enum class`
 
 Define an `enum class` as follows:
 
@@ -513,9 +519,9 @@ This means finding the class name for the class that is going to contain this FS
 
 For our example, we'll say that the class modeling turnstiles is `Turnstile`.
 
-#### Add the state enum to the parent class
+#### Add the state type to the parent class
 
-Add the enum you defined above, and add it to the parent class. For example:
+Add the type you defined above to the parent class. For example:
 
 ```c++
 class Turnstile {
@@ -648,7 +654,7 @@ void Turnstile::fsmDispatch(Turnstile::State currentState, bool fEntry) {
 }
 ```
 
-#### Implement the FSM intialization
+#### Implement the FSM initialization
 
 Somewhere in your initialization for `Turnstile`, add the following code. For example, if `Turnstile` has a `Turnstile::begin()` method, you could write:
 
@@ -728,7 +734,7 @@ bool Catena::LoRaWAN::SendBuffer(
 );
 ```
 
-`SendBuffer` attempts to start ths transmission of a buffer. This attempt might fail for several reasons, for example:
+`SendBuffer` attempts to start the transmission of a buffer. This attempt might fail for several reasons, for example:
 
 - A transmission might already be in progress.
 - The LoRaWAN system might not be properly provisioned with device identity and suitable keys.
@@ -741,7 +747,7 @@ If the transmission is accepted, then the following steps are taken:
 - `pDoneFn` and `pClientData` are saved internally for use when the transmission completes.
 - The data from `pUplinkBuffer` is copied into an internal buffer (so you can immediately start reusing the buffer in your own code).
 - If the device is provisioned for OTAA mode, and the device is not yet joined to a network, a JOIN attempt is initiated; and the message is transmitted if the JOIN attempt succeeds.
-- The message is transmitted on the uplink port specified by `port`. If `fConfirmed` is `true`, a confirmed (acknolwedged) uplink is used; otherwise unconfirmed uplinks are used.
+- The message is transmitted on the uplink port specified by `port`. If `fConfirmed` is `true`, a confirmed (acknowledged) uplink is used; otherwise unconfirmed uplinks are used.
 - Control then returns to the caller (with the result `true`).
 
 When the transmission attempt finishes, the LoRaWAN subsystem calls `pDoneFn(pClientData, fSuccess)`, with `fSuccess` true if the uplink seemed to be successful. Success means different things in different circumstances.
@@ -801,7 +807,7 @@ Objects normally contain two payload slots. The slots are written alternately (s
 
 The first `uint32_t` of an object records the overall size of the object, and the size of each data payload slot.  Objects are always required to be a multiple of 4 bytes long, so the size is recorded as a count of `uint32_t` values. Objects are allowed to be up to 2^18 bytes long. Data payload fields are specified in bytes, and are limited to [0..32767] bytes.
 
-There is an escape clause. If bit 31 of the first `uint32_t`is set, the object is not "standard". In such a case, the contents of the object after the standard header cannot be used for a standard data payload (as defined above). This may be desirable payloads that are written only once, when the FRAM is intialized; but it leaves redundancy management to the client.
+There is an escape clause. If bit 31 of the first `uint32_t`is set, the object is not "standard". In such a case, the contents of the object after the standard header cannot be used for a standard data payload (as defined above). This may be desirable payloads that are written only once, when the FRAM is initialized; but it leaves redundancy management to the client.
 
 This format is summarized in the following tables.
 
@@ -821,7 +827,7 @@ This format is summarized in the following tables.
 |:----:|:----:|:----:|:------------|
 | 15..0 | `Size` | `cFramStorage::SIZE_MASK` | The size of the object in "clicks". Each click is four bytes. |
 | 30..16 | `DataSize` | `cFramStorage::DATASIZE_MASK` | The size of the object's data payload in bytes. This may be zero. |
-| 31 | `fNonStandard` | `cFramStorage::NONSTD_MASK` | If zero, the object's payload uses the redundant scheme described above; the payload size is necessarily limited to 32767 byes. If non-zero, the object's payload uses a client-supplied encoding and representation; but can use up to 256 kbytes (since the object size can represent up to 256 kbytes) |
+| 31 | `fNonStandard` | `cFramStorage::NONSTD_MASK` | If zero, the object's payload uses the redundant scheme described above; the payload size is necessarily limited to 32767 byes. If non-zero, the object's payload uses a client-supplied encoding and representation; but can use up to 256 k bytes (since the object size can represent up to 256 k bytes) |
 
 ##### The FRAM header object
 
@@ -839,12 +845,12 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
    - `uKey`, the 8-bit key value
    - `uSize`, the 16-bit object size. (If your object is variable size, you must specify a maximum size, and the actual size of the object must be represented as part of the object data somehow.)
-   - `fNumber`, a boolean value. If true, then the value represents a little-endian value; if false, big-endian. This is used for displays and the command interpreter.
+   - `fNumber`, a Boolean value. If true, then the value represents a little-endian value; if false, big-endian. This is used for displays and the command interpreter.
    - Optionally `fReplicated` (assumed `true`), which controls whether the replicated data-storage scheme should be used.
 
 3. Find the table `McciCatena::cFramStorage::vItemDefs[]` in `Catena_FramStorage.cpp`, and add your `StandardItem` value at the appropriate offset.
 
-4. To query the value of your object, you can use `gCatena.getFram()->getField(uKey, Value)`; this is a templated function which will set Value according toe the curent value stored for `uKey`.
+4. To query the value of your object, you can use `gCatena.getFram()->getField(uKey, Value)`; this is a templated function which will set Value according toe the current value stored for `uKey`.
 
    - You may also use `gCatena.getFram()->getField(uKey, (uint8_t *)&buffer, sizeof(buffer))`.
 
@@ -854,21 +860,21 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
 #### Class hierarchy within the FRAM library
 
-<!-- The following image renders well on github, but doesn't render in the previewer in vscode unless you turn on "insecure content". Of course, github rendering is more important, but this is irksome -->
+<!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of cFram -- see assets/cfram.plantuml](http://www.plantuml.com/plantuml/png/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0)](https://www.plantuml.com/plantuml/svg/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0 "SVG image of cFram hierarchy")
 
-<!-- The following image renders well on github, but doesn't render in the previewer in vscode unless you turn on "insecure content". Of course, github rendering is more important, but this is irksome -->
+<!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of FRAM Storage objects -- see assets/cframstorage.plantuml](http://www.plantuml.com/plantuml/png/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00)](https://www.plantuml.com/plantuml/svg/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00 "SVG image of cFramStorage class hierarchy")
 
 ### Asynchronous Serial Port Command Processing
 
-The Catena Aruduino platform provides both an asynchronous command-line collection object and a full command parser.
+The Catena Arduino platform provides both an asynchronous command-line collection object and a full command parser.
 
-The `Catena::begin()` method normally crates a commmand parser instance that's linked to a command parser instance. For
+The `Catena::begin()` method normally creates a command parser instance that's linked to a command parser instance. For
 
 #### Collecting lines asynchronously from streams
 
-The header file `Catena_StreamLineCollector.h` defines the class `cStreamLineCollector`. This class is a `cPollableObject`, and as such is polled automaticaly by the governing `cPollingEngine`. A read is launched by calling `cStreamLineCollector::readAsync()`, passing a callback function, a buffer (base and size), and a context handle. When a command has been accumulated, the specified callback function is called according to the following prototype:
+The header file `Catena_StreamLineCollector.h` defines the class `cStreamLineCollector`. This class is a `cPollableObject`, and as such is polled automatically by the governing `cPollingEngine`. A read is launched by calling `cStreamLineCollector::readAsync()`, passing a callback function, a buffer (base and size), and a context handle. When a command has been accumulated, the specified callback function is called according to the following prototype:
 
 ```c++
 typedef void (cStreamLineCollector::ReadCompleteCbFn)(
@@ -898,7 +904,7 @@ The command parser works by parsing the input line into words, and then finding 
 void cCommandParser::registerCommands(cDispatch *pDispatch, void *pContext);
 ```
 
-Multiple command tables can be registered dynamically; this allows modules to add commands as they are initailized. There's no need to edit a central command table.
+Multiple command tables can be registered dynamically; this allows modules to add commands as they are initialized. There's no need to edit a central command table.
 
 The command tables consist of a top-level `cCommandParser::cDispatch` instance. This is **not** a `const` -- it has bookkeeping entries to help with building the tables at runtime without requiring `malloc()`. The dispatch instance points in turn to a
 
@@ -939,7 +945,7 @@ cCommandStream::CommandStatus function1(
 
 `pThis` points to the parent `cCommandStream` instance. `pContext` is the user data from the relevant `cCommandStream::cDispatch` object. `argc` and `argv` are very much like the command arguments to a C `main()` function. `argv[0]` is the matching command, and `argv[1..argc-1]` are the parsed arguments from the command line.
 
-A commmand function may operate synchronously or asynchronously.
+A command function may operate synchronously or asynchronously.
 
 #### Command stream methods for use by functions
 
@@ -957,13 +963,124 @@ A synchronous command function does all of its work in the initial function call
 
 An asynchronous command function allows for work to continue after the initial function call. The main command function typically has two parts.
 
-1. The first part of the command is normally coded synchronously; it checks parameters, etc., and retuns non-`kPending` status. In this part of the command, there's no chance of `pThis->completeCommand` being called.
+1. The first part of the command is normally coded synchronously; it checks parameters, etc., and returns non-`kPending` status. In this part of the command, there's no chance of `pThis->completeCommand` being called.
 
 2. The second part of the command is coded asynchronously. The asynchronous paths each call `pThis->completeCommand()` when all work has been done. Once the function has established at least one asynchronous completion path, the main function must return `kPending` (and must ensure that all the completion paths call `completeCommand()`).
 
 ### Clock Management and Calibration
 
 On some platforms, the system clock needs to be calibrated explicitly in order for the real-time ticks from `micros()` and `millis()` to be accurate. Do this by calling `uint32_t gCatena.CalibrateSystemClock()`. This function updates the clock calibration, and returns a platform-specific value indicative of the calibration. On platforms that don't support (or that don't need) calibration, a dummy implementation is provided that returns 0.
+
+### Si1133 driver
+
+The library includes a simple driver for the SiLabs 1133 light sensor found on many Catena boards.
+
+The header file is `Catena_Si1133.h`.  It defines the class `Catena_Si1133`.
+
+The constructor, `Catena_Si1133()`, takes no arguments.
+
+Call `Catena_Si1133::begin()` prior to using the sensor, and `Catena_Si1133::end()` to shut it down.
+
+`Catena_Si1133::configure()` configures one channel of the sensor. Prototype:
+
+```c++
+bool configure(uint8_t uChannel, uint8_t uMode, uMeasurementCount = 0);
+```
+
+Up to six channels may be configured. `uMode` is one of the following: `CATENA_SI1133_MODE_NotUsed` to configure a channel as not used, `CATENA_SI1133_MODE_SmallIR` to use the small IR sensor, `CATENA_SI1133_MODE_MediumIR` to use the medium IR sensor, `CATENA_SI1133_MODE_LargeIR` to use the large IR sensor, `CATENA_SI1133_MODE_White` to use the regular white sensor,
+`CATENA_SI1133_MODE_LargeWhite`  to use the large white sensor,
+`CATENA_SI1133_MODE_UV` to use the ultraviolet sensor,
+`CATENA_SI1133_MODE_UVDeep` to use the deep UV sensor.
+
+`uMeasurementCount` is zero to use the channel in forced mode, and non-zero to have the channel run in autonomous mode.
+
+```c++
+bool start(bool fOneTime = false);
+```
+
+Start a repeated or one-time measurement.
+
+```c++
+bool isOneTimeReady();
+```
+
+Return `true` if a one-time measurement is complete. All the measurements must have completed.
+
+```c++
+void readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel);
+```
+
+Read `nChannel` channels of data, starting from channel 0, into the table at `pChannelData`.
+
+### `cTimer` Timer object
+
+Timer objects are used to simplify the implementation of periodic events.
+
+#### Catena_Timer.h header file and initialization
+
+```c++
+#include <Catena_Timer.h>
+```
+
+This header file contains all the definitions for the `cTimer` class.
+
+The constructor takes no arguments.  To create a timer named `myTimer`, write:
+
+```c++
+McciCatena::cTimer myTimer;
+```
+
+#### cTimer begin() and end()
+
+Timers are initially stopped. To start a timer, call:
+
+```c++
+bool cTimer::begin(std::uint32_t nMillis);
+```
+
+This method initializes the timer to run with a period of `nMillis` milliseconds. The timer automatically restarts each time the period elapses; so it's like a clock that ticks every `nMillis` milliseconds.
+
+To stop a timer, call:
+
+```c++
+void cTimer::end();
+```
+
+#### Checking for `cTimer` events
+
+To check whether a timer has ticked, call one of the following:
+
+```c++
+bool cTimer::isready();
+
+std::uint32_t cTimer::readTicks();
+
+std::uint32_t cTimer::peekTicks() const;
+
+std::uint32_t cTimer::getRemaining() const;
+```
+
+`isready()` returns true if the timer has ticked at least once since the last time `isready()` or `readTicks()` was called.  `readTicks()` returns the number of ticks that have occurred since the last time `readTicks()` or `isready()` was called.  Both of these, in effect, reset the tick counter.
+
+`peekTicks()` returns the number of ticks since the last call to `readTicks()` or `isready()`, but doesn't reset the tick counter.
+
+`getRemaining()` returns the number of milliseconds remaining in the current timer cycle.
+
+#### `cTimer` Utility routines
+
+```c++
+std::uint32_t cTimer::getInterval() const;
+
+std::uint32_t cTimer::setInterval(std::uint32_t nMillis);
+
+void cTimer::retrigger();
+```
+
+`getInterval()` returns the number of milliseconds per timer tick.
+
+`setInterval()` changes the timer period to a new value, but doesn't change the base time of the current period. If the period is lengthened, then the next tick occurs relative to the base time plus the new period. If the period is shortened, ticks will immediately occur to cover any ticks between the base time of the period and now.
+
+`retrigger()` sets the base of the current period to the current time, and resets any pending ticks.
 
 ### `Catena_functional.h`
 
@@ -999,12 +1116,12 @@ The following commands are supported by the Catena command parser.
 
 | Command | Description |
 |-------------|----------------------------------|
-| `fram reset` _[_ `hard` _]_ | reset the contents of the FRAM. A soft reset assumes that the datastructures are correct, and resets values to defaults. A hard reset invalidates the FRAM, so that the next boot will fully reconstruct it. |
-| `fram dump` _[ base [ len ] ]_ | dump the contents of FRAM, starting at _base_ for _len_ bytes. If _len_ is absent, a length of 32 bytes is assumed. If _base_ is also absent, then 32 bytes are dumpped starting at byte zero.
+| `fram reset` _[_ `hard` _]_ | reset the contents of the FRAM. A soft reset assumes that the data structures are correct, and resets values to defaults. A hard reset invalidates the FRAM, so that the next boot will fully reconstruct it. |
+| `fram dump` _[ base [ len ] ]_ | dump the contents of FRAM, starting at _base_ for _len_ bytes. If _len_ is absent, a length of 32 bytes is assumed. If _base_ is also absent, then 32 bytes are dumped starting at byte zero.
 
 ### LoRaWAN commands
 
-The following commmands are added by the Catena LoRawAN module.
+The following commands are added by the Catena LoRawAN module.
 
 | Command | Description |
 |-------------|----------------------------------|
@@ -1013,24 +1130,24 @@ The following commmands are added by the Catena LoRawAN module.
 
 #### LoRaWAN Parameters
 
-Notes that these parameters are generall not loaded into the LMIC immediately. They are primarily used at boot time and at join time.
+Notes that these parameters are generally not loaded into the LMIC immediately. They are primarily used at boot time and at join time.
 
 | Command     | Target device type | Description |
 |-------------|---------------------|----------------------------------|
 `lorawan configure deveui` _[ value ]_  | OTAA | Set the devEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
 `lorawan configure appeui` _[ value ]_  | OTAA |Set the AppEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
-`lorawan configure appkey` _[ value ]_  | OTAA |Set the AppKey for this device to _value_, a 128-bit value given in big-endian (natrual) form.
-`lorawan configure nwkskey` _[ value ]_ | ABP | Set the NwkSKey for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure appskey` _[ value ]_ | ABP |Set the AppSKey for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure devaddr` _[ value ]_ | either | Set the device address, a 32-bit number, in big-endian form. **_Setting devaddr to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure appkey` _[ value ]_  | OTAA |Set the application key for this device to _value_, a 128-bit value given in big-endian (natural) form.
+`lorawan configure nwkskey` _[ value ]_ | ABP | Set the network session key for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure appskey` _[ value ]_ | ABP |Set the application session key for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure devaddr` _[ value ]_ | either | Set the device address, a 32-bit number, in big-endian form. **_Setting `devaddr` to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
 `lorawan configure netid` _[ value ]    | either | Set the network ID, in big-endian form. For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure fcntup` _[ value ]_  | either | the curent uplink framecount, `FCntUp` in the LoRaWAN spec.
-`lorawan configure fcntdown` _[ value ]_ | either | the current downlink framecount, `FCntDown` in the LoRaWAN spec.
-`lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
+`lorawan configure fcntup` _[ value ]_  | either | the current uplink frame count, `FCntUp` in the LoRaWAN spec.
+`lorawan configure fcntdown` _[ value ]_ | either | the current downlink frame count, `FCntDown` in the LoRaWAN spec.
+`lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
 
 ## Adding your own commands
 
-Here's a step-by-step procedure. There's a fully worked example, [catena_usercommand](#catenausercommand).
+Here's a step-by-step procedure. There's a fully worked example, [`catena_usercommand`](#catenausercommand).
 
 - Include the header file.
 
@@ -1060,7 +1177,7 @@ static const cCommandStream::cEntry sMyCommmandTable[] =
         };
 ```
 
-- Create the top-level structure that represents the command table to the parser. This cannot be `const`, becuase internal fields are used for linkage (to avoid run-time memory allocation in the library).
+- Create the top-level structure that represents the command table to the parser. This cannot be `const`, because internal fields are used for linkage (to avoid run-time memory allocation in the library).
 
 ```c++
 // a top-level structure wraps the above and connects to the system table
@@ -1120,11 +1237,11 @@ This is a very simple sketch without LoRaWAN support. It shows the minimal boile
 
 This sketch adds LoRaWAN uplink to the basic hello-world application. If the LoRaWAN system is provisioned, the app transmits a single message to port 16, containing the bytes `0xCA`, `0xFE`, `0xBA`, and `0xBE`, in sequence.
 
-If the LoRaWAN system is not provisioned, the application enteres an idle loop; you can use the LoRaWAN commands to set things up.
+If the LoRaWAN system is not provisioned, the application enters an idle loop; you can use the LoRaWAN commands to set things up.
 
 ### `catena_usercommand`
 
-This sketch is very similar to `catena_hello`. It shows how to add a user-defined comamand, `application hello`, that prints "`Hello, world!`".
+This sketch is very similar to `catena_hello`. It shows how to add a user-defined command, `application hello`, that prints "`Hello, world!`".
 
 ### `catena_fsm`
 
@@ -1136,11 +1253,16 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
-| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
-| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
+| [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
+| [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- HEAD includes the following changes.
+
+  - [#208](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/208) Add `McciCatena::cTimer` class to simplify timing.
+  - [#209](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/209) Fix error in Si1133 driver that caused UV measurements to be wrong. Add an API to query whether a forced measurement is done.
 
 - v0.17.0 includes the following changes
 
@@ -1190,7 +1312,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - v0.13.0 incorporates recent bug fixes and enhancements. We added our own implementation of the RTC class, to avoid the hacks we were using with the RTCzero library (issue [#86](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/86). We updated the UML docs (issue [#111](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/111)). We refactored the STM32 classes (issue [#99](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/99) and [#103](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/103)). A few other minor changes ([754f4b](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/754f4bd9048f12edbd89906daea483eec31a9468) and [71d45d0](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/71d45d0882b00cc0f18458a35a1f6b320e106433)).
 
-- v0.12.0 adds support for the 4610, 4611, 4612, and 4801, and relies on the LMIC 2.3 pre-integrated pinmap feature to simplify maintenance and make things more structures. We added more UML diagrams to document the class hierarcy. Now depends on MCCI SAMD BSP 1.2.0 and STM32 2.0.0. A common `Catena::Sleep()` method was added for architecture-neutral low-power standby (issue [#83](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/83)). Added experimental machineQ network support. Various minor bug fixes and enhancements.
+- v0.12.0 adds support for the 4610, 4611, 4612, and 4801, and relies on the LMIC 2.3 pre-integrated pin map feature to simplify maintenance and make things more structures. We added more UML diagrams to document the class hierarchy. Now depends on MCCI SAMD BSP 1.2.0 and STM32 2.0.0. A common `Catena::Sleep()` method was added for architecture-neutral low-power standby (issue [#83](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/83)). Added experimental machineQ network support. Various minor bug fixes and enhancements.
 
 - v0.11.0 adds a flash driver for the Catena 4470, adds a flash object for storing BME680 calibration data, and fixes bugs.
 
@@ -1198,7 +1320,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - v0.9.0 adds explicit support for the Catena 4460.
 
-- v0.8.1 corrects an issue with the STM32 library (some things were here that beloned in the main Arduino libraries).
+- v0.8.1 corrects an issue with the STM32 library (some things were here that belonged in the main Arduino libraries).
 
 - v0.8.0 has some minor changes (add the Catena4551 m101/m102/m103/m104 platform, add the Catena4450 m103/m104), and a flag change which effectively changes the API (hence the bump). We add `CatenaBase::fHasLuxS1113`, which indicates the presence of a SI 1113 Lux sensor (as distinct from the BH1750 or the TSL2561 lux sensor used in the Catena4410). Further, we correct the platform flags for the 4551, as it doesn't have an I2C mux. Also incorporates some minor bug fixes for USB serial.
 
