@@ -187,6 +187,8 @@ public:
 	void writeReg(uint8_t uReg, uint8_t uData);
 	void writeParam(uint8_t uReg, uint8_t uData);
 
+	bool isOneTimeReady(void);
+
 private:
 	uint8_t m_DeviceAddress;
 	uint8_t	m_ChannelEnabled;
