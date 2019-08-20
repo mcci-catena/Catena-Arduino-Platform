@@ -40,9 +40,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
 	- [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
 		- [Getting ready](#getting-ready)
-		- [Defining the state enum](#defining-the-state-enum)
+		- [Defining the state `enum class`](#defining-the-state-enum-class)
 		- [Identify the parent class](#identify-the-parent-class)
-		- [Add the state enum to the parent class](#add-the-state-enum-to-the-parent-class)
+		- [Add the state type to the parent class](#add-the-state-type-to-the-parent-class)
 		- [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
 		- [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
 		- [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
@@ -66,6 +66,11 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Asynchronous Command Functions](#asynchronous-command-functions)
 	- [Clock Management and Calibration](#clock-management-and-calibration)
 	- [Si1133 driver](#si1133-driver)
+	- [`cTimer` Timer object](#ctimer-timer-object)
+		- [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
+		- [cTimer begin() and end()](#ctimer-begin-and-end)
+		- [Checking for `cTimer` events](#checking-for-ctimer-events)
+		- [`cTimer` Utility routines](#ctimer-utility-routines)
 	- [`Catena_functional.h`](#catena_functionalh)
 - [Command Summary](#command-summary)
 	- [Standard commands](#standard-commands)
@@ -338,7 +343,7 @@ Name | GUID | Description
 
 #### GUIDs for Adafruit Feather M0s
 
-MCCI also uses this libray with Feather M0s without MCCI hardware. These GUIDs are useful in that situation.
+MCCI also uses this library with Feather M0s without MCCI hardware. These GUIDs are useful in that situation.
 
 Name | GUID | Description
 -----|------|------------
@@ -482,7 +487,7 @@ For example, here's the turnstile state diagram:
 
 [![**Coin Operated Turnstile State Diagram](http://www.plantuml.com/plantuml/png/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_)](https://www.plantuml.com/plantuml/svg/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_ "Click for SVG view")
 
-#### Defining the state enum
+#### Defining the state `enum class`
 
 Define an `enum class` as follows:
 
@@ -514,9 +519,9 @@ This means finding the class name for the class that is going to contain this FS
 
 For our example, we'll say that the class modeling turnstiles is `Turnstile`.
 
-#### Add the state enum to the parent class
+#### Add the state type to the parent class
 
-Add the enum you defined above, and add it to the parent class. For example:
+Add the type you defined above to the parent class. For example:
 
 ```c++
 class Turnstile {
@@ -855,21 +860,21 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
 #### Class hierarchy within the FRAM library
 
-<!-- The following image renders well on GitHub, but doesn't render in the previewer in vscode unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
+<!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of cFram -- see assets/cfram.plantuml](http://www.plantuml.com/plantuml/png/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0)](https://www.plantuml.com/plantuml/svg/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0 "SVG image of cFram hierarchy")
 
-<!-- The following image renders well on GitHub, but doesn't render in the previewer in vscode unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
+<!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of FRAM Storage objects -- see assets/cframstorage.plantuml](http://www.plantuml.com/plantuml/png/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00)](https://www.plantuml.com/plantuml/svg/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00 "SVG image of cFramStorage class hierarchy")
 
 ### Asynchronous Serial Port Command Processing
 
 The Catena Arduino platform provides both an asynchronous command-line collection object and a full command parser.
 
-The `Catena::begin()` method normally crates a command parser instance that's linked to a command parser instance. For
+The `Catena::begin()` method normally creates a command parser instance that's linked to a command parser instance. For
 
 #### Collecting lines asynchronously from streams
 
-The header file `Catena_StreamLineCollector.h` defines the class `cStreamLineCollector`. This class is a `cPollableObject`, and as such is polled automaticaly by the governing `cPollingEngine`. A read is launched by calling `cStreamLineCollector::readAsync()`, passing a callback function, a buffer (base and size), and a context handle. When a command has been accumulated, the specified callback function is called according to the following prototype:
+The header file `Catena_StreamLineCollector.h` defines the class `cStreamLineCollector`. This class is a `cPollableObject`, and as such is polled automatically by the governing `cPollingEngine`. A read is launched by calling `cStreamLineCollector::readAsync()`, passing a callback function, a buffer (base and size), and a context handle. When a command has been accumulated, the specified callback function is called according to the following prototype:
 
 ```c++
 typedef void (cStreamLineCollector::ReadCompleteCbFn)(
@@ -1007,6 +1012,76 @@ void readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel);
 
 Read `nChannel` channels of data, starting from channel 0, into the table at `pChannelData`.
 
+### `cTimer` Timer object
+
+Timer objects are used to simplify the implementation of periodic events.
+
+#### Catena_Timer.h header file and initialization
+
+```c++
+#include <Catena_Timer.h>
+```
+
+This header file contains all the definitions for the `cTimer` class.
+
+The constructor takes no arguments.  To create a timer named `myTimer`, write:
+
+```c++
+McciCatena::cTimer myTimer;
+```
+
+#### cTimer begin() and end()
+
+Timers are initially stopped. To start a timer, call:
+
+```c++
+bool cTimer::begin(std::uint32_t nMillis);
+```
+
+This method initializes the timer to run with a period of `nMillis` milliseconds. The timer automatically restarts each time the period elapses; so it's like a clock that ticks every `nMillis` milliseconds.
+
+To stop a timer, call:
+
+```c++
+void cTimer::end();
+```
+
+#### Checking for `cTimer` events
+
+To check whether a timer has ticked, call one of the following:
+
+```c++
+bool cTimer::isready();
+
+std::uint32_t cTimer::readTicks();
+
+std::uint32_t cTimer::peekTicks() const;
+
+std::uint32_t cTimer::getRemaining() const;
+```
+
+`isready()` returns true if the timer has ticked at least once since the last time `isready()` or `readTicks()` was called.  `readTicks()` returns the number of ticks that have occurred since the last time `readTicks()` or `isready()` was called.  Both of these, in effect, reset the tick counter.
+
+`peekTicks()` returns the number of ticks since the last call to `readTicks()` or `isready()`, but doesn't reset the tick counter.
+
+`getRemaining()` returns the number of milliseconds remaining in the current timer cycle.
+
+#### `cTimer` Utility routines
+
+```c++
+std::uint32_t cTimer::getInterval() const;
+
+std::uint32_t cTimer::setInterval(std::uint32_t nMillis);
+
+void cTimer::retrigger();
+```
+
+`getInterval()` returns the number of milliseconds per timer tick.
+
+`setInterval()` changes the timer period to a new value, but doesn't change the base time of the current period. If the period is lengthened, then the next tick occurs relative to the base time plus the new period. If the period is shortened, ticks will immediately occur to cover any ticks between the base time of the period and now.
+
+`retrigger()` sets the base of the current period to the current time, and resets any pending ticks.
+
 ### `Catena_functional.h`
 
 This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
@@ -1061,18 +1136,18 @@ Notes that these parameters are generally not loaded into the LMIC immediately. 
 |-------------|---------------------|----------------------------------|
 `lorawan configure deveui` _[ value ]_  | OTAA | Set the devEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
 `lorawan configure appeui` _[ value ]_  | OTAA |Set the AppEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
-`lorawan configure appkey` _[ value ]_  | OTAA |Set the AppKey for this device to _value_, a 128-bit value given in big-endian (natural) form.
-`lorawan configure nwkskey` _[ value ]_ | ABP | Set the NwkSKey for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure appskey` _[ value ]_ | ABP |Set the AppSKey for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
-`lorawan configure devaddr` _[ value ]_ | either | Set the device address, a 32-bit number, in big-endian form. **_Setting devaddr to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure appkey` _[ value ]_  | OTAA |Set the application key for this device to _value_, a 128-bit value given in big-endian (natural) form.
+`lorawan configure nwkskey` _[ value ]_ | ABP | Set the network session key for this device (the network session key) to _value_.  For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure appskey` _[ value ]_ | ABP |Set the application session key for this device (the application session key) to  _value_. For OTAA devices, this reflects the value saved after them most recent join.
+`lorawan configure devaddr` _[ value ]_ | either | Set the device address, a 32-bit number, in big-endian form. **_Setting `devaddr` to zero on an OTAA device will cause the LMIC to try to rejoin after the next restart._** For OTAA devices, this reflects the value saved after them most recent join.
 `lorawan configure netid` _[ value ]    | either | Set the network ID, in big-endian form. For OTAA devices, this reflects the value saved after them most recent join.
 `lorawan configure fcntup` _[ value ]_  | either | the current uplink frame count, `FCntUp` in the LoRaWAN spec.
 `lorawan configure fcntdown` _[ value ]_ | either | the current downlink frame count, `FCntDown` in the LoRaWAN spec.
-`lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
+`lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
 
 ## Adding your own commands
 
-Here's a step-by-step procedure. There's a fully worked example, [catena_usercommand](#catenausercommand).
+Here's a step-by-step procedure. There's a fully worked example, [`catena_usercommand`](#catenausercommand).
 
 - Include the header file.
 
@@ -1178,11 +1253,16 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
-| [arduino-lmic](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [arduino-lorawan](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
-| [catena-mcciadk](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
+| [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
+| [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+
+- HEAD includes the following changes.
+
+  - [#208](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/208) Add `McciCatena::cTimer` class to simplify timing.
+  - [#209](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/209) Fix error in Si1133 driver that caused UV measurements to be wrong. Add an API to query whether a forced measurement is done.
 
 - v0.17.0 includes the following changes
 
@@ -1232,7 +1312,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - v0.13.0 incorporates recent bug fixes and enhancements. We added our own implementation of the RTC class, to avoid the hacks we were using with the RTCzero library (issue [#86](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/86). We updated the UML docs (issue [#111](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/111)). We refactored the STM32 classes (issue [#99](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/99) and [#103](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/103)). A few other minor changes ([754f4b](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/754f4bd9048f12edbd89906daea483eec31a9468) and [71d45d0](https://github.com/mcci-catena/Catena-Arduino-Platform/commit/71d45d0882b00cc0f18458a35a1f6b320e106433)).
 
-- v0.12.0 adds support for the 4610, 4611, 4612, and 4801, and relies on the LMIC 2.3 pre-integrated pi nmap feature to simplify maintenance and make things more structures. We added more UML diagrams to document the class hierarchy. Now depends on MCCI SAMD BSP 1.2.0 and STM32 2.0.0. A common `Catena::Sleep()` method was added for architecture-neutral low-power standby (issue [#83](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/83)). Added experimental machineQ network support. Various minor bug fixes and enhancements.
+- v0.12.0 adds support for the 4610, 4611, 4612, and 4801, and relies on the LMIC 2.3 pre-integrated pin map feature to simplify maintenance and make things more structures. We added more UML diagrams to document the class hierarchy. Now depends on MCCI SAMD BSP 1.2.0 and STM32 2.0.0. A common `Catena::Sleep()` method was added for architecture-neutral low-power standby (issue [#83](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/83)). Added experimental machineQ network support. Various minor bug fixes and enhancements.
 
 - v0.11.0 adds a flash driver for the Catena 4470, adds a flash object for storing BME680 calibration data, and fixes bugs.
 
