@@ -178,7 +178,7 @@ public:
 	boolean configure(
 			uint8_t uChannel,
 			uint8_t uMode,
-			uint8_t uMeasurementCount = 0	/* use default */
+			uint8_t uMeasurementCount = 0	/* use forced mode */
 			);
 
 	boolean start(boolean fOneTime = false);
