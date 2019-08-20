@@ -166,6 +166,12 @@ class Catena_Si1133
 public:
         Catena_Si1133(void);
 
+	// neither copyable nor movable
+	Catena_Si1133(const Catena_Si1133&) = delete;
+	Catena_Si1133& operator=(const Catena_Si1133&) = delete;
+	Catena_Si1133(const Catena_Si1133&&) = delete;
+	Catena_Si1133& operator=(const Catena_Si1133&&) = delete;
+
         boolean begin(uint8_t DeviceAddress = CATENA_SI1133_ADDRESS,
 		      TwoWire *pWire = &Wire);
 
