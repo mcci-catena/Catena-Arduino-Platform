@@ -166,13 +166,19 @@ class Catena_Si1133
 public:
         Catena_Si1133(void);
 
+	// neither copyable nor movable
+	Catena_Si1133(const Catena_Si1133&) = delete;
+	Catena_Si1133& operator=(const Catena_Si1133&) = delete;
+	Catena_Si1133(const Catena_Si1133&&) = delete;
+	Catena_Si1133& operator=(const Catena_Si1133&&) = delete;
+
         boolean begin(uint8_t DeviceAddress = CATENA_SI1133_ADDRESS,
 		      TwoWire *pWire = &Wire);
 
 	boolean configure(
 			uint8_t uChannel,
 			uint8_t uMode,
-			uint8_t uMeasurementCount = 0	/* use default */
+			uint8_t uMeasurementCount = 0	/* use forced mode */
 			);
 
 	boolean start(boolean fOneTime = false);
