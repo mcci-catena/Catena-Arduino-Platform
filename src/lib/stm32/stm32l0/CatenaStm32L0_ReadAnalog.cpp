@@ -56,7 +56,6 @@ using namespace McciCatena;
 \****************************************************************************/
 
 constexpr unsigned long ADC_TIMEOUT = 10;
-constexpr unsigned long ADC_CALIBRATE_TIME = 2000;
 constexpr int STM32L0_ADC_CHANNEL_VREFINT = 17;
 constexpr int STM32L0_ADC_CHANNEL_TEMPSENSOR = 18;
 
@@ -222,6 +221,12 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 		vResult = vResult * vRefInt_cal / vRef;
 		// remove the factor of 4, and round
 		*pValue = (vResult + 2) >> 2;
+
+//		gLog.printf(
+//			gLog.kError,
+//			"vRef=%u vChannel=%u *pVrefintCal=%u\t",
+//			vRef, vChannel, *pVrefintCal
+//			);
 		}
 
 	return fStatusOk;
@@ -269,7 +274,6 @@ static bool AdcDisable(void)
 
 static bool AdcCalibrate(void)
 	{
-	static uint32_t s_uLastCalibTime = 0;
 	uint32_t uTime;
 
 	if (ADC1->CR & ADC_CR_ADEN)
@@ -281,10 +285,6 @@ static bool AdcCalibrate(void)
 		}
 
 	uTime = millis();
-	if ((uTime - s_uLastCalibTime) < ADC_CALIBRATE_TIME)
-		return true;
-
-	s_uLastCalibTime = uTime;
 
 	/* turn on the cal bit */
 	ADC1->ISR = ADC_ISR_EOCAL;
