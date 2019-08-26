@@ -1261,7 +1261,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes.
 
-  - [#211](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/211) `Catena_Si1133` cannot be copied or moved. (0.10.0.11)
+  - [#213](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/213) Vbat voltage read is inaccurate on STM32L0 platform. (0.17.0.12)
+  - [#211](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/211) `Catena_Si1133` cannot be copied or moved. (0.17.0.11)
   - [#208](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/208) Add `McciCatena::cTimer` class to simplify timing. (0.17.0.10)
   - [#209](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/209) Fix error in Si1133 driver that caused UV measurements to be wrong. Add an API to query whether a forced measurement is done.
 
