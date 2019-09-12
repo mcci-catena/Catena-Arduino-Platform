@@ -26,6 +26,16 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+#ifdef _mcci_arduino_version
+# if _mcci_arduino_version < _mcci_arduino_version_calc(2, 5, 0, 20)
+#  define MCCI_ARDUINO_BSP_SUPPORT_RTC	0
+# else
+#  define MCCI_ARDUINO_BSP_SUPPORT_RTC	1
+# endif
+#else
+# define MCCI_ARDUINO_BSP_SUPPORT_RTC	0
+#endif
+
 
 /****************************************************************************\
 |
@@ -46,6 +56,8 @@ using namespace McciCatena;
 |	Overrides for "weak" definitions in core HAL.
 |
 \****************************************************************************/
+
+#if ! MCCI_ARDUINO_BSP_SUPPORT_RTC
 
 extern "C" {
 
@@ -126,8 +138,13 @@ uint32_t HAL_AddTick(
 
 } /* extern "C" */
 
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_RTC */
+
 bool CatenaStm32L0Rtc::begin(bool fResetTime)
 	{
+#if MCCI_ARDUINO_BSP_SUPPORT_RTC
+	return Stm32RtcInit(&this->m_hRtc);
+#else
 	RTC_TimeTypeDef	Time;
 	RTC_DateTypeDef	Date;
 	uint32_t RtcClock;
@@ -234,13 +251,13 @@ bool CatenaStm32L0Rtc::begin(bool fResetTime)
 
 	HAL_RTC_DeactivateAlarm(&this->m_hRtc, RTC_ALARM_A);
 	return true;
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_RTC */
 	}
 
 const uint16_t CatenaStm32L0Rtc::md[13] =
 	{
 	0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
 	};
-
 
 CatenaStm32L0Rtc::CalendarTime
 CatenaStm32L0Rtc::GetTime(void)
@@ -321,10 +338,9 @@ void CatenaStm32L0Rtc::SetAlarm(const CalendarTime *pNow)
 
 	this->m_fAlarmEnabled = true;
 	this->m_Alarm = 0;
-	gs_pAlarm = &this->m_Alarm;
 
 //	Serial.print("SetAlarm: ");
-//	Serial.print(pNow->Year + CATENA_STM32L0_RTC_BASE_YEAR);
+//	Serial.print(pNow->Year);
 //	Serial.print("-");
 //	Serial.print(pNow->Month);
 //	Serial.print("-");
@@ -351,7 +367,12 @@ void CatenaStm32L0Rtc::SetAlarm(const CalendarTime *pNow)
 	Alarm.Alarm = RTC_ALARM_A;
 
 	/* Set RTC_Alarm */
+#if MCCI_ARDUINO_BSP_SUPPORT_RTC
+	Stm32RtcSetAlarm(&this->m_hRtc, &Alarm, RTC_FORMAT_BIN, &this->m_Alarm);
+#else
+	gs_pAlarm = &this->m_Alarm;
 	HAL_RTC_SetAlarm_IT(&this->m_hRtc, &Alarm, RTC_FORMAT_BIN);
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_RTC */
 	}
 
 bool CatenaStm32L0Rtc::PollAlarmState(void)

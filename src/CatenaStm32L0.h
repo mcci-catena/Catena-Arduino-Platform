@@ -185,6 +185,17 @@ private:
         CatenaStm32L0           *m_pCatena;
         };
 
+#ifdef _mcci_arduino_version
+# if _mcci_arduino_version < _mcci_arduino_version_calc(2, 5, 0, 20)
+#  define MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG	0
+# else
+#  define MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG	1
+# endif
+#else
+# define MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG	0
+#endif
+
+#if ! MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG
 // this function is called from a trampoline C function that
 // needs to invoke analog reads for checking USB presence.
 bool CatenaStm32L0_ReadAnalog(
@@ -193,6 +204,7 @@ bool CatenaStm32L0_ReadAnalog(
         uint32_t Multiplier,
         uint32_t *pValue
         );
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG */
 
 } // namespace McciCatena
 

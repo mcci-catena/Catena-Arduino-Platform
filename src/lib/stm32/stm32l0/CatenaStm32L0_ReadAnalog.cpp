@@ -55,6 +55,7 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+#if ! MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG
 constexpr unsigned long ADC_TIMEOUT = 10;
 constexpr int STM32L0_ADC_CHANNEL_VREFINT = 17;
 constexpr int STM32L0_ADC_CHANNEL_TEMPSENSOR = 18;
@@ -64,6 +65,7 @@ static bool AdcDisable(void);
 static bool AdcEnable(void);
 static bool AdcGetValue(uint32_t *value);
 static void AdcStart(void);
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG */
 
 
 /****************************************************************************\
@@ -89,6 +91,8 @@ static void AdcStart(void);
 |	of objects.
 |
 \****************************************************************************/
+
+#if ! MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG
 
 // because this is defined inside the McciCatena namespace in the header file
 // we need to explicitly add the namespace tag here.
@@ -399,6 +403,8 @@ static void AdcStart(void)
 	ADC1->ISR = (ADC_ISR_EOC | ADC_ISR_EOSEQ);
 	ADC1->CR |= ADC_CR_ADSTART;
 	}
+
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG */
 
 /*
 
@@ -428,6 +434,7 @@ uint32_t CatenaStm32L0::ReadAnalog(
 	uint32_t Multiplier
 	) const
 	{
+#if ! MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG
 	uint32_t	vResult;
 	bool		fStatusOk;
 
@@ -450,6 +457,9 @@ uint32_t CatenaStm32L0::ReadAnalog(
 		}
 
 	return vResult;
+#else
+	return Stm32ReadAnalog(Channel, ReadCount, Multiplier);
+#endif
 	}
 
 #endif // ARDUINO_ARCH_STM32
