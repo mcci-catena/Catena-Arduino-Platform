@@ -64,7 +64,7 @@ Definition:
 		McciCatena::cFram8k::begin()
 	
 Description:
-	Initialize an cFram2K object prior to operation.
+	Initialize an cFram8k object prior to operation.
 
 Returns:
 	true for success, false for failure.
@@ -84,7 +84,7 @@ McciCatena::cFram8k::begin()
 
 /*
 
-Name:	McciCatena::cFram2K::read()
+Name:	McciCatena::cFram8k::read()
 
 Function:
 	Read a string of bytes from the FRAM
@@ -117,7 +117,7 @@ McciCatena::cFram8k::read(
 
 /*
 
-Name:	McciCatena::cFram2K::write()
+Name:	McciCatena::cFram8k::write()
 
 Function:
 	Write a sequence of bytes to the FRAM.

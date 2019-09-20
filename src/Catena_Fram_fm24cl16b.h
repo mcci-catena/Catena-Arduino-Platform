@@ -1,20 +1,20 @@
 /*
 
-Module:  Catena_Mb85rc64ta.h
+Module:  Catena_Fram_fm24cl16b.h
 
 Function:
-       class Catena_Mb85rc64ta: 8K I2C FRAM
+       class cFram_FM24CL16B: 2K I2C FRAM
 
 Copyright notice:
         See accompanying LICENSE file.
 
 Author:
-        ChaeHee Won, MCCI Corporation	October 2017
+        ChaeHee Won, MCCI Corporation	September 2019
 
 */
 
-#ifndef _CATENA_MB85RC64TA_H_		/* prevent multiple includes */
-#define _CATENA_MB85RC64TA_H_
+#ifndef _CATENA_FRAM_FM24CL16B_H_	/* prevent multiple includes */
+#define _CATENA_FRAM_FM24CL16B_H_
 
 #pragma once
 
@@ -23,16 +23,16 @@ Author:
 
 namespace McciCatena {
 
-class Catena_Mb85rc64ta
+class cFram_FM24CL16B
 	{
 public:
-	Catena_Mb85rc64ta(void);
+	cFram_FM24CL16B(void);
 
-        static constexpr uint8_t CATENA_MB85RC64TA_ADDRESS = 0x50;
-        static constexpr int CATENA_MB85RC64TA_SLAVE_ID = (0xF8 >> 1);
+        static constexpr uint8_t CATENA_FM24CL16B_ADDRESS = 0x50;
+        static constexpr int CATENA_FM24CL16B_SLAVE_ID = (0xF8 >> 1);
 
 	// set up and probe device
-	boolean begin(uint8_t DeviceAddress = CATENA_MB85RC64TA_ADDRESS,
+	boolean begin(uint8_t DeviceAddress = CATENA_FM24CL16B_ADDRESS,
 		      TwoWire *pWire = &Wire);
 
 	// write a single byte
@@ -50,10 +50,6 @@ public:
 	// read ID
 	void readId(uint16_t *pManufactureId, uint16_t *pProductId);
 
-	// power management
-	void powerDown(void);
-	void powerUp(void);
-
 private:
 	uint8_t		m_DeviceAddress;
 	boolean		m_Initialized;
@@ -61,9 +57,10 @@ private:
 	TwoWire *	m_pWire;
 
 	void prepIO(void) const;
+	uint8_t getDeviceAddress(uint16_t framAddr) const;
 	};
 
 } // namespace McciCatena
 
-/**** end of Catena_Mb85rc64ta.h ****/
-#endif /* _CATENA_MB85RC64TA_H_ */
+/**** end of Catena_Fram_fm24cl16b.h ****/
+#endif /* _CATENA_FRAM_FM24CL16B_H_ */
