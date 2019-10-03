@@ -1,39 +1,16 @@
-/* CatenaWingFram2k.h	Wed Dec 05 2018 14:15:16 chwon */
-
 /*
 
 Module:  CatenaWingFram2k.h
 
 Function:
 	class CatenaWingFram2k: CatenaBase Platform to represent a Catena
-        Feather Wing with 2k FRAM and the DIO1>D6 loopback.
-
-Version:
-	V0.12.0	Wed Dec 05 2018 14:15:17 chwon	Edit level 3
+	Feather Wing with 2k FRAM and the DIO1>D6 loopback.
 
 Copyright notice:
-	This file copyright (C) 2017-2018 by
+	See LICENSE file accompanying this project.
 
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
- 
 Author:
 	Terry Moore, MCCI Corporation	March 2017
-
-Revision history:
-   0.5.0  Sun Mar 12 2017 18:16:07  tmm
-	Module created.
-
-   0.12.0  Wed Dec 05 2018 14:15:17  chwon
-	Use CatenaSamd21 super class instead of CatenaFeatherM0LoRa class.
-	Remove GetSysEUI() and GetPlatformForID() methods override.
-	Add ReadVbat() and add getFRAM() method override.
 
 */
 
@@ -50,7 +27,7 @@ Revision history:
 # include "Catena_Fram2k.h"
 #endif
 
-#include <Arduino_LoRaWAN_ttn.h>
+#include <Arduino_LoRaWAN_network.h>
 
 //
 // TODO(tmm@mcci.com)
@@ -126,11 +103,11 @@ private:
 || The LoRaWAN class for the Catena Wings. Needed because we have a
 || specific storage implementation and pin table.
 */
-class CatenaWingFram2k::LoRaWAN : public Arduino_LoRaWAN_ttn,
+class CatenaWingFram2k::LoRaWAN : public Arduino_LoRaWAN_network,
                                   public McciCatena::cPollableObject
 	{
 public:
-	using Super = Arduino_LoRaWAN_ttn;
+	using Super = Arduino_LoRaWAN_network;
 
 	/*
 	|| the constructor. We don't do anything at this level, the
