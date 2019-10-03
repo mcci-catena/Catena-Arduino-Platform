@@ -5,11 +5,11 @@ Module:	Catena_LoRaWAN.plantuml
 
 Function:
 	PlantUML reference source for Catena::LoRaWAN class diagram.
-	
+
 Copyright:
 	See accompanying LICENSE file at
 	https:://github.com/mcci-catena/Catena-Arduino-Platform
-	
+
 Author:
 	Terry Moore, MCCI Corporation	July 2019
 
@@ -50,6 +50,8 @@ note right on link
   by IDE or command line
 end note
 
+class Arduino_LoRaWAN_network
+
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_eu868
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_us915
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_au921
@@ -61,6 +63,14 @@ Arduino_LoRaWAN_ttn_us915 <|.. Arduino_LoRaWAN_ttn
 Arduino_LoRaWAN_ttn_au921 <|.. Arduino_LoRaWAN_ttn
 Arduino_LoRaWAN_ttn_as923 <|.. Arduino_LoRaWAN_ttn
 Arduino_LoRaWAN_ttn_in866 <|.. Arduino_LoRaWAN_ttn
+
+Arduino_LoRaWAN_machineQ <|.. Arduino_LoRaWAN_network
+note right on link
+   Network selected at compile time
+   by IDE or command line.
+end note
+Arduino_LoRaWAN_ttn <|.. Arduino_LoRaWAN_network
+
 }
 
 namespace McciCatena {
@@ -69,19 +79,14 @@ class cPollableObject
 class Catena::LoRaWAN
 note right
   Some complexity hidden;
-  Subclasses deal with device 
+  Subclasses deal with device
   configuration and FRAM
   usage.
 end note
 
 cPollableObject <|- Catena::LoRaWAN
 
-.Arduino_LoRaWAN_machineQ <|.. Catena::LoRaWAN
-note right on link
-   Network selected at compile time
-   by IDE or command line. 
-end note
-.Arduino_LoRaWAN_ttn <|.. Catena::LoRaWAN
+.Arduino_LoRaWAN_network <|.. Catena::LoRaWAN
 
 }
 @enduml
