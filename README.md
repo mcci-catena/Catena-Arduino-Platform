@@ -1261,7 +1261,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes.
 
-  - [#222](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/222) Use `Arduino_LoRaWAN_network` consistently as base for `LoRaWAN` classes. (0.17.0.20)
+  - [#222](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/222) Use `Arduino_LoRaWAN_network` consistently as base for `LoRaWAN` classes. Requires Arduino_LoRaWAN 0.6.0.20 or later. (0.17.0.20)
   - [#213](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/213) Vbat voltage read is inaccurate on STM32L0 platform. (0.17.0.12)
   - [#211](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/211) `Catena_Si1133` cannot be copied or moved. (0.17.0.11)
   - [#208](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/208) Add `McciCatena::cTimer` class to simplify timing. (0.17.0.10)
