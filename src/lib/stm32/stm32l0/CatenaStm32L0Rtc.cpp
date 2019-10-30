@@ -26,16 +26,6 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-#ifdef _mcci_arduino_version
-# if _mcci_arduino_version < _mcci_arduino_version_calc(2, 5, 0, 20)
-#  define MCCI_ARDUINO_BSP_SUPPORT_RTC	0
-# else
-#  define MCCI_ARDUINO_BSP_SUPPORT_RTC	1
-# endif
-#else
-# define MCCI_ARDUINO_BSP_SUPPORT_RTC	0
-#endif
-
 
 /****************************************************************************\
 |
