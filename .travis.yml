@@ -130,9 +130,7 @@ script:
  # test each of the regions on the 4450.
  - _notsamd    || arduino --verify $(_samdopts '' us915) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notsamd    || arduino --verify $(_samdopts '' eu868) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- - _notsamd    || arduino --verify $(_samdopts '' au921) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
- # V1.1.0 of the samd bsp didn't support au921 correctly -- test with projcfg
- # - _notsamd    || { _projcfg CFG_au921 CFG_sx1276_radio && arduino --verify $(_samdopts '' projcfg) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino ; }
+ - _notsamd    || arduino --verify $(_samdopts '' au915) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notsamd    || arduino --verify $(_samdopts '' as923) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notsamd    || arduino --verify $(_samdopts '' as923jp) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notsamd    || arduino --verify $(_samdopts '' in866) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
@@ -164,7 +162,7 @@ script:
 
  # test each of the regions for 4610 (using it as an example). us915 already tested
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 eu868  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 au921  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 au915  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923jp) $THISLIB/examples/catena_hello/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 in866  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
