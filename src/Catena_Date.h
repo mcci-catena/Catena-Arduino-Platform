@@ -100,33 +100,22 @@ public:
 
     static constexpr bool isValidYearMonthDay(Year_t year, Month_t month, Day_t day)
         {
-        if (! (kMinYear <= year && year <= kMaxYear))
-            return false;
-
-        if (! (1 <= month && month <= 12))
-            return false;
-
-        if (! (1 <= day && day <= (month == 2 ? 28 + isLeapYear(year) :
+        return (kMinYear <= year && year <= kMaxYear) &&
+               (1 <= month && month <= 12) &&
+               (1 <= day && day <= (month == 2 ? 28 + isLeapYear(year) :
                                    ((1 << (month - 1)) & kMonthsWith31Days) != 0 ? 31 :
-                                   30)))
-            return false;
-
-        return true;
+                                   30));
         }
 
     static constexpr bool isValidHourMinuteSecond(Hour_t h, Minute_t m, Second_t s)
         {
-        if (! (0 <= h && h <= 23))
-            return false;
-        if (! (0 <= m && m <= 59))
-            return false;
-        if (! (0 <= s && s <= 59))
-            return false;
-        return true;
+        return (0 <= h && h <= 23) &&
+               (0 <= m && m <= 59) &&
+               (0 <= s && s <= 59);
         }
 
     // return day in year (0..364 or 0..365)
-    static constexpr unsigned getDayInYear(Year_t year, Month_t month, Day_t day)
+    static /* constexpr */ unsigned getDayInYear(Year_t year, Month_t month, Day_t day)
         {
         unsigned dayInYear = 0;
 
@@ -187,13 +176,8 @@ public:
     // check validity
     bool isValid() const
         {
-        if (! isValidYearMonthDay(this->m_year, this->m_month, this->m_day))
-            return false;
-
-        if (! (this->m_hour < 24 && this->m_minute < 60 && this->m_second < 60))
-            return false;
-
-        return true;
+        return isValidYearMonthDay(this->m_year, this->m_month, this->m_day) &&
+               isValidHourMinuteSecond(this->m_hour, this->m_minute, this->m_second);
         }
 
 private:
@@ -212,25 +196,35 @@ private:
     };
 
 // check the leap-year calculations
-static_assert(  cDate::isLeapYear(0));
-static_assert(! cDate::isLeapYear(1899));
-static_assert(! cDate::isLeapYear(1900));
-static_assert(! cDate::isLeapYear(1901));
-static_assert(! cDate::isLeapYear(1902));
-static_assert(! cDate::isLeapYear(1903));
-static_assert(  cDate::isLeapYear(1904));
-static_assert(  cDate::isLeapYear(2000));
+static_assert(  cDate::isLeapYear(0),       "isLeapYear() error");
+static_assert(! cDate::isLeapYear(1899),    "isLeapYear() error");
+static_assert(! cDate::isLeapYear(1900),    "isLeapYear() error");
+static_assert(! cDate::isLeapYear(1901),    "isLeapYear() error");
+static_assert(! cDate::isLeapYear(1902),    "isLeapYear() error");
+static_assert(! cDate::isLeapYear(1903),    "isLeapYear() error");
+static_assert(  cDate::isLeapYear(1904),    "isLeapYear() error");
+static_assert(  cDate::isLeapYear(2000),    "isLeapYear() error");
 
-static_assert(cDate::daysSinceProlepticZero(0) == 0);
-static_assert(cDate::daysSinceProlepticZero(1) == 366);
-static_assert(cDate::daysSinceProlepticZero(4) == 4 * 365 + 1);
-static_assert(cDate::daysSinceProlepticZero(5) == 5 * 365 + 2);
-static_assert(cDate::daysSinceProlepticZero(99) == 99 * 365 + 99/4 + 1);
-static_assert(cDate::daysSinceProlepticZero(100) == 100 * 365 + 99/4 + 1);
-static_assert(cDate::daysSinceProlepticZero(101) == 101 * 365 + 100/4);
-static_assert(cDate::daysSinceProlepticZero(101) == 36890);
-static_assert(cDate::daysSinceProlepticZero(1901) == 694326);
-static_assert(cDate::daysSinceProlepticZero(2005) == 732312);
+static_assert(cDate::daysSinceProlepticZero(0) == 0,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(1) == 366,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(4) == 4 * 365 + 1,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(5) == 5 * 365 + 2,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(99) == 99 * 365 + 99/4 + 1,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(100) == 100 * 365 + 99/4 + 1,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(101) == 101 * 365 + 100/4,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(101) == 36890,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(1901) == 694326,
+                                            "daysSinceProlepticZero() error");
+static_assert(cDate::daysSinceProlepticZero(2005) == 732312,
+                                            "daysSinceProlepticZero() error");
 
 } // namespace McciCatena
 
