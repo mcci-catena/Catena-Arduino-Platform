@@ -20,7 +20,7 @@ Author:
 #pragma once
 
 #include <cstdint>
-#include <limits>
+#include <Catena_limits.h>
 
 namespace McciCatena {
 
@@ -43,7 +43,7 @@ public:
     static constexpr GpsTime_t kGpsTimeInvalid = kGpsTimeInvalidLow;
     static constexpr CommonTime_t kCommonTimeInvalidLow = CommonTime_t(kGpsTimeInvalidLow + kCommonToGpsSeconds);
     static constexpr CommonTime_t kCommonTimeInvalid = std::numeric_limits<CommonTime_t>::lowest();
-    static constexpr CommonTime_t kCommonTimeInvalidHigh = std::numeric_limits<CommonTime_t>::max();
+    static constexpr CommonTime_t kCommonTimeInvalidHigh = cNumericLimits<CommonTime_t>::numeric_limits_max();
     static constexpr GpsTime_t kGpsTimeInvalidHigh = GpsTime_t(kCommonTimeInvalidHigh - kCommonToGpsSeconds);
 
     static constexpr bool isValidGpsTime(GpsTime_t t) { return t > kGpsTimeInvalidLow && t < kGpsTimeInvalidHigh; }
@@ -59,10 +59,10 @@ public:
     static constexpr Year_t kCommonYear = 1970;
     static constexpr Year_t kGpsYear = 1980;
     static constexpr Year_t kMinYear = 0;
-    static constexpr Year_t kMaxYear = std::numeric_limits<Year_t>::max();
+    static constexpr Year_t kMaxYear = cNumericLimits<Year_t>::numeric_limits_max();
 
     // one-hot mask with 1 for zero-origin months with 31 days
-    static constexpr unsigned kMonthsWith31Days = 
+    static constexpr unsigned kMonthsWith31Days =
         (1 << 0 | 1 << 2 | 1 << 4 | 1 << 6 | 1 << 7 | 1 << 9 | 1 << 11);
 
     // return days since day zero of the proleptic Gregorian astronomical calendar.
@@ -135,7 +135,7 @@ public:
         /* if March or later, and it's a leap year, add 1 */
         if (month >= 3 && isLeapYear(year))
             ++dayInYear;
-        
+
         return dayInYear + day - 1;
         }
 
@@ -145,8 +145,14 @@ public:
     // set date portion of clock, return true if valid.
     bool setDate(Year_t y, Month_t m, Day_t d);
 
+    // set date portion of clock by parsing ISO8601 string yyyy-mm-dd
+    bool parseDateIso8601(const char *pDate, const char **ppEndPointer = nullptr);
+
     // set time portion of clock, return true if valid.
     bool setTime(Hour_t h, Minute_t m, Second_t s);
+
+    // set time portion of clock by parsing ISO8601 string hh:mm:ss
+    bool parseTime(const char *pTime, const char **ppEndPointer = nullptr);
 
     // return time according to Common epoch
     CommonTime_t getCommonTime() const;
