@@ -63,6 +63,7 @@ extern "C" {
 
 uint32_t USBD_LL_ConnectionState(void)
 	{
+#if ! MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG
 	uint32_t vBus;
 	bool fStatus;
 
@@ -70,6 +71,12 @@ uint32_t USBD_LL_ConnectionState(void)
 			Catena463x::ANALOG_CHANNEL_VBUS, 1, 3, &vBus
 			);
 	return (fStatus && vBus < 3000) ? 0 : 1;
+#else
+	uint32_t vBus;
+
+	vBus = Stm32ReadAnalog(Catena463x::ANALOG_CHANNEL_VBUS, 1, 3);
+	return vBus < 3000 ? 0 : 1;
+#endif
 	}
 
 }

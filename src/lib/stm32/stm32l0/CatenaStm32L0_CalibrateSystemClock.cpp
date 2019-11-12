@@ -26,7 +26,9 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-static uint32_t MeasureMillisPerRtcSecond(void);
+#if ! MCCI_ARDUINO_BSP_SUPPORT_CLOCK_CALIBRATION
+static uint32_t MeasureMicrosPerRtcSecond(void);
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_CLOCK_CALIBRATION */
 
 
 /****************************************************************************\
@@ -85,7 +87,7 @@ Description:
 	use TIM21, but there's no sample code. We're need to
 	do better than we've been doing, so the first version
 	of this function runs for several seconds and compares
-	millis (driven by system clock) to the output of the
+	micros (driven by system clock) to the output of the
 	RTC (driven by LSE).
 
 	In general, this routine works by stepping the clock
@@ -110,6 +112,9 @@ Notes:
 
 uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 	{
+#if MCCI_ARDUINO_BSP_SUPPORT_CLOCK_CALIBRATION
+	return Stm32CalibrateSystemClock();
+#else
 	uint32_t Calib;
 	uint32_t CalibNew;
 	uint32_t CalibLow;
@@ -142,13 +147,13 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 	CalibLow = 0;
 	CalibHigh = 0;
 	mSecondLow = 0;
-	mSecondHigh = 2000;
+	mSecondHigh = 2000000;
 	fHaveSeenLow = fHaveSeenHigh = false;
 
 	/* loop until we have a new value */
 	do	{
-		/* meassure the # of millis per RTC second */
-		mSecond = MeasureMillisPerRtcSecond();
+		/* meassure the # of micros per RTC second */
+		mSecond = MeasureMicrosPerRtcSecond();
 
 		/* invariant: */
 		if (Calib == CalibNew)
@@ -161,7 +166,7 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 			);
 
 		/* if mSecond is low, this meaans we must increase the system clock */
-		if (mSecond <= 1000)
+		if (mSecond <= 1000000)
 			{
 			/*
 			|| the following condition establishes that we're
@@ -297,11 +302,14 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 		mSecondNew
 		);
 	return CalibNew;
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_CLOCK_CALIBRATION */
 	}
+
+#if ! MCCI_ARDUINO_BSP_SUPPORT_CLOCK_CALIBRATION
 
 static
 uint32_t
-MeasureMillisPerRtcSecond(
+MeasureMicrosPerRtcSecond(
 	void
 	)
 	{
@@ -313,10 +321,10 @@ MeasureMillisPerRtcSecond(
 	/* get the starting time */
 	second = RTC->TR & (RTC_TR_ST | RTC_TR_SU);
 
-	/* wait for a new second to start, and capture millis() in start */
+	/* wait for a new second to start, and capture micros() in start */
 	do	{
 		now = RTC->TR & (RTC_TR_ST | RTC_TR_SU);
-		start = millis();
+		start = micros();
 		} while (second == now);
 
 	/* update our second of interest */
@@ -325,15 +333,17 @@ MeasureMillisPerRtcSecond(
 	/* no point in watching the register until we get close */
 	delay(500);
 
-	/* wait for the next second to start, and capture millis() */
+	/* wait for the next second to start, and capture micros() */
 	do	{
 		now = RTC->TR & (RTC_TR_ST | RTC_TR_SU);
-		end = millis();
+		end = micros();
 		} while (second == now);
 
 	/* return the delta */
 	return end - start;
 	}
+
+#endif	/* MCCI_ARDUINO_BSP_SUPPORT_CLOCK_CALIBRATION */
 
 #endif // ARDUINO_ARCH_STM32
 

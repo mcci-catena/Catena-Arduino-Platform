@@ -84,7 +84,11 @@ Catena4611::ReadVbat(void) const
 float
 Catena4611::ReadVbus(void) const
 	{
-	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 1, 3);
+	// on the Catena 4611, the Vbus divider impedance is very high,
+	// so charge transfer from the previous channel causes problems.
+	// Therefore, let's read one extra time; the prvious ADC will
+	// have had some time to bleed off.
+	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 6, 3);
 	return volt / 1000;
 	}
 
@@ -94,13 +98,20 @@ extern "C" {
 
 uint32_t USBD_LL_ConnectionState(void)
 	{
+#if ! MCCI_ARDUINO_BSP_SUPPORT_READ_ANALOG
 	uint32_t vBus;
 	bool fStatus;
 
 	fStatus = CatenaStm32L0_ReadAnalog(
-			Catena461x::ANALOG_CHANNEL_VBUS, 1, 3, &vBus
+			Catena461x::ANALOG_CHANNEL_VBUS, 6, 3, &vBus
 			);
 	return (fStatus && vBus < 3000) ? 0 : 1;
+#else
+	uint32_t vBus;
+
+	vBus = Stm32ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 6, 3);
+	return vBus < 3000 ? 0 : 1;
+#endif
 	}
 
 }
