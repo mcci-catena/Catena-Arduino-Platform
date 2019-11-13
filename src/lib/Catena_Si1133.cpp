@@ -278,6 +278,7 @@ boolean Catena_Si1133::start(boolean fOneTime)
 		return false;
 		}
 
+	this->m_StartTime = this->m_LastPollTime = millis();
 	this->m_fOneTime = fOneTime;
         return true;
 	}
@@ -358,7 +359,17 @@ bool Catena_Si1133::isOneTimeReady()
 	{
 	if (this->m_fOneTime)
 		{
+		std::uint32_t now = millis();
+
+		if ((now - this->m_LastPollTime) < kPollDelayMs ||
+		    (now - this->m_StartTime) < kStartDelayMs)
+		    	{
+			// not enough time has passed
+			return false;
+			}
+
 		this->m_ChannelCompleted |= this->readReg(SI1133_REG_IRQ_STATUS);
+		this->m_LastPollTime = now;
 		return (this->m_ChannelCompleted & this->m_ChannelEnabled) == this->m_ChannelEnabled;
 		}
 	else
