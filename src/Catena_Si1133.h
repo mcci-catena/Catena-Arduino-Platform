@@ -198,6 +198,7 @@ public:
 private:
 	uint8_t m_DeviceAddress;
 	uint8_t	m_ChannelEnabled;
+	uint8_t m_ChannelCompleted;
 	uint8_t	m_ChannelDataReg[SI1133_NUM_CHANNEL];
 	boolean	m_Initialized;
 	boolean	m_fOneTime;
