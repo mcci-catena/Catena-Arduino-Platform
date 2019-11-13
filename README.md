@@ -14,83 +14,89 @@ _Apologies_: This document is a work in progress, and is published in this inter
 - [Overview](#overview)
 - [Coding Practices](#coding-practices)
 - [Components](#components)
-	- [Namespace `McciCatena`](#namespace-mccicatena)
-	- [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
-	- [Board-specific Classes](#board-specific-classes)
-	- [Class derivation](#class-derivation)
-		- [STM32 Classes](#stm32-classes)
-		- [SAMD Classes](#samd-classes)
-	- [Platform Management](#platform-management)
-		- [Platform GUIDs](#platform-guids)
-		- [GUIDs for the Catena 461x family](#guids-for-the-catena-461x-family)
-			- [Catena 4610](#catena-4610)
-			- [Catena 4611](#catena-4611)
-			- [Catena 4612](#catena-4612)
-			- [Catena 4617](#catena-4617)
-			- [Catena 4618](#catena-4618)
-			- [Catena 4630](#catena-4630)
-		- [GUIDs for the Catena 4450/4460/4470 family](#guids-for-the-catena-445044604470-family)
-			- [Catena 4450](#catena-4450)
-			- [Catena 4460](#catena-4460)
-			- [Catena 4470](#catena-4470)
-		- [GUIDs for the Catena 4801 family](#guids-for-the-catena-4801-family)
-		- [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
-	- [Polling Framework](#polling-framework)
-		- [Making a class pollable](#making-a-class-pollable)
-		- [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
-	- [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
-		- [Getting ready](#getting-ready)
-		- [Defining the state `enum class`](#defining-the-state-enum-class)
-		- [Identify the parent class](#identify-the-parent-class)
-		- [Add the state type to the parent class](#add-the-state-type-to-the-parent-class)
-		- [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
-		- [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
-		- [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
-		- [Implement the FSM initialization](#implement-the-fsm-initialization)
-	- [LoRaWAN Support](#lorawan-support)
-		- [Sending an uplink message](#sending-an-uplink-message)
-		- [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
-		- [LoRaWAN Class Structure](#lorawan-class-structure)
-	- [FRAM Storage Management](#fram-storage-management)
-		- [FRAM Storage Formats](#fram-storage-formats)
-			- [Object Storage Structure](#object-storage-structure)
-			- [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
-			- [The FRAM header object](#the-fram-header-object)
-		- [Adding FRAM objects](#adding-fram-objects)
-		- [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
-	- [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
-		- [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
-		- [The command parser](#the-command-parser)
-		- [Command stream methods for use by functions](#command-stream-methods-for-use-by-functions)
-		- [Synchronous Command Functions](#synchronous-command-functions)
-		- [Asynchronous Command Functions](#asynchronous-command-functions)
-	- [Clock Management and Calibration](#clock-management-and-calibration)
-	- [Si1133 driver](#si1133-driver)
-	- [`cTimer` Timer object](#ctimer-timer-object)
-		- [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
-		- [cTimer begin() and end()](#ctimer-begin-and-end)
-		- [Checking for `cTimer` events](#checking-for-ctimer-events)
-		- [`cTimer` Utility routines](#ctimer-utility-routines)
-	- [`Catena_functional.h`](#catena_functionalh)
+    - [Namespace `McciCatena`](#namespace-mccicatena)
+    - [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
+    - [Board-specific Classes](#board-specific-classes)
+    - [Class derivation](#class-derivation)
+        - [STM32 Classes](#stm32-classes)
+        - [SAMD Classes](#samd-classes)
+    - [Platform Management](#platform-management)
+        - [Platform GUIDs](#platform-guids)
+        - [GUIDs for the Catena 461x family](#guids-for-the-catena-461x-family)
+            - [Catena 4610](#catena-4610)
+            - [Catena 4611](#catena-4611)
+            - [Catena 4612](#catena-4612)
+            - [Catena 4617](#catena-4617)
+            - [Catena 4618](#catena-4618)
+            - [Catena 4630](#catena-4630)
+        - [GUIDs for the Catena 4450/4460/4470 family](#guids-for-the-catena-445044604470-family)
+            - [Catena 4450](#catena-4450)
+            - [Catena 4460](#catena-4460)
+            - [Catena 4470](#catena-4470)
+        - [GUIDs for the Catena 4801 family](#guids-for-the-catena-4801-family)
+        - [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
+    - [Polling Framework](#polling-framework)
+        - [Making a class pollable](#making-a-class-pollable)
+        - [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
+    - [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
+        - [Getting ready](#getting-ready)
+        - [Defining the state `enum class`](#defining-the-state-enum-class)
+        - [Identify the parent class](#identify-the-parent-class)
+        - [Add the state type to the parent class](#add-the-state-type-to-the-parent-class)
+        - [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
+        - [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
+        - [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
+        - [Implement the FSM initialization](#implement-the-fsm-initialization)
+    - [The general time/date class `McciCatena::cDate`](#the-general-timedate-class-mccicatenacdate)
+        - [Interval Seconds](#interval-seconds)
+        - [`cDate` calendar types](#cdate-calendar-types)
+        - [`cDate` properties](#cdate-properties)
+        - [`cDate` methods](#cdate-methods)
+        - [Timekeeping, solar days, leap seconds](#timekeeping-solar-days-leap-seconds)
+    - [LoRaWAN Support](#lorawan-support)
+        - [Sending an uplink message](#sending-an-uplink-message)
+        - [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
+        - [LoRaWAN Class Structure](#lorawan-class-structure)
+    - [FRAM Storage Management](#fram-storage-management)
+        - [FRAM Storage Formats](#fram-storage-formats)
+            - [Object Storage Structure](#object-storage-structure)
+            - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
+            - [The FRAM header object](#the-fram-header-object)
+        - [Adding FRAM objects](#adding-fram-objects)
+        - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
+    - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
+        - [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
+        - [The command parser](#the-command-parser)
+        - [Command stream methods for use by functions](#command-stream-methods-for-use-by-functions)
+        - [Synchronous Command Functions](#synchronous-command-functions)
+        - [Asynchronous Command Functions](#asynchronous-command-functions)
+    - [Clock Management and Calibration](#clock-management-and-calibration)
+    - [Si1133 driver](#si1133-driver)
+    - [`cTimer` Timer object](#ctimer-timer-object)
+        - [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
+        - [cTimer begin() and end()](#ctimer-begin-and-end)
+        - [Checking for `cTimer` events](#checking-for-ctimer-events)
+        - [`cTimer` Utility routines](#ctimer-utility-routines)
+    - [`Catena_functional.h`](#catena_functionalh)
 - [Command Summary](#command-summary)
-	- [Standard commands](#standard-commands)
-	- [STM32L0 commands](#stm32l0-commands)
-	- [FRAM commands](#fram-commands)
-	- [LoRaWAN commands](#lorawan-commands)
-		- [LoRaWAN Parameters](#lorawan-parameters)
+    - [Standard commands](#standard-commands)
+    - [STM32L0 commands](#stm32l0-commands)
+    - [FRAM commands](#fram-commands)
+    - [LoRaWAN commands](#lorawan-commands)
+        - [LoRaWAN Parameters](#lorawan-parameters)
 - [Adding your own commands](#adding-your-own-commands)
 - [Example sketches](#example-sketches)
-	- [`catena_hello`](#catena_hello)
-	- [`catena_hello_lora`](#catena_hello_lora)
-	- [`catena_usercommand`](#catena_usercommand)
-	- [`catena_fsm`](#catena_fsm)
+    - [`catena_hello`](#catena_hello)
+    - [`catena_hello_lora`](#catena_hello_lora)
+    - [`catena_usercommand`](#catena_usercommand)
+    - [`catena_fsm`](#catena_fsm)
 - [Board Support Dependencies](#board-support-dependencies)
 - [Other Libraries and Versions Required](#other-libraries-and-versions-required)
 - [Library Release History](#library-release-history)
 - [Meta](#meta)
-	- [License](#license)
-	- [Support Open Source Hardware and Software](#support-open-source-hardware-and-software)
-	- [Trademarks](#trademarks)
+    - [License](#license)
+    - [Support Open Source Hardware and Software](#support-open-source-hardware-and-software)
+    - [Trademarks](#trademarks)
 
 <!-- /TOC -->
 <!-- markdownlint-restore -->
@@ -668,6 +674,117 @@ void Turnstile::begin() {
   // remaining init code...
 }
 ```
+
+### The general time/date class `McciCatena::cDate`
+
+When logging data, we frequently need to keep time on a scale that is correlated with other devices. Although the Arduino environment provides interval times based on the `seconds()`, `millis()` and `micros()` APIs, there's no built-in concept of calendar time. The `cDate` class provides calendar time objects and the ability to perform conversions between calendar time and interval time. The `cDate` object is also an important component for clock drivers.
+
+```c++
+#include <Catena_Date.h>
+
+// allocate a date object, initially invalid
+McciCatena::cDate myDate;
+```
+
+#### Interval Seconds
+
+It's common to compare intervals and transmit timestamps using a simple up-counter. Traditional Posix systems count seconds since 1970-01-01 00:00:00Z; GPS systems count seconds since 1980-01-06 00:00:00Z. These base times are commonly called "epochs". Times can be (theoretically) in the past (negative) or future (positive) relative to the epoch. For a variety of reasons, we call times based on the Posix epoch "Common times"; we call times based on the GPS epoch "GPS times". The types `CommonTime_t` and `GpsTime_t` are used to record times in common and GPS times.  Both are of type `std::int64_t`. Both have a range of designated values that are valid; this range is chosen to allow any valid `CommonTime_t` to be converted to `GpsTime_t` and vice versa.
+
+```c++
+constexpr cDate::CommonTime_t cDate::kCommonTimeInvalid;
+constexpr cDate::CommonTime_t cDate::kGpsTimeInvalid;
+
+constexpr bool cDate::isCommonTimeValid(CommonTime_t);
+constexpr bool cDate::isGpsTimeValid(GpsTime_t);
+
+constexpr cDate::CommonTime_t cDate::getCommonTime(GpsTime_t);
+constexpr cDate::GpsTime_t cDate::getGpsTime(CommonTime_t);
+```
+
+Many numerical values of `std::int64_t` are not valid times. The library uses `kCommonInvalidTime` and `kGpsInvalidTime` when it needs to create an invalid time, but it (and clients of the library) should use `isCommonTimeValid()` or `isGpsTimeValid()` to check whether a given time is in fact valid.
+
+`getCommonTime()` and `getGpsTime()` convert valid times between the two systems, handling invalid cases.
+
+#### `cDate` calendar types
+
+The types `cDate::Year_t`, `cDate::Month_t`, `cDate::Day_t`, `cDate::Hour_t`, `cDate::Minute_t`, `cDate::Second_t` are used to represent years (from 0 to 65535), months (from 1 to 12), days (from 1 to 28, 29, 30, or 31, depending on the month and year), hours (0 to 23), minutes (0 to 59), and seconds (0 to 59). The year zero corresponds to ISO-8601 year zero. We use, technically speaking, a [proleptic Gregorian calendar](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) with [astronomical year numbering](https://en.wikipedia.org/wiki/Astronomical_year_numbering) (i.e., year zero).
+
+#### `cDate` properties
+
+```c++
+bool cDate::isValid() const;
+```
+
+This function returns `true` if the entries in the `cDate` object are valid, `false` otherwise.
+
+```c++
+cDate::Year_t cDate::year() const;
+cDate::Monty_t cDate::month() const;
+cDate::Day_t cDate::day() const;
+cDate::Hour_t cDate::hour() const;
+cDate::Minute_t cDate::minute() const;
+cDate::Second_t cDate::second() const;
+```
+
+These functions return the various fields of the date.
+
+```c++
+cDate::CommonTime_t cDate::getCommonTime() const;
+cDate::GpsTime_t cDate::getGpsTime() const;
+```
+
+These functions return the `CommonTime_t` or `GpsTime_t` equivalent of the date object.
+
+#### `cDate` methods
+
+```c++
+bool cDate::setDate(Year_t y, Month_t m, Day_t d);
+```
+
+Set the date portion of the `cDate` instance (only if a valid date is passed). Return `true` if and only if the date was updated.
+
+```c++
+bool cDate::setTime(Hour_t h, Minute_t m, Second_t s);
+```
+
+Set the time portion of the `cDate` instance (only if a valid time is passed). Return `true` if and only if the time was updated. Time is set in zone `UTC+0`.
+
+```c++
+bool cDate::setCommonTime(CommonTime_t commonTime);
+bool cDate::setGpsTime(GpsTime_t gpsTime);
+```
+
+Set the date and time of the `cDate` instance from the common or GPS time stamp. Returns `false` if the incoming timestamp is invalid, or if the specified time is out of range.
+
+#### Timekeeping, solar days, leap seconds
+
+This section is provided for background, and can be skipped if you're not interested in the theory behind the implementation.
+
+Timekeeping is a thorny topic for scientific investigations, because one day is not exactly 86,400 seconds long. Obviously, the difference between two instants, measured in seconds, is independent of calendar system, but converting the time of each instant into ISO date and time is **not** independent of the calendar. Worse is that computing systems (e.g. POSIX-based systems) focus more on easy, deterministic conversion from a time serial number to UTC time, and so assume that there are exactly 86400 seconds/day. In UTC time, the solar calendar date is paramount; leap-seconds are inserted or deleted as needed to keep UTC mean solar noon aligned with astronomical mean solar noon.
+
+In effect, the computer observes a sequence of seconds. We need to correlate them to calendar time, and we need to interpret know the interval between instances. Let's call the sequence of seconds _interval time_, as opposed to _calendar time_.
+
+Let's also define an important property of sequences of seconds -- "interval-preserving" sequences are those in which, if T1 and T2 are interval second numbers, (T2 - T1) is equal to the number of ITU seconds between the times T1 and T2.
+
+Real-time calendar clocks typically measure intervals using a mixed-radix system (year/month/day hour:minute:second). This looks much like UTC calendar time, but in fact doesn't include leap seconds, and is a pure interval counter (with inconvenient arithmetic).
+
+There are (at least) three ways of relating interval time to calendar time.
+
+1. Keep interval time interval-preserving, and convert to calendar time as if days were exactly 86,400 seconds long. (GPS is such a time scale.) Differences between instants (in seconds) are in ITU seconds.
+2. Keep interval time interval-preserving, but convert to calendar time accounting for leap seconds (most days are 86,400 seconds long, but some days are 86,399 seconds long, others are 86,401 seconds long). (UTC is such a time scale.) Differences between instants (in seconds) are in ITU seconds.
+3. Make interval time _not_ interval-preserving by considering leap seconds. A day with 86,401 ITU seconds will have two seconds numbered 86,399; a day with 86,399 ITU seconds will not have a second numbered 86,399. Convert to date/time as if days were exactly 86,400 seconds long. The difference between two instants (in interval time) is not guaranteed to be accurate in ITU seconds. This is how POSIX time works.
+
+Steve Allen's website has a number of good discussions, including:
+
+- [Issues involved in computer time stamps and leap seconds][T1]
+- [Two kinds of Time, Two kinds of Time Scales][T2]
+
+[T1]: https://www.ucolick.org/~sla/leapsecs/picktwo.html
+[T2]: https://www.ucolick.org/~sla/leapsecs/twokindsoftime.html
+
+The onboard real-time clocks provided by various Catena platforms count intervals in "calendar" time, and are set by people (again in "calendar" time) from watches etc. that run from UTC or a derivative. We avoid the additional complication of local time zones by assuming that the user will use GMT (UTC+0, or "Zulu" time) We will assume that the user can input the time in Zulu time and that the battery-backed RTC is recording time in Zulu time.
+
+Therefore, we use a timescale that simply states that days have 86,400 seconds. In effect, we choose option 1 above. In our applications, we think that this will be good enough. If we ever start to use LoRaWAN ("GPS") time, we assume that the network will be able to send us the information needed to convert to calendar time as needed. This may add a little complication but it's future complication and we'll deal with all this if the need arises.
 
 ### LoRaWAN Support
 
