@@ -317,13 +317,11 @@ McciCatena::cStreamLineCollector::doEcho(std::uint8_t c)
 		this->write(c);
 	else if (0 <= c && c <= 0x1f)
 		{
-		this->write('^');
-		this->write(0x40 + c);
+		this->echoControl(c);
 		}
 	else if (c == 0x7F)
 		{
-		this->write('^');
-		this->write('?');
+		this->echoControl(c);
 		}
 	else
 		this->write(c);
@@ -352,14 +350,14 @@ void
 McciCatena::cStreamLineCollector::doInputCancel()
 	{
 	this->m_pInsert = this->m_pBuffer;
-	this->write('^'); this->write(0x40 + kCancel); this->write('\n');
+	this->echoControl(kCancel); this->write('\n');
 	this->realign(this->m_inputColumn);
 	}
 
 void
 McciCatena::cStreamLineCollector::doInputRetype()
 	{
-	this->write('^'); this->write(0x40 + kRetype); this->write('\n');
+	this->echoControl(kRetype); this->write('\n');
 	this->realign(this->m_inputColumn);
 	for (auto p = this->m_pBuffer; p < this->m_pInsert; ++p)
 		this->write(*p);
@@ -391,6 +389,15 @@ McciCatena::cStreamLineCollector::doInput(
 	}
 
 void
+McciCatena::cStreamLineCollector::echoControl(
+	std::uint8_t c
+	)
+	{
+	this->write('^');
+	this->write(c ^ 0x40);
+	}
+
+void
 McciCatena::cStreamLineCollector::readComplete(
 	ErrorCode uStatus
 	)
@@ -409,6 +416,18 @@ McciCatena::cStreamLineCollector::readComplete(
                         );
                 }
 	}
+
+void
+McciCatena::cStreamLineCollector::printf(
+        const char *pFmt, ...
+        )
+        {
+        std::va_list ap;
+
+        va_start(ap, pFmt);
+        (void)this->vprintf(pFmt, ap);
+        va_end(ap);
+        }
 
 void
 McciCatena::cStreamLineCollector::vprintf(const char *pFmt, std::va_list ap)

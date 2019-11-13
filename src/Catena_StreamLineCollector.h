@@ -175,6 +175,11 @@ public:
 	// write a single character
 	void write(std::uint8_t c);
 
+	// formatted print
+	void printf(const char *pFmt, ...)
+                __attribute__((__format__(__printf__, 2, 3)));
+                /* format counts start with 2 for non-static C++ member fns */
+
 	// formatted print for nested callers
         void vprintf(const char *pFmt, std::va_list ap);
 
@@ -186,6 +191,7 @@ protected:
 	void doInputDelete();
 	void doInputRetype();
 	void realign(Columnator &t);
+	void echoControl(std::uint8_t c);
 
 private:
 	// the stream we're working with
