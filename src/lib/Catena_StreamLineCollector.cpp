@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -114,9 +114,9 @@ Description:
 Returns:
 	No explicit result.
 
-	When the callback is called, the ErrorCode will be set to one of the 
+	When the callback is called, the ErrorCode will be set to one of the
 	following values:
-	
+
 		kSuccess for succes.
 		kBusy if a read was issued while a read was already pending.
 		kOverrun if the read completed with a buffer overrun.
@@ -127,7 +127,7 @@ Notes:
 
 */
 
-void 
+void
 McciCatena::cStreamLineCollector::readAsync(
 	ReadCompleteCbFn *pFn,	// the function to call on completion,
 	void *pDoneCtx,		// context to pass to the function
@@ -181,7 +181,7 @@ McciCatena::cStreamLineCollector::poll(
                 // Log.printf(Log.kAlways, "%s: stream not ready\n", FUNCTION);
 		return;
                 }
-	
+
 	// if there is no data available on the stream, give up
 	size_t const nAvail = this->m_pStream->available();
 
@@ -224,7 +224,7 @@ McciCatena::cStreamLineCollector::poll(
                 // number read
 		size_t nRead;
                 ErrorCode status;
-                
+
                 status = ErrorCode::kBusy;
 
                 for (nRead = 0; status == ErrorCode::kBusy && nRead < nRemaining; ++nRead)
@@ -236,7 +236,7 @@ McciCatena::cStreamLineCollector::poll(
                                 break;
                                 }
 
-                        // activate on cr or lf; 
+                        // activate on cr or lf;
                         // silently ignore lf immediately after cr, so cr/lf
                         // is still effectively only one line ending.
                         if (c == kCr)
@@ -282,7 +282,7 @@ McciCatena::cStreamLineCollector::inputEdit(
 		*/
 		this->doInputDelete();
 		break;
-	
+
 	case kCancel:
 		/*
 		|| "control-X" erases the current line; the character
@@ -297,14 +297,14 @@ McciCatena::cStreamLineCollector::inputEdit(
 		*/
 		this->doInputRetype();
 		break;
-	
+
 	case '\0':
 		/* just discard */
 		break;
 
 	default:
 		this->doEcho(c);
-			
+
 		this->doInput(c);
 		break;
 		}
@@ -402,9 +402,9 @@ McciCatena::cStreamLineCollector::readComplete(
                 this->m_pReadCompleteCbFn = nullptr;
 
                 (*pDoneFn)(
-                        this->m_pReadCompleteCbCtx, 
-                        uStatus, 
-                        this->m_pBuffer, 
+                        this->m_pReadCompleteCbCtx,
+                        uStatus,
+                        this->m_pBuffer,
                         this->m_pInsert - this->m_pBuffer
                         );
                 }
@@ -511,7 +511,7 @@ McciCatena::cStreamLineCollector::Columnator::adjustColumn(std::uint8_t c, bool 
 			this->m_state = EncodingState::CSI2;
 			return;
 			}
-		
+
 		if (0x40 <= c && c <= 0x7E)
 			{
 			this->m_state = EncodingState::Normal;

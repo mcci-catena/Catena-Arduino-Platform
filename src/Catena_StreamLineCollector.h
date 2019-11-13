@@ -13,9 +13,9 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	See accompanying license file.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -59,7 +59,7 @@ protected:
 	class Columnator
 		{
 	private:
-		enum class EncodingState : std::uint8_t	
+		enum class EncodingState : std::uint8_t
 			{
 			Normal,
 			Esc1,
@@ -90,7 +90,7 @@ protected:
 			if (fTransparent)
 				{
 				this->m_state = EncodingState::Transparent;
-				} 
+				}
 			else
 				{
 				this->reset();
@@ -147,16 +147,16 @@ public:
 
 	// the callback function:
 	typedef void (ReadCompleteCbFn)(
-				void* pCtx, 
-				ErrorCode uStatus, 
+				void* pCtx,
+				ErrorCode uStatus,
 				uint8_t *pBuffer,
 				size_t nBuffer
 				);
-	
+
 public:
 	// the poll method (makes this pollable)
 	virtual void poll(void) override;
-	
+
 	// the setup function. The enabler function is used for streams like
 	// USB Serial, which hang if you talk to them when they're not plugged
 	// in...
@@ -189,7 +189,7 @@ private:
 	Stream			*m_pStream = nullptr;
         bool                    m_fLastWasCr = false;
 	cStreamReady		*m_pStreamReady = nullptr;
-	
+
 	// the callback function
 	ReadCompleteCbFn	*m_pReadCompleteCbFn = nullptr;
 	// context for callback.
