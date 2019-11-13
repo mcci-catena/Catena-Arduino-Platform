@@ -1,5 +1,3 @@
-/* Catena_StreamLineCollector.h	Sat Mar 18 2017 15:15:53 tmm */
-
 /*
 
 Module:  Catena_StreamLineCollector.h
@@ -7,11 +5,8 @@ Module:  Catena_StreamLineCollector.h
 Function:
 	McciCatena::cStreamLineCollector
 
-Version:
-	V0.5.0	Sat Mar 18 2017 15:15:53 tmm	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2017 by
+	This file copyright (C) 2017, 2019 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -19,15 +14,10 @@ Copyright notice:
 
 	An unpublished work.  All rights reserved.
 	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+	See accompanying license file.
  
 Author:
 	Terry Moore, MCCI Corporation	March 2017
-
-Revision history:
-   0.5.0  Sat Mar 18 2017 15:15:53  tmm
-	Module created.
 
 */
 
@@ -46,6 +36,7 @@ Revision history:
 #endif
 
 #include <cstdarg>
+#include <Catena_limits.h>
 
 // now, back to reality
 #include "Stream.h"
@@ -61,6 +52,57 @@ namespace McciCatena {
 class cStreamLineCollector : public cPollableObject
 	{
 public:
+	using ColumnNumber_t = std::uint8_t;
+	static constexpr ColumnNumber_t kColumnMax = cNumericLimits<ColumnNumber_t>::numeric_limits_max();
+
+protected:
+	class Columnator
+		{
+	private:
+		enum class EncodingState : std::uint8_t	
+			{
+			Normal,
+			Esc1,
+			EscOsc,
+			CSI1,
+			CSI2,
+			UTF8,
+			Transparent,
+			};
+
+	public:
+		Columnator()
+			: m_column(0)
+			, m_state(EncodingState::Normal)
+			{}
+
+		ColumnNumber_t adjust(const char *pString);
+		void adjustColumn(std::uint8_t c, bool fEchoMode);
+		void reset(ColumnNumber_t col = 0)
+			{
+			this->m_column = col;
+			this->m_state = EncodingState::Normal;
+			}
+		ColumnNumber_t getColumn() const
+			{ return this->m_column; }
+		void setTransarent(bool fTransparent)
+			{
+			if (fTransparent)
+				{
+				this->m_state = EncodingState::Transparent;
+				} 
+			else
+				{
+				this->reset();
+				}
+			}
+
+	private:
+		ColumnNumber_t m_column;
+		EncodingState m_state;
+		};
+
+public:
 	cStreamLineCollector() {};
 	virtual ~cStreamLineCollector() {};
 
@@ -70,13 +112,22 @@ public:
 	cStreamLineCollector(const cStreamLineCollector&&) = delete;
 	cStreamLineCollector& operator=(const cStreamLineCollector&&) = delete;
 
-	enum : uint8_t
+	enum EditChars: std::uint8_t
 		{
 		kEol = '\n',
-                kCr = '\r'
+                kCr = '\r',
+		kLf = '\n',
+		kRetype = 'R' & 0x1f,	/* ^R: retype */
+		kTab = '\t',
+		kSp = ' ',
+		kBackspace = 'H' & 0x1f,
+		kDel = 0x7F,
+		kEsc = '\e',
+		kCancel = 'U' & 0x1f,	/* ^U: cancel */
+		kCaret = '^',
 		};
 
-	enum ErrorCode : uint32_t
+	enum ErrorCode: std::uint32_t
 		{
 		kSuccess = 0,
 		kOverrun = 1,
@@ -121,7 +172,17 @@ public:
 		size_t nBuffer		// the buffer size
 		);
 
+	void putc(std::uint8_t c);
         void vprintf(const char *pFmt, std::va_list ap);
+
+protected:
+	void inputEdit(std::uint8_t c);
+	void doEcho(std::uint8_t c);
+	void doInput(std::uint8_t c);
+	void doInputCancel();
+	void doInputDelete();
+	void doInputRetype();
+	void realign(Columnator &t);
 
 private:
 	// the stream we're working with
@@ -147,7 +208,10 @@ private:
 		{
 		return this->m_pReadCompleteCbFn != nullptr;
 		}
+	Columnator		m_inputColumn;
+	Columnator		m_outputColumn;
 	};
+
 
 }; // namespace McciCatena
 

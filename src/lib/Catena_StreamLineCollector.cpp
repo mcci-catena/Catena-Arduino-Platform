@@ -156,6 +156,7 @@ McciCatena::cStreamLineCollector::readAsync(
 	this->m_pBuffer = pBuffer;
 	this->m_nBuffer = nBuffer;
 	this->m_pInsert = pBuffer;
+	this->m_inputColumn.reset(this->m_outputColumn.getColumn());
 	}
 
 void
@@ -206,8 +207,9 @@ McciCatena::cStreamLineCollector::poll(
 			if (c < 0)
 				break;
 
-			if (c == kEol)
+			if (c == kEol || c == kCr)
 				{
+				this->m_fLastWasCr = (c == kCr);
 				this->readComplete(ErrorCode::kOverrun);
 				break;
 				}
@@ -234,34 +236,158 @@ McciCatena::cStreamLineCollector::poll(
                                 break;
                                 }
 
-                        *this->m_pInsert++ = (uint8_t) c;
-
                         // activate on cr or lf; 
-                        // silently ignore empty lines, so cr/lf
+                        // silently ignore lf immediately after cr, so cr/lf
                         // is still effectively only one line ending.
                         if (c == kCr)
                                 {
-                                this->m_pInsert[-1] = '\n';
+				this->inputEdit(kEol);
                                 this->m_fLastWasCr = true;
                                 status = ErrorCode::kSuccess;
                                 }
                         else if (c == kEol)
                                 {
-                                if (this->m_fLastWasCr)
-                                        --this->m_pInsert;
-                                else
+                                if (! this->m_fLastWasCr)
+					{
+					this->inputEdit(c);
                                         status = ErrorCode::kSuccess;
+					}
 
                                 this->m_fLastWasCr = false;
                                 }
                         else
+				{
+				this->inputEdit(c);
                                 this->m_fLastWasCr = false;
+				}
                         }
 
                 // exited loop; complete if possible.
                 if (status != ErrorCode::kBusy)
 			this->readComplete(status);
 		}
+	}
+
+void
+McciCatena::cStreamLineCollector::inputEdit(
+	std::uint8_t c
+	)
+	{
+	switch (c)
+		{
+	case kBackspace:
+	case kDel:
+		/*
+		|| "backspace" erases the current character
+		*/
+		this->doInputDelete();
+		break;
+	
+	case kCancel:
+		/*
+		|| "control-X" erases the current line; the character
+		|| is discarded.
+		*/
+		this->doInputCancel();
+		break;
+
+	case kRetype:
+		/*
+		|| "control-R" retypes the current line.
+		*/
+		this->doInputRetype();
+		break;
+	
+	case '\0':
+		/* just discard */
+		break;
+
+	default:
+		this->doEcho(c);
+			
+		this->doInput(c);
+		break;
+		}
+	}
+
+void
+McciCatena::cStreamLineCollector::doEcho(std::uint8_t c)
+	{
+	if (c == kCr || c == kLf || c == kTab)
+		this->putc(c);
+	else if (0 <= c && c <= 0x1f)
+		{
+		this->putc('^');
+		this->putc(0x40 + c);
+		}
+	else if (c == 0x7F)
+		{
+		this->putc('^');
+		this->putc('?');
+		}
+	else
+		this->putc(c);
+	}
+
+void
+McciCatena::cStreamLineCollector::doInputDelete()
+	{
+	if (this->m_pInsert > this->m_pBuffer)
+		{
+		Columnator t = this->m_inputColumn;
+
+		--this->m_pInsert;
+
+		// adjust the column.
+		for (auto p = this->m_pBuffer; p < this->m_pInsert; ++p)
+			{
+			t.adjustColumn(p[0], true);
+			}
+
+		this->realign(t);
+		}
+	}
+
+void
+McciCatena::cStreamLineCollector::doInputCancel()
+	{
+	this->m_pInsert = this->m_pBuffer;
+	this->putc('^'); this->putc(0x40 + kCancel); this->putc('\n');
+	this->realign(this->m_inputColumn);
+	}
+
+void
+McciCatena::cStreamLineCollector::doInputRetype()
+	{
+	this->putc('^'); this->putc(0x40 + kRetype); this->putc('\n');
+	this->realign(this->m_inputColumn);
+	for (auto p = this->m_pBuffer; p < this->m_pInsert; ++p)
+		this->putc(*p);
+	}
+
+void
+McciCatena::cStreamLineCollector::realign(
+	cStreamLineCollector::Columnator &t
+	)
+	{
+	while (t.getColumn() < this->m_outputColumn.getColumn())
+		{
+		this->putc(kBackspace);
+		this->putc(' ');
+		this->putc(kBackspace);
+		}
+	while (t.getColumn() > this->m_outputColumn.getColumn())
+		{
+		this->putc(' ');
+		}
+	}
+
+void
+McciCatena::cStreamLineCollector::doInput(
+	std::uint8_t c
+	)
+	{
+	*this->m_pInsert++ = c;
 	}
 
 void
@@ -298,5 +424,164 @@ McciCatena::cStreamLineCollector::vprintf(const char *pFmt, std::va_list ap)
 
         vsnprintf(buf, sizeof(buf) - 1, pFmt, ap);
         buf[sizeof(buf) - 1] = '\0';
-        this->m_pStream->print(buf);
+	//this->m_outputColumn.adjust(buf);
+	for (auto p = buf; ; ++p)
+		{
+		const std::uint8_t c = std::uint8_t(*p);
+		if (c == '\0')
+			break;
+
+		this->putc(c);
+		}
         }
+
+void
+McciCatena::cStreamLineCollector::putc(std::uint8_t c)
+	{
+	if (c == kLf && this->m_outputColumn.getColumn() != 0)
+		this->putc(kCr);
+
+	// do tabs by adjusting column and aligning. This
+	// has nicer boundary conditions.
+	if (c == kTab)
+		{
+		auto t = this->m_outputColumn;
+		t.adjustColumn(c, false);
+		this->realign(t);
+		return;
+		}
+
+	// normal path
+	this->m_outputColumn.adjustColumn(c, false);
+	this->m_pStream->print(char(c));
+	}
+
+McciCatena::cStreamLineCollector::ColumnNumber_t
+McciCatena::cStreamLineCollector::Columnator::adjust(const char *pString)
+	{
+	for (;;)
+		{
+		const std::uint8_t c = std::uint8_t(*pString++);
+
+		if (c == '\0')
+			return this->getColumn();
+
+		this->adjustColumn(c, false);
+		}
+	}
+
+
+void
+McciCatena::cStreamLineCollector::Columnator::adjustColumn(std::uint8_t c, bool fInputMode)
+	{
+	switch (this->m_state)
+		{
+	case EncodingState::Transparent:
+		break;
+
+	case EncodingState::Esc1:
+		if (c == '[')
+			{
+			this->m_state = EncodingState::CSI1;
+			return;
+			}
+		else if (c == ']')
+			{
+			this->m_state = EncodingState::EscOsc;
+			return;
+			}
+		// in all other cases, consume the next charater and return,.
+		this->m_state = EncodingState::Normal;
+		return;
+
+	case EncodingState::EscOsc:
+		if (0x20 <= c && c <= 0x7e)
+			return;
+		this->m_state = EncodingState::Normal;
+		goto normal;
+
+	case EncodingState::CSI1:
+		if (0x30 <= c && c <= 0x3F)
+			// parameter byte.
+			return;
+
+	case EncodingState::CSI2:
+		if (0x20 <= c && c <= 0x2F)
+			{
+			this->m_state = EncodingState::CSI2;
+			return;
+			}
+		
+		if (0x40 <= c && c <= 0x7E)
+			{
+			this->m_state = EncodingState::Normal;
+			return;
+			}
+		this->m_state = EncodingState::Normal;
+		goto normal;
+
+	case EncodingState::UTF8:
+		if (0xC0 <= c & c <= 0xFF)
+			return;
+		this->m_state = EncodingState::Normal;
+		goto normal;
+
+	default:
+	case EncodingState::Normal:
+	normal:
+		if ((0x20 <= c && c <= 0x7E) || (0x80 <= c && c < 0xC0))
+			{
+			if (this->m_column < kColumnMax)
+				++this->m_column;
+			break;
+			}
+		else if (0xC0 <= c && c <= 0xFF)
+			{
+			this->m_state = EncodingState::UTF8;
+			break;
+			}
+
+		// non-simple characters
+		switch (c)
+			{
+		case kCr:
+			this->m_column = 0;
+			break;
+		case kLf:
+			this->m_column = 0;
+			break;
+		case kBackspace:
+			if (this->m_column > 0)
+				--this->m_column;
+			break;
+		case kTab:
+			{
+			ColumnNumber_t delta = 8 - (this->m_column & 7);
+			if (this->m_column > kColumnMax - delta)
+				this->m_column = kColumnMax;
+			else
+				this->m_column += delta;
+			}
+			break;
+		case kEsc:
+			if (! fInputMode)
+				this->m_state = EncodingState::Esc1;
+			break;
+
+		default:
+			// in input mode, this will be ^<something> (2 ch)
+			// in normal mode, leave column number unchanged.
+			if (fInputMode)
+				{
+				constexpr ColumnNumber_t nThresh = kColumnMax - 2;
+
+				if (this->m_column <= nThresh)
+					this->m_column += 2;
+				else
+					this->m_column = kColumnMax;
+				}
+			break;
+			}
+		break;
+		}
+	}
