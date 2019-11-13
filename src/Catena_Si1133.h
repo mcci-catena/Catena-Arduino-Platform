@@ -36,6 +36,7 @@ Revision history:
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <cstdint>
 
 /* TODO: change these to enums and constepxrs in the McciCatena namespace */
 
