@@ -172,7 +172,10 @@ public:
 		size_t nBuffer		// the buffer size
 		);
 
-	void putc(std::uint8_t c);
+	// write a single character
+	void write(std::uint8_t c);
+
+	// formatted print for nested callers
         void vprintf(const char *pFmt, std::va_list ap);
 
 protected:

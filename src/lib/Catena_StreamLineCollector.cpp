@@ -314,19 +314,19 @@ void
 McciCatena::cStreamLineCollector::doEcho(std::uint8_t c)
 	{
 	if (c == kCr || c == kLf || c == kTab)
-		this->putc(c);
+		this->write(c);
 	else if (0 <= c && c <= 0x1f)
 		{
-		this->putc('^');
-		this->putc(0x40 + c);
+		this->write('^');
+		this->write(0x40 + c);
 		}
 	else if (c == 0x7F)
 		{
-		this->putc('^');
-		this->putc('?');
+		this->write('^');
+		this->write('?');
 		}
 	else
-		this->putc(c);
+		this->write(c);
 	}
 
 void
@@ -352,17 +352,17 @@ void
 McciCatena::cStreamLineCollector::doInputCancel()
 	{
 	this->m_pInsert = this->m_pBuffer;
-	this->putc('^'); this->putc(0x40 + kCancel); this->putc('\n');
+	this->write('^'); this->write(0x40 + kCancel); this->write('\n');
 	this->realign(this->m_inputColumn);
 	}
 
 void
 McciCatena::cStreamLineCollector::doInputRetype()
 	{
-	this->putc('^'); this->putc(0x40 + kRetype); this->putc('\n');
+	this->write('^'); this->write(0x40 + kRetype); this->write('\n');
 	this->realign(this->m_inputColumn);
 	for (auto p = this->m_pBuffer; p < this->m_pInsert; ++p)
-		this->putc(*p);
+		this->write(*p);
 	}
 
 void
@@ -372,13 +372,13 @@ McciCatena::cStreamLineCollector::realign(
 	{
 	while (t.getColumn() < this->m_outputColumn.getColumn())
 		{
-		this->putc(kBackspace);
-		this->putc(' ');
-		this->putc(kBackspace);
+		this->write(kBackspace);
+		this->write(' ');
+		this->write(kBackspace);
 		}
 	while (t.getColumn() > this->m_outputColumn.getColumn())
 		{
-		this->putc(' ');
+		this->write(' ');
 		}
 	}
 
@@ -431,15 +431,15 @@ McciCatena::cStreamLineCollector::vprintf(const char *pFmt, std::va_list ap)
 		if (c == '\0')
 			break;
 
-		this->putc(c);
+		this->write(c);
 		}
         }
 
 void
-McciCatena::cStreamLineCollector::putc(std::uint8_t c)
+McciCatena::cStreamLineCollector::write(std::uint8_t c)
 	{
 	if (c == kLf && this->m_outputColumn.getColumn() != 0)
-		this->putc(kCr);
+		this->write(kCr);
 
 	// do tabs by adjusting column and aligning. This
 	// has nicer boundary conditions.
@@ -469,7 +469,6 @@ McciCatena::cStreamLineCollector::Columnator::adjust(const char *pString)
 		this->adjustColumn(c, false);
 		}
 	}
-
 
 void
 McciCatena::cStreamLineCollector::Columnator::adjustColumn(std::uint8_t c, bool fInputMode)
