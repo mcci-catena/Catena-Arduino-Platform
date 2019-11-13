@@ -36,6 +36,7 @@ Revision history:
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <cstdint>
 
 /* TODO: change these to enums and constepxrs in the McciCatena namespace */
 
@@ -163,8 +164,12 @@ namespace McciCatena {
 
 class Catena_Si1133
 	{
+private:
+	static constexpr uint32_t kPollDelayMs = 5;
+	static constexpr uint32_t kStartDelayMs = 200;
+
 public:
-        Catena_Si1133(void);
+	Catena_Si1133(void);
 
 	// neither copyable nor movable
 	Catena_Si1133(const Catena_Si1133&) = delete;
@@ -198,9 +203,12 @@ public:
 private:
 	uint8_t m_DeviceAddress;
 	uint8_t	m_ChannelEnabled;
+	uint8_t m_ChannelCompleted;
 	uint8_t	m_ChannelDataReg[SI1133_NUM_CHANNEL];
-	boolean	m_Initialized;
-	boolean	m_fOneTime;
+	bool	m_Initialized;
+	bool	m_fOneTime;
+	std::uint32_t m_StartTime;
+	std::uint32_t m_LastPollTime;
 	TwoWire *m_pWire;
 	uint8_t	getResponse(void);
 	uint8_t	waitResponse(uint8_t uResponse);

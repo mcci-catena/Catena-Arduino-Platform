@@ -248,12 +248,24 @@ boolean Catena_Si1133::start(boolean fOneTime)
 
 	this->writeParam(SI1133_PARAM_CHAN_LIST, this->m_ChannelEnabled);
 	if (fOneTime)
+		{
+		// read and discard any interrupts
+		(void) this->readReg(SI1133_REG_IRQ_STATUS);
+		// no channels completed
+		this->m_ChannelCompleted = 0;
+		// interupts enabled from those channels
 		this->writeReg(SI1133_REG_IRQ_ENABLE, this->m_ChannelEnabled);
+		// do a forced acquisition
+		this->writeReg(SI1133_REG_COMMAND, SI1133_CMD_FORCE);
+		}
+	else
+		{
+		// start asynchronous operation.
+		this->writeReg(
+			SI1133_REG_COMMAND, SI1133_CMD_START
+			);
+		}
 
-	this->writeReg(
-		SI1133_REG_COMMAND,
-		fOneTime ? SI1133_CMD_FORCE : SI1133_CMD_START
-		);
 	uResponse = this->readReg(SI1133_REG_RESPONSE0);
 	if (uResponse & SI1133_RSP_CMD_ERR)
 		{
@@ -266,6 +278,7 @@ boolean Catena_Si1133::start(boolean fOneTime)
 		return false;
 		}
 
+	this->m_StartTime = this->m_LastPollTime = millis();
 	this->m_fOneTime = fOneTime;
         return true;
 	}
@@ -345,7 +358,20 @@ void Catena_Si1133::readMultiChannelData(uint16_t *pChannelData, uint32_t nChann
 bool Catena_Si1133::isOneTimeReady()
 	{
 	if (this->m_fOneTime)
-		return (this->readReg(SI1133_REG_IRQ_STATUS) & this->m_ChannelEnabled) == this->m_ChannelEnabled;
+		{
+		std::uint32_t now = millis();
+
+		if ((now - this->m_LastPollTime) < kPollDelayMs ||
+		    (now - this->m_StartTime) < kStartDelayMs)
+		    	{
+			// not enough time has passed
+			return false;
+			}
+
+		this->m_ChannelCompleted |= this->readReg(SI1133_REG_IRQ_STATUS);
+		this->m_LastPollTime = now;
+		return (this->m_ChannelCompleted & this->m_ChannelEnabled) == this->m_ChannelEnabled;
+		}
 	else
 		return false;
 	}
