@@ -40,12 +40,14 @@ static cCommandStream::CommandFn doSysEUI;
 \****************************************************************************/
 
 static cCommandStream::CommandFn doConfigure;
+static cCommandStream::CommandFn doEcho;
 static cCommandStream::CommandFn doReset;
 static cCommandStream::CommandFn doVersion;
 
 static const cCommandStream::cEntry sDispatchEntries[] =
 	{
 	{ "configure", doConfigure },
+	{ "echo", doEcho },
 	{ "reset", doReset },
 	{ "version", doVersion },
 	};
@@ -369,5 +371,39 @@ doVersion(
 	return cCommandStream::CommandStatus::kSuccess;
 	}
 
+static const char sOn[] = "on";
+static const char sOff[] = "off";
+
+static cCommandStream::CommandStatus
+doEcho(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
+	auto result = cCommandStream::CommandStatus::kSuccess;
+
+	if (argc > 2)
+		{
+		result = cCommandStream::CommandStatus::kInvalidParameter;
+		}
+	else if (argc <= 1)
+		{
+		pThis->printf("system echo %s\n", pThis->getEcho() ? sOn : sOff);
+		}
+	else /* argc == 2 */
+		{
+		if (strcmp(argv[1], sOn) == 0)
+			pThis->setEcho(true);
+		else if (strcmp(argv[1], sOff) == 0)
+			pThis->setEcho(false);
+		else
+			result = cCommandStream::CommandStatus::kInvalidParameter;
+		}
+
+	return result;
+	}
 
 /**** end of CatenaBase_registerCommands.cpp ****/

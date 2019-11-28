@@ -313,6 +313,10 @@ McciCatena::cStreamLineCollector::inputEdit(
 void
 McciCatena::cStreamLineCollector::doEcho(std::uint8_t c)
 	{
+	// don't echo if echo is off.
+	if (this->m_fNoEcho)
+		return;
+
 	if (c == kCr || c == kLf || c == kTab)
 		this->write(c);
 	else if (0 <= c && c <= 0x1f)
@@ -350,17 +354,17 @@ void
 McciCatena::cStreamLineCollector::doInputCancel()
 	{
 	this->m_pInsert = this->m_pBuffer;
-	this->echoControl(kCancel); this->write('\n');
+	this->echoControl(kCancel); this->doEcho('\n');
 	this->realign(this->m_inputColumn);
 	}
 
 void
 McciCatena::cStreamLineCollector::doInputRetype()
 	{
-	this->echoControl(kRetype); this->write('\n');
+	this->echoControl(kRetype); this->doEcho('\n');
 	this->realign(this->m_inputColumn);
 	for (auto p = this->m_pBuffer; p < this->m_pInsert; ++p)
-		this->write(*p);
+		this->doEcho(*p);
 	}
 
 void
@@ -368,6 +372,9 @@ McciCatena::cStreamLineCollector::realign(
 	cStreamLineCollector::Columnator &t
 	)
 	{
+	if (this->m_fNoEcho)
+		return;
+
 	while (t.getColumn() < this->m_outputColumn.getColumn())
 		{
 		this->write(kBackspace);
@@ -393,8 +400,8 @@ McciCatena::cStreamLineCollector::echoControl(
 	std::uint8_t c
 	)
 	{
-	this->write('^');
-	this->write(c ^ 0x40);
+	this->doEcho('^');
+	this->doEcho(c ^ 0x40);
 	}
 
 void

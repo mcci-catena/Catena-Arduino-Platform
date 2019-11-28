@@ -183,6 +183,18 @@ public:
 	// formatted print for nested callers
         void vprintf(const char *pFmt, std::va_list ap);
 
+	// enable or disable echo
+	void setEcho(bool fEnable)
+		{
+		this->m_fNoEcho = ! fEnable;
+		}
+
+	// get echo-enable state
+	bool getEcho() const
+		{
+		return ! this->m_fNoEcho;
+		}
+
 protected:
 	void inputEdit(std::uint8_t c);
 	void doEcho(std::uint8_t c);
@@ -197,6 +209,7 @@ private:
 	// the stream we're working with
 	Stream			*m_pStream = nullptr;
         bool                    m_fLastWasCr = false;
+	bool			m_fNoEcho = false;
 	cStreamReady		*m_pStreamReady = nullptr;
 
 	// the callback function

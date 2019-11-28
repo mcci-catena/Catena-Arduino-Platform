@@ -100,6 +100,18 @@ public:
         // complete an asynchronous command.
         void completeCommand(CommandStatus status);
 
+        // get the echo-enable state of the underlying stream.
+        bool getEcho() const
+                {
+                return this->m_pCollector->getEcho();
+                }
+
+        // set the echo-enable state of the underlying stream.
+        void setEcho(bool fEnable)
+                {
+                this->m_pCollector->setEcho(fEnable);
+                }
+
 protected:
 
 private:
