@@ -55,7 +55,7 @@ Author:
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)        \
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
-#define CATENA_ARDUINO_PLATFORM_VERSION CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 17, 0, 41)      /* v0.17.0.41 */
+#define CATENA_ARDUINO_PLATFORM_VERSION CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 17, 0, 50)      /* v0.17.0.50 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
@@ -290,6 +290,13 @@ public:
                 // if it's not possible; do nothing and return 0.
                 return 0;
                 }
+
+        // return the command processor object
+        cCommandStream *getCommandStream()
+                {
+                return &this->m_CommandStream;
+                }
+
 
 /****************************************************************************\
 |
