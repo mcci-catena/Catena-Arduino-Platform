@@ -36,6 +36,7 @@ public:
     // {b39bc7ac-3e7a-4ac8-92a3-d9535dc6a123}
     static const MCCIADK_GUID_WIRE kPageEndSignature1_Guid;
     static constexpr std::uint32_t getU32(const std::uint8_t *p) { return p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24); }
+    static constexpr std::uint16_t getU16(const std::uint8_t *p) { return p[0] | (p[1] << 8); }
     static void putU32(std::uint8_t *p, std::uint32_t v)
         {
         p[0] = std::uint8_t(v >>  0);
@@ -43,10 +44,30 @@ public:
         p[2] = std::uint8_t(v >> 16);
         p[3] = std::uint8_t(v >> 24);
         }
+    static void putU16(std::uint8_t *p, std::uint16_t v)
+        {
+        p[0] = std::uint8_t(v >>  0);
+        p[1] = std::uint8_t(v >>  8);
+        }
 
     // common layout for any descriptor.
-    struct ParamDesc_t
+    enum class ParamDescId : std::uint8_t
         {
+        Board = 1,  // this is a board descriptor.
+        };
+
+   class ParamDesc_t
+        {
+    public:
+        // default constructor
+        ParamDesc_t() {}
+        // allow user to select id, length.
+        ParamDesc_t(ParamDescId id, std::uint8_t size)
+            : uLen(size)
+            , uType(std::uint8_t(id))
+            {}
+
+    public:
         std::uint8_t    uLen;               // the length of this item
         std::uint8_t    uType;              // the type of this item
         };
@@ -75,27 +96,57 @@ public:
 
     static constexpr std::uint32_t kPageEndSignature1Address = kFlashTop + 1 - sizeof(PageEndSignature1_t);
 
-    enum class ParamDescId : std::uint8_t
+    class ParamBoard_t : public ParamDesc_t
         {
-        Board = 1,  // this is a board descriptor.
-        };
+    public:
+        ParamBoard_t()
+            : ParamDesc_t(ParamDescId::Board, sizeof(ParamBoard_t))
+            {}
+        static constexpr size_t nSerial = 8;
 
-    struct ParamBoard_t : public ParamDesc_t
-        {
-        std::uint8_t    SerialNumber[8];    // the serial number for this device
-        std::uint8_t    Model[4];           // the model ID for this device.
-        std::uint8_t    ECN[4];             // ECN info for this device.
+    private:
+        std::uint8_t    SerialNumber[nSerial]; // the serial number for this device
+        std::uint8_t    Assembly[4];        // the MCCI assembly number for this device -- normally 12300####.
+        std::uint8_t    Model[2];           // the model ID for this device.
+        std::uint8_t    ModNumber[2];       // the marketing "mod number"
+        std::uint8_t    Rev;                // the revision. 0 == a.
+        std::uint8_t    Dash;               // the dash nubmer.
 
-        std::uint32_t getModel() const  { return getU32(this->Model); }
-        std::uint32_t getECN() const    { return getU32(this->ECN); }
+    public:
+        std::uint32_t getAssembly() const   { return getU32(this->Assembly); }
+        std::uint16_t getModel() const      { return getU16(this->Model); }
+        std::uint16_t getModNumber() const  { return getU16(this->ModNumber); }
+        std::uint8_t getRev() const         { return this->Rev; }
+        char getRevChar() const             { this->getRev() + 'A'; }
+        std::uint8_t getDash() const        { return this->Dash; }
 
-        void setModel(std::uint32_t model)
+        void setAssembly(std::uint32_t assembly)
             {
-            putU32(this->Model, model);
+            putU32(this->Assembly, assembly);
             }
-        void setECN(std::uint32_t ecn)
+        void setModel(std::uint16_t model)
             {
-            putU32(this->ECN, ecn);
+            putU16(this->Model, model);
+            }
+        void setModNumber(std::uint16_t modNumber)
+            {
+            putU16(this->ModNumber, modNumber);
+            }
+        void setRev(std::uint8_t rev)
+            {
+            this->Rev = rev;
+            }
+        bool setRevChar(char c)
+            {
+            if (! (('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z')))
+                return false;
+
+            setRev((c - 'A') & 0x1F);
+            return true;
+            }
+        void setDash(std::uint8_t dash)
+            {
+            this->Dash = dash;
             }
         void getSerialNumber(std::uint8_t mySerial[8]) const
             {
@@ -106,7 +157,6 @@ public:
             std::memcpy(this->SerialNumber, mySerial, sizeof(this->SerialNumber));
             }
         };
-
     };
 
 } // namespace McciCatena
