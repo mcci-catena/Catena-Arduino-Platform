@@ -117,7 +117,7 @@ public:
         std::uint16_t getModel() const      { return getU16(this->Model); }
         std::uint16_t getModNumber() const  { return getU16(this->ModNumber); }
         std::uint8_t getRev() const         { return this->Rev; }
-        char getRevChar() const             { this->getRev() + 'A'; }
+        char getRevChar() const             { return this->getRev() + 'A'; }
         std::uint8_t getDash() const        { return this->Dash; }
 
         void setAssembly(std::uint32_t assembly)
