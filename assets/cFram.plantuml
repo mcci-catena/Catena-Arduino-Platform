@@ -46,7 +46,7 @@ class cFram2K {
  +size_t read();
  +size_t write();
  +cFramStorage::Offset getsize();
- -Adafruit_FRAM_I2C m_hw
+ -MCCI_FRAM_I2C m_hw
 }
 
 cFram <|-- cFram2K

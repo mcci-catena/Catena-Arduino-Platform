@@ -40,8 +40,8 @@ Revision history:
 # include "Catena_Fram.h"
 #endif
 
-#ifndef _ADAFRUIT_FRAM_I2C_H_
-# include <Adafruit_FRAM_I2C.h>
+#ifndef _MCCI_FRAM_I2C_H_
+# include <MCCI_FRAM_I2C.h>
 #endif
 
 /****************************************************************************\
@@ -84,7 +84,7 @@ public:
 
 protected:
 private:
-	Adafruit_FRAM_I2C	m_hw;
+	MCCI_FRAM_I2C	m_hw;
 	};
 
 }; // namespace McciCatena
