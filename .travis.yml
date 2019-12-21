@@ -19,7 +19,7 @@ sudo: true
 
 env:
  global:
-  - IDE_VERSION=1.8.9
+  - IDE_VERSION=1.8.10
  matrix:
   - TARGET=samd
   - TARGET=stm32l0
@@ -94,7 +94,7 @@ before_install:
   - arduino --pref "boardsmanager.additional.urls=$BSPMCCI" --save-prefs
 
 install:
- - _clonelib github.com mcci-catena/Adafruit_FRAM_I2C
+ - _clonelib github.com mcci-catena/MCCI_FRAM_I2C
  - _clonelib github.com mcci-catena/arduino-lmic
  - _clonelib github.com mcci-catena/arduino-lorawan
  - _clonelib github.com mcci-catena/Catena-mcciadk
