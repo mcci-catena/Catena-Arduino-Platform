@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.17.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.18.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-capture -->
@@ -1242,7 +1242,7 @@ The following commands are added by the Catena LoRawAN module.
 
 | Command | Description |
 |-------------|----------------------------------|
-| `lorawan configure` _param [ value ]_  | Display or set a LoRaWAN parameter.
+| `lorawan configure` _`param` [ `value` ]_  | Display or set a LoRaWAN parameter.
 | `lorawan join` | unjoin if joined, then start a new join session.
 
 #### LoRaWAN Parameters
@@ -1376,9 +1376,14 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Library Release History
 
-- HEAD includes the following changes.
+- v0.18.0 includes the following changes.
 
+  - [#240](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/240) Change to requiring MCCI_FRAM_I2C library.
+  - [#241](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/241) List required libraries in `library.properties`.
+  - [#238](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/238), [#236](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/237) Add flash-based mfg data (0.17.0.60).
   - [#233](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/233), [#230](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/230) Add input line editing and echo control (0.17.0.50).
+  - [#277](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/277) Slow down polling of the Si1133; accumulate interrupt reports.
+  - [#228](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/228) add `cDate` class and parser (0.17.0.30).
   - [#222](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/222) Use `Arduino_LoRaWAN_network` consistently as base for `LoRaWAN` classes. Requires Arduino_LoRaWAN 0.6.0.20 or later. (0.17.0.20)
   - [#213](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/213) Vbat voltage read is inaccurate on STM32L0 platform. (0.17.0.12)
   - [#211](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/211) `Catena_Si1133` cannot be copied or moved. (0.17.0.11)
