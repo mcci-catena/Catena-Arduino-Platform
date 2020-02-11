@@ -66,8 +66,8 @@ McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
         cFramStorage::StandardItem(kBootCount, sizeof(uint32_t), /* number */ true),
         cFramStorage::StandardItem(kOperatingFlags, sizeof(uint32_t), /* number */ true),
 
-	/* the size field should match BSEC_MAX_STATE_BLOB_SIZE, whcich is 139 */
-	cFramStorage::StandardItem(kBme680Cal, 139, /* number */ false),
+        /* the size field should match BSEC_MAX_STATE_BLOB_SIZE, which is 139 */
+        cFramStorage::StandardItem(kBme680Cal, 139, /* number */ false),
         };
 
 
