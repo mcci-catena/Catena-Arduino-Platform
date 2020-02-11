@@ -47,9 +47,13 @@ public:
                 kBootCount = 14,
                 kOperatingFlags = 15,
                 kBme680Cal = 16,
+                kAppConf = 17,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };
+
+        /* client should beware of MaxAppConfSize using the kAppConf key*/
+        const static unsigned int MaxAppConfSize = 64;
 
         class StandardItem
                 {

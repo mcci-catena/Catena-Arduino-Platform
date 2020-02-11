@@ -68,6 +68,7 @@ McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
 
         /* the size field should match BSEC_MAX_STATE_BLOB_SIZE, which is 139 */
         cFramStorage::StandardItem(kBme680Cal, 139, /* number */ false),
+        cFramStorage::StandardItem(kAppConf, cFramStorage::MaxAppConfSize, false)
         };
 
 
