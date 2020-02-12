@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.18.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.18.1...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-capture -->
@@ -1375,6 +1375,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Library Release History
+- v0.18.1 includes the following changes.
+  - [#247](https://github.com/mcci-catena/Catena-Arduino-Platform/pull/247) Add a generic application block to FRAM map
 
 - v0.18.0 includes the following changes.
 
