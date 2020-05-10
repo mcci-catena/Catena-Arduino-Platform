@@ -147,16 +147,60 @@ doConfigure(
 	)
 	{
 	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
-	uint8_t databuf[16];
+	cFram::Cursor cursor(pCatena->getFram());
+	static constexpr unsigned databuf_size = 16;
+
+	auto printValue = [](cCommandStream *pThis, cFram::Cursor &cursor, const char *pName) -> cCommandStream::CommandStatus 
+		{
+		uint8_t databuf[databuf_size];
+		if (! cursor.islocated())
+			{
+			pThis->printf("%s: not initialized\n", pName);
+			return cCommandStream::CommandStatus::kNotInitialized;
+			}
+		else
+			{
+			char strbuf[64];
+			size_t size;
+
+			size = cursor.getitemsize();
+			if (size > sizeof(databuf))
+				size = sizeof(databuf);
+
+
+			if (! cursor.get(databuf, size))
+				{
+				pThis->printf("%s: read error\n", pName);
+				return cCommandStream::CommandStatus::kReadError;
+				}
+
+			cursor.formatvalue(
+				strbuf, sizeof(strbuf), 0,
+				databuf, size
+				);
+
+			pThis->printf("%s\n", strbuf);
+			return cCommandStream::CommandStatus::kSuccess;
+			}
+		};
 
 	if (argc < 2)
 		{
 		// TODO(tmm@mcci.com) display values
-		return cCommandStream::CommandStatus::kInvalidParameter;
+		for (auto const & p : sKeyMap)
+			{
+			cursor.locate(p.uKey);
+			if (! cursor.isbound())
+				continue;
+
+			pThis->printf("lorawan %s %s ", argv[0], p.pName);
+			(void) printValue(pThis, cursor, p.pName);
+			}
+
+		return cCommandStream::CommandStatus::kSuccess;
 		}
 
 	const char * const pName = argv[1];
-	cFram::Cursor cursor(pCatena->getFram());
 
 	for (auto const & p : sKeyMap)
 		{
@@ -177,42 +221,20 @@ doConfigure(
 		return cCommandStream::CommandStatus::kInvalidParameter;
 		}
 
-	size_t size;
-
-	size = cursor.getitemsize();
-	if (size > sizeof(databuf))
-		size = sizeof(databuf);
-
 	// display
 	if (argc <= 2)
 		{
-		if (! cursor.islocated())
-			{
-			pThis->printf("%s: not initialized\n", pName);
-			return cCommandStream::CommandStatus::kNotInitialized;
-			}
-		else
-			{
-			char strbuf[64];
-
-			if (! cursor.get(databuf, size))
-				{
-				pThis->printf("%s: read error\n", pName);
-				return cCommandStream::CommandStatus::kReadError;
-				}
-
-			cursor.formatvalue(
-				strbuf, sizeof(strbuf), 0,
-				databuf, size
-				);
-
-			pThis->printf("%s\n", strbuf);
-			return cCommandStream::CommandStatus::kSuccess;
-			}
+		return printValue(pThis, cursor, pName);
 		}
 	else
 		{
 		const char * const pValue = argv[2];
+		uint8_t databuf[databuf_size];
+		size_t size;
+
+		size = cursor.getitemsize();
+		if (size > sizeof(databuf))
+			size = sizeof(databuf);
 
 		// parse the argument according to the cursor (which
 		// specifies what will receive it
