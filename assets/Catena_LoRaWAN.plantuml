@@ -35,14 +35,37 @@ abstract class Arduino_LoRaWAN_ttn_base as ".._ttn_base"
 
 class Arduino_LoRaWAN_ttn_eu868 as ".._ttn_eu868"
 class Arduino_LoRaWAN_ttn_us915 as ".._ttn_us915"
-class Arduino_LoRaWAN_ttn_au921 as ".._ttn_au921"
+class Arduino_LoRaWAN_ttn_au915 as ".._ttn_au915"
 class Arduino_LoRaWAN_ttn_as923 as ".._ttn_as923"
 class Arduino_LoRaWAN_ttn_in866 as ".._ttn_in866"
+class Arduino_LoRaWAN_ttn_kr920 as ".._ttn_kr920"
 
 class Arduino_LoRaWAN_ttn
 
+abstract class Arduino_LoRaWAN_Actility_base as ".._Actility_base"
+
+class Arduino_LoRaWAN_Actility_eu868 as ".._eu868"
+class Arduino_LoRaWAN_Actility_us915 as ".._us915"
+class Arduino_LoRaWAN_Actility_au915 as ".._au915"
+class Arduino_LoRaWAN_Actility_as923 as ".._as923"
+class Arduino_LoRaWAN_Actility_in866 as ".._in866"
+class Arduino_LoRaWAN_Actility_kr920 as ".._kr920"
+
+class Arduino_LoRaWAN_Actility
+
+abstract class Arduino_LoRaWAN_Helium_base as ".._Helium_base"
+
+class Arduino_LoRaWAN_Helium_us915 as ".._us915"
+
+class Arduino_LoRaWAN_Helium
+
+/' the top fan-in '/
 Arduino_LoRaWAN <|-- Arduino_LoRaWAN_machineQ_base
 Arduino_LoRaWAN <|-- Arduino_LoRaWAN_ttn_base
+Arduino_LoRaWAN <|-- Arduino_LoRaWAN_Actility_base
+Arduino_LoRaWAN <|-- Arduino_LoRaWAN_Helium_base
+
+/' machineQ '/
 Arduino_LoRaWAN_machineQ_base <|-- Arduino_LoRaWAN_machineQ_us915
 Arduino_LoRaWAN_machineQ_us915 <|.. Arduino_LoRaWAN_machineQ
 note right on link
@@ -52,24 +75,49 @@ end note
 
 class Arduino_LoRaWAN_network
 
+/' TheThingsNetwork '/
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_eu868
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_us915
-Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_au921
+Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_au915
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_as923
 Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_in866
+Arduino_LoRaWAN_ttn_base <|-- Arduino_LoRaWAN_ttn_kr920
 
 Arduino_LoRaWAN_ttn_eu868 <|.. Arduino_LoRaWAN_ttn
 Arduino_LoRaWAN_ttn_us915 <|.. Arduino_LoRaWAN_ttn
-Arduino_LoRaWAN_ttn_au921 <|.. Arduino_LoRaWAN_ttn
+Arduino_LoRaWAN_ttn_au915 <|.. Arduino_LoRaWAN_ttn
 Arduino_LoRaWAN_ttn_as923 <|.. Arduino_LoRaWAN_ttn
 Arduino_LoRaWAN_ttn_in866 <|.. Arduino_LoRaWAN_ttn
+Arduino_LoRaWAN_ttn_kr920 <|.. Arduino_LoRaWAN_ttn
 
+/' Actility '/
+Arduino_LoRaWAN_Actility_base <|-- Arduino_LoRaWAN_Actility_eu868
+Arduino_LoRaWAN_Actility_base <|-- Arduino_LoRaWAN_Actility_us915
+Arduino_LoRaWAN_Actility_base <|-- Arduino_LoRaWAN_Actility_au915
+Arduino_LoRaWAN_Actility_base <|-- Arduino_LoRaWAN_Actility_as923
+Arduino_LoRaWAN_Actility_base <|-- Arduino_LoRaWAN_Actility_in866
+Arduino_LoRaWAN_Actility_base <|-- Arduino_LoRaWAN_Actility_kr920
+
+Arduino_LoRaWAN_Actility_eu868 <|.. Arduino_LoRaWAN_Actility
+Arduino_LoRaWAN_Actility_us915 <|.. Arduino_LoRaWAN_Actility
+Arduino_LoRaWAN_Actility_au915 <|.. Arduino_LoRaWAN_Actility
+Arduino_LoRaWAN_Actility_as923 <|.. Arduino_LoRaWAN_Actility
+Arduino_LoRaWAN_Actility_in866 <|.. Arduino_LoRaWAN_Actility
+Arduino_LoRaWAN_Actility_kr920 <|.. Arduino_LoRaWAN_Actility
+
+/' Helium '/
+Arduino_LoRaWAN_Helium_base <|-- Arduino_LoRaWAN_Helium_us915
+Arduino_LoRaWAN_Helium_us915 <|.. Arduino_LoRaWAN_Helium
+
+/' fan-out of .._network '/
 Arduino_LoRaWAN_machineQ <|.. Arduino_LoRaWAN_network
 note right on link
    Network selected at compile time
    by IDE or command line.
 end note
 Arduino_LoRaWAN_ttn <|.. Arduino_LoRaWAN_network
+Arduino_LoRaWAN_Actility <|.. Arduino_LoRaWAN_network
+Arduino_LoRaWAN_Helium <|.. Arduino_LoRaWAN_network
 
 }
 

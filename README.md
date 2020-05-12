@@ -11,100 +11,100 @@ _Apologies_: This document is a work in progress, and is published in this inter
 <!-- markdownlint-disable -->
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
-- [Overview](#overview)
-- [Coding Practices](#coding-practices)
-- [Components](#components)
-    - [Namespace `McciCatena`](#namespace-mccicatena)
-    - [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
-    - [Board-specific Classes](#board-specific-classes)
-    - [Class derivation](#class-derivation)
-        - [STM32 Classes](#stm32-classes)
-        - [SAMD Classes](#samd-classes)
-    - [Platform Management](#platform-management)
-        - [Platform GUIDs](#platform-guids)
-        - [GUIDs for the Catena 461x family](#guids-for-the-catena-461x-family)
-            - [Catena 4610](#catena-4610)
-            - [Catena 4611](#catena-4611)
-            - [Catena 4612](#catena-4612)
-            - [Catena 4617](#catena-4617)
-            - [Catena 4618](#catena-4618)
-            - [Catena 4630](#catena-4630)
-        - [GUIDs for the Catena 4450/4460/4470 family](#guids-for-the-catena-445044604470-family)
-            - [Catena 4450](#catena-4450)
-            - [Catena 4460](#catena-4460)
-            - [Catena 4470](#catena-4470)
-        - [GUIDs for the Catena 4801 family](#guids-for-the-catena-4801-family)
-        - [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
-    - [Polling Framework](#polling-framework)
-        - [Making a class pollable](#making-a-class-pollable)
-        - [Using pollable objects in sketches](#using-pollable-objects-in-sketches)
-    - [Finite State Machine (FSM) Framework](#finite-state-machine-fsm-framework)
-        - [Getting ready](#getting-ready)
-        - [Defining the state `enum class`](#defining-the-state-enum-class)
-        - [Identify the parent class](#identify-the-parent-class)
-        - [Add the state type to the parent class](#add-the-state-type-to-the-parent-class)
-        - [Define the FSM instance in the parent class](#define-the-fsm-instance-in-the-parent-class)
-        - [Declare a method function in the parent class](#declare-a-method-function-in-the-parent-class)
-        - [Implement the FSM dispatch function](#implement-the-fsm-dispatch-function)
-        - [Implement the FSM initialization](#implement-the-fsm-initialization)
-    - [The general time/date class `McciCatena::cDate`](#the-general-timedate-class-mccicatenacdate)
-        - [Interval Seconds](#interval-seconds)
-        - [`cDate` calendar types](#cdate-calendar-types)
-        - [`cDate` properties](#cdate-properties)
-        - [`cDate` methods](#cdate-methods)
-        - [Timekeeping, solar days, leap seconds](#timekeeping-solar-days-leap-seconds)
-    - [LoRaWAN Support](#lorawan-support)
-        - [Sending an uplink message](#sending-an-uplink-message)
-        - [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
-        - [LoRaWAN Class Structure](#lorawan-class-structure)
-    - [FRAM Storage Management](#fram-storage-management)
-        - [FRAM Storage Formats](#fram-storage-formats)
-            - [Object Storage Structure](#object-storage-structure)
-            - [Bit layout of `uSizeKey`](#bit-layout-of-usizekey)
-            - [The FRAM header object](#the-fram-header-object)
-        - [Adding FRAM objects](#adding-fram-objects)
-        - [Class hierarchy within the FRAM library](#class-hierarchy-within-the-fram-library)
-    - [Asynchronous Serial Port Command Processing](#asynchronous-serial-port-command-processing)
-        - [Collecting lines asynchronously from streams](#collecting-lines-asynchronously-from-streams)
-        - [The command parser](#the-command-parser)
-        - [Command stream methods for use by functions](#command-stream-methods-for-use-by-functions)
-        - [Synchronous Command Functions](#synchronous-command-functions)
-        - [Asynchronous Command Functions](#asynchronous-command-functions)
-    - [Clock Management and Calibration](#clock-management-and-calibration)
-    - [Si1133 driver](#si1133-driver)
-    - [`cTimer` Timer object](#ctimer-timer-object)
-        - [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
-        - [cTimer begin() and end()](#ctimer-begin-and-end)
-        - [Checking for `cTimer` events](#checking-for-ctimer-events)
-        - [`cTimer` Utility routines](#ctimer-utility-routines)
-    - [`Catena_functional.h`](#catena_functionalh)
-- [Command Summary](#command-summary)
-    - [Standard commands](#standard-commands)
-    - [STM32L0 commands](#stm32l0-commands)
-    - [FRAM commands](#fram-commands)
-    - [LoRaWAN commands](#lorawan-commands)
-        - [LoRaWAN Parameters](#lorawan-parameters)
-- [Adding your own commands](#adding-your-own-commands)
-- [Example sketches](#example-sketches)
-    - [`catena_hello`](#catena_hello)
-    - [`catena_hello_lora`](#catena_hello_lora)
-    - [`catena_usercommand`](#catena_usercommand)
-    - [`catena_fsm`](#catena_fsm)
-- [Board Support Dependencies](#board-support-dependencies)
-- [Other Libraries and Versions Required](#other-libraries-and-versions-required)
-- [Library Release History](#library-release-history)
-- [Meta](#meta)
-    - [License](#license)
-    - [Support Open Source Hardware and Software](#support-open-source-hardware-and-software)
-    - [Trademarks](#trademarks)
+- [1. Overview](#1-overview)
+- [2. Coding Practices](#2-coding-practices)
+- [3. Components](#3-components)
+	- [3.1. Namespace `McciCatena`](#31-namespace-mccicatena)
+	- [3.2. Class `Catena` and header file `Catena.h`](#32-class-catena-and-header-file-catenah)
+	- [3.3. Board-specific Classes](#33-board-specific-classes)
+	- [3.4. Class derivation](#34-class-derivation)
+		- [3.4.1. STM32 Classes](#341-stm32-classes)
+		- [3.4.2. SAMD Classes](#342-samd-classes)
+	- [3.5. Platform Management](#35-platform-management)
+		- [3.5.1. Platform GUIDs](#351-platform-guids)
+		- [3.5.2. GUIDs for the Catena 461x family](#352-guids-for-the-catena-461x-family)
+			- [3.5.2.1. Catena 4610](#3521-catena-4610)
+			- [3.5.2.2. Catena 4611](#3522-catena-4611)
+			- [3.5.2.3. Catena 4612](#3523-catena-4612)
+			- [3.5.2.4. Catena 4617](#3524-catena-4617)
+			- [3.5.2.5. Catena 4618](#3525-catena-4618)
+			- [3.5.2.6. Catena 4630](#3526-catena-4630)
+		- [3.5.3. GUIDs for the Catena 4450/4460/4470 family](#353-guids-for-the-catena-445044604470-family)
+			- [3.5.3.1. Catena 4450](#3531-catena-4450)
+			- [3.5.3.2. Catena 4460](#3532-catena-4460)
+			- [3.5.3.3. Catena 4470](#3533-catena-4470)
+		- [3.5.4. GUIDs for the Catena 4801 family](#354-guids-for-the-catena-4801-family)
+		- [3.5.5. GUIDs for Adafruit Feather M0s](#355-guids-for-adafruit-feather-m0s)
+	- [3.6. Polling Framework](#36-polling-framework)
+		- [3.6.1. Making a class pollable](#361-making-a-class-pollable)
+		- [3.6.2. Using pollable objects in sketches](#362-using-pollable-objects-in-sketches)
+	- [3.7. Finite State Machine (FSM) Framework](#37-finite-state-machine-fsm-framework)
+		- [3.7.1. Getting ready](#371-getting-ready)
+		- [3.7.2. Defining the state `enum class`](#372-defining-the-state-enum-class)
+		- [3.7.3. Identify the parent class](#373-identify-the-parent-class)
+		- [3.7.4. Add the state type to the parent class](#374-add-the-state-type-to-the-parent-class)
+		- [3.7.5. Define the FSM instance in the parent class](#375-define-the-fsm-instance-in-the-parent-class)
+		- [3.7.6. Declare a method function in the parent class](#376-declare-a-method-function-in-the-parent-class)
+		- [3.7.7. Implement the FSM dispatch function](#377-implement-the-fsm-dispatch-function)
+		- [3.7.8. Implement the FSM initialization](#378-implement-the-fsm-initialization)
+	- [3.8. The general time/date class `McciCatena::cDate`](#38-the-general-timedate-class-mccicatenacdate)
+		- [3.8.1. Interval Seconds](#381-interval-seconds)
+		- [3.8.2. `cDate` calendar types](#382-cdate-calendar-types)
+		- [3.8.3. `cDate` properties](#383-cdate-properties)
+		- [3.8.4. `cDate` methods](#384-cdate-methods)
+		- [3.8.5. Timekeeping, solar days, leap seconds](#385-timekeeping-solar-days-leap-seconds)
+	- [3.9. LoRaWAN Support](#39-lorawan-support)
+		- [3.9.1. Sending an uplink message](#391-sending-an-uplink-message)
+		- [3.9.2. Registering to receive downlink messages](#392-registering-to-receive-downlink-messages)
+		- [3.9.3. LoRaWAN Class Structure](#393-lorawan-class-structure)
+	- [3.10. FRAM Storage Management](#310-fram-storage-management)
+		- [3.10.1. FRAM Storage Formats](#3101-fram-storage-formats)
+			- [3.10.1.1. Object Storage Structure](#31011-object-storage-structure)
+			- [3.10.1.2. Bit layout of `uSizeKey`](#31012-bit-layout-of-usizekey)
+			- [3.10.1.3. The FRAM header object](#31013-the-fram-header-object)
+		- [3.10.2. Adding FRAM objects](#3102-adding-fram-objects)
+		- [3.10.3. Class hierarchy within the FRAM library](#3103-class-hierarchy-within-the-fram-library)
+	- [3.11. Asynchronous Serial Port Command Processing](#311-asynchronous-serial-port-command-processing)
+		- [3.11.1. Collecting lines asynchronously from streams](#3111-collecting-lines-asynchronously-from-streams)
+		- [3.11.2. The command parser](#3112-the-command-parser)
+		- [3.11.3. Command stream methods for use by functions](#3113-command-stream-methods-for-use-by-functions)
+		- [3.11.4. Synchronous Command Functions](#3114-synchronous-command-functions)
+		- [3.11.5. Asynchronous Command Functions](#3115-asynchronous-command-functions)
+	- [3.12. Clock Management and Calibration](#312-clock-management-and-calibration)
+	- [3.13. Si1133 driver](#313-si1133-driver)
+	- [3.14. `cTimer` Timer object](#314-ctimer-timer-object)
+		- [3.14.1. Catena_Timer.h header file and initialization](#3141-catena_timerh-header-file-and-initialization)
+		- [3.14.2. cTimer begin() and end()](#3142-ctimer-begin-and-end)
+		- [3.14.3. Checking for `cTimer` events](#3143-checking-for-ctimer-events)
+		- [3.14.4. `cTimer` Utility routines](#3144-ctimer-utility-routines)
+	- [3.15. `Catena_functional.h`](#315-catena_functionalh)
+- [4. Command Summary](#4-command-summary)
+	- [4.1. Standard commands](#41-standard-commands)
+	- [4.2. STM32L0 commands](#42-stm32l0-commands)
+	- [4.3. FRAM commands](#43-fram-commands)
+	- [4.4. LoRaWAN commands](#44-lorawan-commands)
+		- [4.4.1. LoRaWAN Parameters](#441-lorawan-parameters)
+- [5. Adding your own commands](#5-adding-your-own-commands)
+- [6. Example sketches](#6-example-sketches)
+	- [6.1. `catena_hello`](#61-catena_hello)
+	- [6.2. `catena_hello_lora`](#62-catena_hello_lora)
+	- [6.3. `catena_usercommand`](#63-catena_usercommand)
+	- [6.4. `catena_fsm`](#64-catena_fsm)
+- [7. Board Support Dependencies](#7-board-support-dependencies)
+- [8. Other Libraries and Versions Required](#8-other-libraries-and-versions-required)
+- [9. Release History](#9-release-history)
+- [10. Meta](#10-meta)
+	- [10.1. License](#101-license)
+	- [10.2. Support Open Source Hardware and Software](#102-support-open-source-hardware-and-software)
+	- [10.3. Trademarks](#103-trademarks)
 
 <!-- /TOC -->
 <!-- markdownlint-restore -->
 <!-- Due to a bug in Markdown TOC, the table is formatted incorrectly if tab indentation is set other than 4. Due to another bug, this comment must be *after* the TOC entry. -->
 
-## Overview
+## 1. Overview
 
-## Coding Practices
+## 2. Coding Practices
 
 In order to assist people who are not everyday readers and writer of C++, this library adopts some rules.
 
@@ -122,9 +122,9 @@ In order to assist people who are not everyday readers and writer of C++, this l
 
 7. However, we do take advantage of some of the C++-11 header files, such as `<functional>`, `<type_traits>`, and `<cstdint>`.  (Sometimes we have to do extra work for this.)
 
-## Components
+## 3. Components
 
-### Namespace `McciCatena`
+### 3.1. Namespace `McciCatena`
 
 Unless otherwise specified, all symbols are defined inside namespace `McciCatena`. Usually sketches begin with something like this:
 
@@ -136,11 +136,11 @@ Unless otherwise specified, all symbols are defined inside namespace `McciCatena
 using namespace McciCatena;
 ```
 
-### Class `Catena` and header file `Catena.h`
+### 3.2. Class `Catena` and header file `Catena.h`
 
 `Catena.h` is the main header file for the library. It uses the `#defines` injected by `board.txt` and `platform.txt` from the Arduino environment to create a class named `Catena` derived from the `Catena...` class that is specific to the board for which the software is being built. This allows examples to be source-compatible, no matter which Catena is our target.
 
-### Board-specific Classes
+### 3.3. Board-specific Classes
 
 `Catena.h` defines the class `Catena` in terms on one of the following classes based on the setting of the BSP:
 
@@ -162,7 +162,7 @@ Class                 | Header File             | Description
 `Catena4630`          | `Catena4630.h`          | MCCI Catena 4630 Murata-based board with Air Quality Sensor.
 `Catena4801`          | `Catena4801.h`          | MCCI Catena 4801 Murata-based board with Modbus.
 
-### Class derivation
+### 3.4. Class derivation
 
 The following figures gives the class derivation hierarchy for the board classes.
 
@@ -178,7 +178,7 @@ Also note that the link is SVG, but the image is PNG.
 
 -->
 
-#### STM32 Classes
+#### 3.4.1. STM32 Classes
 
 The first figure just gives relationships; the second has details about the members of each class.
 
@@ -191,7 +191,7 @@ The first figure just gives relationships; the second has details about the memb
 <!-- $enableStm32 = 1, $enableSamd = 0,  $enableMembers = 1 -->
 [![**Catena STM32 Class Hierarchy (full detail):**](http://www.plantuml.com/plantuml/png/xLbjRzh84t_DVegj-jU_IPe78Cs3UbUfr8487H04vFgYgj3Q7i0Ns-lRNKEvNhxxZHUC7y1ngghNHBet0S_yvc5-pCmkvBrKJAZGSyd9AqAwt0vTU5inc0AVVM0IZWEN-LfFMg5lAOVxRqcb7mblknqgO082V0kevA70bmaNTD1iN7MRnvvD8uZbCYcfxR2fODungH231qlXJ6SA7Gq1ABCixWNCNph-b7RQHhCtRDA9um9Y6w6QSO704GYnf5tE1HpIhc6qgS55m0MBCghq-1my4mIjLskNXFIu0fbEq_7O52Hr_2YtxfNEZGcWK_01NO1DpIKDc5HH2chcI1qVyOgJYffXTI3cw9ufEbCgU7joibWiDjGSO_udySCXPRvDiLRJN3d3CWJ8qDM-RmSTUKpfQ1PvOf8gJasWDlUZ41Y1kLGv7iX3kd3K35cRQ7uLgSoP6s89O3kOhiuiyatdJ3ZCT55ZWiiNn-WQAERZeL5KSF9XaCh2ST4zu9yb3-a2StWbgGzWWtrCoAiJGbxy3_p8MrUpAUaxMjl8XiexhMSbpBDHK2N4PvXpm2oWNSjoLjr3lnB2JAa4izIw2PAsGYMbhr4Peh9vspv_CpR3gDQn-cLBWm_8NLPpwpj_Xj2-sfXz-hnB7Tl6Ql13ZzxqcuF6gDsx7hSwZUjXekXt6gFMpQ2Rad-LYYd7kW-HyTFwM57iAOLDxhLSDfNZQr0uCxqmecjlFsDXSkvIY_jImPT0PErUZziIxP3ujT6SEpOTiWdq1GQQhAMHTKp2XtMTz01Z3fSIfN70cENx5TveZ9gznZWkHXjiedFHljgoqz4H5RCMXvynWTQ9V4Lch2qDjWPkg4FLJH3D6phHD6IABr2chJCSxgx2XAdZ5n2pgcVTXJtcmTu-rPfTZeOkGB3jg2MOHm-ceA8twVm3xhhfPu69I0NYnlm3BBNMCDisS3QPRyVfzmMVEzBXFfOzL4iNT9rvuHgiMmhr3JD8Gzh-XESGDugn0eZEhWTgoERGCd0_1WMAAxxmTwY682Ed-Q1OMeSFs4VcvogCvo4r_0T1yX1XNkQuZxdBUigZfab3ZA9rL8WoWh1jxu9QGn0ESmV0x6N56wUUj3gxboW2zDYjJFlSTP7Ofe_z1gXBFq_NtfK0vhLzb8E1Qh0K5mZTl5_1rbMkqAZEF4UGetW6K9cT4Qqj64Hl7CGrQvXcGx8v9EEPoAUP5Q49YzJtv8KpeNkPVOydmFxknHxfwpNwDJioD6gFp5oc19lA-1o4S6peCdctGTtbKQ7X0XCHvf0cmY6enAnWb-Ld-d4jTxGgR30oaFg1iZGZuEEnJ19cahEnc1eDU9BCb1DHM7H9ExI0gHc8RXNhZa_OHg_HkRaUzzkzrB5xrRvkZngTHBh5oyJbJD5eCdytcKglxPVv9P_VUlf4sbw5fRPwJsXZlTOQlJjOhidONUv7D8eEXVhTZwptTVu4IXoWw0Fdok2Xh_R-RyPlLwK-rEJMEctiyPRONZaRfz_N_HtiWtontr5HQewAsIe0XJ83ok-6Sh8koydIYapvk3-IBLBGH6_EphxyqFOfek6-AA7psbDBwFI99NHP_La9bMpbJ9PlQZX_nGcbRyYxByWl7xqZDRhiydKKtmkBt4xlnckluz_GxGuRet_RljhSUCRTHf_ETRWHZmD--hp3JZf_mLXHFm-EACsHLlzsqluZxGn9UoGzXHVvRoSZTm7UEw0h-JmsbPy-xpzKM8pxIQoTVpzhFvIKxOmlddh6vTULtDbRUqn1_pBDvxLdrXYOSUtPPLn_TXbVFBkCBvzRngVFRV8kgqzyyielhQcV2N_z--WeyzDIsJelCDQ8yhX976sS_nMZ495yyISvanWLNy0VrjTHdtEO1PoL0SxB01VLHrAuakGvx5H9vYa6nDzSYxKu_GzgJukr-WiM8KcKNDGQIKBaGbQBLGzOrOjL5yMgIvBKagkjIf92SeLjMle-_aHo_u1xHwlxPEROGBsLA3PuZo-Xv_u3)](https://www.plantuml.com/plantuml/svg/xLbjRzh84t_DVegj-jU_IPe78Cs3UbUfr8487H04vFgYgj3Q7i0Ns-lRNKEvNhxxZHUC7y1ngghNHBet0S_yvc5-pCmkvBrKJAZGSyd9AqAwt0vTU5inc0AVVM0IZWEN-LfFMg5lAOVxRqcb7mblknqgO082V0kevA70bmaNTD1iN7MRnvvD8uZbCYcfxR2fODungH231qlXJ6SA7Gq1ABCixWNCNph-b7RQHhCtRDA9um9Y6w6QSO704GYnf5tE1HpIhc6qgS55m0MBCghq-1my4mIjLskNXFIu0fbEq_7O52Hr_2YtxfNEZGcWK_01NO1DpIKDc5HH2chcI1qVyOgJYffXTI3cw9ufEbCgU7joibWiDjGSO_udySCXPRvDiLRJN3d3CWJ8qDM-RmSTUKpfQ1PvOf8gJasWDlUZ41Y1kLGv7iX3kd3K35cRQ7uLgSoP6s89O3kOhiuiyatdJ3ZCT55ZWiiNn-WQAERZeL5KSF9XaCh2ST4zu9yb3-a2StWbgGzWWtrCoAiJGbxy3_p8MrUpAUaxMjl8XiexhMSbpBDHK2N4PvXpm2oWNSjoLjr3lnB2JAa4izIw2PAsGYMbhr4Peh9vspv_CpR3gDQn-cLBWm_8NLPpwpj_Xj2-sfXz-hnB7Tl6Ql13ZzxqcuF6gDsx7hSwZUjXekXt6gFMpQ2Rad-LYYd7kW-HyTFwM57iAOLDxhLSDfNZQr0uCxqmecjlFsDXSkvIY_jImPT0PErUZziIxP3ujT6SEpOTiWdq1GQQhAMHTKp2XtMTz01Z3fSIfN70cENx5TveZ9gznZWkHXjiedFHljgoqz4H5RCMXvynWTQ9V4Lch2qDjWPkg4FLJH3D6phHD6IABr2chJCSxgx2XAdZ5n2pgcVTXJtcmTu-rPfTZeOkGB3jg2MOHm-ceA8twVm3xhhfPu69I0NYnlm3BBNMCDisS3QPRyVfzmMVEzBXFfOzL4iNT9rvuHgiMmhr3JD8Gzh-XESGDugn0eZEhWTgoERGCd0_1WMAAxxmTwY682Ed-Q1OMeSFs4VcvogCvo4r_0T1yX1XNkQuZxdBUigZfab3ZA9rL8WoWh1jxu9QGn0ESmV0x6N56wUUj3gxboW2zDYjJFlSTP7Ofe_z1gXBFq_NtfK0vhLzb8E1Qh0K5mZTl5_1rbMkqAZEF4UGetW6K9cT4Qqj64Hl7CGrQvXcGx8v9EEPoAUP5Q49YzJtv8KpeNkPVOydmFxknHxfwpNwDJioD6gFp5oc19lA-1o4S6peCdctGTtbKQ7X0XCHvf0cmY6enAnWb-Ld-d4jTxGgR30oaFg1iZGZuEEnJ19cahEnc1eDU9BCb1DHM7H9ExI0gHc8RXNhZa_OHg_HkRaUzzkzrB5xrRvkZngTHBh5oyJbJD5eCdytcKglxPVv9P_VUlf4sbw5fRPwJsXZlTOQlJjOhidONUv7D8eEXVhTZwptTVu4IXoWw0Fdok2Xh_R-RyPlLwK-rEJMEctiyPRONZaRfz_N_HtiWtontr5HQewAsIe0XJ83ok-6Sh8koydIYapvk3-IBLBGH6_EphxyqFOfek6-AA7psbDBwFI99NHP_La9bMpbJ9PlQZX_nGcbRyYxByWl7xqZDRhiydKKtmkBt4xlnckluz_GxGuRet_RljhSUCRTHf_ETRWHZmD--hp3JZf_mLXHFm-EACsHLlzsqluZxGn9UoGzXHVvRoSZTm7UEw0h-JmsbPy-xpzKM8pxIQoTVpzhFvIKxOmlddh6vTULtDbRUqn1_pBDvxLdrXYOSUtPPLn_TXbVFBkCBvzRngVFRV8kgqzyyielhQcV2N_z--WeyzDIsJelCDQ8yhX976sS_nMZ495yyISvanWLNy0VrjTHdtEO1PoL0SxB01VLHrAuakGvx5H9vYa6nDzSYxKu_GzgJukr-WiM8KcKNDGQIKBaGbQBLGzOrOjL5yMgIvBKagkjIf92SeLjMle-_aHo_u1xHwlxPEROGBsLA3PuZo-Xv_u3 "Click for SVG image of Class Hierarchy")
 
-#### SAMD Classes
+#### 3.4.2. SAMD Classes
 
 The first figure just gives relationships; the second has details about the members of each class.
 
@@ -203,7 +203,7 @@ The first figure just gives relationships; the second has details about the memb
 <!-- $enableStm32 = 0, $enableSamd = 1,  $enableMembers = 1 -->
 [![**Catena SAMD Class Hierarchy (full detail):**](http://www.plantuml.com/plantuml/png/xLbjSzf64FxC_OhBfDFOZby0no-JDZCXCdYO0cO0Dnyo6UOaBQ1Qqgbt9mXD_T-xEX1wCRBiTfBOC_qIM_Sy-xAFTrS7UIyL4ohqN7BqYf0kjqCNtbOCfi1d7vY4my1bliP9A_GjvN3_BQdqeyFhReSAc800tm8gUIZmnuGBEcWsBhhDGy-c4SLocPJKTjXKCE-GL8Z1WwLmfZE5ZeO0b5aMzmBcBnr_IZjjezaRDkd4SG6vZL3Dk43Y28HOqYxd0lPfrp3QrE0Yu8956LLwV0wU2OBMgxLpGdfSWKodwNXi2f8wVfHRzqBdnWJGAVY0Bi2cvf86JAee1JLpf8wFVCL9HSsmEX1pTCyKdIaLl3qwMYmM6saECV-Z-66VCj-cMAjfhfnX6G9aw6hVruEEFAHqD8iyCKaLfoPGc_jH28p0NAeS3-G-NJXgXgfDjBwALERC3R44i1rCLsSM-QPp9XnckeYOuFB58Re6YlbuQ1GLdFmnI6NXkEWUy9yb3-a2StWbgGzWWtr8oAiZGbxy17xahQlLbFGThMtEXiexhkD9DJbXdgqfn6UOSy0ie5tBSbRTGxyImaof1BFKkWcIjaAGqjS8XWWshzkdRyPc6DKwLh_SGV01jSiYrxxpPmZjYutPfy_RuDWsXi4FFNhLRmuQetRlSjpgD2w72T3lD4Qjgq4tTVvLAgOSwpP4nO_hOqMnfnGskTTosLIEBq7XpFJ2IAwTtOo5oRbBBUvB1Ly2aRLxFMvBj4FXrqPpxjXqo2RGntJLP7qQMSSYV5ZNIVSmvd0fyJGE6Ajyk-8RZL6prnZ7nMY3JNGksXTtx7HqPCMgnU5dJA1rShuICqPBWws96-aGkWgYUKCdMePCyGLWsZgZuVOgJ9WwVe4mgthMNTXZ7kpiKeriSpHq0OAxZbg2UNHl2Yhw9Pr_m5qt_Imm4Qb0N9b_WANM2BDj0sUJ-NQSVb_mkICTxcFPGxLqGTUPFroJTKiXtZ23DANjJtYESQKOAw3ex7gWXcmEBGFtOr00NF25lmKQWeoSveDYQHq-O1-PdwimdeVKyEy5oKF4UPdJFjOkwodFcYODCOhMKI7B2CAslOrg3K4up1q0ivSLRvnwqd1sBr4awB5RcVQvwwAmJH_x3H1BFq_NtfK0vhLzF0S3OR0K5qZT_BwYhQjSiH7EF4UKWtW64CpEY4OB1j4R1t7DcgRLa6mEoNWcvzFCYj22HV0jUU5Cw4vct-F2tzs-s2EyNgDVioD3TNkavp9riAcCpq48nuOkapSRrasU5HekC15nzcboE0ILc1NiijnCFx3b3bQ53KO6IZzGbbO4VDkPa4IPvDrOB8qcF4bboeKeBBga7Lh0r0n4jufrns_OHg_HkReSzzkzr6ltedtP7ZKwoUaTNIOkPuf6a_cxoLHwRR_CB_dyrjDlfBkhiDHMxmbjhDTQetS3oxKOsylzY4RHIw5-yothVPr_0oKEyEW3vyhWeQzsVZRZNrUbtjVarZfjxF6MkBjoDax_M_Tti0_onVxhYZ9pLAnM0IcK6L9-DvIBTLukbWOovUF-IBP8GHEzEJdvyatRfqY6swA4JcjFBQ7Z9vRGUVM795I-bJDPlgdX_1KdbBuXRxyWltp4ZaHssUNh8BuN5hcTtepNNiU_eTijDaR_kdsnkV6Ckuq-dUjm8nu7_FHvYvrq_eAnedwU74cQ4wt-lsYF5-q4HNkWFCKN-KUBaRi0x-pHrVayDfMVFk_ULrZC-q6gdJvUjUygojsCpvvwnkNNbToxj_RGWhwZpAUrPzOOc77jsMLSVtOPdpsxZC-VMyR7pstopgjFVFBABwsfhmb__VlW8FFLKiawBpBMZFAuIHnjdFyMev2HVF0dEPEO5L_0xyVhYESSPWadPOJJCi9PzO4Ihaxo6dQg9FCK4-9FhiKeJl-zw74ngZzW4P94oKMjaIH4BcIr6Bh7gbuCdHL3voIf9LTRbII5v0hRjFHj_1V9_GVSErhT9JF71kgjZcA3z_WZzDn_0000)](https://www.plantuml.com/plantuml/svg/xLbjSzf64FxC_OhBfDFOZby0no-JDZCXCdYO0cO0Dnyo6UOaBQ1Qqgbt9mXD_T-xEX1wCRBiTfBOC_qIM_Sy-xAFTrS7UIyL4ohqN7BqYf0kjqCNtbOCfi1d7vY4my1bliP9A_GjvN3_BQdqeyFhReSAc800tm8gUIZmnuGBEcWsBhhDGy-c4SLocPJKTjXKCE-GL8Z1WwLmfZE5ZeO0b5aMzmBcBnr_IZjjezaRDkd4SG6vZL3Dk43Y28HOqYxd0lPfrp3QrE0Yu8956LLwV0wU2OBMgxLpGdfSWKodwNXi2f8wVfHRzqBdnWJGAVY0Bi2cvf86JAee1JLpf8wFVCL9HSsmEX1pTCyKdIaLl3qwMYmM6saECV-Z-66VCj-cMAjfhfnX6G9aw6hVruEEFAHqD8iyCKaLfoPGc_jH28p0NAeS3-G-NJXgXgfDjBwALERC3R44i1rCLsSM-QPp9XnckeYOuFB58Re6YlbuQ1GLdFmnI6NXkEWUy9yb3-a2StWbgGzWWtr8oAiZGbxy17xahQlLbFGThMtEXiexhkD9DJbXdgqfn6UOSy0ie5tBSbRTGxyImaof1BFKkWcIjaAGqjS8XWWshzkdRyPc6DKwLh_SGV01jSiYrxxpPmZjYutPfy_RuDWsXi4FFNhLRmuQetRlSjpgD2w72T3lD4Qjgq4tTVvLAgOSwpP4nO_hOqMnfnGskTTosLIEBq7XpFJ2IAwTtOo5oRbBBUvB1Ly2aRLxFMvBj4FXrqPpxjXqo2RGntJLP7qQMSSYV5ZNIVSmvd0fyJGE6Ajyk-8RZL6prnZ7nMY3JNGksXTtx7HqPCMgnU5dJA1rShuICqPBWws96-aGkWgYUKCdMePCyGLWsZgZuVOgJ9WwVe4mgthMNTXZ7kpiKeriSpHq0OAxZbg2UNHl2Yhw9Pr_m5qt_Imm4Qb0N9b_WANM2BDj0sUJ-NQSVb_mkICTxcFPGxLqGTUPFroJTKiXtZ23DANjJtYESQKOAw3ex7gWXcmEBGFtOr00NF25lmKQWeoSveDYQHq-O1-PdwimdeVKyEy5oKF4UPdJFjOkwodFcYODCOhMKI7B2CAslOrg3K4up1q0ivSLRvnwqd1sBr4awB5RcVQvwwAmJH_x3H1BFq_NtfK0vhLzF0S3OR0K5qZT_BwYhQjSiH7EF4UKWtW64CpEY4OB1j4R1t7DcgRLa6mEoNWcvzFCYj22HV0jUU5Cw4vct-F2tzs-s2EyNgDVioD3TNkavp9riAcCpq48nuOkapSRrasU5HekC15nzcboE0ILc1NiijnCFx3b3bQ53KO6IZzGbbO4VDkPa4IPvDrOB8qcF4bboeKeBBga7Lh0r0n4jufrns_OHg_HkReSzzkzr6ltedtP7ZKwoUaTNIOkPuf6a_cxoLHwRR_CB_dyrjDlfBkhiDHMxmbjhDTQetS3oxKOsylzY4RHIw5-yothVPr_0oKEyEW3vyhWeQzsVZRZNrUbtjVarZfjxF6MkBjoDax_M_Tti0_onVxhYZ9pLAnM0IcK6L9-DvIBTLukbWOovUF-IBP8GHEzEJdvyatRfqY6swA4JcjFBQ7Z9vRGUVM795I-bJDPlgdX_1KdbBuXRxyWltp4ZaHssUNh8BuN5hcTtepNNiU_eTijDaR_kdsnkV6Ckuq-dUjm8nu7_FHvYvrq_eAnedwU74cQ4wt-lsYF5-q4HNkWFCKN-KUBaRi0x-pHrVayDfMVFk_ULrZC-q6gdJvUjUygojsCpvvwnkNNbToxj_RGWhwZpAUrPzOOc77jsMLSVtOPdpsxZC-VMyR7pstopgjFVFBABwsfhmb__VlW8FFLKiawBpBMZFAuIHnjdFyMev2HVF0dEPEO5L_0xyVhYESSPWadPOJJCi9PzO4Ihaxo6dQg9FCK4-9FhiKeJl-zw74ngZzW4P94oKMjaIH4BcIr6Bh7gbuCdHL3voIf9LTRbII5v0hRjFHj_1V9_GVSErhT9JF71kgjZcA3z_WZzDn_0000 "Click for SVG image of SAMD Class Hierarchy")
 
-### Platform Management
+### 3.5. Platform Management
 
 The hardware supported by this platform is generally similar. The architecture allows for the following kinds of variation (as outlined in the class hierarchy):
 
@@ -217,7 +217,7 @@ Items 1-3 are to some degree known at compile time, based on the Catena model ch
 
 The system is identified to the software by a platform object, of type `CATENA_PLATFORM`. Several platform objects are built into the firmware image, based on the known variations for component population and external sensors. The appropriate platform object is located at boot time by the Catena Arduino Platform framework. Some values representing possibly variation are stored as `PlatformFlags` in the `CATENA_PLATFORM`. This variable is of type`PLATFORM_FLAGS`.
 
-#### Platform GUIDs
+#### 3.5.1. Platform GUIDs
 
 Each `CATENA_PLATFORM` has a unique identification. This is a 128-bit binary number called a GUID (or [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)), generated by MCCI during the system design process. The platform GUIDs are defined in the header file [`Catena_Guids.h`](./src/Catena_Guids.h). For convenience, here's a table of the known GUIDs.
 
@@ -244,9 +244,9 @@ awk '/^[/][/]/ {
     }' src/Catena_Guids.h | LC_ALL=C sort
 ```
 
-#### GUIDs for the Catena 461x family
+#### 3.5.2. GUIDs for the Catena 461x family
 
-##### Catena 4610
+##### 3.5.2.1. Catena 4610
 
 The Catena 4610 uses a LiPo battery like traditional Feathers, and includes a BME280 temperature/pressure/humidity sensor, and a Si1133 light sensor.
 
@@ -258,7 +258,7 @@ Name | GUID | Description
 `CATENA_4610_M103` | `c2cf6cf4-a4c3-4611-941f-6955ffa5bfdc` | Catena 4610 M103 -- contact MCCI
 `CATENA_4610_M104` | `bfed4740-a58a-4ef6-933a-09cb22e93d00` | Catena 4610 M104 -- contact MCCI
 
-##### Catena 4611
+##### 3.5.2.2. Catena 4611
 
 The 4611 uses a boost regulator that is either on or fully off, controlled by the enable pin. It's therefore a hybrid between the 4610 (which uses a battery charger switch controlled by the enable pin), and the 4612 (which instead uses the switch to jump from raw Vbat to regulated 3.3V). The 4611 is available by special order from MCCI. Generally, MCCI uses the 4612 instead.
 
@@ -270,7 +270,7 @@ Name | GUID | Description
 `CATENA_4611_M103` | `c85b27cb-7cf9-4025-92bb-2009c08449e5` | Catena 4611 M103 -- contact MCCI
 `CATENA_4611_M104` | `c22be8af-e693-4319-b243-1c2d10197973` | Catena 4611 M103 -- contact MCCI
 
-##### Catena 4612
+##### 3.5.2.3. Catena 4612
 
 The 4612 runs off an unregulated battery supply, with the option of a boost regulator that can bring the system voltage up to 3.3V.
 
@@ -282,7 +282,7 @@ Name | GUID | Description
 `CATENA_4612_M103` | `ff8b2ac6-75cd-4ed3-980b-50b209e64551` | Catena 4612 M103 -- contact MCCI
 `CATENA_4612_M104` | `dea48489-cdac-43f4-b8ad-edb08ce21546` | Catena 4612 M103 -- contact MCCI
 
-##### Catena 4617
+##### 3.5.2.4. Catena 4617
 
 The Catena 4617 is a variant of the Catena 4612 with a IDT HS3001 temperature/humidity sensor in place of the Bosch BME280.
 
@@ -290,7 +290,7 @@ Name | GUID | Description
 -----|------|------------
 `CATENA_4617_BASE` | `6767c2f6-d5d5-43f4-81af-db0d4d08815a` | Base Catena 4617, assuming no modifications or customizations.
 
-##### Catena 4618
+##### 3.5.2.5. Catena 4618
 
 The Catena 4618 is a variant of the Catena 4612 with a Sensirion SHT31-DIS-F temperature/humidity sensor in place of the Bosch BME280.
 
@@ -298,7 +298,7 @@ Name | GUID | Description
 -----|------|------------
 `CATENA_4618_BASE` | `b75ed77b-b06e-4b26-a968-9c15f222dfb2` | Base Catena 4618, assuming no modifications or customizations.
 
-##### Catena 4630
+##### 3.5.2.6. Catena 4630
 
 The Catena 4630 is a variant of the Catena 4610. It deletes the Si1131 light sensor, and adds an IDT ZMOD4410 atmospheric gas sensor, plus a connection for an external Plantower PMS7003 PM2.5/dust sensor.
 
@@ -306,9 +306,9 @@ Name | GUID | Description
 -----|------|------------
 `CATENA_4630_BASE` | `17281c12-d78a-4e4f-9c42-c8bbc5499c91` | Base Catena 4618, assuming no modifications or customizations.
 
-#### GUIDs for the Catena 4450/4460/4470 family
+#### 3.5.3. GUIDs for the Catena 4450/4460/4470 family
 
-##### Catena 4450
+##### 3.5.3.1. Catena 4450
 
 The 4450 Feather Wing includes a BME280 temperature/humidity/pressure sensor, and a BH1750 lux sensor.
 
@@ -320,7 +320,7 @@ Name | GUID | Description
 `CATENA_4450_M103` | `1fb2506f-0f2a-4310-9e6a-9bc191e0ae12` | Catena 4450 M103 -- contact MCCI
 `CATENA_4450_M104` | `a731f637-e3ed-4088-a9a8-f54b6671dcf6` | Catena 4450 M103 -- contact MCCI
 
-##### Catena 4460
+##### 3.5.3.2. Catena 4460
 
 The 4460 Feather Wing includes a BME680 air quality sensor, and a BH1750 lux sensor.
 
@@ -332,7 +332,7 @@ Name | GUID | Description
 `CATENA_4460_M103` | `a882186f-f4ab-4ee4-9402-7b628a76d886` | Catena 4460 M103 -- contact MCCI
 `CATENA_4460_M104` | `398a9e5a-e22f-4265-9d35-bf45433ddbe3` | Catena 4460 M103 -- contact MCCI
 
-##### Catena 4470
+##### 3.5.3.3. Catena 4470
 
 The 4470 Feather Wing includes a BME280 temperature/humidity/pressure sensor, a BH1750 lux sensor, and a Modbus/RS-485 interface connected to `Serial1`.
 
@@ -341,13 +341,13 @@ Name | GUID | Description
 `CATENA_4470_BASE` | `ea8568ec-5dae-46ee-929a-a3f6b00a565e` | Base Catena 4470, assuming no modifications or customizations.
 `CATENA_4470_M101` | `dd0a37a6-e469-43ec-b173-fed795129455` | Catena 4470 M101, configured for power monitoring and other pulse-input applications.
 
-#### GUIDs for the Catena 4801 family
+#### 3.5.4. GUIDs for the Catena 4801 family
 
 Name | GUID | Description
 -----|------|------------
 `CATENA_4801_BASE` | `10ea7e25-a4a4-45fd-8959-c04a6a5d7f95` | Base Catena 4801, assuming no modifications or customizations.
 
-#### GUIDs for Adafruit Feather M0s
+#### 3.5.5. GUIDs for Adafruit Feather M0s
 
 MCCI also uses this library with Feather M0s without MCCI hardware. These GUIDs are useful in that situation.
 
@@ -359,7 +359,7 @@ Name | GUID | Description
 `FEATHER_M0_PROTO` | `f6a15678-c7f3-43f4-ac57-67ef5cf75541` | A Feather M0 Proto.
 `FEATHER_M0` | `2e6dfed4-f577-47d5-9137-b3e63976ae92` | Some unspecified member of the Feather M0 family.
 
-### Polling Framework
+### 3.6. Polling Framework
 
 When composing software from components, it's inconvenient and bug-prone to have to manually edit the Arduino `loop()` function to poll each component.
 
@@ -373,7 +373,7 @@ The abstract relationships are shown below.
 
 [![**Pollable framework UML Class Diagram **](http://www.plantuml.com/plantuml/png/bL9DRziw43nhVyN2btoyM4voUquG94_nGrDOQP2FSx4IrnOBYXH8oggGfh-zb0p7RjGswCNMahCpiyEzT9wihqi5aps0r8XQyJHAoBEc_yXnN2dI_JtyN-lSIwEd4DrrXq_f72qlsBBE6PsfRVXR68lvdL6ACiKtshDTK3ZE5Jc7GjBIKXb318cfMYkNXGzi3yn8UMxAYdGhzHBdDydizc662wauOAzgNnWRW8ziROkfCPQFC4sI6qoChOobpbRqiLOjdXwV_0jmQpoxNP-of2Kxb1hlPrVfzImk1P9bNBBcqCu2inOhShwJzuLqlNR0UmEHBnWTsnLR98-5zzLqCccQvZMRE7YVR8eZ92qmp9bbQpA6oBAhLS_zT3ztCU9ZqJ6HGsymOnH6Tn91WHHwMR8xmaRw0eLSz05xY5QaQdR8GWQxlREE6rTaPPUr2ppAD76WPWn-oj2q6VWwxGQ6g94gq7FuQKsDJV2mvr0p2nOnmDu4e922aSlAjrXocR5r09g2dufonZJFvNery1b0RbztyE3XFlhdcJBdBUN-1RyF8Vi7FqDMHWgi0ch_u0nU0DOhq_U5u6PwAJNZ-Vc6v-AYrzZjsfGP1-nERKFjWkgdx0ldVl_Lohh6mmuv7foMdwiFJABtid69MrCxs86hNvBTybV_Ew4vEN_sJXp3ZC-_ZSTl0lepRAiARt8rumiS7KyFHmFW2wndVd9ia-xhv9r763IS8ZaSnN4ymdTRjniM3q8EOuntRFm5zXJWahMeImK_0000)](https://www.plantuml.com/plantuml/svg/bL9DRziw43nhVyN2btoyM4voUquG94_nGrDOQP2FSx4IrnOBYXH8oggGfh-zb0p7RjGswCNMahCpiyEzT9wihqi5aps0r8XQyJHAoBEc_yXnN2dI_JtyN-lSIwEd4DrrXq_f72qlsBBE6PsfRVXR68lvdL6ACiKtshDTK3ZE5Jc7GjBIKXb318cfMYkNXGzi3yn8UMxAYdGhzHBdDydizc662wauOAzgNnWRW8ziROkfCPQFC4sI6qoChOobpbRqiLOjdXwV_0jmQpoxNP-of2Kxb1hlPrVfzImk1P9bNBBcqCu2inOhShwJzuLqlNR0UmEHBnWTsnLR98-5zzLqCccQvZMRE7YVR8eZ92qmp9bbQpA6oBAhLS_zT3ztCU9ZqJ6HGsymOnH6Tn91WHHwMR8xmaRw0eLSz05xY5QaQdR8GWQxlREE6rTaPPUr2ppAD76WPWn-oj2q6VWwxGQ6g94gq7FuQKsDJV2mvr0p2nOnmDu4e922aSlAjrXocR5r09g2dufonZJFvNery1b0RbztyE3XFlhdcJBdBUN-1RyF8Vi7FqDMHWgi0ch_u0nU0DOhq_U5u6PwAJNZ-Vc6v-AYrzZjsfGP1-nERKFjWkgdx0ldVl_Lohh6mmuv7foMdwiFJABtid69MrCxs86hNvBTybV_Ew4vEN_sJXp3ZC-_ZSTl0lepRAiARt8rumiS7KyFHmFW2wndVd9ia-xhv9r763IS8ZaSnN4ymdTRjniM3q8EOuntRFm5zXJWahMeImK_0000 "Click for SVG version")
 
-#### Making a class pollable
+#### 3.6.1. Making a class pollable
 
 Let's say that `UserClass1` exists and has the following definition.
 
@@ -408,7 +408,7 @@ public:
 };
 ```
 
-#### Using pollable objects in sketches
+#### 3.6.2. Using pollable objects in sketches
 
 Each instance of your pollable class (in our example, each instance of type `UserClass1`) must be *registered* with a polling engine. The most convenient polling engine to use is the once provided by the `CatenaBase` class, which is normally instantiated as `gCatena`.  Simply call `gCatena.registerObject()` to register your object with the Catena polling engine. So for example:
 
@@ -463,7 +463,7 @@ void loop() {
 }
 ```
 
-### Finite State Machine (FSM) Framework
+### 3.7. Finite State Machine (FSM) Framework
 
 Finite state machines are very useful when implementing non-blocking asynchronous programs, or modeling external hardware that changes state independently of the system.
 
@@ -485,7 +485,7 @@ In addition to the states relevant to your problem, `TState` must have three dis
 
 We'll use the [coin-operated turnstile](https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile) example from Wikipedia to make things more concrete.
 
-#### Getting ready
+#### 3.7.1. Getting ready
 
 The author usually starts by drawing a diagram, labeled with the states and transitions.
 
@@ -493,7 +493,7 @@ For example, here's the turnstile state diagram:
 
 [![**Coin Operated Turnstile State Diagram](http://www.plantuml.com/plantuml/png/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_)](https://www.plantuml.com/plantuml/svg/XP9FRvmm4CNFpAUOMwGg2srltKELY6oaL4iKvS-fxS7WMR1gR6IFboBrmtTW5RHQLUe5u_6ytxndk8ci0gVUGd45K7cTB6sp-vUAVgj-i9GFLhdb7EwJQzXujuNiQIw-LNiCTA10hY6CFWLP3ZvW8t8KBXDgezgW-XmoAFqm1TDsBFeN8bHDu_j1kScu5lSFvUxnPOS7O-M48UkOXxZT5aLhk4jrBhr5tpHcqmZMgQ9SbirjqCauln53BADxcNERkFD1XhnI21DMtWUwngei7x3qOV11pI6oRybE-FdZfoy0ZvufdgSolMefed7ulBkjxdPvhr45mfOSYPmqrXCEAl9idJiJJxwDOmyPTuIHmf621C4vXwGOnt6zoINB--OQbTCeTrJN9nX15YWckx3VdlSnHtpjPfAAo1vhGktTF48cA8jiUehNE1hkK9l3yZaOigEoIIAGDc9tSJQpyQY2KRMbA1phnrpGXEAd5z5xuBjg3WpPQApWIHwJJpYAXwk8ZaYJpW6k2e3l7txYPlCL8-zzyqlcRENrmHasoW8iVy1wjcxVd3qLO9LTCEZub687PvMTup0LE0kN69o2YsmiNJ9c-4eflN5d3POEB4spQV7P9TP-T3-4Ss_SoQ-e_mUJseMfvFvbwu9r6Gx_h0xWXfnElOM_ "Click for SVG view")
 
-#### Defining the state `enum class`
+#### 3.7.2. Defining the state `enum class`
 
 Define an `enum class` as follows:
 
@@ -519,13 +519,13 @@ enum class State {
 };
 ```
 
-#### Identify the parent class
+#### 3.7.3. Identify the parent class
 
 This means finding the class name for the class that is going to contain this FSM. One class can contain many FSMs, but each FSM class has only one parent class.
 
 For our example, we'll say that the class modeling turnstiles is `Turnstile`.
 
-#### Add the state type to the parent class
+#### 3.7.4. Add the state type to the parent class
 
 Add the type you defined above to the parent class. For example:
 
@@ -544,7 +544,7 @@ class Turnstile {
 };
 ```
 
-#### Define the FSM instance in the parent class
+#### 3.7.5. Define the FSM instance in the parent class
 
 Add an FSM instance as a member of the parent class. It's up to you whether to make it `public`, `private`, or `protected`.
 
@@ -565,7 +565,7 @@ class Turnstile {
 };
 ```
 
-#### Declare a method function in the parent class
+#### 3.7.6. Declare a method function in the parent class
 
 Finally, we have to declare a method function that the FSM can call.  Extending the turnstile example again:
 
@@ -589,7 +589,7 @@ class Turnstile {
 };
 ```
 
-#### Implement the FSM dispatch function
+#### 3.7.7. Implement the FSM dispatch function
 
 Your FSM dispatch function will look like this.
 
@@ -660,7 +660,7 @@ void Turnstile::fsmDispatch(Turnstile::State currentState, bool fEntry) {
 }
 ```
 
-#### Implement the FSM initialization
+#### 3.7.8. Implement the FSM initialization
 
 Somewhere in your initialization for `Turnstile`, add the following code. For example, if `Turnstile` has a `Turnstile::begin()` method, you could write:
 
@@ -675,7 +675,7 @@ void Turnstile::begin() {
 }
 ```
 
-### The general time/date class `McciCatena::cDate`
+### 3.8. The general time/date class `McciCatena::cDate`
 
 When logging data, we frequently need to keep time on a scale that is correlated with other devices. Although the Arduino environment provides interval times based on the `seconds()`, `millis()` and `micros()` APIs, there's no built-in concept of calendar time. The `cDate` class provides calendar time objects and the ability to perform conversions between calendar time and interval time. The `cDate` object is also an important component for clock drivers.
 
@@ -686,7 +686,7 @@ When logging data, we frequently need to keep time on a scale that is correlated
 McciCatena::cDate myDate;
 ```
 
-#### Interval Seconds
+#### 3.8.1. Interval Seconds
 
 It's common to compare intervals and transmit timestamps using a simple up-counter. Traditional Posix systems count seconds since 1970-01-01 00:00:00Z; GPS systems count seconds since 1980-01-06 00:00:00Z. These base times are commonly called "epochs". Times can be (theoretically) in the past (negative) or future (positive) relative to the epoch. For a variety of reasons, we call times based on the Posix epoch "Common times"; we call times based on the GPS epoch "GPS times". The types `CommonTime_t` and `GpsTime_t` are used to record times in common and GPS times.  Both are of type `std::int64_t`. Both have a range of designated values that are valid; this range is chosen to allow any valid `CommonTime_t` to be converted to `GpsTime_t` and vice versa.
 
@@ -705,11 +705,11 @@ Many numerical values of `std::int64_t` are not valid times. The library uses `k
 
 `getCommonTime()` and `getGpsTime()` convert valid times between the two systems, handling invalid cases.
 
-#### `cDate` calendar types
+#### 3.8.2. `cDate` calendar types
 
 The types `cDate::Year_t`, `cDate::Month_t`, `cDate::Day_t`, `cDate::Hour_t`, `cDate::Minute_t`, `cDate::Second_t` are used to represent years (from 0 to 65535), months (from 1 to 12), days (from 1 to 28, 29, 30, or 31, depending on the month and year), hours (0 to 23), minutes (0 to 59), and seconds (0 to 59). The year zero corresponds to ISO-8601 year zero. We use, technically speaking, a [proleptic Gregorian calendar](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) with [astronomical year numbering](https://en.wikipedia.org/wiki/Astronomical_year_numbering) (i.e., year zero).
 
-#### `cDate` properties
+#### 3.8.3. `cDate` properties
 
 ```c++
 bool cDate::isValid() const;
@@ -735,7 +735,7 @@ cDate::GpsTime_t cDate::getGpsTime() const;
 
 These functions return the `CommonTime_t` or `GpsTime_t` equivalent of the date object.
 
-#### `cDate` methods
+#### 3.8.4. `cDate` methods
 
 ```c++
 bool cDate::setDate(Year_t y, Month_t m, Day_t d);
@@ -756,7 +756,7 @@ bool cDate::setGpsTime(GpsTime_t gpsTime);
 
 Set the date and time of the `cDate` instance from the common or GPS time stamp. Returns `false` if the incoming timestamp is invalid, or if the specified time is out of range.
 
-#### Timekeeping, solar days, leap seconds
+#### 3.8.5. Timekeeping, solar days, leap seconds
 
 This section is provided for background, and can be skipped if you're not interested in the theory behind the implementation.
 
@@ -786,7 +786,7 @@ The onboard real-time clocks provided by various Catena platforms count interval
 
 Therefore, we use a timescale that simply states that days have 86,400 seconds. In effect, we choose option 1 above. In our applications, we think that this will be good enough. If we ever start to use LoRaWAN ("GPS") time, we assume that the network will be able to send us the information needed to convert to calendar time as needed. This may add a little complication but it's future complication and we'll deal with all this if the need arises.
 
-### LoRaWAN Support
+### 3.9. LoRaWAN Support
 
 The Catena Arduino Platform includes C++ wrappers for LoRaWAN support, based on the MCCI version of the [Arduino LMIC](https://github.com/mcci-catena/Arduino-LMIC)  library and MCCI's [Arduino LoRaWAN](https://github.com/mcci-catena/Arduino-LoRaWAN) library. It includes command processing from the `Serial` console for run-time (not compile-time) provisioning, and uses the non-volatile storage provided by the Catena FRAM to store connection parameters and uplink/downlink counts.
 
@@ -829,7 +829,7 @@ To use LoRaWAN in a sketch, do the following.
     }
     ```
 
-#### Sending an uplink message
+#### 3.9.1. Sending an uplink message
 
 Use the `Catena::LoRaWAN::SendBuffer()` method to send an uplink message. Usually it's best to send it with an asynchronous callback, so that's what we'll show.
 
@@ -872,7 +872,7 @@ When the transmission attempt finishes, the LoRaWAN subsystem calls `pDoneFn(pCl
 - For an unconfirmed uplink, success means that the device is joined to a network, and was able to transmit the message without any local errors. If not joined, and the join attempt fails, then `fSuccess` will be false.
 - For a confirmed uplink, success means that the message was sent, *and* a confirmation downlink was received. Failure doesn't necessarily mean that the network didn't receive the message; it only means that we didn't get an acknowledgement.
 
-#### Registering to receive downlink messages
+#### 3.9.2. Registering to receive downlink messages
 
 Receiving a message is a somewhat passive operation. The client registers a callback with `gLoRaWAN`; later, whenever a downlink message is received, the client's callback is called.
 
@@ -890,21 +890,21 @@ void Arduino_LoRaWAN::SetReceiveBufferBufferCb(
   );
 ```
 
-#### LoRaWAN Class Structure
+#### 3.9.3. LoRaWAN Class Structure
 
-In order to allow code to be portable across networks and regions, we've done a lot of work with abstraction classes. If you're curious, here's a somewhat simplified diagram.
+In order to allow code to be portable across networks and regions, we've done a lot of work with abstraction classes. If you're curious, here's a somewhat simplified diagram (click on the diagram to get an enlarged SVG version).
 
-[![**LoRaWAN class structure**](http://www.plantuml.com/plantuml/png/XPPFRzj64CNFcayny2MNYAfTrB3L7Y8e2k12SbEvGO_6S3acjzu_nFw9AgJvxYMreS7OMVh8cVtDlhVxHEgT3-H2r0eMRm1sjegAbxCr1JPqlxLx-djrMxIAp6aDV8X616dD4cOV--AdtHOTFx1Z8nYzZKumFbY7QS9o-Mq42aNUOoMfTgGBWBLjZqxMJUWctJ4Z2M5rI-OeJOtRc_Nczcw33r8nKe1P4qBhbyl5efQXYMNHhLre8UHSdBPPfDtcArT5QUoyanOw4HfW5KDZNRV7N-pS4NVMEdwBk_Nw1jVMjTPHxsRsUrH7lFZf_1hWrWRsOtjIKyqUfS7zPhLxlobqXUGOQpRSuLnXUSIMVEYLXqRw95kQO64M6aRFxZCxf82zZSx4uN1uEjAJbU7XBPAfi7PKbcaOmyonZ-eq-zD-wmk0Dmk0HbQChDjmHCswPES1MXAFL3CEXp2SF7aywmqF3HmQMrawSiSp_09K-k18X7HDmyhX_k6L_hqcqKZ3VzwNvFcqOL5yNpm3U0MD_lhybn4xghuAloem13FMbfxpiXB0yUhoQaIambcU-Dx3Ks6Ae7XzSJuYKc6IyDSNFu-8L9WYfBcwl1mHgJ1b7U1P4N_xRpwVllOCaha8c9oLsEcem7Ix6r4K-S0O6nXFxn-q1fKqZu2uvrfsJvuLYy0LKi3-fIGLOv2Q0VjV-itx3LhNDpIPgaSPs5JOJymTgU5miEuH89lBP3WNmcak7yLfBX_8QIuVosak7qw0hFMNzpXaDEiwZsGDvv6irpoIjPb7ic5EI2PFFquntgRkL8upGIwUalmZ4zDQu2k08Ss-9S6u4qAcZp9-6NuLugDLYah5VvJ_i0Yf-loFmiWJ8DvPpIVjYl-LuOYDh2esl_QTM9vuzbWnAJp8q635dwLWm0un3xAEwUkElRqF-zKE4AEdUcmJdedgW_f24XGPq-b4NYp_2k_OL56h_m40)](https://www.plantuml.com/plantuml/svg/XPPFRzj64CNFcayny2MNYAfTrB3L7Y8e2k12SbEvGO_6S3acjzu_nFw9AgJvxYMreS7OMVh8cVtDlhVxHEgT3-H2r0eMRm1sjegAbxCr1JPqlxLx-djrMxIAp6aDV8X616dD4cOV--AdtHOTFx1Z8nYzZKumFbY7QS9o-Mq42aNUOoMfTgGBWBLjZqxMJUWctJ4Z2M5rI-OeJOtRc_Nczcw33r8nKe1P4qBhbyl5efQXYMNHhLre8UHSdBPPfDtcArT5QUoyanOw4HfW5KDZNRV7N-pS4NVMEdwBk_Nw1jVMjTPHxsRsUrH7lFZf_1hWrWRsOtjIKyqUfS7zPhLxlobqXUGOQpRSuLnXUSIMVEYLXqRw95kQO64M6aRFxZCxf82zZSx4uN1uEjAJbU7XBPAfi7PKbcaOmyonZ-eq-zD-wmk0Dmk0HbQChDjmHCswPES1MXAFL3CEXp2SF7aywmqF3HmQMrawSiSp_09K-k18X7HDmyhX_k6L_hqcqKZ3VzwNvFcqOL5yNpm3U0MD_lhybn4xghuAloem13FMbfxpiXB0yUhoQaIambcU-Dx3Ks6Ae7XzSJuYKc6IyDSNFu-8L9WYfBcwl1mHgJ1b7U1P4N_xRpwVllOCaha8c9oLsEcem7Ix6r4K-S0O6nXFxn-q1fKqZu2uvrfsJvuLYy0LKi3-fIGLOv2Q0VjV-itx3LhNDpIPgaSPs5JOJymTgU5miEuH89lBP3WNmcak7yLfBX_8QIuVosak7qw0hFMNzpXaDEiwZsGDvv6irpoIjPb7ic5EI2PFFquntgRkL8upGIwUalmZ4zDQu2k08Ss-9S6u4qAcZp9-6NuLugDLYah5VvJ_i0Yf-loFmiWJ8DvPpIVjYl-LuOYDh2esl_QTM9vuzbWnAJp8q635dwLWm0un3xAEwUkElRqF-zKE4AEdUcmJdedgW_f24XGPq-b4NYp_2k_OL56h_m40 "Click for SVG version")
+[![**LoRaWAN class structure**](http://www.plantuml.com/plantuml/png/fPVFRjj64CRFcgSO-E9BH2KkQjXg3n4K1tLXkQdje4TZIOx8hSbTOl_45TAyUybXrn0TSmd5nvtTtt3c-xWQyRrrmZXVLx0u1jZet5UqdAs58oNkh_ID-6jrdJILK7m6FdgLEQdL4cQVkk3dpHKQsf8XbH5QxKr6kDK6-mpBvVyfCAk4jPXBKHXH9m1htUoCB4hNPhebGf5bkcw4sabLuDNb-kBwzWAtiY8K3cQbSurTBXUBGhhIfqbxTb5dcPnd_9X5_xJvokHUAZrlItDj4JN0ohjIc_OPTsJC3ZTQ6tg3c_Nw4jVQDDg8hflPxxxQuSdRT-S0rzgHtMzFrg8WYrBXpSLgy-4YgNCKXh0WHIrEEQOxR8HrNUMkbBOlMogdOUPAGalc2naK3hissYOU7n-V9ELMmk8D2fLZgr2Qzia8PeQihpZtvvihcm0SBm1AcHDItRWTrbIdP2n08x87KH064OBomk9Hrt3OmB1n9LCZpEu8lu98hJCYSxrDuMJm7oRsxskHbLBHd_UfiCGFJ99Xy0XW0lNs_DtFWHr69-790frJWzh2cZEF0UJFJi_s2GuSHOX13q-1627yaE10dB3d9pyDY2uG8wGwEptT9pWG8nxC-SdRVO83CR4c7LXbJbRIxGOs38ASFeOE30bcn96X8xoOGeQMy68A6Nh2YobaQ0elff2XAy6HE3DfoszKILyFJ0cXO4a4Uq7TE07jb45N4ZhTu5QekLHul81dX_7NV-Vp-8zC71bU--dJGz4YI4G-RYtKo4t5wfzeaRM4-7QR8ab6Ku3IZf0dB6g5bLGFW7X3XMnNbYhAkiab77PZjvjNJjO4sCsoomyNg4stKGkLToW1gHoxZ6FsAdAFsZom27SbtRKr5FQw3x8O8ywC-yRt-t0kI7Sm9_oFSNpT3-VwEtyurrzyW579-BLuYOHHjGv3X3yOOOqEGrYUmn1MPXJXLpDSSNubenEAzOzFebTbOE5VbK7ursPWMrwLWLrwJORmEiULPbF7XrnSv1-5XP-6uz9Em75L9-2ue76Ohq8_klWYZ0-rwDHZTSVeeVGZVmNuBu3s3lKMaoGCaTZmV35Z05-UUHZ6K6JgZOozv6dklVI34wzbJFmeDQ9cd85l04hKP1kH4MwoJFQVm_WrJEliawugaLRqH_etPQwFFlz4trCF46zrJQnIHVzqLPSopqdzqktub7coc9Eey56w4dFw8ZC2R16rbONllwkn4_BZpMe3YDwAObzGU5PKzwfzLn8a8qsp8jyV_mRlIUM-hlu3)](https://www.plantuml.com/plantuml/svg/fPVFRjj64CRFcgSO-E9BH2KkQjXg3n4K1tLXkQdje4TZIOx8hSbTOl_45TAyUybXrn0TSmd5nvtTtt3c-xWQyRrrmZXVLx0u1jZet5UqdAs58oNkh_ID-6jrdJILK7m6FdgLEQdL4cQVkk3dpHKQsf8XbH5QxKr6kDK6-mpBvVyfCAk4jPXBKHXH9m1htUoCB4hNPhebGf5bkcw4sabLuDNb-kBwzWAtiY8K3cQbSurTBXUBGhhIfqbxTb5dcPnd_9X5_xJvokHUAZrlItDj4JN0ohjIc_OPTsJC3ZTQ6tg3c_Nw4jVQDDg8hflPxxxQuSdRT-S0rzgHtMzFrg8WYrBXpSLgy-4YgNCKXh0WHIrEEQOxR8HrNUMkbBOlMogdOUPAGalc2naK3hissYOU7n-V9ELMmk8D2fLZgr2Qzia8PeQihpZtvvihcm0SBm1AcHDItRWTrbIdP2n08x87KH064OBomk9Hrt3OmB1n9LCZpEu8lu98hJCYSxrDuMJm7oRsxskHbLBHd_UfiCGFJ99Xy0XW0lNs_DtFWHr69-790frJWzh2cZEF0UJFJi_s2GuSHOX13q-1627yaE10dB3d9pyDY2uG8wGwEptT9pWG8nxC-SdRVO83CR4c7LXbJbRIxGOs38ASFeOE30bcn96X8xoOGeQMy68A6Nh2YobaQ0elff2XAy6HE3DfoszKILyFJ0cXO4a4Uq7TE07jb45N4ZhTu5QekLHul81dX_7NV-Vp-8zC71bU--dJGz4YI4G-RYtKo4t5wfzeaRM4-7QR8ab6Ku3IZf0dB6g5bLGFW7X3XMnNbYhAkiab77PZjvjNJjO4sCsoomyNg4stKGkLToW1gHoxZ6FsAdAFsZom27SbtRKr5FQw3x8O8ywC-yRt-t0kI7Sm9_oFSNpT3-VwEtyurrzyW579-BLuYOHHjGv3X3yOOOqEGrYUmn1MPXJXLpDSSNubenEAzOzFebTbOE5VbK7ursPWMrwLWLrwJORmEiULPbF7XrnSv1-5XP-6uz9Em75L9-2ue76Ohq8_klWYZ0-rwDHZTSVeeVGZVmNuBu3s3lKMaoGCaTZmV35Z05-UUHZ6K6JgZOozv6dklVI34wzbJFmeDQ9cd85l04hKP1kH4MwoJFQVm_WrJEliawugaLRqH_etPQwFFlz4trCF46zrJQnIHVzqLPSopqdzqktub7coc9Eey56w4dFw8ZC2R16rbONllwkn4_BZpMe3YDwAObzGU5PKzwfzLn8a8qsp8jyV_mRlIUM-hlu3 "Click for SVG version")
 
 As the diagram shows, Catena::LoRaWAN objects are primarily `Arduino_LoRaWAN` derivatives, but they also can be viewed as `McciCatena::cPollableObject` instances, and therefore can participate in [polling](#polling-framework).
 
-### FRAM Storage Management
+### 3.10. FRAM Storage Management
 
 Many MCCI Catena models include FRAM storage for keeping data across power cycles without worrying about the limited write-tolerance of EEPROM or flash. (FRAM, or ferro-electric RAM, is essentially non-volatile memory that can be freely written. Flash EPROM and EEPROM can be written, but tend to have non-local error properties and limited write durability. They are good for storing code, but troublesome for storing counters, because a location must be updated each time a counter is written.)
 
 The abstract class `cFram` is used to represent a FRAM-based storage element. It is abstract in that is uses several virtual methods that must be supplied by the concrete class that represents the specific FRAM chip. (For example, `cFram2K` represents a 2k by 8 FRAM.)
 
-#### FRAM Storage Formats
+#### 3.10.1. FRAM Storage Formats
 
 All FRAMs managed by `cFram` use a common object format on the FRAM, defined by the header file `Catena_FramStorage.h`.
 
@@ -928,7 +928,7 @@ There is an escape clause. If bit 31 of the first `uint32_t`is set, the object i
 
 This format is summarized in the following tables.
 
-##### Object Storage Structure
+##### 3.10.1.1. Object Storage Structure
 
 | Bytes | Name | Type  | Description |
 |:-----:|:----:|:-----:|:------------|
@@ -938,7 +938,7 @@ This format is summarized in the following tables.
 | 21..23 | `uVer[3]` | `uint8_t[3]` | Array of current slot indicators. Normally these are all identical and either 0x00 or 0x01. However, after a system upset, it is possible that these will not be the same. If `uVer[0]` is equal to `uVer[1]`, then the slot is selected by the value of these bytes. Otherwise, the slot is selected by the value of `uVer[3]`. |
 | 24.._size_-1 | - | - | Reserved space for the data payload. Slot zero starts at byte 24 and runs for the number of data bytes defined by bits 30..16 of `uSizeKey`. Slot one starts immediately after slot zero. |
 
-##### Bit layout of `uSizeKey`
+##### 3.10.1.2. Bit layout of `uSizeKey`
 
 | Bits | Name | Mask | Description |
 |:----:|:----:|:----:|:------------|
@@ -946,13 +946,13 @@ This format is summarized in the following tables.
 | 30..16 | `DataSize` | `cFramStorage::DATASIZE_MASK` | The size of the object's data payload in bytes. This may be zero. |
 | 31 | `fNonStandard` | `cFramStorage::NONSTD_MASK` | If zero, the object's payload uses the redundant scheme described above; the payload size is necessarily limited to 32767 byes. If non-zero, the object's payload uses a client-supplied encoding and representation; but can use up to 256 k bytes (since the object size can represent up to 256 k bytes) |
 
-##### The FRAM header object
+##### 3.10.1.3. The FRAM header object
 
 An FRAM store managed by this library is expected to begin with a header object. A header object is identified by the well-known GUID `{1DE7CDCD-0647-4B3C-A18D-8138A3D9613F}` and the key `kHeader` (zero).
 
 The header object carries a single 4-byte (`uint32_t`) payload, which is interpreted as the end-of-storage address -- the offset of the first byte on the FRAM that is not used for object storage. If an object is added to the store, this pointer is updated after the new object object has been fully committed. The new object is not permanently committed until the end-of-storage pointer is atomically updated.
 
-#### Adding FRAM objects
+#### 3.10.2. Adding FRAM objects
 
 1. Determine the GUID and key you want to use. If you are adding the item as part of the Catena library, you can use the GUID `GUID_FRAM_CATENA_V1(WIRE)`, `{1DE7CDCD-0647-4B3C-A18D-8138A3D9613F}`; add the key to `McciCatena::cFramStorage::StandardKeys`, defined in `Catena_FramStorage.h`.
 
@@ -975,7 +975,7 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
    - You may also use `gCatena.getFram()->saveField(uKey, (const uint8_t *)&buffer, sizeof(buffer))`.
 
-#### Class hierarchy within the FRAM library
+#### 3.10.3. Class hierarchy within the FRAM library
 
 <!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of cFram -- see assets/cfram.plantuml](http://www.plantuml.com/plantuml/png/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0)](https://www.plantuml.com/plantuml/svg/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0 "SVG image of cFram hierarchy")
@@ -983,13 +983,13 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 <!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of FRAM Storage objects -- see assets/cframstorage.plantuml](http://www.plantuml.com/plantuml/png/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00)](https://www.plantuml.com/plantuml/svg/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00 "SVG image of cFramStorage class hierarchy")
 
-### Asynchronous Serial Port Command Processing
+### 3.11. Asynchronous Serial Port Command Processing
 
 The Catena Arduino platform provides both an asynchronous command-line collection object and a full command parser.
 
 The `Catena::begin()` method normally creates a command parser instance that's linked to a command parser instance. For
 
-#### Collecting lines asynchronously from streams
+#### 3.11.1. Collecting lines asynchronously from streams
 
 The header file `Catena_StreamLineCollector.h` defines the class `cStreamLineCollector`. This class is a `cPollableObject`, and as such is polled automatically by the governing `cPollingEngine`. A read is launched by calling `cStreamLineCollector::readAsync()`, passing a callback function, a buffer (base and size), and a context handle. When a command has been accumulated, the specified callback function is called according to the following prototype:
 
@@ -1007,7 +1007,7 @@ typedef void (cStreamLineCollector::ReadCompleteCbFn)(
 - `pBuffer` points to the first byte of data. This might be `nullptr` in case of error, and it might be different than the user's original buffer pointer.
 - `nBuffer` is passed as the actual number of data bytes in the buffer. In case of error, `nBuffer` will be zero.
 
-#### The command parser
+#### 3.11.2. The command parser
 
 A command parser is initialized with a reference to a  `cStreamLineCollector` instance and a convenience reference to the governing `cCatena` instance. It is initialized with
 
@@ -1064,7 +1064,7 @@ cCommandStream::CommandStatus function1(
 
 A command function may operate synchronously or asynchronously.
 
-#### Command stream methods for use by functions
+#### 3.11.3. Command stream methods for use by functions
 
 Command stream functions may call any of these functions:
 
@@ -1072,11 +1072,11 @@ Command stream functions may call any of these functions:
 - `pThis->getuint32()` scans an argument and converts to `uint32_t`.
 - `pThis->completeCommand(CommandStatus)` signals the completion of an [asynchronous command](asynchronous-command-functions).
 
-#### Synchronous Command Functions
+#### 3.11.4. Synchronous Command Functions
 
 A synchronous command function does all of its work in the initial function call, and returns a status code.  The status code can be any value _except_ `CommandStatus::kPending`. Synchronous commands must not call `pThis->completeCommand(CommandStatus)`.
 
-#### Asynchronous Command Functions
+#### 3.11.5. Asynchronous Command Functions
 
 An asynchronous command function allows for work to continue after the initial function call. The main command function typically has two parts.
 
@@ -1084,11 +1084,11 @@ An asynchronous command function allows for work to continue after the initial f
 
 2. The second part of the command is coded asynchronously. The asynchronous paths each call `pThis->completeCommand()` when all work has been done. Once the function has established at least one asynchronous completion path, the main function must return `kPending` (and must ensure that all the completion paths call `completeCommand()`).
 
-### Clock Management and Calibration
+### 3.12. Clock Management and Calibration
 
 On some platforms, the system clock needs to be calibrated explicitly in order for the real-time ticks from `micros()` and `millis()` to be accurate. Do this by calling `uint32_t gCatena.CalibrateSystemClock()`. This function updates the clock calibration, and returns a platform-specific value indicative of the calibration. On platforms that don't support (or that don't need) calibration, a dummy implementation is provided that returns 0.
 
-### Si1133 driver
+### 3.13. Si1133 driver
 
 The library includes a simple driver for the SiLabs 1133 light sensor found on many Catena boards.
 
@@ -1129,11 +1129,11 @@ void readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel);
 
 Read `nChannel` channels of data, starting from channel 0, into the table at `pChannelData`.
 
-### `cTimer` Timer object
+### 3.14. `cTimer` Timer object
 
 Timer objects are used to simplify the implementation of periodic events.
 
-#### Catena_Timer.h header file and initialization
+#### 3.14.1. Catena_Timer.h header file and initialization
 
 ```c++
 #include <Catena_Timer.h>
@@ -1147,7 +1147,7 @@ The constructor takes no arguments.  To create a timer named `myTimer`, write:
 McciCatena::cTimer myTimer;
 ```
 
-#### cTimer begin() and end()
+#### 3.14.2. cTimer begin() and end()
 
 Timers are initially stopped. To start a timer, call:
 
@@ -1163,7 +1163,7 @@ To stop a timer, call:
 void cTimer::end();
 ```
 
-#### Checking for `cTimer` events
+#### 3.14.3. Checking for `cTimer` events
 
 To check whether a timer has ticked, call one of the following:
 
@@ -1183,7 +1183,7 @@ std::uint32_t cTimer::getRemaining() const;
 
 `getRemaining()` returns the number of milliseconds remaining in the current timer cycle.
 
-#### `cTimer` Utility routines
+#### 3.14.4. `cTimer` Utility routines
 
 ```c++
 std::uint32_t cTimer::getInterval() const;
@@ -1199,7 +1199,7 @@ void cTimer::retrigger();
 
 `retrigger()` sets the base of the current period to the current time, and resets any pending ticks.
 
-### `Catena_functional.h`
+### 3.15. `Catena_functional.h`
 
 This wrapper allows the C++ `<functional>` header file to be used with Arduino code.
 
@@ -1207,9 +1207,9 @@ The technical problem is that the `arduino.h` header file defines `min()` and `m
 
 The solution is a hack: undefine `min()` prior to including `<functional>`, and then redefine them using the well-known definitions.
 
-## Command Summary
+## 4. Command Summary
 
-### Standard commands
+### 4.1. Standard commands
 
 The following commands are supported by the Catena command parser.
 
@@ -1223,34 +1223,36 @@ The following commands are supported by the Catena command parser.
 | `system reset` | dynamically restart the system, as if the reset button were pressed |
 | `system version` | display the board type, and versions of the required libraries. Includes the MCCI Arduino BSP version, if known. |
 
-### STM32L0 commands
+### 4.2. STM32L0 commands
 
 | Command | Description |
 |-------------|----------------------------------|
 | `system calibrate` | calibrate the system clock and print the result.
 
-### FRAM commands
+### 4.3. FRAM commands
 
 | Command | Description |
 |-------------|----------------------------------|
 | `fram reset` _[_ `hard` _]_ | reset the contents of the FRAM. A soft reset assumes that the data structures are correct, and resets values to defaults. A hard reset invalidates the FRAM, so that the next boot will fully reconstruct it. |
 | `fram dump` _[ base [ len ] ]_ | dump the contents of FRAM, starting at _base_ for _len_ bytes. If _len_ is absent, a length of 32 bytes is assumed. If _base_ is also absent, then 32 bytes are dumped starting at byte zero.
 
-### LoRaWAN commands
+### 4.4. LoRaWAN commands
 
 The following commands are added by the Catena LoRawAN module.
 
 | Command | Description |
 |-------------|----------------------------------|
+| `lorawan configure` | Display all LoRaWAN parameters.
 | `lorawan configure` _`param` [ `value` ]_  | Display or set a LoRaWAN parameter.
 | `lorawan join` | unjoin if joined, then start a new join session.
 
-#### LoRaWAN Parameters
+#### 4.4.1. LoRaWAN Parameters
 
-Notes that these parameters are generally not loaded into the LMIC immediately. They are primarily used at boot time and at join time.
+These parameters are generally not loaded into the LMIC immediately. They are primarily used at boot time and at join time.
 
 | Command     | Target device type | Description |
 |-------------|---------------------|----------------------------------|
+`lorawan configure` | either | Display all the parameters.
 `lorawan configure deveui` _[ value ]_  | OTAA | Set the devEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
 `lorawan configure appeui` _[ value ]_  | OTAA |Set the AppEUI for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
 `lorawan configure appkey` _[ value ]_  | OTAA |Set the application key for this device to _value_, a 128-bit value given in big-endian (natural) form.
@@ -1262,7 +1264,7 @@ Notes that these parameters are generally not loaded into the LMIC immediately. 
 `lorawan configure fcntdown` _[ value ]_ | either | the current downlink frame count, `FCntDown` in the LoRaWAN spec.
 `lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
 
-## Adding your own commands
+## 5. Adding your own commands
 
 Here's a step-by-step procedure. There's a fully worked example, [`catena_usercommand`](#catenausercommand).
 
@@ -1287,11 +1289,11 @@ cCommandStream::CommandFn cmdOne, cmdTwo /*, .. etc. */;
 ```c++
 // the individual commmands are put in this table
 static const cCommandStream::cEntry sMyCommmandTable[] =
-        {
-        { "one", cmdOne },
-        { "two", cmdTwo },
-        // other commands go here....
-        };
+	{
+	{ "one", cmdOne },
+	{ "two", cmdTwo },
+	// other commands go here....
+	};
 ```
 
 - Create the top-level structure that represents the command table to the parser. This cannot be `const`, because internal fields are used for linkage (to avoid run-time memory allocation in the library).
@@ -1304,8 +1306,8 @@ static cCommandStream::cDispatch sMyCommands(
     sMyCommmandTable,           // this is the pointer to the table
     sizeof(sMyCommmandTable),   // this is the size of the table
     "application"               // this is the "first word" for all the commands
-                                // in this table. If nullptr, then the commands
-                                // are added to the main table.
+				// in this table. If nullptr, then the commands
+				// are added to the main table.
     );
 ```
 
@@ -1344,29 +1346,29 @@ cCommandStream::CommandStatus cmdOne(
     }
 ```
 
-## Example sketches
+## 6. Example sketches
 
-### `catena_hello`
+### 6.1. `catena_hello`
 
 This is a very simple sketch without LoRaWAN support. It shows the minimal boilerplate needed to use this library. Although it's not obvious, while looping, the program automatically flashes the LED and accepts commands from the console.
 
-### `catena_hello_lora`
+### 6.2. `catena_hello_lora`
 
 This sketch adds LoRaWAN uplink to the basic hello-world application. If the LoRaWAN system is provisioned, the app transmits a single message to port 16, containing the bytes `0xCA`, `0xFE`, `0xBA`, and `0xBE`, in sequence.
 
 If the LoRaWAN system is not provisioned, the application enters an idle loop; you can use the LoRaWAN commands to set things up.
 
-### `catena_usercommand`
+### 6.3. `catena_usercommand`
 
 This sketch is very similar to `catena_hello`. It shows how to add a user-defined command, `application hello`, that prints "`Hello, world!`".
 
-### `catena_fsm`
+### 6.4. `catena_fsm`
 
 This sketch demonstrates the use of the Catena FSM class to implement the `Turnstile` example described in [Finite State Machine Framework](#finite-state-machine-fsm-framework).
 
-## Board Support Dependencies
+## 7. Board Support Dependencies
 
-## Other Libraries and Versions Required
+## 8. Other Libraries and Versions Required
 
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
@@ -1374,7 +1376,12 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
-## Library Release History
+## 9. Release History
+
+- HEAD includes the following changes.
+
+  - [#248](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/248) Add interactive command `lorawan configure` to display all hte parameters.
+  
 - v0.18.1 includes the following changes.
   - [#247](https://github.com/mcci-catena/Catena-Arduino-Platform/pull/247) Add a generic application block to FRAM map
 
@@ -1454,18 +1461,18 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - v0.7.0 is a major refactoring adding support for the `Catena 4551`, which is based on the STM32L0. Although we think that there are no breaking changes, there might be a few, especially if code relied on structured defined internally to the MCCI-Catena-Arduino library `Catena...` classes.
 
-## Meta
+## 10. Meta
 
-### License
+### 10.1. License
 
 This repository is released under the [MIT](./LICENSE) license. Commercial licenses are also available from MCCI Corporation.
 
-### Support Open Source Hardware and Software
+### 10.2. Support Open Source Hardware and Software
 
 MCCI invests time and resources providing this open source code, please support MCCI and open-source hardware by purchasing products from MCCI, Adafruit and other open-source hardware/software vendors!
 
 For information about MCCI's products, please visit [store.mcci.com](https://store.mcci.com/).
 
-### Trademarks
+### 10.3. Trademarks
 
 MCCI and MCCI Catena are registered trademarks of MCCI Corporation. All other marks are the property of their respective owners.
