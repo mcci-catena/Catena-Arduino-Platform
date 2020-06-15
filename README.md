@@ -1380,7 +1380,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - v0.19.0 includes the following changes.
 
-  - [#248](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/248) Add interactive command `lorawan configure` to display all hte parameters.
+  - [#248](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/248) Add interactive command `lorawan configure` to display all the parameters.
+  - [#253](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/253) Add `AdcStart()` before each `AdcGetValue()` to read Channel value (0.19.0.10).
   
 - v0.18.1 includes the following changes.
   - [#247](https://github.com/mcci-catena/Catena-Arduino-Platform/pull/247) Add a generic application block to FRAM map
