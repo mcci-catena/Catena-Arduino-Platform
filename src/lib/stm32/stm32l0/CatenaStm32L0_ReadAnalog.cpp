@@ -163,7 +163,7 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 		ADC1->SMPR = ADC_SMPR_SMPR;
 		ADC->CCR = ADC_CCR_VREFEN;
 
-		/* start ADC, which will take 2 readings */
+		/* start ADC, before each readings */
 		AdcStart();
 
 		fStatusOk = AdcGetValue(&vRef);
@@ -171,7 +171,10 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 			{
 			*pValue = 5;
 			if (Channel != STM32L0_ADC_CHANNEL_VREFINT)
+				{
+				AdcStart();
 				fStatusOk = AdcGetValue(&vChannel);
+				}
 			else
 				vChannel = vRef;
 			}
@@ -217,7 +220,7 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 		vRefInt_cal = (*pVrefintCal * 3000 + 1) / (4096 / 4);
 
 		vResult = vChannel * Multiplier;
-	
+
 		vResult = vResult * vRefInt_cal / vRef;
 		// remove the factor of 4, and round
 		*pValue = (vResult + 2) >> 2;
