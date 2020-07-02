@@ -176,7 +176,9 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 				fStatusOk = AdcGetValue(&vChannel);
 				}
 			else
+				{
 				vChannel = vRef;
+				}
 			}
 
 		if (fStatusOk)
