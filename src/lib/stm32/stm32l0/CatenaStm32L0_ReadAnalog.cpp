@@ -222,7 +222,7 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 		vRefInt_cal = (*pVrefintCal * 3000 + 1) / (4096 / 4);
 
 		vResult = vChannel * Multiplier;
-
+	
 		vResult = vResult * vRefInt_cal / vRef;
 		// remove the factor of 4, and round
 		*pValue = (vResult + 2) >> 2;
