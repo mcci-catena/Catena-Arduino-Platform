@@ -254,6 +254,25 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 				(! fHaveSeenLow || !fHaveSeenHigh));
 
 	//
+	// Check which calibration value is better, 
+	// with lower error in PPM
+	//
+	if (fHaveSeenLow && fHaveSeenHigh)
+		{
+		uint32_t mSecondHighDiff;
+		uint32_t mSecondLowDiff;
+		
+		mSecondHighDiff = (mSecondHigh - 1000);
+		mSecondLowDiff = (1000 - mSecondLow);
+		
+		if (mSecondHighDiff > mSecondLowDiff)
+			fHaveSeenHigh = false;
+		
+		else if (mSecondHighDiff <= mSecondLowDiff)
+			fHaveSeenLow = false;
+		}
+
+	//
 	// We are going to take higher calibration value first and
 	// it allows us not to call LMIC_setClockError().
 	//
