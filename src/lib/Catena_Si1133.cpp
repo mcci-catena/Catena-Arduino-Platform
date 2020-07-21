@@ -101,7 +101,7 @@ static const uint8_t	sk_Si1133AdcConfig[][4] =
 		//	normal measurement, sw gain 1, hw gain 1
 		//	16 bit out, post shift 1, no threshold
 		//	use meascount 2 (unless nChannel == 0)
-		{ SI1133_ADCMUX_LARGE_WHITE | 0x40, 0x00, 0x08, 0x80 },
+		{ SI1133_ADCMUX_LARGE_WHITE | 0x40, 0x74, 0x08, 0x80 },
 
 		// UV: 
 		//	fastest decimation
