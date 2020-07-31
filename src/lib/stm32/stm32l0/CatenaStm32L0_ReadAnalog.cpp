@@ -163,7 +163,7 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 		ADC1->SMPR = ADC_SMPR_SMPR;
 		ADC->CCR = ADC_CCR_VREFEN;
 
-		/* start ADC, before each readings */
+		/* start ADC, before each reading */
 		AdcStart();
 
 		fStatusOk = AdcGetValue(&vRef);
