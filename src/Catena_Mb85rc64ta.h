@@ -55,23 +55,23 @@ public:
 	Catena_Mb85rc64ta(void);
 
 	// set up and probe device
-	boolean begin(uint8_t DeviceAddress = CATENA_MB85RC64TA_ADDRESS,
+	bool begin(uint8_t DeviceAddress = CATENA_MB85RC64TA_ADDRESS,
 		      TwoWire *pWire = &Wire);
 
 	// write a single byte
-	void write8(uint16_t framAddr, uint8_t value);
+	bool write8(uint16_t framAddr, uint8_t value);
 
 	// write a buffer
-	void write(uint16_t framAddr, uint8_t const *pBuffer, size_t nBuffer);
+	size_t write(uint16_t framAddr, uint8_t const *pBuffer, size_t nBuffer);
 
-	// read a single byte
+	// read a single byte -- no error check.
 	uint8_t read8(uint16_t framAddr);
 
-	// read a buffer
+	// read a buffer -- error if result ! nBuffer
 	size_t read(uint16_t framAddr, uint8_t *pBuffer, size_t nBuffer);
 
 	// read ID
-	void readId(uint16_t *pManufactureId, uint16_t *pProductId);
+	bool readId(uint16_t *pManufactureId, uint16_t *pProductId);
 
 	// power management
 	void powerDown(void);
