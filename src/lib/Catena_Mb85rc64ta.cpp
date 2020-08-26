@@ -250,6 +250,7 @@ size_t Catena_Mb85rc64ta::write(
 		    	{
 			nBuffer -= nThis;
 			pBuffer += nThis;
+			framAddr += nThis;
 		    	}
 		else
 			// error!
@@ -353,12 +354,13 @@ size_t Catena_Mb85rc64ta::read(
 				// error
 				break;
 				}
-			while (nBuffer > 0)
+			while (nRead > 0)
 				{
 				*pBuffer++ = this->m_pWire->read();
 				--nBuffer;
+				--nRead;
 				}
-			framAddr += nRead;
+			framAddr += nThis;
 			}
 		else
 			// error
