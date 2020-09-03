@@ -193,6 +193,10 @@ bool  Catena_Si1133::configure(
 	if (uMeasurementCount != 0 && config.getCounter() == ChannelConfiguration_t::CounterSelect_t::None)
 		return false;
 
+	// if measurement count is zero, set counter to none
+	if (uMeasurementCount == 0)
+		config.setCounter(ChannelConfiguration_t::CounterSelect_t::None);
+
 	// store the configuration and invalidate the data offsets
 	this->m_config[uChannel] = config;
 	this->m_fDataRegValid = false;
@@ -402,6 +406,7 @@ bool Catena_Si1133::readMultiChannelData(uint32_t *pChannelData, uint32_t nChann
 		channelData |= this->m_pWire->read();
 		*pChannelData = channelData;
 		}
+	return true;
 	}
 
 bool Catena_Si1133::readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel) const
@@ -508,11 +513,11 @@ uint8_t Catena_Si1133::waitResponse(uint8_t uResponse)
 uint8_t Catena_Si1133::readParam(uint8_t uParam)
 	{
 	uint8_t uResponse;
-	
+
 	uResponse = this->getResponse();
 
 	this->writeReg(SI1133_REG_COMMAND, SI1133_CMD_PARAM_QUERY + uParam);
-	
+
 	uResponse = this->waitResponse(uResponse);
 	if (uResponse & SI1133_RSP_CMD_ERR)
 		{
@@ -528,7 +533,7 @@ uint8_t Catena_Si1133::readParam(uint8_t uParam)
 void Catena_Si1133::writeParam(uint8_t uParam, uint8_t uData)
 	{
 	uint8_t uResponse;
-	
+
 	uResponse = this->getResponse();
 
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
