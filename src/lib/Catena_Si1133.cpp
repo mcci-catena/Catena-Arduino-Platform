@@ -214,7 +214,7 @@ bool  Catena_Si1133::configure(
 		this->writeParam(uChannelBase,   uint8_t((value >> 0) & 0xFFu));
 		this->writeParam(uChannelBase+1, uint8_t((value >> 8) & 0xFFu));
 		this->writeParam(uChannelBase+2, uint8_t((value >> 16) & 0xFFu));
-		this->writeParam(uChannelBase+3, uint8_t((value >> 24) & 0xFFu));
+		this->writeParam(uChannelBase+3, uMeasurementCount ? uint8_t((value >> 24) & 0xFFu) : 0);
 
 		if (uMeasurementCount != 0)
 			{
@@ -508,11 +508,11 @@ uint8_t Catena_Si1133::waitResponse(uint8_t uResponse)
 uint8_t Catena_Si1133::readParam(uint8_t uParam)
 	{
 	uint8_t uResponse;
-	
+
 	uResponse = this->getResponse();
 
 	this->writeReg(SI1133_REG_COMMAND, SI1133_CMD_PARAM_QUERY + uParam);
-	
+
 	uResponse = this->waitResponse(uResponse);
 	if (uResponse & SI1133_RSP_CMD_ERR)
 		{
@@ -528,7 +528,7 @@ uint8_t Catena_Si1133::readParam(uint8_t uParam)
 void Catena_Si1133::writeParam(uint8_t uParam, uint8_t uData)
 	{
 	uint8_t uResponse;
-	
+
 	uResponse = this->getResponse();
 
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
