@@ -402,6 +402,7 @@ bool Catena_Si1133::readMultiChannelData(uint32_t *pChannelData, uint32_t nChann
 		channelData |= this->m_pWire->read();
 		*pChannelData = channelData;
 		}
+	return true;
 	}
 
 bool Catena_Si1133::readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel) const
