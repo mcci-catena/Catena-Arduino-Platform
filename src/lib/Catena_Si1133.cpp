@@ -193,6 +193,10 @@ bool  Catena_Si1133::configure(
 	if (uMeasurementCount != 0 && config.getCounter() == ChannelConfiguration_t::CounterSelect_t::None)
 		return false;
 
+	// if measurement count is zero, set counter to none
+	if (uMeasurementCount == 0)
+		config.setCounter(ChannelConfiguration_t::CounterSelect_t::None);
+
 	// store the configuration and invalidate the data offsets
 	this->m_config[uChannel] = config;
 	this->m_fDataRegValid = false;
@@ -214,7 +218,7 @@ bool  Catena_Si1133::configure(
 		this->writeParam(uChannelBase,   uint8_t((value >> 0) & 0xFFu));
 		this->writeParam(uChannelBase+1, uint8_t((value >> 8) & 0xFFu));
 		this->writeParam(uChannelBase+2, uint8_t((value >> 16) & 0xFFu));
-		this->writeParam(uChannelBase+3, uMeasurementCount ? uint8_t((value >> 24) & 0xFFu) : 0);
+		this->writeParam(uChannelBase+3, uint8_t((value >> 24) & 0xFFu));
 
 		if (uMeasurementCount != 0)
 			{
