@@ -168,6 +168,45 @@ private:
 	static constexpr uint32_t kPollDelayMs = 5;
 	static constexpr uint32_t kStartDelayMs = 200;
 
+	static constexpr uint32_t adcconfig_adcmux 		= UINT32_C(0x1F) << 0;
+	static constexpr uint32_t adcconfig_decim_rate 		= UINT32_C(3) << 5;
+
+	static constexpr uint32_t adcsense_hw_gain 		= UINT32_C(0xF) << (0 + 8);
+	static constexpr uint32_t adcsense_sw_gain 		= UINT32_C(0x7) << (4 + 8);
+	static constexpr uint32_t adcsense_hsig 		= UINT32_C(1) << (7 + 8);
+
+	static constexpr uint32_t adcpost_thresh_en 		= UINT32_C(0x3) << (0 + 16);
+	static constexpr uint32_t adcpost_postshift 		= UINT32_C(0x7) << (3 + 16);
+	static constexpr uint32_t adcpost_24bit 		= UINT32_C(1) << (6 + 16);
+
+	static constexpr uint32_t measconfig_counter_index 	= UINT32_C(3) << (6 + 24);
+
+public:
+	enum class InputLed_t : uint8_t
+		{
+		SmallIR		= 0b00000,
+		MediumIR 	= 0b00001,
+		LargeIR		= 0b00010,
+		White 		= 0b01011,
+		LargeWhite 	= 0b01101,
+		UV		= 0b11000,
+		UVdeep		= 0b11001,
+		Disabled	= 0b11111,
+		};
+	static constexpr bool isValid(InputLed_t v)
+		{
+		return (v <= InputLed_t::Disabled) &&
+		       ((UINT32_C(1) << uint8_t(v)) & 
+		       		((1u << uint8_t(InputLed_t::SmallIR)) |
+				 (1u << uint8_t(InputLed_t::MediumIR)) |
+				 (1u << uint8_t(InputLed_t::LargeIR)) |
+				 (1u << uint8_t(InputLed_t::White)) |
+				 (1u << uint8_t(InputLed_t::LargeWhite)) |
+				 (1u << uint8_t(InputLed_t::UV)) |
+				 (1u << uint8_t(InputLed_t::UVdeep)) |
+				 (1u << uint8_t(InputLed_t::Disabled))));
+		}
+	
 public:
 	Catena_Si1133(void);
 
@@ -177,20 +216,145 @@ public:
 	Catena_Si1133(const Catena_Si1133&&) = delete;
 	Catena_Si1133& operator=(const Catena_Si1133&&) = delete;
 
+	static constexpr uint32_t clocksToMicroseconds(uint32_t nClocks) {
+		return ((nClocks * 2) / 21 + 1) / 2;
+		}
+	static constexpr uint32_t microsecondsToClocks(uint32_t us) {
+		return us * 21;
+		}
+
+	//! \brief Configuration object for SI1133 setup
+	class ChannelConfiguration_t
+		{
+	private:
+		uint32_t	m_value;
+
+		template <typename T>
+		static constexpr T fieldlsb(T fmask) { return ((fmask) & (~(fmask) + T(1))); }
+		template <typename T>
+		static constexpr T fieldvalue(T fmask, T val) { return (fieldlsb(fmask) * val) & fmask; }
+		template <typename T>
+		static constexpr T fieldget(T fmask, T val) { return (val & fmask) / fieldlsb(fmask); }
+		template <typename T, typename TV>
+		static constexpr T fieldset(T fmask, T val, TV fv) { return (val & ~fmask) | (fv * fieldlsb(fmask)); }
+
+		template <typename T>
+		ChannelConfiguration_t& setValue(uint32_t fmask, T value) {
+			this->m_value = fieldset(fmask, this->m_value, value);
+			return *this;
+		}
+
+	public:
+		uint32_t getValue() const { return this->m_value; };
+
+		ChannelConfiguration_t(uint32_t v = 0)
+			: m_value(v)
+			{}
+
+		ChannelConfiguration_t& setDecimationRateCode(uint8_t rate) {
+			return this->setValue(adcconfig_decim_rate, rate);
+			}
+		uint8_t getDecimationRateCode() const { return fieldget(adcconfig_decim_rate, this->m_value); }
+		static constexpr uint32_t decimationRateCodeToClocks(uint8_t ratecode) {
+			return ((ratecode & 3) == 0) ? 1024 :
+			       ((ratecode & 3) == 1) ? 2048 :
+			       ((ratecode & 3) == 2) ? 4096 :
+			       				512;
+			}
+		ChannelConfiguration_t& setAdcMux(InputLed_t channel) {
+			return this->setValue(adcconfig_adcmux, uint8_t(channel));
+			}
+		InputLed_t getAdcMux() { return InputLed_t(fieldget(adcconfig_adcmux, this->m_value)); }
+
+		ChannelConfiguration_t& setSwGainCode(uint8_t gc) {
+			return this->setValue(adcsense_sw_gain, gc);
+			}
+		uint8_t getSwGainCode() { return fieldget(adcsense_sw_gain, this->m_value); }			
+
+		ChannelConfiguration_t& setHwGainCode(uint8_t gc) {
+			return this->setValue(adcsense_hw_gain, gc);
+			}
+		uint8_t getHwGainCode() { return fieldget(adcsense_hw_gain, this->m_value); }			
+
+		ChannelConfiguration_t& setHsig(bool fHighRange) {
+			return this->setValue(adcsense_hsig, fHighRange);
+			}
+		bool getHsig() { return fieldget(adcsense_hsig, this->m_value); }			
+
+		enum class Threshold_t : uint8_t {
+			None = 0,
+			Threshold0,
+			Threshold1, 
+			Threshold2
+			};
+		
+		ChannelConfiguration_t& setInterruptThreshold(Threshold_t nBits) {
+			return this->setValue(adcpost_thresh_en, uint8_t(nBits));
+			}
+		Threshold_t getInterruptThreshold() const { return Threshold_t(fieldget(adcpost_postshift, this->m_value)); }
+
+		ChannelConfiguration_t& setPostShift(uint8_t nBits) {
+			return this->setValue(adcpost_postshift, nBits);
+			}
+		uint8_t getPostShift() const { return fieldget(adcpost_postshift, this->m_value); }
+
+		ChannelConfiguration_t& set24bit(bool f24bit = true) {
+			return this->setValue(adcpost_24bit, f24bit);
+			}
+		bool get24bit() const { return fieldget(adcpost_24bit, this->m_value); }
+
+		enum class CounterSelect_t : uint8_t {
+			None = 0,
+			MeasCount1,
+			MeasCount2,
+			MeasCount3
+			};
+
+		ChannelConfiguration_t& setCounter(CounterSelect_t c) {
+			return this->setValue(measconfig_counter_index, uint8_t(c));
+			}
+		CounterSelect_t getCounter() const { return CounterSelect_t(fieldget(measconfig_counter_index, this->m_value)); }
+		};
+
+
         boolean begin(uint8_t DeviceAddress = CATENA_SI1133_ADDRESS,
 		      TwoWire *pWire = &Wire);
 
-	boolean configure(
-			uint8_t uChannel,
-			uint8_t uMode,
-			uint8_t uMeasurementCount = 0	/* use forced mode */
-			);
+	bool configure(
+		uint8_t uChannel,			//! channel in 0..5
+		ChannelConfiguration_t cc,		//! configuration value
+		uint8_t uMeasurementCount		//! 0: forced mode, otherwise count of measurements
+		);
 
+	/// \brief fully configure the measurement for a given
+	///	channel. Must be called in ascending order of channel
+	///	to simplify measurement.
+	///
+	/// \note This is a legacy API; we recommend using the `ChannelConfiguration_t`
+	///	variant for new code.
+	///
+	/// \param uChannel is the sequence of the measrurement
+	///	in the Si1133 output buffer.
+	///
+	/// \param uMode is an index into 
+	boolean configure(
+		uint8_t uChannel,
+		uint8_t uMode,
+		uint8_t uMeasurementCount = 0	/* use forced mode */
+		);
+
+	/// \brief start a measurement.
+	/// \param fOneTime controls whether this is a one-time (if `true`)
+	///	or continuous (if `false` or omitted) measurement.
 	boolean start(boolean fOneTime = false);
+
+	/// \brief stop an ongoing measurement.
 	boolean stop(void);
 
-	uint16_t readChannelData(uint8_t uChannel = 0);
-	void readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel);
+	/// \brief read a single channel o
+	uint32_t readChannelData(uint8_t uChannel = 0);
+	bool readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel) const;
+	bool readMultiChannelData(uint32_t *pChannelData, uint32_t nChannel) const;
 
 	uint8_t readReg(uint8_t uReg);
 	uint8_t readParam(uint8_t uParam);
@@ -202,11 +366,15 @@ public:
 
 private:
 	uint8_t m_DeviceAddress;
+	/// bitmap of enabled channels.
 	uint8_t	m_ChannelEnabled;
 	uint8_t m_ChannelCompleted;
 	uint8_t	m_ChannelDataReg[SI1133_NUM_CHANNEL];
-	bool	m_Initialized;
-	bool	m_fOneTime;
+	/// array of channel configuration info.
+	ChannelConfiguration_t m_config[SI1133_NUM_CHANNEL];
+	bool	m_Initialized : 1;
+	bool	m_fOneTime : 1;
+	bool	m_fDataRegValid : 1;
 	std::uint32_t m_StartTime;
 	std::uint32_t m_LastPollTime;
 	TwoWire *m_pWire;

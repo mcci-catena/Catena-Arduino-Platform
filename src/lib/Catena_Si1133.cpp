@@ -65,59 +65,43 @@ using namespace McciCatena;
 
 // this table has one row per mode, and 4 columns:
 //		  ADCCONFIGx	ADCSENSx	ADCPOSTx	MEASCONGIGx
-
-static const uint8_t	sk_Si1133AdcConfig[][4] =
+static const Catena_Si1133::ChannelConfiguration_t sk_Config[] =
 	{
-		// small IR: 
-		//	normal decimation
-		//	normal measurement, sw gain 1, hw gain 1
-		//	16 bit out, no shift, no threshold
-		//	use meascount 1 (unless nChannel == 0)
-		{ SI1133_ADCMUX_SMALL_IR,    0x00, 0x00, 0x40 },
-
-		// medium IR: 
-		//	normal decimation
-		//	normal measurement, sw gain 1, hw gain 1
-		//	16 bit out, post shift 1, no threshold
-		//	use meascount 1 (unless nChannel == 0)
-		{ SI1133_ADCMUX_MEDIUM_IR,   0x00, 0x08, 0x40 },
-
-		// large IR: 
-		//	normal decimation
-		//	normal measurement, sw gain 1, hw gain 1
-		//	16 bit out, post shift 2, no threshold
-		//	use meascount 1 (unless nChannel == 0)
-		{ SI1133_ADCMUX_LARGE_IR,    0x00, 0x10, 0x40 },
-
-		// white: 
-		//	normal decimation
-		//	normal measurement, sw gain 1, hw gain 1
-		//	16 bit out, post shift 0, no threshold
-		//	use meascount 2 (unless nChannel == 0)
-		{ SI1133_ADCMUX_WHITE,       0x00, 0x00, 0x80 },
-
-		// large white: 
-		//	slow decimation (195 us)
-		//	normal measurement, sw gain 1, hw gain 1
-		//	16 bit out, post shift 1, no threshold
-		//	use meascount 2 (unless nChannel == 0)
-		{ SI1133_ADCMUX_LARGE_WHITE | 0x40, 0x00, 0x08, 0x80 },
-
-		// UV: 
-		//	fastest decimation
-		//	normal measurement, sw gain 1, hw gain 9
-		//	16 bit out, post shift 0, no threshold
-		//	use meascount 3 (unless nChannel == 0)
-		{ SI1133_ADCMUX_UV | 0x60,    0x09, 0x00, 0xC0 },
-
-		// UV deep: 
-		//	normal decimation
-		//	normal measurement, sw gain 1, hw gain 11
-		//	16 bit out, post shift 0, no threshold
-		//	use meascount 3 (unless nChannel == 0)
-		{ SI1133_ADCMUX_UV_DEEP | 0x60, 0x0b, 0x00, 0xC0 },
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::SmallIR)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount1),
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::MediumIR)
+		.setPostShift(1)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount1),
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::LargeIR)
+		.setPostShift(2)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount1),
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::White)
+		.setPostShift(0)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount2),
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::LargeWhite)
+		.setSwGainCode(7)
+		.setHwGainCode(4)
+		.setPostShift(1)
+		.set24bit(1)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount2),
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::UV)
+		.setSwGainCode(0)
+		.setHwGainCode(9)
+		.setPostShift(0)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount3),
+	Catena_Si1133::ChannelConfiguration_t()
+		.setAdcMux(Catena_Si1133::InputLed_t::UVdeep)
+		.setSwGainCode(0)
+		.setHwGainCode(11)
+		.setPostShift(0)
+		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount3),
 	};
-
 
 /****************************************************************************\
 |
@@ -193,7 +177,61 @@ boolean Catena_Si1133::begin(uint8_t DeviceAddress, TwoWire *pWire)
         return true;
 	}
 
-// configure the channel. if uMeasurementCount is zero, 
+bool  Catena_Si1133::configure(
+	uint8_t	uChannel,
+	Catena_Si1133::ChannelConfiguration_t config,
+	uint8_t uMeasurementCount
+	)
+	{
+	if (uChannel >= SI1133_NUM_CHANNEL)
+		return false;
+
+	if (! isValid(config.getAdcMux()))
+		return false;
+
+	// if measurement count is non-zero, config must select a counter.
+	if (uMeasurementCount != 0 && config.getCounter() == ChannelConfiguration_t::CounterSelect_t::None)
+		return false;
+
+	// if measurement count is zero, set counter to none
+	if (uMeasurementCount == 0)
+		config.setCounter(ChannelConfiguration_t::CounterSelect_t::None);
+
+	// store the configuration and invalidate the data offsets
+	this->m_config[uChannel] = config;
+	this->m_fDataRegValid = false;
+
+	// allow disabling as well as enabling channels
+	if (config.getAdcMux() == InputLed_t::Disabled)
+		{
+		this->m_ChannelEnabled &= ~(1u << uChannel);
+		return true;
+		}
+	else
+		{
+		uint8_t uChannelBase;
+		uint32_t value = config.getValue();
+
+		this->m_ChannelEnabled |= (1u << uChannel);
+
+		uChannelBase = SI1133_PARAM_ADCCONFIG0 + (uChannel * 4);
+		this->writeParam(uChannelBase,   uint8_t((value >> 0) & 0xFFu));
+		this->writeParam(uChannelBase+1, uint8_t((value >> 8) & 0xFFu));
+		this->writeParam(uChannelBase+2, uint8_t((value >> 16) & 0xFFu));
+		this->writeParam(uChannelBase+3, uint8_t((value >> 24) & 0xFFu));
+
+		if (uMeasurementCount != 0)
+			{
+			uChannelBase =	(SI1133_PARAM_MEASCOUNT0 - 1) +
+					uint8_t(config.getCounter());
+			this->writeParam(uChannelBase, uMeasurementCount);
+			}
+		return true;
+		}
+	}
+
+// configure the channel (legacy). if uMeasurementCount is zero, we set up for forced mode,
+// otherwise configure autonomous mode.
 boolean Catena_Si1133::configure(
 	uint8_t uChannel,
 	uint8_t uMode,
@@ -202,41 +240,10 @@ boolean Catena_Si1133::configure(
 	{
 	uint8_t	uChannelBase;
 
-	if (uChannel >= SI1133_NUM_CHANNEL || uMode > CATENA_SI1133_MODE_UVDeep)
+	if (uMode > sizeof(sk_Config) / sizeof(sk_Config[0]))
 		return false;
 
-	if (this->m_ChannelEnabled & (1u << uChannel))
-		return false;
-
-	this->m_ChannelEnabled |= (1u << uChannel);
-
-	uChannelBase = SI1133_REG_HOSTOUT0;
-	for (uint32_t i = 0; i < SI1133_NUM_CHANNEL; ++i)
-		{
-		if (this->m_ChannelEnabled & (1u << i))
-			{
-			this->m_ChannelDataReg[i] = uChannelBase;
-			uChannelBase += 2;
-			}
-		else
-			{
-			this->m_ChannelDataReg[i] = 0;
-			}
-		}
-
-	uChannelBase = SI1133_PARAM_ADCCONFIG0 + (uChannel * 4);
-	this->writeParam(uChannelBase,   sk_Si1133AdcConfig[uMode][0]);
-	this->writeParam(uChannelBase+1, sk_Si1133AdcConfig[uMode][1]);
-	this->writeParam(uChannelBase+2, sk_Si1133AdcConfig[uMode][2]);
-	this->writeParam(uChannelBase+3, uMeasurementCount ? sk_Si1133AdcConfig[uMode][3] : 0);
-
-	if (uMeasurementCount != 0)
-		{
-		uChannelBase =	(SI1133_PARAM_MEASCOUNT0 - 1) +
-				(sk_Si1133AdcConfig[uMode][3] >> 6);
-		this->writeParam(uChannelBase, uMeasurementCount);
-		}
-        return true;
+	return this->configure(uChannel, sk_Config[uMode], uMeasurementCount);
 	}
 
 boolean Catena_Si1133::start(boolean fOneTime)
@@ -245,6 +252,27 @@ boolean Catena_Si1133::start(boolean fOneTime)
 
 	if (this->m_ChannelEnabled == 0)
 		return false;
+
+	if (! this->m_fDataRegValid)
+		{
+		uint8_t	uChannelBase;
+
+		uChannelBase = SI1133_REG_HOSTOUT0;
+		for (uint32_t i = 0; i < SI1133_NUM_CHANNEL; ++i)
+			{
+			if (this->m_ChannelEnabled & (1u << i))
+				{
+				this->m_ChannelDataReg[i] = uChannelBase;
+				uChannelBase += 2 + this->m_config[i].get24bit();	// assumes 16-bit mode. add 3 for 24-bit mode.
+				}
+			else
+				{
+				this->m_ChannelDataReg[i] = 0;
+				}
+			}
+
+		this->m_fDataRegValid = true;
+		}
 
 	this->writeParam(SI1133_PARAM_CHAN_LIST, this->m_ChannelEnabled);
 	if (fOneTime)
@@ -306,53 +334,101 @@ boolean Catena_Si1133::stop(void)
         return true;
 	}
 
-uint16_t Catena_Si1133::readChannelData(uint8_t uChannel)
+uint32_t Catena_Si1133::readChannelData(uint8_t uChannel)
 	{
-	uint16_t uValue;
+	uint32_t uValue;
 
 	if (uChannel >= SI1133_NUM_CHANNEL ||
 	    (this->m_ChannelEnabled & (1u << uChannel)) == 0)
 		return 0;
 
-	this->m_pWire->beginTransmission(this->m_DeviceAddress);
-	this->m_pWire->write(this->m_ChannelDataReg[uChannel]);
-	this->m_pWire->endTransmission();
-	this->m_pWire->requestFrom(this->m_DeviceAddress, 2u);
+	bool const fIs24bit = this->m_config[uChannel].get24bit();
 
-	while (! this->m_pWire->available())
-		/* loop */;
+	this->m_pWire->beginTransmission(this->m_DeviceAddress);
+	if (this->m_pWire->write(this->m_ChannelDataReg[uChannel]) != 1)
+		return 0;
+	if (this->m_pWire->endTransmission() != 0)
+		return 0;
+	if (this->m_pWire->requestFrom(this->m_DeviceAddress, 2u + fIs24bit) != 2u + fIs24bit)
+		return 0;
+
+	uValue = 0;
+
+	if (fIs24bit)
+		{
+		uValue = this->m_pWire->read() << 16;
+		}
+
 	uValue = this->m_pWire->read() << 8;
 
-	while (! this->m_pWire->available())
-		/* loop */;
 	uValue |= this->m_pWire->read();
 
 	return uValue;
 	}
 
-void Catena_Si1133::readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel)
+bool Catena_Si1133::readMultiChannelData(uint32_t *pChannelData, uint32_t nChannel) const
 	{
 	uint8_t	nRead;
 
-	if (this->m_ChannelEnabled == 0 || pChannelData == NULL || nChannel == 0)
-		return;
+	if (this->m_ChannelEnabled == 0 || pChannelData == NULL || nChannel == 0 || nChannel > SI1133_NUM_CHANNEL)
+		return false;
 
+	/* count number of 24-bit channels */
 	nRead = (uint8_t)(nChannel * 2u);
+	for (uint32_t i = 0; i < nChannel; ++i)
+		{
+		if (! (this->m_ChannelEnabled & (1 << i)))
+			continue;
+
+		nRead += this->m_config[i].get24bit();
+		}
+
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
-	this->m_pWire->write(SI1133_REG_HOSTOUT0);
-	this->m_pWire->endTransmission();
-	this->m_pWire->requestFrom(this->m_DeviceAddress, nRead);
+	if (this->m_pWire->write(SI1133_REG_HOSTOUT0) == 0)
+		return false;
+	if (this->m_pWire->endTransmission() != 0)
+		return false;
+	if (this->m_pWire->requestFrom(this->m_DeviceAddress, nRead) != nRead)
+		return false;
 
 	for (uint32_t i = 0; i < nChannel; ++pChannelData, ++i)
 		{
-		while (! this->m_pWire->available())
-			/* loop */;
-		*pChannelData = this->m_pWire->read() << 8;
+		// we can't have "negative light" so we treat
+		// the 24-bit and 16-bit numbers as unsigned.
+		uint32_t channelData = 0;
 
-		while (! this->m_pWire->available())
-			/* loop */;
-		*pChannelData |= this->m_pWire->read();
+		if (this->m_config[i].get24bit())
+			{
+			channelData = this->m_pWire->read() << 16;
+			}
+
+		channelData |= this->m_pWire->read() << 8;
+		channelData |= this->m_pWire->read();
+		*pChannelData = channelData;
 		}
+	return true;
+	}
+
+bool Catena_Si1133::readMultiChannelData(uint16_t *pChannelData, uint32_t nChannel) const
+	{
+	// it's much easier to just allocate an extra array and do a regular read
+	uint32_t tempChannel[SI1133_NUM_CHANNEL];
+	bool result;
+
+	if (nChannel > SI1133_NUM_CHANNEL)
+		nChannel = SI1133_NUM_CHANNEL;
+
+	result = this->readMultiChannelData(tempChannel, nChannel);
+
+	if (! result)
+		{
+		memset(tempChannel, 0, sizeof(tempChannel));
+		}
+
+	for (uint32_t i = 0; i < nChannel; ++i)
+		pChannelData[i] = uint16_t(tempChannel[i]);
+
+	return result;
 	}
 
 bool Catena_Si1133::isOneTimeReady()
@@ -379,11 +455,12 @@ bool Catena_Si1133::isOneTimeReady()
 uint8_t Catena_Si1133::readReg(uint8_t uReg)
 	{
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
-	this->m_pWire->write(uReg);
-	this->m_pWire->endTransmission();
-	this->m_pWire->requestFrom(this->m_DeviceAddress, 1u);
-	while (! this->m_pWire->available())
-		/* loop */;
+	if (this->m_pWire->write(uReg) != 1)
+		return 0;
+	if (this->m_pWire->endTransmission() != 0)
+		return 0;
+	if (this->m_pWire->requestFrom(this->m_DeviceAddress, 1u) != 1)
+		return 0;
 	return this->m_pWire->read();
 	}
 
@@ -436,11 +513,11 @@ uint8_t Catena_Si1133::waitResponse(uint8_t uResponse)
 uint8_t Catena_Si1133::readParam(uint8_t uParam)
 	{
 	uint8_t uResponse;
-	
+
 	uResponse = this->getResponse();
 
 	this->writeReg(SI1133_REG_COMMAND, SI1133_CMD_PARAM_QUERY + uParam);
-	
+
 	uResponse = this->waitResponse(uResponse);
 	if (uResponse & SI1133_RSP_CMD_ERR)
 		{
@@ -456,7 +533,7 @@ uint8_t Catena_Si1133::readParam(uint8_t uParam)
 void Catena_Si1133::writeParam(uint8_t uParam, uint8_t uData)
 	{
 	uint8_t uResponse;
-	
+
 	uResponse = this->getResponse();
 
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
