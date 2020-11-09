@@ -383,6 +383,10 @@ static bool AdcGetValue(uint32_t *value)
 	if (rAdcIsr & ADC_ISR_EOC)
 		{
 		*value = ADC1->DR;
+
+		/* clear the EOC flag post ADC data read to start new read.
+		In wait mode, clearing EOC flag helps to match speed of ADC to
+		speed of system clock */
 		ADC1->ISR &= ~ADC_ISR_EOC;
 		return true;
 		}
