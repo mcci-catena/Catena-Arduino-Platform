@@ -1422,6 +1422,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes.
 
+  - Fix [#261](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/261): add support for low level FRAM driver `Catena_Mb85rc64ta::read()` and `write()` to read/write > 255 bytes (version 0.19.0.30).
   - Fix [#260](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/269): add more control to the Si1133 library (version 0.19.0.20).
   - Fix [#253](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/253): add `AdcStart()` before each `AdcGetValue()` to read channel value (version 0.19.0.10).
 
