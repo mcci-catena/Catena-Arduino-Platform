@@ -102,7 +102,7 @@ Function:
 	Begin method
 
 Definition:
-	boolean Catena_Mb85rc64ta::begin(
+	bool Catena_Mb85rc64ta::begin(
 		uint8_t DeviceAddress,
 		TwoWire *pWire
 		);
@@ -115,7 +115,7 @@ Returns:
 
 */
 
-boolean Catena_Mb85rc64ta::begin(
+bool Catena_Mb85rc64ta::begin(
 	uint8_t DeviceAddress,
 	TwoWire *pWire
 	)
@@ -170,7 +170,7 @@ Function:
 	Writes a byte at the specific FRAM address
 
 Definition:
-	void Catena_Mb85rc64ta::write8(
+	bool Catena_Mb85rc64ta::write8(
 		uint16_t framAddr,
 		uint8_t value
 		);
@@ -179,21 +179,24 @@ Description:
 	This function writes a byte at the specific FRAM address.
 
 Returns:
-	No explicit result.
+	True for success, false for error.
 
 */
 
-void Catena_Mb85rc64ta::write8(
+bool Catena_Mb85rc64ta::write8(
 	uint16_t framAddr,
 	uint8_t value
 	)
 	{
 	this->prepIO();
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
-	this->m_pWire->write(framAddr >> 8);
-	this->m_pWire->write(framAddr & 0xFF);
-	this->m_pWire->write(value);
-	this->m_pWire->endTransmission();
+	if (this->m_pWire->write(framAddr >> 8) == 1 &&
+	    this->m_pWire->write(framAddr & 0xFF) == 1 &&
+	    this->m_pWire->write(value) == 1 &&
+	    this->m_pWire->endTransmission() == 0)
+	    	return true;
+	else
+		return false;
 	}
 
 /*
@@ -204,7 +207,7 @@ Function:
 	Writes a buffer to the specific FRAM address
 
 Definition:
-	void Catena_Mb85rc64ta::write(
+	size+t Catena_Mb85rc64ta::write(
 		uint16_t framAddr,
 		const uint8_t *pBuffer,
 		size_t nBuffer
@@ -214,22 +217,48 @@ Description:
 	This function writes a buffer to the specific FRAM address
 
 Returns:
-	No explicit result.
+	Number of bytes written, which must be either nBuffer for
+	success or some number less than nBuffer for failure.
 
 */
 
-void Catena_Mb85rc64ta::write(
+size_t Catena_Mb85rc64ta::write(
 	uint16_t framAddr,
 	const uint8_t *pBuffer,
 	size_t nBuffer
 	)
 	{
+	// There are numerous limitations on TwoWire buffer size. On 8-bit
+	// Arduinos, the buffer size is limited to 32 bytes. On STM32 Arduinos,
+	// the buffer size is not limited, but depends on malloc(), which is
+	// not really reliable on systems with small memory. So... do this in
+	// chunks.
+	constexpr size_t nChunk = 32;
+	const auto nOriginal = nBuffer;
+
 	this->prepIO();
-	this->m_pWire->beginTransmission(this->m_DeviceAddress);
-	this->m_pWire->write(framAddr >> 8);
-	this->m_pWire->write(framAddr & 0xFF);
-	this->m_pWire->write(pBuffer, nBuffer);
-	this->m_pWire->endTransmission();
+
+	while (nBuffer != 0)
+		{
+		const auto nThis = nBuffer > nChunk ? nChunk : nBuffer;
+
+		this->m_pWire->beginTransmission(this->m_DeviceAddress);
+		if (this->m_pWire->write(framAddr >> 8) &&
+		    this->m_pWire->write(framAddr & 0xFF) &&
+		    this->m_pWire->write(pBuffer, nThis) == nThis &&
+		    this->m_pWire->endTransmission() == 0)
+		    	{
+			nBuffer -= nThis;
+			pBuffer += nThis;
+			framAddr += nThis;
+		    	}
+		else
+			// error!
+			break;
+		}
+
+	// return count of bytes written.
+	return nOriginal - nBuffer;
 	}
 
 /*
@@ -258,20 +287,19 @@ uint8_t Catena_Mb85rc64ta::read8(
 	{
 	this->prepIO();
 	this->m_pWire->beginTransmission(this->m_DeviceAddress);
-	this->m_pWire->write(framAddr >> 8);
-	this->m_pWire->write(framAddr & 0xFF);
-	this->m_pWire->endTransmission();
-
-	this->m_pWire->requestFrom(this->m_DeviceAddress, (uint8_t)1);
-	while (! this->m_pWire->available())
-		/* loop */;
-
-	return this->m_pWire->read();
+	if (this->m_pWire->write(framAddr >> 8) &&
+	    this->m_pWire->write(framAddr & 0xFF) &&
+	    this->m_pWire->endTransmission() == 0 &&
+	    this->m_pWire->requestFrom(this->m_DeviceAddress, (uint8_t)1) == 1)
+		return this->m_pWire->read();
+	else
+		// error!
+		return 0;
 	}
 
 /*
 
-Name:	Catena_Mb85rc64ta::read8
+Name:	Catena_Mb85rc64ta::read()
 
 Function:
 	Reads a buffer from the specified FRAM address
@@ -297,35 +325,49 @@ size_t Catena_Mb85rc64ta::read(
 	size_t nBuffer
 	)
 	{
-	size_t const save_nBuffer = nBuffer;
+	// There are numerous limitations on TwoWire buffer size. On 8-bit
+	// Arduinos, the buffer size is limited to 32 bytes. On STM32 Arduinos,
+	// the buffer size is not limited, but depends on malloc(), which is
+	// not really reliable on systems with small memory. So... do this in
+	// chunks.
+	constexpr size_t nChunk = 32;
+	const auto save_nBuffer = nBuffer;
 
 	this->prepIO();
 	while (nBuffer > 0)
 		{
+		const auto nThis = nBuffer > nChunk ? nChunk : nBuffer;
 		uint8_t	nRead;
 
 		this->m_pWire->beginTransmission(this->m_DeviceAddress);
-		this->m_pWire->write(framAddr >> 8);
-		this->m_pWire->write(framAddr & 0xFF);
-		this->m_pWire->endTransmission();
-
-		nRead = this->m_pWire->requestFrom(
+		if (this->m_pWire->write(framAddr >> 8) &&
+		    this->m_pWire->write(framAddr & 0xFF) &&
+		    this->m_pWire->endTransmission() == 0)
+		    	{
+			nRead = this->m_pWire->requestFrom(
 				this->m_DeviceAddress,
-				(uint8_t) nBuffer
+				(uint8_t) nThis
 				);
-		if (nRead == 0)
-			{
-			break;
-			}
 
-		framAddr += nRead;
-		while (this->m_pWire->available() && nBuffer > 0)
-			{
-			*pBuffer++ = this->m_pWire->read();
-			--nBuffer;
+			if (nRead != nThis)
+				{
+				// error
+				break;
+				}
+			while (nRead > 0)
+				{
+				*pBuffer++ = this->m_pWire->read();
+				--nBuffer;
+				--nRead;
+				}
+			framAddr += nThis;
 			}
+		else
+			// error
+			break;
 		}
 
+	// return count of bytes read.
 	return save_nBuffer - nBuffer;
 	}
 
@@ -334,10 +376,10 @@ size_t Catena_Mb85rc64ta::read(
 Name:	Catena_Mb85rc64ta::readId
 
 Function:
-	Reads a buffer from the specified FRAM address
+	Get the FRAM JEDEC IDs
 
 Definition:
-	void Catena_Mb85rc64ta::readId(
+	bool Catena_Mb85rc64ta::readId(
 		uint16_t *pManufactureId,
 		uint16_t *pProductId
 		);
@@ -346,11 +388,11 @@ Description:
 	This function reads a buffer from the specified FRAM address.
 
 Returns:
-	No explicit result.
+	true for success, false for failure.
 
 */
 
-void Catena_Mb85rc64ta::readId(
+bool Catena_Mb85rc64ta::readId(
 	uint16_t *pManufactureId,
 	uint16_t *pProductId
 	)
@@ -358,37 +400,37 @@ void Catena_Mb85rc64ta::readId(
 	uint8_t	data;
 
 	this->prepIO();
-#if 0
-	data = this->m_pWire->requestFrom(
-		CATENA_MB85RC64TA_SLAVE_ID,
-		(uint8_t) 3,
-		(uint32_t) (this->m_DeviceAddress << 1),
-		(uint8_t) 1,
-		true	/* sendStop */
-		);
-#else
 	this->m_pWire->beginTransmission(CATENA_MB85RC64TA_SLAVE_ID);
-	this->m_pWire->write(this->m_DeviceAddress << 1);
-	this->m_pWire->endTransmission();
-
-	data = this->m_pWire->requestFrom(
+	if (this->m_pWire->write(this->m_DeviceAddress << 1) &&
+	    this->m_pWire->endTransmission() == 0)
+		{
+		data = this->m_pWire->requestFrom(
 			CATENA_MB85RC64TA_SLAVE_ID,
 			3
 			);
-#endif
-	if (data == 0)
+		}
+	else
+		data = 0;
+
+	if (data != 3)
 		{
 		Serial.println("FRAM readId() failed");
+		*pManufactureId = 0;
+		*pProductId = 0;
+		return false;
 		}
-
-	data = this->m_pWire->read();
-	*pManufactureId = data << 4;
-	data = this->m_pWire->read();
-	*pManufactureId |= data & 0x0Fu;
-	data = this->m_pWire->read();
-	*pProductId = data & 0xF0u << 8;
-	data = this->m_pWire->read();
-	*pProductId |= data;
+	else
+		{
+		data = this->m_pWire->read();
+		*pManufactureId = data << 4;
+		data = this->m_pWire->read();
+		*pManufactureId |= data & 0x0Fu;
+		data = this->m_pWire->read();
+		*pProductId = data & 0xF0u << 8;
+		data = this->m_pWire->read();
+		*pProductId |= data;
+		return true;
+		}
 	}
 
 /*
@@ -408,6 +450,9 @@ Description:
 
 Returns:
 	No explicit result.
+
+Notes:
+	No error checking.
 
 */
 
