@@ -172,7 +172,6 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 			*pValue = 5;
 			if (Channel != STM32L0_ADC_CHANNEL_VREFINT)
 				{
-				AdcStart();
 				fStatusOk = AdcGetValue(&vChannel);
 				}
 			else
@@ -384,7 +383,11 @@ static bool AdcGetValue(uint32_t *value)
 	if (rAdcIsr & ADC_ISR_EOC)
 		{
 		*value = ADC1->DR;
-		ADC1->ISR = ADC_ISR_EOC;
+
+		/* clear the EOC flag post ADC data read to start new read.
+		In wait mode, clearing EOC flag helps to match speed of ADC to
+		speed of system clock */
+		ADC1->ISR &= ~ADC_ISR_EOC;
 		return true;
 		}
 
