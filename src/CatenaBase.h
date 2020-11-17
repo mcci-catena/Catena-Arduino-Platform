@@ -178,6 +178,8 @@ public:
                 fHasHS001 = 1 << 19,
                 //platform has SHT3x sensirion
                 fHasSHT3x = 1 << 20,
+                //platform has I2C Level Shifter
+                fHasI2cLevelShifter = 1 << 21,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
