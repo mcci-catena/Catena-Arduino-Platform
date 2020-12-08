@@ -71,7 +71,9 @@ public:
         // read the current battery voltage, in engineering units
         virtual float ReadVbat(void) const = 0;
         virtual float ReadVbus(void) const = 0;
+#if defined(ARDUINO_MCCI_CATENA_4802)
         virtual float ReadVin(void) const = 0;
+#endif
 
         virtual void Sleep(uint32_t howLongInSeconds) override;
 

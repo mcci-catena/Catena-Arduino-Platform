@@ -1,40 +1,22 @@
-/* Catena4802_ReadVoltage.cpp	Wed Jan 16 2019 10:40:07 chwon */
-
 /*
 
-Module:  Catena4802_ReadVoltage.cpp
+Module:  Catena4802_ReadAnalog.cpp
 
 Function:
-	Catena4802::ReadVin()
-
-Version:
-	V0.13.0	Wed Jan 16 2019 10:40:07 chwon	Edit level 2
+        Catena4802::ReadVin()
 
 Copyright notice:
-	This file copyright (C) 2018-2019 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+        See accompanying LICENSE file.
 
 Author:
-	ChaeHee Won, MCCI Corporation	November 2018
+        Dhinesh Kumar Pitchai, MCCI Corporation	November 2020
 
 Revision history:
-   0.12.0  Mon Nov 26 2018 16:18:29  chwon
-	Module created.
-
-   0.13.0  Wed Jan 16 2019 10:40:07  chwon
-	Use CatenaStm32L0::ReadAnalog() method.
+        See https://github.com/mcci-catena/Catena-Arduino-Platform
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
+#ifdef ARDUINO_MCCI_CATENA_4802
 
 #include "Catena4802.h"
 
@@ -43,10 +25,7 @@ using namespace McciCatena;
 
 /****************************************************************************\
 |
-|		Manifest constants & typedefs.
-|
-|	This is strictly for private types and constants which will not
-|	be exported.
+|	Manifest constants & typedefs.
 |
 \****************************************************************************/
 
@@ -56,30 +35,20 @@ using namespace McciCatena;
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only
-|	using the ROM storage class; they may be global.
-|
 \****************************************************************************/
 
 
 
 /****************************************************************************\
 |
-|	VARIABLES:
-|
-|	If program is to be ROM-able, these must be initialized
-|	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those
-|	variables owned by this module should be declared here, using the BSS
-|	keyword; this allows for linkers that dislike multiple declarations
-|	of objects.
+|	Variables.
 |
 \****************************************************************************/
 
 float
 Catena4802::ReadVin(void) const
 	{
-	float volt = this->ReadAnalog(Catena480x::ANALOG_CHANNEL_VBAT, 1, 3);
+	float volt = this->ReadAnalog(Catena480x::ANALOG_CHANNEL_VIN, 1, 3);
 	return volt / 1000;
 	}
 
