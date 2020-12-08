@@ -1,6 +1,6 @@
 /*
 
-Module:  Catena4802_ReadAnalog.cpp
+Module:  Catena4802_ReadVoltage.cpp
 
 Function:
         Catena4802::ReadVin()
