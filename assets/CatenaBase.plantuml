@@ -270,6 +270,7 @@ class Catena4801 {
 
 class Catena4802 {
   +const char *CatenaName() const;
+  +float ReadVin() const;
   #void getPlatformTable();
   -{static}const CATENA_PLATFORM(* const vPlatforms[]);
   -{static}const size_t nvPlatforms;
