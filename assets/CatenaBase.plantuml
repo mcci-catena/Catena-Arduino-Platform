@@ -267,6 +267,13 @@ class Catena4801 {
   -{static}const CATENA_PLATFORM(* const vPlatforms[]);
   -{static}const size_t nvPlatforms;
 }
+
+class Catena4802 {
+  +const char *CatenaName() const;
+  #void getPlatformTable();
+  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
+  -{static}const size_t nvPlatforms;
+}
 !endif
 
 !if ($enableSamd == 1)
@@ -302,6 +309,7 @@ Catena461x <|-- Catena4617
 Catena461x <|-- Catena4618
 Catena463x <|-- Catena4630
 Catena480x <|-- Catena4801
+Catena480x <|-- Catena4802
 !endif
 }
 
