@@ -33,7 +33,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
                         - [Catena 4450](#catena-4450)
                         - [Catena 4460](#catena-4460)
                         - [Catena 4470](#catena-4470)
-                - [GUIDs for the Catena 4801 family](#guids-for-the-catena-4801-family)
+                - [GUIDs for the Catena 480x family](#guids-for-the-catena-480x-family)
+                        - [Catena 4801](#catena-4801)
+                        - [Catena 4802](#catena-4802)
                 - [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
         - [Polling Framework](#polling-framework)
                 - [Making a class pollable](#making-a-class-pollable)
@@ -161,6 +163,7 @@ Class                 | Header File             | Description
 `Catena4618`          | `Catena4618.h`          | MCCI Catena 4618 second-generation Murata-based board with variable Vdd, no charging.
 `Catena4630`          | `Catena4630.h`          | MCCI Catena 4630 Murata-based board with Air Quality Sensor.
 `Catena4801`          | `Catena4801.h`          | MCCI Catena 4801 Murata-based board with Modbus.
+`Catena4802`          | `Catena4802.h`          | MCCI Catena 4802 Murata-based board with Modbus and Temperature sensor.
 
 ### Class derivation
 
@@ -341,11 +344,19 @@ Name | GUID | Description
 `CATENA_4470_BASE` | `ea8568ec-5dae-46ee-929a-a3f6b00a565e` | Base Catena 4470, assuming no modifications or customizations.
 `CATENA_4470_M101` | `dd0a37a6-e469-43ec-b173-fed795129455` | Catena 4470 M101, configured for power monitoring and other pulse-input applications.
 
-#### GUIDs for the Catena 4801 family
+#### GUIDs for the Catena 480x family
+
+##### Catena 4801
 
 Name | GUID | Description
 -----|------|------------
 `CATENA_4801_BASE` | `10ea7e25-a4a4-45fd-8959-c04a6a5d7f95` | Base Catena 4801, assuming no modifications or customizations.
+
+##### Catena 4802
+
+Name | GUID | Description
+-----|------|------------
+`CATENA_4802_BASE` | `daaf345e-b5d5-4a32-a303-3ac70b81d260` | Base Catena 4802, assuming no modifications or customizations.
 
 #### GUIDs for Adafruit Feather M0s
 
@@ -1422,6 +1433,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes.
 
+  - Fix [#268](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/268): adds support to the new board Catena 4802 (version 0.19.10.0).
   - Fix [#266](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/266): clear EOC flag after every analog read (version 0.19.0.30).
   - Fix [#261](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/261): add support for low level FRAM driver `Catena_Mb85rc64ta::read()` and `write()` to read/write > 255 bytes (version 0.19.0.30).
   - Fix [#260](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/269): add more control to the Si1133 library (version 0.19.0.20).
