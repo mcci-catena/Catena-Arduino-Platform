@@ -16,7 +16,7 @@ Revision history:
 
 */
 
-#ifdef ARDUINO_MCCI_CATENA_4802
+#ifdef ARDUINO_ARCH_STM32
 
 #include "Catena4802.h"
 
@@ -48,10 +48,10 @@ using namespace McciCatena;
 float
 Catena4802::ReadVin(void) const
 	{
-	float volt = this->ReadAnalog(Catena480x::ANALOG_CHANNEL_VIN, 1, 3);
+	float volt = this->ReadAnalog(Catena480x::ANALOG_CHANNEL_VBAT, 1, 3);
 	return volt / 1000;
 	}
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena480x_ReadVoltage.cpp ****/
+/**** end of Catena4802_ReadVoltage.cpp ****/
