@@ -1433,7 +1433,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes.
 
-  - Fix [#268](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/268): adds support to the new board Catena 4802 (version 0.19.10.0).
+  - Fix [#268](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/268): adds support to the new board Catena 4802 (version 0.19.0.40).
   - Fix [#266](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/266): clear EOC flag after every analog read (version 0.19.0.30).
   - Fix [#261](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/261): add support for low level FRAM driver `Catena_Mb85rc64ta::read()` and `write()` to read/write > 255 bytes (version 0.19.0.30).
   - Fix [#260](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/269): add more control to the Si1133 library (version 0.19.0.20).
