@@ -69,7 +69,7 @@ public:
 
 	enum ANALOG_PINS
 		{
-		APIN_VBAT_SENSE = A0,
+		APIN_VBAT_SENSE = A0,	/* for 4802 it is referred as VIN */
 		};
 
 	enum ANALOG_CHANNELS
@@ -79,7 +79,7 @@ public:
 		ANALOG_CHANNEL_A2 = 4,
 		ANALOG_CHANNEL_A3 = 3,
 		ANALOG_CHANNEL_A4 = 2,
-		ANALOG_CHANNEL_VBAT = ANALOG_CHANNEL_A0,
+		ANALOG_CHANNEL_VBAT = ANALOG_CHANNEL_A0,	/* for 4802 it is referred as VIN */
 		ANALOG_CHANNEL_VREF = 17,
 		};
 
