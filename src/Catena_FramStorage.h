@@ -48,6 +48,11 @@ public:
                 kOperatingFlags = 15,
                 kBme680Cal = 16,
                 kAppConf = 17,
+                kDevID = 18,
+                kPAC = 19,
+                kKey = 20,
+                kRegion = 21,
+                kEncryption = 22,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };

@@ -74,6 +74,9 @@ public:
 	*/
 	class LoRaWAN /* forward */;
 
+	// Sigfox binding
+	class Sigfox /* forward */;
+
 	virtual const char *CatenaName() const override { return "Catena 4410"; };
 
 protected:

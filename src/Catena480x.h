@@ -67,6 +67,9 @@ public:
 	// LoRaWAN binding
 	class LoRaWAN /* forward */;
 
+	// Sigfox binding
+	class Sigfox /* forward */;
+
 	enum ANALOG_PINS
 		{
 		APIN_VBAT_SENSE = A0,
@@ -115,6 +118,27 @@ public:
 	|| Super constructor does most of the work.
 	*/
 	LoRaWAN() {};
+
+	bool begin(Catena480x *pParent);
+
+protected:
+
+private:
+	};
+
+/*
+|| The Sigfox class for the Catena 480x.
+*/
+class Catena480x::Sigfox : public CatenaStm32L0::Sigfox
+	{
+public:
+	using Super = CatenaStm32L0::Sigfox;
+
+	/*
+	|| the constructor. We don't do anything at this level, the
+	|| Super constructor does most of the work.
+	*/
+	Sigfox() {};
 
 	bool begin(Catena480x *pParent);
 
