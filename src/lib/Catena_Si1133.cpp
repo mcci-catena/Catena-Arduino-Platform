@@ -404,6 +404,12 @@ bool Catena_Si1133::readMultiChannelData(uint32_t *pChannelData, uint32_t nChann
 
 		channelData |= this->m_pWire->read() << 8;
 		channelData |= this->m_pWire->read();
+
+		if (channelData >= 0x800000)
+			{
+			channelData = 0;
+			}
+
 		*pChannelData = channelData;
 		}
 	return true;
