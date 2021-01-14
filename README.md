@@ -1431,6 +1431,10 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
+- HEAD includes the following changes
+
+  - fix [#273](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/273): in very low light conditions, with 24-bit measurements, Si1133 can generate negative light readings. Detect such values and force to zero (version 0.20.0.10).
+
 - v0.20.0 includes the following changes.
 
   - Fix [#268](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/268): adds support to the new board Catena 4802 (version 0.19.0.40).
