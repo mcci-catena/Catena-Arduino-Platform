@@ -1,46 +1,15 @@
-/* CatenaStm32L0_LoRaWAN_begin.cpp	Mon Jan 07 2019 11:36:38 chwon */
-
 /*
 
-Module:  CatenaStm32L0_LoRaWAN_begin.cpp
+Module:  CatenaStm32L0_Sigfox_begin.cpp
 
 Function:
-	CatenaStm32L0::LoRaWAN::begin()
-
-Version:
-	V0.13.0	Mon Jan 07 2019 11:36:38 chwon	Edit level 5
+	CatenaStm32L0::Sigfox::begin()
 
 Copyright notice:
-	This file copyright (C) 2017-2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+        See accompanying LICENSE file.
 
 Author:
-	ChaeHee Won, MCCI Corporation	October 2017
-
-Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
-	Module created.
-
-   0.10.0  Wed May 09 2018 12:15:37  chwon
-	Use PIN_SX1276_ANT_SWITCH_TX_BOOST and PIN_SX1276_ANT_SWITCH_TX_RFO.
-
-   0.12.0  Mon Nov 26 2018 15:48:10  chwon
-	Remvoe PIN_SX1276_ANT_SWITCH_TX_BOOST and PIN_SX1276_ANT_SWITCH_TX_RFO
-	pin initialization.
-
-   0.12.0  Wed Dec 05 2018 14:27:41  chwon
-	Use Catena addLoRaWanCommands().
-
-   0.13.0  Mon Jan 07 2019 11:36:39  chwon
-	Need to set up LoRaWan command before call Arduino_LoRaWAN::begin().
+	Dhinesh Kumar Pitchai, MCCI Corporation	December 2020
 
 */
 
@@ -50,7 +19,6 @@ Revision history:
 
 #include <Catena_Log.h>
 #include <mcciadk_baselib.h>
-#include <MCCI_Sigfox.h>
 
 using namespace McciCatena;
 
@@ -88,32 +56,27 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-bool CatenaStm32L0::LoRaWAN::begin(
+bool CatenaStm32L0::Sigfox::begin(
 	CatenaStm32L0 *pParent
 	)
 	{
-	gLog.printf(gLog.kTrace, "+CatenaStm32L0::LoRaWAN::begin()\n");
+	gLog.printf(gLog.kTrace, "+CatenaStm32L0::Sigfox::begin()\n");
+	MCCI_Sigfox m_Sigfox;
 
 	this->m_pCatena = pParent;
-	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
         /* first set up command processor -- just in case begin() failed */
-        pParent->addLoRaWanCommands();
+        pParent->addSigfoxCommands();
 
 	/* call the base begin */
-	if (! this->Arduino_LoRaWAN::begin())
+	if (! m_Sigfox.isReady())
 		{
 		gLog.printf(
 			gLog.kError,
-			"?CatenaStm32L0::LoRaWAN::begin:"
-			" Arduino_LoRaWAN:begin failed\n"
+			"?CatenaStm32L0::Sigfox::begin:"
+			" MCCI_Sigfox:begin failed\n"
 			);
 		return false;
-		}
-
-	if (pParent->GetSystemClockRate() < 16000000)
-		{
-		LMIC_setClockError(5*65536/100);
 		}
 
 	/* indicate success to the client */

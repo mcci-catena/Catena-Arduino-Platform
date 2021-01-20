@@ -47,12 +47,12 @@ public:
                 kBootCount = 14,
                 kOperatingFlags = 15,
                 kBme680Cal = 16,
-                kAppConf = 17,
-                kDevID = 18,
-                kPAC = 19,
-                kKey = 20,
-                kRegion = 21,
-                kEncryption = 22,
+                kDevID = 17,
+                kPAC = 18,
+                kKey = 19,
+                kRegion = 20,
+                kEncryption = 21,
+                kAppConf = 22,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };

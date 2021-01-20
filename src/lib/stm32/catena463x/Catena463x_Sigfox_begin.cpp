@@ -1,15 +1,15 @@
 /*
 
-Module:  Catena463x_LoRaWAN_begin.cpp
+Module:  Catena463x_Sigfox_begin.cpp
 
 Function:
-        Catena463x::LoRaWAN::begin()
+        Catena463x::Sigfox::begin()
 
 Copyright notice:
         See accompanying LICENSE file.
 
 Author:
-        Dhinesh Kumar Pitchai, MCCI Corporation	April 2019
+	Dhinesh Kumar Pitchai, MCCI Corporation	December 2020
 
 */
 
@@ -24,13 +24,13 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena463x::LoRaWAN::begin()
+Name:	Catena463x::Sigfox::begin()
 
 Function:
-	Record linkage to main Catena object and set up LoRaWAN.
+	Record linkage to main Catena object and set up Sigfox.
 
 Definition:
-	bool Catena463x::LoRaWAN::begin(
+	bool Catena463x::Sigfox::begin(
 		Catena463x *pParent
 		);
 
@@ -43,18 +43,18 @@ Returns:
 */
 
 bool
-Catena463x::LoRaWAN::begin(
+Catena463x::Sigfox::begin(
 	Catena463x *pParent
 	)
 	{
-	gLog.printf(gLog.kTrace, "+Catena463x::LoRaWAN::begin()\n");
+	gLog.printf(gLog.kTrace, "+Catena463x::Sigfox::begin()\n");
 
 	/* call the base begin */
 	if (! this->Super::begin(pParent))
 		{
 		gLog.printf(
 			gLog.kBug,
-			"?Catena463x::LoRaWAN::begin: Super::begin() failed\n"
+			"?Catena463x::Sigfox::begin: Super::begin() failed\n"
 			);
 		return false;
 		}
@@ -65,4 +65,4 @@ Catena463x::LoRaWAN::begin(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena463x_LoRaWAN_begin.cpp ****/
+/**** end of Catena463x_Sigfox_begin.cpp ****/
