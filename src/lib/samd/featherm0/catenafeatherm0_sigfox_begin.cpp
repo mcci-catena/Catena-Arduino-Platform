@@ -1,37 +1,15 @@
-/* begin.cpp	Wed Dec 05 2018 14:30:26 chwon */
-
 /*
 
-Module:  begin.cpp
+Module:  catenafeatherm0_sigfox_begin.cpp
 
 Function:
-	Catena4410::LoRaWAN::begin()
-
-Version:
-	V0.12.0	Wed Dec 05 2018 14:30:26 chwon	Edit level 2
+	CatenaFeatherM0::Sigfox::begin()
 
 Copyright notice:
-	This file copyright (C) 2016, 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-	
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+    See accompanying LICENSE file.
  
 Author:
-	Terry Moore, MCCI Corporation	October 2016
-
-Revision history:
-   0.1.0  Tue Oct 25 2016 03:42:18  tmm
-	Module created. Note that since this lives in a library with
-	lib/begin.cpp, we must have a different file name.
-
-   0.12.0  Wed Dec 05 2018 14:30:26  chwon
-	Add debug message.
+	Dhinesh Kumar Pitchai, MCCI Corporation	December 2020
 
 */
 
@@ -79,17 +57,17 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-bool CatenaFeatherM0::LoRaWAN::begin(
+bool CatenaFeatherM0::Sigfox::begin(
 	CatenaFeatherM0 *pParent
 	)
 	{
-	gLog.printf(gLog.kTrace, "+CatenaFeatherM0::LoRaWAN::begin()\n");
+	gLog.printf(gLog.kTrace, "+CatenaFeatherM0::Sigfox::begin()\n");
+	MCCI_Sigfox m_Sigfox;
 
 	this->m_pCatena = pParent;
-	this->m_ulDebugMask |= LOG_VERBOSE | LOG_ERRORS | LOG_BASIC;
 
 	/* first call the base begin */
-	if (! this->Arduino_LoRaWAN::begin())
+	if (! m_Sigfox.isReady())
                 {
                 gLog.printf(
                         gLog.kBug,

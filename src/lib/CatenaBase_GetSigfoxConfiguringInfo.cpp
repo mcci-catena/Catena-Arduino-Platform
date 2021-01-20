@@ -64,7 +64,7 @@ Function:
 Definition:
 	public: virtual bool
 		CatenaBase::GetSigfoxConfiguringInfo(
-			Arduino_LoRaWAN::OtaaProvisioningInfo *pInfo
+			MCCI_Catena_Sigfox::SigfoxConfiguringInfo *pInfo
 			) override;
 
 Description:
@@ -84,7 +84,7 @@ Returns:
 
 bool
 CatenaBase::GetSigfoxConfiguringInfo(
-	Arduino_LoRaWAN::OtaaProvisioningInfo *pInfo
+	MCCI_Catena_Sigfox::SigfoxConfiguringInfo *pInfo
 	)
 	{
 	auto const pFram = this->getFram();
@@ -93,7 +93,7 @@ CatenaBase::GetSigfoxConfiguringInfo(
 		{
 		gLog.printf(
 			gLog.kError,
-			"?CatenaBase::GetOtaaProvisioningInfo: no FRAM\n"
+			"?CatenaBase::GetSigfoxConfiguringInfo: no FRAM\n"
 			);
 
 		if (pInfo != nullptr)
@@ -101,6 +101,8 @@ CatenaBase::GetSigfoxConfiguringInfo(
 
 		return false;
 		}
+
+	/* cFram::Cursor framSigfoxCredentials(pFram); */
 
 	cFram::Cursor framDevID(pFram),
 		      framPAC(pFram),
@@ -118,11 +120,14 @@ CatenaBase::GetSigfoxConfiguringInfo(
 	    framEncryption.locate(cFramStorage::vItemDefs[cFramStorage::kEncryption]))
 		fResult = true;
 
+	/* if (framSigfoxCredentials.locate(cFramStorage::vItemDefs[cFramStorage::kSigfoxCredentials]))
+		fResult = true; */
+
 	if (! fResult)
 		{
 		gLog.printf(
 			gLog.kError,
-			"?CatenaBase::GetOtaaProvisioningInfo: failing\n"
+			"?CatenaBase::GetSigfoxConfiguringInfo: failing\n"
 			);
 
 		if (pInfo != nullptr)
@@ -135,13 +140,20 @@ CatenaBase::GetSigfoxConfiguringInfo(
 		return true;
 
 	/* copy the data */
-	framDevID.get(pInfo->AppKey, sizeof(pInfo->AppKey));
-	framPAC.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
-	framKey.get(pInfo->AppEUI, sizeof(pInfo->AppEUI));
-	framRegion.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
-	framEncryption.get(pInfo->AppEUI, sizeof(pInfo->AppEUI));
+	framDevID.get(pInfo->DevID, sizeof(pInfo->DevID));
+	framPAC.get(pInfo->PAC, sizeof(pInfo->PAC));
+	framKey.get(pInfo->Key, sizeof(pInfo->Key));
+	framRegion.get(pInfo->Region, sizeof(pInfo->Region));
+	framEncryption.get(pInfo->Encryption, sizeof(pInfo->Encryption));
+
+	/* copy the data */
+	/* framSigfoxCredentials.get(pInfo->AppKey, sizeof(pInfo->AppKey));
+	framSigfoxCredentials.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
+	framSigfoxCredentials.get(pInfo->AppEUI, sizeof(pInfo->AppEUI));
+	framSigfoxCredentials.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
+	framSigfoxCredentials.get(pInfo->AppEUI, sizeof(pInfo->AppEUI)); */
 
 	return true;
 	}
 
-/**** end of CatenaBase_GetOtaaProvisioningInfo.cpp ****/
+/**** end of CatenaBase_GetSigfoxConfiguringInfo.cpp ****/

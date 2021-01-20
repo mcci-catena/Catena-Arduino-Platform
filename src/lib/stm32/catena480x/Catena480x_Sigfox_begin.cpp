@@ -1,5 +1,3 @@
-/* Catena480x_LoRaWAN_begin.cpp	Thu Nov 15 2018 14:54:47 chwon */
-
 /*
 
 Module:  Catena480x_LoRaWAN_begin.cpp
@@ -7,27 +5,11 @@ Module:  Catena480x_LoRaWAN_begin.cpp
 Function:
 	Catena480x::LoRaWAN::begin()
 
-Version:
-	V0.11.0	Thu Nov 15 2018 14:54:47 chwon	Edit level 1
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+        See accompanying LICENSE file.
 
 Author:
-	ChaeHee Won, MCCI Corporation	November 2018
-
-Revision history:
-   0.11.0  Thu Nov 15 2018 14:54:47  chwon
-	Module created.
+	Dhinesh Kumar Pitchai, MCCI Corporation	December 2020
 
 */
 
