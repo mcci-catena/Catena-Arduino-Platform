@@ -52,7 +52,12 @@ public:
 		kPinUndefined = 0xFFu,
 		};
 
-	cTotalizer(uint8_t pin = kPinUndefined) : m_pin(pin) {};
+	static constexpr uint16_t kDefault_msDebounce = 50;
+
+	cTotalizer(uint8_t pin = kPinUndefined)
+		: m_pin(pin)
+		, m_msDebounce(kDefault_msDebounce)
+		{};
 
 	// setup, passing in a pin
 	bool begin(uint8_t pin = kPinUndefined);
@@ -66,6 +71,19 @@ public:
         bool getDeltaCountAndTime(uint32_t &outCount, uint32_t &outDelta);
         void setReference();
 
+	// set the debounce time
+	cTotalizer &setDebounce(uint16_t msDebounce)
+		{
+		this->m_msDebounce = msDebounce;
+		return *this;
+		}
+
+	// get the debounce time
+	uint16_t getDebounce() const
+		{
+		return this->m_msDebounce;
+		}
+
 private:
         // total number of counts seen
 	uint32_t m_total;
@@ -74,6 +92,8 @@ private:
         // time of last measurement
         uint32_t m_tLastMeasured;
         uint32_t m_nLastMeasured;
+	// debounce time. Zero turns off.
+	uint16_t m_msDebounce;
         // last bit value observed.
 	bool m_last;
         // last debounced bit value observed
