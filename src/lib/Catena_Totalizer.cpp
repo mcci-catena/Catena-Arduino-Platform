@@ -96,7 +96,7 @@ McciCatena::cTotalizer::poll()
 	else if (! this->m_fIsStable)
 		{
 		// 50 millisecond debounce?
-		if ((now - this->m_tEdge) > 50)
+		if ((now - this->m_tEdge) > this->m_msDebounce)
 			{
 			this->m_fIsStable = true;
 			if (fCurrent != this->m_lastStable)

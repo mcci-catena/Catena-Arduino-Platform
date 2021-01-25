@@ -497,7 +497,8 @@ CatenaStm32L0Rtc::CalendarTime::Advance(
 	if (delta == 0)
 		return result;
 
-	uint8_t leapYear = (Year & 0x3) ? 0 : 1;
+	// the STM32 clock treats year 00 as 2100, 2200, or 2300: not a leap year.
+	uint8_t leapYear = (Year & 0x3) || (Year == 0) ? 0 : 1;
 	uint8_t firstDay = CatenaStm32L0Rtc::md[Month - 1];
 	uint8_t lastDay = CatenaStm32L0Rtc::md[Month];
 
