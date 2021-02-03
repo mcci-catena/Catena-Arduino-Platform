@@ -79,6 +79,11 @@ public:
                 return this->m_Rtc.GetTime();
                 }
 
+        bool SetCalendarTime(const CatenaStm32L0Rtc::CalendarTime &calendarTime)
+                {
+                return this->m_Rtc.SetTime(&calendarTime);
+                }
+
         virtual uint32_t CalibrateSystemClock(void) override;
 
 protected:

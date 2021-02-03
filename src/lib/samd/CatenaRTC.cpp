@@ -195,6 +195,22 @@ const uint16_t CatenaRTC::md[13] =
         0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
         };
 
+bool
+CatenaRTC::SetTime(const CatenaRTC::CalendarTime *pTime)
+	{
+        RTC_MODE2_CLOCK_Type Mode2Clock;
+
+	Mode2Clock.bit.SECOND = pTime->Second;
+	Mode2Clock.bit.MINUTE = pTime->Minute;
+	Mode2Clock.bit.HOUR = pTime->Hour;
+	Mode2Clock.bit.DAY = pTime->Day;
+	Mode2Clock.bit.MONTH = pTime->Month;
+	Mode2Clock.bit.YEAR = pTime->Year;
+
+	RTC->MODE2.CLOCK.reg = Mode2Clock.reg;
+	RtcWaitSynchronize();
+	return true;
+	}
 
 CatenaRTC::CalendarTime
 CatenaRTC::GetTime(void)

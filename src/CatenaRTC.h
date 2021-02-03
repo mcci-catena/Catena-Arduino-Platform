@@ -82,7 +82,7 @@ public:
         bool begin(bool fResetTime = false);
 
         CalendarTime GetTime();
-
+	bool SetTime(const CalendarTime *pTime);
         void SetAlarm(uint32_t delta);
 
 	void SetAlarm(const CalendarTime *pNow);
