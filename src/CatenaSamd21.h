@@ -88,6 +88,11 @@ public:
 		return this->m_Rtc.GetTime();
 		}
 
+        bool SetCalendarTime(const CatenaRTC::CalendarTime &calendarTime)
+                {
+                return this->m_Rtc.SetTime(&calendarTime);
+                }
+
 protected:
 	virtual void registerCommands(void);
 
