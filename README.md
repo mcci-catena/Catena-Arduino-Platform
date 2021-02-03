@@ -1433,6 +1433,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes
 
+  - fix [#275](ttps://github.com/mcci-catena/Catena-Arduino-Platform/issues/275): add `cTotalizer::setDebounce()`, allowing the debounce time to be adjusted from 50ms. This can also be done in the constructor. (Version 0.20.0.30.)
   - fix [#279](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/279): system could sleep forever if the beginning and end of a time range straddled the end of a month. Also fix [#280](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/280), adding ability to set the time (version 0.20.0.20).
   - fix [#273](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/273): in very low light conditions, with 24-bit measurements, Si1133 can generate negative light readings. Detect such values and force to zero (version 0.20.0.10).
 
