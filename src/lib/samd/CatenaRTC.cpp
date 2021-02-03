@@ -410,16 +410,11 @@ CatenaRTC::CalendarTime::Advance(
 
 	uint8_t leapYear = (Year & 0x3) ? 0 : 1;
 	uint8_t firstDay = CatenaRTC::md[Month - 1];
-	uint8_t lastDay = CatenaRTC::md[Month];
+	uint8_t lastDay = CatenaRTC::md[Month] - firstDay;
 
-	if (leapYear)
+	if (leapYear && Month == 2)
 		{
-		if (Month >= 2)
-			{
-			++lastDay;
-			if (Month >= 3)
-				++firstDay;
-			}
+		++lastDay;
 		}
 
 	// now we just propagate carry
