@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -80,7 +80,7 @@ McciCatena::cTotalizer::begin(
 	}
 
 // public: virtual override
-void 
+void
 McciCatena::cTotalizer::poll()
 	{
 	bool fCurrent = digitalRead(this->m_pin);
@@ -96,7 +96,7 @@ McciCatena::cTotalizer::poll()
 	else if (! this->m_fIsStable)
 		{
 		// 50 millisecond debounce?
-		if ((now - this->m_tEdge) > 50)
+		if ((now - this->m_tEdge) > this->m_msDebounce)
 			{
 			this->m_fIsStable = true;
 			if (fCurrent != this->m_lastStable)
@@ -111,13 +111,13 @@ McciCatena::cTotalizer::poll()
 		}
 	}
 
-bool 
+bool
 McciCatena::cTotalizer::getDeltaCountAndTime(
-        uint32_t &outCount, 
+        uint32_t &outCount,
         uint32_t &outDelta
         )
         {
-        if (this->m_fHaveDelta) 
+        if (this->m_fHaveDelta)
                 {
                 outCount = this->m_total - this->m_nLastMeasured;
                 outDelta = this->m_tEdge - this->m_tLastMeasured;
@@ -128,7 +128,7 @@ McciCatena::cTotalizer::getDeltaCountAndTime(
         return this->m_fHaveDelta;
         }
 
-void 
+void
 McciCatena::cTotalizer::setReference()
         {
         this->m_tLastMeasured = this->m_tEdge;
