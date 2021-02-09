@@ -62,12 +62,11 @@ bool CatenaFeatherM0::Sigfox::begin(
 	)
 	{
 	gLog.printf(gLog.kTrace, "+CatenaFeatherM0::Sigfox::begin()\n");
-	MCCI_Sigfox m_Sigfox;
 
 	this->m_pCatena = pParent;
 
 	/* first call the base begin */
-	if (! m_Sigfox.isReady())
+	if (! this->MCCI_Catena_Sigfox::begin())
                 {
                 gLog.printf(
                         gLog.kBug,

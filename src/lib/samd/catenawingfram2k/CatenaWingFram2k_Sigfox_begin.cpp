@@ -48,7 +48,6 @@ CatenaWingFram2k::Sigfox::begin(
 	)
 	{
 	gLog.printf(gLog.kTrace, "+CatenaWingFram2k::Sigfox::begin()\n");
-	MCCI_Sigfox m_Sigfox;
 
 	this->m_pCatena = pParent;
 
@@ -56,7 +55,7 @@ CatenaWingFram2k::Sigfox::begin(
         pParent->addSigfoxCommands();
 
 	/* call the base begin */
-	if (! m_Sigfox.isReady())
+	if (! this->MCCI_Catena_Sigfox::begin())
 		{
 		gLog.printf(
 			gLog.kError,

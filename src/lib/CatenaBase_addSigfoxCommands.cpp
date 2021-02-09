@@ -15,7 +15,6 @@ Author:
 
 #include "CatenaBase.h"
 
-#include <MCCI_Sigfox.h>
 #include <Catena_Sigfox_wapper.h>
 
 #include "Catena_Log.h"

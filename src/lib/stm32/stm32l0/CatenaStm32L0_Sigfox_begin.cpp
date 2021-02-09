@@ -61,7 +61,6 @@ bool CatenaStm32L0::Sigfox::begin(
 	)
 	{
 	gLog.printf(gLog.kTrace, "+CatenaStm32L0::Sigfox::begin()\n");
-	MCCI_Sigfox m_Sigfox;
 
 	this->m_pCatena = pParent;
 
@@ -69,12 +68,12 @@ bool CatenaStm32L0::Sigfox::begin(
         pParent->addSigfoxCommands();
 
 	/* call the base begin */
-	if (! m_Sigfox.isReady())
+	if (! this->MCCI_Catena_Sigfox::begin())
 		{
 		gLog.printf(
 			gLog.kError,
 			"?CatenaStm32L0::Sigfox::begin:"
-			" MCCI_Sigfox:begin failed\n"
+			" MCCI_Catena_Sigfox:begin failed\n"
 			);
 		return false;
 		}
