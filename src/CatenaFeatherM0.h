@@ -24,7 +24,6 @@ Author:
 
 #include <Arduino_LoRaWAN_network.h>
 
-#include <MCCI_Sigfox.h>
 #include <Catena_Sigfox_wapper.h>
 
 namespace McciCatena {
@@ -126,7 +125,7 @@ class CatenaFeatherM0::Sigfox : public MCCI_Catena_Sigfox,
                                  public cPollableObject
 	{
 public:
-	using Super = MCCI_Sigfox;
+        using Super = MCCI_Catena_Sigfox;
 
 	/*
 	|| the constructor.
@@ -140,7 +139,7 @@ public:
 	*/
 	virtual bool begin(CatenaFeatherM0 *pCatena);
 
-	virtual void poll() { sigfox_loop(); };
+        virtual void poll() { this->Super::loop(); };
 
 protected:
 	/*

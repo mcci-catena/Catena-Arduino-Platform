@@ -143,15 +143,8 @@ CatenaBase::GetSigfoxConfiguringInfo(
 	framDevID.get(pInfo->DevID, sizeof(pInfo->DevID));
 	framPAC.get(pInfo->PAC, sizeof(pInfo->PAC));
 	framKey.get(pInfo->Key, sizeof(pInfo->Key));
-	framRegion.get(pInfo->Region, sizeof(pInfo->Region));
-	framEncryption.get(pInfo->Encryption, sizeof(pInfo->Encryption));
-
-	/* copy the data */
-	/* framSigfoxCredentials.get(pInfo->AppKey, sizeof(pInfo->AppKey));
-	framSigfoxCredentials.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
-	framSigfoxCredentials.get(pInfo->AppEUI, sizeof(pInfo->AppEUI));
-	framSigfoxCredentials.get(pInfo->DevEUI, sizeof(pInfo->DevEUI));
-	framSigfoxCredentials.get(pInfo->AppEUI, sizeof(pInfo->AppEUI)); */
+	framRegion.get(&pInfo->Region, sizeof(pInfo->Region));
+	framEncryption.get(&pInfo->Encryption, sizeof(pInfo->Encryption));
 
 	return true;
 	}
