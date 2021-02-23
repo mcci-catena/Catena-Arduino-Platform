@@ -57,6 +57,8 @@ _Apologies_: This document is a work in progress, and is published in this inter
                 - [Sending an uplink message](#sending-an-uplink-message)
                 - [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
                 - [LoRaWAN Class Structure](#lorawan-class-structure)
+        - [Sigfox Support](#sigfox-support)
+                - [Sigfox Class Structure](#sigfox-class-structure)
         - [FRAM Storage Management](#fram-storage-management)
                 - [FRAM Storage Formats](#fram-storage-formats)
                         - [Object Storage Structure](#object-storage-structure)
@@ -84,6 +86,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
         - [FRAM commands](#fram-commands)
         - [LoRaWAN commands](#lorawan-commands)
                 - [LoRaWAN Parameters](#lorawan-parameters)
+        - [Sigfox commands](#sigfox-commands)
+                - [Sigfox Parameters](#sigfox-parameters)
+                - [Sigfox Regions](#sigfox-regions)
 - [Adding your own commands](#adding-your-own-commands)
 - [Example sketches](#example-sketches)
         - [`catena_hello`](#catena_hello)
@@ -898,6 +903,51 @@ In order to allow code to be portable across networks and regions, we've done a 
 
 As the diagram shows, Catena::LoRaWAN objects are primarily `Arduino_LoRaWAN` derivatives, but they also can be viewed as `McciCatena::cPollableObject` instances, and therefore can participate in [polling](#polling-framework).
 
+### Sigfox Support
+
+The Catena Arduino Platform includes C++ wrappers for Sigfox support, based on the MCCI version of the [MCCI_Sigfox_Image](https://github.com/mcci-catena/MCCI_Sigfox_Image) library. It includes command processing from the `Serial` console for run-time (not compile-time) provisioning, and uses the non-volatile storage provided by the Catena FRAM to store connection parameters and uplink/downlink counts.
+
+The `Catena::Sigfox` class is derived from the `MCCI_Sigfox` class defined by `<MCCI_Sigfox.h>`.
+
+To use Sigfox in a sketch, do the following.
+
+1. Instantiate the global Catena object, with the name `gCatena`.
+
+    ```c++
+    #include <Catena.h>
+
+    using namespace McciCatena; // to save typing
+
+    Catena gCatena;  // instantiate the Catena platform object.
+    ```
+
+2. Instantiate the global Sigfox object, with the name `gSigfox`:
+
+    ```c++
+    Catena::Sigfox gSigfox;  // the Sigfox function.
+    ```
+
+3. In your setup function, initialize gCatena, gSigfox, and register gSigfox as a pollable object (see [Polling Framework](#polling-framework)).
+
+    ```c++
+    void setup() {
+      // other things
+
+      // set up Catena platform.
+      gCatena.begin();
+
+      // set up Sigfox
+      gSigfox.begin(&gCatena);
+      gCatena.registerObject(&gSigfox);
+
+      // other things
+    }
+    ```
+
+#### Sigfox Class Structure
+
+Catena::Sigfox objects are primarily `MCCI_Sigfox` derivatives, but they also can be viewed as `McciCatena::cPollableObject` instances, and therefore can participate in [polling](#polling-framework).
+
 ### FRAM Storage Management
 
 Many MCCI Catena models include FRAM storage for keeping data across power cycles without worrying about the limited write-tolerance of EEPROM or flash. (FRAM, or ferro-electric RAM, is essentially non-volatile memory that can be freely written. Flash EPROM and EEPROM can be written, but tend to have non-local error properties and limited write durability. They are good for storing code, but troublesome for storing counters, because a location must be updated each time a counter is written.)
@@ -1306,6 +1356,42 @@ These parameters are generally not loaded into the LMIC immediately. They are pr
 `lorawan configure fcntdown` _[ value ]_ | either | the current downlink frame count, `FCntDown` in the LoRaWAN spec.
 `lorawan configure join` _[ value ]_ | either | if zero, the provisioning data will _not_ be loaded into the LMIC at startup. Older versions of the [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) might still allow transmits to cause the device to start trying to join, but it will use invalid credentials.
 
+### Sigfox commands
+
+The following commands are added by the Catena Sigfox module.
+
+| Command | Description |
+|-------------|----------------------------------|
+| `sigfox configure` | Display all Sigfox parameters.
+| `sigfox configure` _`param` [ `value` ]_  | Display or set a Sigfox parameter.
+
+#### Sigfox Parameters
+
+These parameters are generally not loaded into the Sigfox library immediately. They are primarily used at boot time and at join time.
+
+| Command     | Description |
+|-------------|----------------------------------|
+`sigfox configure` | Display all the parameters.
+`sigfox configure devid` _[ value ]_  | Set the devID for this device to _value_, a 32-bit EUI given in big-endian (natural) form.
+`sigfox configure pac` _[ value ]_  |Set the PAC for this device to _value_, a 64-bit EUI given in big-endian (natural) form.
+`sigfox configure key` _[ value ]_  |Set the secured/encrypted key for this device to _value_, a 128-bit value given in big-endian (natural) form.
+`sigfox configure region` _[ value ]_ | Set the region for this device to _value_, a 8-bit value denotes the specific region (ref: [Sigfox Regions](#sigfox-regions)).
+`sigfox configure encryption` _[ value ]_ |Set whether the payload to be encrypted or not using the bool _value_ (0 or 1).
+
+#### Sigfox Regions
+
+These are values of specific regions to be provided to configure the region. For example, to communicate in US915, use the command as `sigfox configure region 2`.
+
+The regions other than in the list below are not supported by Sigfox library currently.
+
+| Value     | Regions |
+|-------------|----------------------------------|
+1 | EU868, MEA868
+2 | US915, SA915
+3 | JP923
+4 | AU915, SA920, AP920
+5 | KR920
+
 ## Adding your own commands
 
 Here's a step-by-step procedure. There's a fully worked example, [`catena_usercommand`](#catenausercommand).
@@ -1422,6 +1508,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes.
 
+  - Fix [#270](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/270): add Sigfox support to Catena Platform.
   - Fix [#266](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/266): clear EOC flag after every analog read (version 0.19.0.30).
   - Fix [#261](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/261): add support for low level FRAM driver `Catena_Mb85rc64ta::read()` and `write()` to read/write > 255 bytes (version 0.19.0.30).
   - Fix [#260](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/269): add more control to the Si1133 library (version 0.19.0.20).
