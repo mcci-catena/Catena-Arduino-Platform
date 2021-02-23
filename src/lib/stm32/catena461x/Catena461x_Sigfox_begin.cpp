@@ -27,7 +27,7 @@ using namespace McciCatena;
 Name:	Catena461x::Sigfox::begin()
 
 Function:
-	Record linkage to main Catena object and set up LoRaWAN.
+	Record linkage to main Catena object and set up Sigfox.
 
 Definition:
 	bool Catena461x::Sigfox::begin(
