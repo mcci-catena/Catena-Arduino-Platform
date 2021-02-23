@@ -59,6 +59,8 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Sending an uplink message](#sending-an-uplink-message)
 		- [Registering to receive downlink messages](#registering-to-receive-downlink-messages)
 		- [LoRaWAN Class Structure](#lorawan-class-structure)
+	- [Sigfox Support](#sigfox-support)
+		- [Sigfox Class Structure](#sigfox-class-structure)
 	- [FRAM Storage Management](#fram-storage-management)
 		- [FRAM Storage Formats](#fram-storage-formats)
 			- [Object Storage Structure](#object-storage-structure)
@@ -86,6 +88,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [FRAM commands](#fram-commands)
 	- [LoRaWAN commands](#lorawan-commands)
 		- [LoRaWAN Parameters](#lorawan-parameters)
+	- [Sigfox commands](#sigfox-commands)
+		- [Sigfox Parameters](#sigfox-parameters)
+		- [Sigfox Regions](#sigfox-regions)
 - [Adding your own commands](#adding-your-own-commands)
 - [Example sketches](#example-sketches)
 	- [`catena_hello`](#catena_hello)
@@ -1511,6 +1516,10 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Release History
+
+- HEAD includes the following changes
+
+  - fix [#270](ttps://github.com/mcci-catena/Catena-Arduino-Platform/issues/270): add sigfox support and commands to configure using Serial terminal. (Version 0.20.1.10.)
 
 - v0.20.1 includes the following changes.
 
