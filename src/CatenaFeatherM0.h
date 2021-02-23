@@ -24,8 +24,6 @@ Author:
 
 #include <Arduino_LoRaWAN_network.h>
 
-#include <Catena_Sigfox_wapper.h>
-
 namespace McciCatena {
 
 class CatenaFeatherM0 : public CatenaSamd21
@@ -38,9 +36,6 @@ public:
 
 	// forward reference
 	class LoRaWAN;
-
-	// Sigfox binding
-	class Sigfox /* forward */;
 
 	// all FeatherM0s put vbat on A7
 	enum ANALOG_PINS
@@ -112,42 +107,6 @@ protected:
 	virtual bool GetOtaaProvisioningInfo(
 			OtaaProvisioningInfo *pProvisioningInfo
 			) override;
-
-	//
-	// TODO(tmm@mcci.com) -- the following are not used but are always
-	// hanging around even when we have better ways to do things.
-	//
-private:
-	CatenaFeatherM0		*m_pCatena;
-	};
-
-class CatenaFeatherM0::Sigfox : public MCCI_Catena_Sigfox,
-                                 public cPollableObject
-	{
-public:
-        using Super = MCCI_Catena_Sigfox;
-
-	/*
-	|| the constructor.
-	*/
-	Sigfox() {};
-
-	/*
-	|| the begin function loads data from the local
-	|| platform's stable storage and initializes
-	|| the connection.
-	*/
-	virtual bool begin(CatenaFeatherM0 *pCatena);
-
-        virtual void poll() { this->Super::loop(); };
-
-protected:
-	/*
-	|| we have to provide these for the lower level
-	*/
-	virtual bool GetSigfoxConfiguringInfo(
-					SigfoxConfiguringInfo *pProvisioningInfo
-					) override;
 
 	//
 	// TODO(tmm@mcci.com) -- the following are not used but are always
