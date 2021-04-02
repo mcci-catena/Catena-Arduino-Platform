@@ -109,6 +109,7 @@ CatenaBase::GetAbpProvisioningInfo(
 	)
 	{
 	auto const pFram = this->getFram();
+	Arduino_LoRaWAN::SessionState State;
 
 	if (pFram == nullptr)
 		{
@@ -127,8 +128,7 @@ CatenaBase::GetAbpProvisioningInfo(
 		      framAppSKey(pFram),
 		      framDevAddr(pFram),
 		      framNetID(pFram),
-		      framFCntUp(pFram),
-		      framFCntDown(pFram);
+		      framSessionState(pFram);
 
 	bool fResult;
 
@@ -138,8 +138,7 @@ CatenaBase::GetAbpProvisioningInfo(
 	    framAppSKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppSKey]) &&
 	    framDevAddr.locate(cFramStorage::vItemDefs[cFramStorage::kDevAddr]) &&
 	    framNetID.locate(cFramStorage::vItemDefs[cFramStorage::kNetID]) &&
-	    framFCntUp.locate(cFramStorage::vItemDefs[cFramStorage::kFCntUp]) &&
-	    framFCntDown.locate(cFramStorage::vItemDefs[cFramStorage::kFCntDown]))
+	    framSessionState.locate(cFramStorage::vItemDefs[cFramStorage::kLmicSessionState]))
 		fResult = true;
 
 	if (! fResult)
@@ -159,8 +158,9 @@ CatenaBase::GetAbpProvisioningInfo(
 	framAppSKey.get(pInfo->AppSKey, sizeof(pInfo->AppSKey));
 	framDevAddr.getuint32(pInfo->DevAddr);
 	framNetID.getuint32(pInfo->NetID);
-	framFCntUp.getuint32(pInfo->FCntUp);
-	framFCntDown.getuint32(pInfo->FCntDown);
+	framSessionState.get((uint8_t *)&State, sizeof(State));
+	pInfo->FCntDown = State.V1.FCntDown;
+	pInfo->FCntUp = State.V1.FCntUp;
 
 	return true;
 	}
