@@ -250,6 +250,14 @@ public:
                 size_t nData
                 ) const;
 
+        // parse a field
+        static bool parsefield(
+                const char *pValue,
+                uint8_t *pData,
+                size_t nData,
+                bool isNumber
+                );
+
         size_t formatvalue(
                 char *pBuffer,
                 size_t nBuffer,
@@ -257,6 +265,20 @@ public:
                 const uint8_t *pData,
                 size_t nData
                 ) const;
+
+        static size_t formatfield(
+                char *pBuffer,
+                size_t nBuffer,
+                size_t iBuffer,
+                const uint8_t *pData,
+                size_t nData,
+                bool isNum
+                );
+
+        cFramStorage::StandardKeys getKey() const
+                {
+                return cFramStorage::StandardKeys(this->m_uKey);
+                }
 	
 private:
         cFramStorage::StandardItem getItem()

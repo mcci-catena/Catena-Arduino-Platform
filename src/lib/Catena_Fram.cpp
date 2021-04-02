@@ -997,6 +997,17 @@ McciCatena::cFram::Cursor::parsevalue(
         if (nData != item.getSize())
                 return false;
 
+        return parsefield(pValue, pData, nData, item.isNumber());
+        }
+
+bool
+McciCatena::cFram::Cursor::parsefield(
+        const char *pValue,
+        uint8_t *pData,
+        size_t nData,
+        bool isNumber
+        )
+        {
         // value is hex, and may have embedded '-' to separate
         // bytes. At the end, if it's a number, we have to reverse 
         // it.... for sanity, start with zeros.  As a further
@@ -1050,7 +1061,7 @@ McciCatena::cFram::Cursor::parsevalue(
                 }
 
         // if it's a number, we now have to byte-reverse
-        if (item.isNumber())
+        if (isNumber)
                 {
                 size_t nData2 = nData/2;
                 size_t i, j;
@@ -1060,6 +1071,7 @@ McciCatena::cFram::Cursor::parsevalue(
 
         return true;
         }
+
 
 size_t 
 McciCatena::cFram::Cursor::formatvalue(
@@ -1080,6 +1092,22 @@ McciCatena::cFram::Cursor::formatvalue(
         if (! this->getitem(item))
                 return iBuffer;
 
+        return formatfield(pBuffer, nBuffer, iBuffer, pData, nData, item.isNumber());
+        }
+
+size_t 
+McciCatena::cFram::Cursor::formatfield(
+        char *pBuffer,
+        size_t nBuffer,
+        size_t iBuffer,
+        const uint8_t *pData,
+        size_t nData,
+        bool isNum
+        )
+        {
+        if (iBuffer < nBuffer)
+                pBuffer[iBuffer] = '\0';
+
         // if it's a number, we need to reverse it.
         // TODO(tmm@mcci.com): better formatting for GUIDs
         for (size_t i = 0; i < nData; ++i)
@@ -1087,7 +1115,7 @@ McciCatena::cFram::Cursor::formatvalue(
                 size_t j;
                 const char *pSep;
                 pSep = "-";
-                if (item.isNumber())
+                if (isNum)
                         {
                         j = nData - i - 1;
                         if (nData <= 4 || j == 0)
