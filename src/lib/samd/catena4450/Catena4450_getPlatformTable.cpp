@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	April 2017
 
@@ -60,7 +60,7 @@ Function:
 	Get the known platform table.
 
 Definition:
-	public: virtual 
+	public: virtual
 		void Catena4450::getPlatformTable(
                         const CATENA_PLATFORM * const * &vPlatforms,
                         size_t &nvPlatforms

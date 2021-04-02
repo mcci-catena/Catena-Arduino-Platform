@@ -39,7 +39,7 @@ Revision history:
 using namespace McciCatena;
 
 
-float 
+float
 CatenaWingFram2k::ReadVbat(void) const
 	{
 	float rawVoltage = analogRead(CatenaWingFram2k::APIN_VBAT_SENSE);

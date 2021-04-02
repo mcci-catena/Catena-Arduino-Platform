@@ -44,7 +44,7 @@ using namespace McciCatena;
 |
 |		Manifest constants & typedefs.
 |
-|	This is strictly for private types and constants which will not 
+|	This is strictly for private types and constants which will not
 |	be exported.
 |
 \****************************************************************************/
@@ -55,20 +55,20 @@ using namespace McciCatena;
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only 
+|	If program is to be ROM-able, these must all be tagged read-only
 |	using the ROM storage class; they may be global.
 |
 \****************************************************************************/
 
 /*
-function _cpuid { 
-        echo "$1" | 
-        sed -e 's/^/0x/' -e 's/-/, 0x/g' | 
-        awk '{ 
-                $1 = "        { CpuID:  { " $1; 
-                $8 = $8 "\n\t\t   "; 
-                $16 = $16 " },"; 
-                print }' ; 
+function _cpuid {
+        echo "$1" |
+        sed -e 's/^/0x/' -e 's/-/, 0x/g' |
+        awk '{
+                $1 = "        { CpuID:  { " $1;
+                $8 = $8 "\n\t\t   ";
+                $16 = $16 " },";
+                print }' ;
 }
 */
 
@@ -183,7 +183,7 @@ const size_t Catena4450::nvCpuIdToPlatform =
 |
 |	If program is to be ROM-able, these must be initialized
 |	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those 
+|	every variable to have an initializer.)  Note that only those
 |	variables owned by this module should be declared here, using the BSS
 |	keyword; this allows for linkers that dislike multiple declarations
 |	of objects.
@@ -199,7 +199,7 @@ Function:
 	Get the known platform table.
 
 Definition:
-	public: virtual 
+	public: virtual
 		void Catena4450::getCpuIdPlatformTable(
                         const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
                         size_t &nvCpuIdToPlatform

@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	October 2016
 
@@ -75,7 +75,7 @@ CatenaFeatherM0::LoRaWAN::GetAbpProvisioningInfo(
                         __func__
                         );
 
-        if (! pInstance || 
+        if (! pInstance ||
             pInstance->Style != ProvisioningStyle::kABP)
                 {
                 if (pInfo)
@@ -83,10 +83,10 @@ CatenaFeatherM0::LoRaWAN::GetAbpProvisioningInfo(
                         // ensure consistent behavior
                         memset(pInfo, 0, sizeof(*pInfo));
                         }
-        
+
                 return false;
                 }
-        
+
         // got instance data
         if (pInfo)
                 {

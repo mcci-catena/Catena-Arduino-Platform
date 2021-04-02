@@ -84,11 +84,11 @@ public:
 	|| the constructor.
 	*/
 	LoRaWAN() {};
-		
+
 	/*
 	|| the begin function loads data from the local
 	|| platform's stable storage and initializes
-	|| the connection. 
+	|| the connection.
 	*/
 	virtual bool begin(CatenaFeatherM0 *pCatena);
 

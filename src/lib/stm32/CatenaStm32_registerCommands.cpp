@@ -18,7 +18,7 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
 
@@ -58,7 +58,7 @@ static const cCommandStream::cEntry sDefaultEntries[] =
         { "cpuid", doCpuid },
         };
 
-static cCommandStream::cDispatch 
+static cCommandStream::cDispatch
 sDispatch(sDefaultEntries, sizeof(sDefaultEntries));
 
 /****************************************************************************\

@@ -18,7 +18,7 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 Author:
 	Terry Moore, MCCI Corporation	December 2016
 

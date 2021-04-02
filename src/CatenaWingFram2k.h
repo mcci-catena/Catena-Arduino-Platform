@@ -90,7 +90,7 @@ public:
         	};
 
         bool getBootCount(uint32_t &bootCount)
-                { 
+                {
                 bootCount = this->m_BootCount;
                 return true;
                 };

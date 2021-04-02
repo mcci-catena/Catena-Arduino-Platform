@@ -102,7 +102,7 @@ private:
         // In future versions, this might change; some STM32L0 implementations
         // might not have a crystal so LSE won't work. But for now, we assume
         // that there's a crystal for LSE.
-#if defined(_mcci_arduino_version) 
+#if defined(_mcci_arduino_version)
 # if _mcci_arduino_version >= _mcci_arduino_version_calc(2,4,0,90)
         static constexpr bool kUsesLSE = true;          // _mcci_arduino_version indicates that LSE clock is used.
 # else

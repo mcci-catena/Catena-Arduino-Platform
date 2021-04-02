@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -66,7 +66,7 @@ bool CatenaWingFram2k::begin()
         delay(2000);
         gLog.printf(gLog.kTrace, "+CatenaWingFram2k::begin()\n");
 
-        // we must initialize the FRAM before we call our parent, 
+        // we must initialize the FRAM before we call our parent,
         // because FRAM is used for stable storage of platform info.
 
         // start the FRAM
@@ -77,7 +77,7 @@ bool CatenaWingFram2k::begin()
 	if (! this->m_Fram.isValid())
 		{
 		gLog.printf(
-			gLog.kError, 
+			gLog.kError,
 			"FRAM contents are not valid, resetting\n"
 			);
 		this->m_Fram.initialize();
@@ -87,7 +87,7 @@ bool CatenaWingFram2k::begin()
 	if (! this->Super::begin())
 		{
 		gLog.printf(
-			gLog.kError, 
+			gLog.kError,
 			"?CatenaWingFram2k::begin:"
 			" Super::begin() failed\n"
 			);
@@ -101,7 +101,7 @@ bool CatenaWingFram2k::begin()
         if (!this->m_Fram.addCommands())
         	{
 		gLog.printf(
-			gLog.kError, 
+			gLog.kError,
 			"?CatenaWingFram2k::begin:"
 			" m_Fram.addCommands() failed\n"
 			);

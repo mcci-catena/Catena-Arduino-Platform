@@ -18,10 +18,10 @@ Copyright notice:
                 Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	October 2016
 
@@ -47,11 +47,11 @@ char *CatenaBase::GetUniqueIDstring(
 
         unsigned i;
         int j;
-        
+
         for (i = 0, j = 0; i < sizeof(CPUid.b); ++i)
                 {
                 const int nBuf = sizeof(*pStringBuf) - j;
-                const int jResult = 
+                const int jResult =
                     snprintf(
                         &pStringBuf->c[j],
                         nBuf,

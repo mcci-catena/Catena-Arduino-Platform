@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -57,7 +57,7 @@ protected:
 	using Super = cPersistentStorage;
 
 public:
-        virtual bool begin() override 
+        virtual bool begin() override
                 {
                 this->resetCache();
                 this->m_endOffset = 0;
@@ -183,17 +183,17 @@ class cFram::Cursor
 	{
 public:
         // the basic constructor just fills things in.
-	Cursor(cFram *pFram) 
-                : m_pFram(pFram), 
-                  m_uKey(cFramStorage::StandardKeys::kMAX), 
-                  m_offset(cFramStorage::kInvalidOffset) 
+	Cursor(cFram *pFram)
+                : m_pFram(pFram),
+                  m_uKey(cFramStorage::StandardKeys::kMAX),
+                  m_offset(cFramStorage::kInvalidOffset)
                 {};
 
         // construct and locate
         Cursor(cFram *pFram, cFramStorage::StandardItem item);
 
         // construct and locate using key
-        Cursor(cFram *pFram, cFramStorage::StandardKeys uKey) 
+        Cursor(cFram *pFram, cFramStorage::StandardKeys uKey)
                 : Cursor{pFram, cFramStorage::vItemDefs[uKey]} {};
 
         // take a located cursor and create an object if needed
@@ -279,7 +279,7 @@ public:
                 {
                 return cFramStorage::StandardKeys(this->m_uKey);
                 }
-	
+
 private:
         cFramStorage::StandardItem getItem()
                 {

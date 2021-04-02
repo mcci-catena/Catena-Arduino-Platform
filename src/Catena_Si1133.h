@@ -196,7 +196,7 @@ public:
 	static constexpr bool isValid(InputLed_t v)
 		{
 		return (v <= InputLed_t::Disabled) &&
-		       ((UINT32_C(1) << uint8_t(v)) & 
+		       ((UINT32_C(1) << uint8_t(v)) &
 		       		((1u << uint8_t(InputLed_t::SmallIR)) |
 				 (1u << uint8_t(InputLed_t::MediumIR)) |
 				 (1u << uint8_t(InputLed_t::LargeIR)) |
@@ -206,7 +206,7 @@ public:
 				 (1u << uint8_t(InputLed_t::UVdeep)) |
 				 (1u << uint8_t(InputLed_t::Disabled))));
 		}
-	
+
 public:
 	Catena_Si1133(void);
 
@@ -269,25 +269,25 @@ public:
 		ChannelConfiguration_t& setSwGainCode(uint8_t gc) {
 			return this->setValue(adcsense_sw_gain, gc);
 			}
-		uint8_t getSwGainCode() { return fieldget(adcsense_sw_gain, this->m_value); }			
+		uint8_t getSwGainCode() { return fieldget(adcsense_sw_gain, this->m_value); }
 
 		ChannelConfiguration_t& setHwGainCode(uint8_t gc) {
 			return this->setValue(adcsense_hw_gain, gc);
 			}
-		uint8_t getHwGainCode() { return fieldget(adcsense_hw_gain, this->m_value); }			
+		uint8_t getHwGainCode() { return fieldget(adcsense_hw_gain, this->m_value); }
 
 		ChannelConfiguration_t& setHsig(bool fHighRange) {
 			return this->setValue(adcsense_hsig, fHighRange);
 			}
-		bool getHsig() { return fieldget(adcsense_hsig, this->m_value); }			
+		bool getHsig() { return fieldget(adcsense_hsig, this->m_value); }
 
 		enum class Threshold_t : uint8_t {
 			None = 0,
 			Threshold0,
-			Threshold1, 
+			Threshold1,
 			Threshold2
 			};
-		
+
 		ChannelConfiguration_t& setInterruptThreshold(Threshold_t nBits) {
 			return this->setValue(adcpost_thresh_en, uint8_t(nBits));
 			}
@@ -336,7 +336,7 @@ public:
 	/// \param uChannel is the sequence of the measrurement
 	///	in the Si1133 output buffer.
 	///
-	/// \param uMode is an index into 
+	/// \param uMode is an index into
 	boolean configure(
 		uint8_t uChannel,
 		uint8_t uMode,

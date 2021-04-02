@@ -46,7 +46,7 @@ CatenaBase::NetSaveSessionInfo(
 	)
 	{
 	auto const pFram = this->getFram();
-	
+
 	// note that the v1 header and the V2 header are identical in the
 	// bytes belwow.
 	if (pFram != nullptr && (Info.Header.Tag == Arduino_LoRaWAN::kSessionInfoTag_V1 ||
@@ -78,7 +78,7 @@ CatenaBase::NetSaveSessionState(
 	)
 	{
 	auto const pFram = this->getFram();
-	
+
 	// note that the v1 header and the V2 header are identical in the
 	// bytes belwow.
 	if (pFram != nullptr && (State.Header.Tag == Arduino_LoRaWAN::kSessionStateTag_V1))

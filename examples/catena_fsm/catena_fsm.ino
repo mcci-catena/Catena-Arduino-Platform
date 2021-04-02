@@ -57,7 +57,7 @@ public:
                 };
 
         // the begin method initializes the fsm
-        void begin() 
+        void begin()
                 {
                 if (! this->m_fRunning)
                         this->m_fsm.init(*this, &Turnstile::fsmDispatch);

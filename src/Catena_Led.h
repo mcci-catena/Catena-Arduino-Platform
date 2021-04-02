@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	December 2016
 
@@ -82,10 +82,10 @@ public:
                 m_StartTime = millis();
                 m_Pattern = LedPattern::Off;
                 }
-        
-        virtual void poll(void) override 
+
+        virtual void poll(void) override
                 {
-                this->loop(); 
+                this->loop();
                 }
 
         void loop(void)

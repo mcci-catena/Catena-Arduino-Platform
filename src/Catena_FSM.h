@@ -162,7 +162,7 @@ Description:
     the outer evaluator; its job is to keep applying
     the parent's fsmDispatch() until there's no more
     work to be done.
- 
+
     While doing that, it watches for recursive calls
     to eval(), and schedules additional executions
     until everything settles down.
@@ -179,7 +179,7 @@ Description:
     <TParent> is the type of the parent object for this
     finite state machine; it's used so we can call the
     dispatch function:
-    
+
         TState TParent::dispatch(
             TState currentState,
             bool fEntry         // true if just entering
@@ -219,9 +219,9 @@ void cFSM<TParent, TState>::eval(void)
             break;
 
         // call the state dispatcher.
-        auto const newState = 
+        auto const newState =
                 (this->m_parent->*this->m_dispatch)(
-                        oldState, 
+                        oldState,
                         fStateChanged
                         );
 

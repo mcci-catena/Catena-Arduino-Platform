@@ -134,7 +134,7 @@ Function:
 	Get the known platform table.
 
 Definition:
-	public: virtual 
+	public: virtual
 		void Catena4612::getPlatformTable(
                         const CATENA_PLATFORM * const * &vPlatforms,
                         size_t &nvPlatforms

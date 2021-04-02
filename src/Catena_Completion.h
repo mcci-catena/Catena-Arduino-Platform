@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -40,7 +40,7 @@ namespace McciCatena {
 
 // a completion is an abstract class; pass a pointer to this to
 // any of the event processors, and it will get dispatched. Note that
-// in your derived version, 
+// in your derived version,
 class cCompletion
 	{
 public:

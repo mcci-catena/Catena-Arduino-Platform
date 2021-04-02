@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	November 2016
 
@@ -74,8 +74,8 @@ CatenaFeatherM0::GetProvisioningInfo(
 
         for (i = pTable->nInfo, pInfo = pTable->pInfo; i > 0; ++pInfo, --i)
                 {
-                /* 
-                || even for ABP, we use the DevEUI to match up -- but it's 
+                /*
+                || even for ABP, we use the DevEUI to match up -- but it's
                 || reversed. All Catenas have DevEUIs, so this is really not
                 || a sacrifice.
                 */
@@ -83,9 +83,9 @@ CatenaFeatherM0::GetProvisioningInfo(
                 const uint8_t *q;
                 unsigned j;
 
-                for (j = sizeof(*pSysEUI), 
-                       p = &pSysEUI->b[0], q = &pInfo->OtaaInfo.DevEUI[j - 1]; 
-                     j > 0; 
+                for (j = sizeof(*pSysEUI),
+                       p = &pSysEUI->b[0], q = &pInfo->OtaaInfo.DevEUI[j - 1];
+                     j > 0;
                      --j, ++p, --q
                      )
                         {
