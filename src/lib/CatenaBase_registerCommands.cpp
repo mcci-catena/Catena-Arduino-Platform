@@ -362,7 +362,7 @@ doVersion(
 		}
 
 	pThis->printf("Board: %s\n", pCatena->CatenaName());
-	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION);
+	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION, true);
 	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION, true);
 	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION);
 	printVersion(pThis, "MCCIADK", mcciadk_version);

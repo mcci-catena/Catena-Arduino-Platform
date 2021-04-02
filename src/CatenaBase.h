@@ -47,15 +47,16 @@ Author:
 
 #include <Arduino_LoRaWAN.h>
 
-#if ! (defined(ARDUINO_LORAWAN_VERSION) && ARDUINO_LORAWAN_VERSION >= ARDUINO_LORAWAN_VERSION_CALC(0,6,0,20))
+#if ! (defined(ARDUINO_LORAWAN_VERSION_COMPARE_LT) && \
+        ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,0,1)))
 # error Arduino_LoRaWAN library is out of date. Check ARDUINO_LORAWAN_VERSION.
 #endif
 
-// Catena-Arduino-Platform Version
+// Catena-Arduino-Platform Version: uses semantic version for local (so local == 0 is > non-zero)
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)        \
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
-#define CATENA_ARDUINO_PLATFORM_VERSION CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 20, 1, 0)      /* v0.20.1.0 */
+#define CATENA_ARDUINO_PLATFORM_VERSION CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 21, 0, 1)      /* v0.21.0-1 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
@@ -69,6 +70,29 @@ Author:
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_LOCAL(v)    \
         ((v) & 0xFFu)
 
+/// \brief convert a semantic version to an integer.
+#define CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(v)       \
+        (((v) & 0xFFFFFF00u) | (((v) - 1) & 0xFFu))
+
+/// \brief compare two semantic versions
+/// \return \c true if \b a is less than \b b (as a semantic version).
+#define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LT(a, b)   \
+        (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) < CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
+
+/// \brief compare two semantic versions
+/// \return \c true if \b a is greater than or equal to \b b (as a semantic version).
+#define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_GE(a, b)   \
+        (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) >= CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
+
+/// \brief compare two semantic versions
+/// \return \c true if \b a is greater than \b b (as a semantic version).
+#define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_GT(a, b)   \
+        (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) > CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
+
+/// \brief compare two semantic versions
+/// \return \c true if \b a is less than or equal to \b b (as a semantic version).
+#define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LE(a, b)   \
+        (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) <= CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
 
 namespace McciCatena {
 
