@@ -32,6 +32,14 @@ Author:
 
 #include <Arduino_LoRaWAN_network.h>
 
+static_assert(
+        ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(
+                ARDUINO_LORAWAN_VERSION,
+                ARDUINO_LORAWAN_VERSION_CALC(0, 9, 0, 1)
+                ),
+        "ARDUINO_LORAWAN_VERSION must be at least 0.9.0-1"
+        );
+
 namespace McciCatena {
 
 class CatenaStm32L0 : public CatenaStm32
@@ -146,12 +154,16 @@ protected:
         virtual bool GetOtaaProvisioningInfo(
                         Arduino_LoRaWAN::OtaaProvisioningInfo *
                         ) override;
-        virtual void NetSaveFCntUp(uint32_t uFCntUp) override;
-        virtual void NetSaveFCntDown(uint32_t uFCntDown) override;
         virtual void NetSaveSessionInfo(
                         const SessionInfo &Info,
                         const uint8_t *pExtraInfo,
                         size_t nExtraInfo
+                        ) override;
+        virtual void NetSaveSessionState(
+                        Arduino_LoRaWAN::SessionState const &State
+                        ) override;
+        virtual bool NetGetSessionState(
+                        Arduino_LoRaWAN::SessionState &State
                         ) override;
 
         //

@@ -55,9 +55,9 @@ abstract class CatenaBase {
   +ProvisioningStyle GetProvisioningStyle();
   +bool GetAbpProvisioningInfo();
   +bool GetOtaaProvisioningInfo();
-  +void NetSaveFCntUp();
-  +void NetSaveFCntDown();
   +void NetSaveSessionInfo();
+  +void NetSaveSessionState();
+  +bool NetGetSessionInfo();
   +bool addLoRaWanCommands();
   +{static}CatenaBase *pCatenaBase;
   #{abstract}void registerCommands();

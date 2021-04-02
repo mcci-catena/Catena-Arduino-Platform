@@ -132,26 +132,6 @@ CatenaWingFram2k::LoRaWAN::GetProvisioningStyle(
 	return pCatena->GetProvisioningStyle();
 	}
 
-void
-CatenaWingFram2k::LoRaWAN::NetSaveFCntUp(
-	uint32_t uFCntUp
-	)
-	{
-        CatenaWingFram2k * const pCatena = this->m_pCatena;
-
-        pCatena->NetSaveFCntUp(uFCntUp);
-	}
-
-void
-CatenaWingFram2k::LoRaWAN::NetSaveFCntDown(
-	uint32_t uFCntDown
-	)
-	{
-        CatenaWingFram2k * const pCatena = this->m_pCatena;
-
-        pCatena->NetSaveFCntDown(uFCntDown);
-        }
-
 void 
 CatenaWingFram2k::LoRaWAN::NetSaveSessionInfo(
 	const SessionInfo &Info, 
@@ -162,6 +142,26 @@ CatenaWingFram2k::LoRaWAN::NetSaveSessionInfo(
         CatenaWingFram2k * const pCatena = this->m_pCatena;
 
         pCatena->NetSaveSessionInfo(Info, pExtraInfo, nExtraInfo);
+	}
+
+void
+CatenaWingFram2k::LoRaWAN::NetSaveSessionState(
+	const SessionState &State
+	)
+	{
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
+
+        pCatena->NetSaveSessionState(State);
+	}
+
+bool
+CatenaWingFram2k::LoRaWAN::NetGetSessionState(
+	SessionState &State
+	)
+	{
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
+
+        return pCatena->NetGetSessionState(State);
 	}
 
 #endif // ARDUINO_ARCH_SAMD

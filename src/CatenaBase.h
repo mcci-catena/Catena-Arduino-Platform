@@ -276,12 +276,16 @@ public:
         bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo *);
         bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo *);
 
-        void NetSaveFCntUp(uint32_t uFCntUp);
-        void NetSaveFCntDown(uint32_t uFCntDown);
         void NetSaveSessionInfo(
                 const Arduino_LoRaWAN::SessionInfo &Info,
                 const uint8_t *pExtraInfo,
                 size_t nExtraInfo
+                );
+        void NetSaveSessionState(
+                const Arduino_LoRaWAN::SessionState &State
+                );
+        bool NetGetSessionState(
+                Arduino_LoRaWAN::SessionState &State
                 );
 
         bool addLoRaWanCommands(void);

@@ -48,6 +48,7 @@ public:
                 kOperatingFlags = 15,
                 kBme680Cal = 16,
                 kAppConf = 17,
+                kLmicSessionState = 18,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };
