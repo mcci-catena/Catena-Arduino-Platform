@@ -84,6 +84,8 @@ static const Catena_Si1133::ChannelConfiguration_t sk_Config[] =
 		.setCounter(Catena_Si1133::ChannelConfiguration_t::CounterSelect_t::MeasCount2),
 	Catena_Si1133::ChannelConfiguration_t()
 		.setAdcMux(Catena_Si1133::InputLed_t::LargeWhite)
+		.setDecimationRateCode(1)
+		.setHsig(false)
 		.setSwGainCode(0)
 		.setHwGainCode(0)
 		.setPostShift(1)
