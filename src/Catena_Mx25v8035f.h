@@ -167,8 +167,8 @@ public:
 	void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer);
 
 	// program a buffer
-	void program(uint32_t Address, uint8_t *pBuffer, size_t nBuffer);
-	size_t programPage(uint32_t Address, uint8_t *pBuffer, size_t nBuffer);
+	void program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer);
+	size_t programPage(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer);
 
 	// power management
 	void powerDown(void);

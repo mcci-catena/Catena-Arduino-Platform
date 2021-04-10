@@ -607,13 +607,13 @@ Returns:
 
 size_t Catena_Mx25v8035f::programPage(
 	uint32_t Address,
-	uint8_t *pBuffer,
+	const uint8_t *pBuffer,
 	size_t nBuffer
 	)
 	{
 	SPIClass * const pSpi = this->m_pSpi;
 	uint8_t	status[2];
-	uint8_t data[4];
+	uint8_t data[MX25V8035F_PAGE_SIZE];
 	size_t	programSize;
 
 	data[0] = MX25V8035F_CMD_PP;
@@ -628,7 +628,8 @@ size_t Catena_Mx25v8035f::programPage(
 	this->setWel();
 
 	pSpi->transfer(this->m_CS, data, sizeof(data), SPI_CONTINUE);
-	pSpi->transfer(this->m_CS, pBuffer, programSize, SPI_LAST);
+	memcpy(data, pBuffer, programSize);
+	pSpi->transfer(this->m_CS, data, programSize, SPI_LAST);
 
 	this->pollWip(1 /* ms */);
 
@@ -645,7 +646,7 @@ Function:
 Definition:
 	void Catena_Mx25v8035f::program(
 		uint32_t Address,
-		uint8_t *pBuffer,
+		const uint8_t *pBuffer,
 		size_t nBuffer
 		);
 
@@ -659,7 +660,7 @@ Returns:
 
 void Catena_Mx25v8035f::program(
 	uint32_t Address,
-	uint8_t *pBuffer,
+	const uint8_t *pBuffer,
 	size_t nBuffer
 	)
 	{
