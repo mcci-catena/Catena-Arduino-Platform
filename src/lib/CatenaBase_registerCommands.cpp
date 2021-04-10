@@ -369,7 +369,9 @@ doVersion(
 
 	/* include the MCCI Arduino version, if known */
 	if (pCatena->kMcciArduinoVersion != 0)
-		printVersion(pThis, "MCCI-Arduino-BSP", pCatena->kMcciArduinoVersion);
+		printVersion(pThis, "MCCI-Arduino-BSP", pCatena->kMcciArduinoVersion,
+			pCatena->kMcciArduinoVersionIsSemantic
+			);
 
 	return cCommandStream::CommandStatus::kSuccess;
 	}

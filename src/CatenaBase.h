@@ -116,6 +116,11 @@ public:
 #else
         static constexpr uint32_t kMcciArduinoVersion = 0;
 #endif
+#if defined(_mcci_arduino_version_is_semantic)
+        static constexpr bool kMcciArduinoVersionIsSemantic = true;
+#else
+        static constexpr bool kMcciArduinoVersionIsSemantic = false;
+#endif
         static constexpr uint32_t versionCalc(uint8_t major, uint8_t minor, uint8_t patch, uint8_t local)
                 {
                 return (major << 24u) | (minor << 16u) | (patch << 8u) | local;
