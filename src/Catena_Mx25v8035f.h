@@ -131,7 +131,16 @@ namespace McciCatena {
 class Catena_Mx25v8035f
 	{
 public:
-	Catena_Mx25v8035f(void);
+	Catena_Mx25v8035f(void)
+		: m_Initialized(false)
+		, m_registered(false)
+		{};
+
+	// neither copyable nor movable
+	Catena_Mx25v8035f(const Catena_Mx25v8035f&) = delete;
+	Catena_Mx25v8035f& operator=(const Catena_Mx25v8035f&) = delete;
+	Catena_Mx25v8035f(const Catena_Mx25v8035f&&) = delete;
+	Catena_Mx25v8035f& operator=(const Catena_Mx25v8035f&&) = delete;
 
 	// set up and probe device
 	boolean begin(SPIClass *pSpi, uint8_t ChipSelectPin = D19);
@@ -168,10 +177,13 @@ public:
 private:
 	boolean		m_Initialized;
 	boolean		m_PowerDown;
+	boolean		m_registered;
 	uint8_t		m_CS;
 	SPIClass *	m_pSpi;
 
 	void erase(uint32_t Address, uint8_t Command, uint32_t Delay);
+	void setWel(void);
+	void pollWip(uint32_t pollMs);
 	};
 
 } // namespace McciCatena

@@ -43,56 +43,31 @@ Revision history:
 #include <math.h>
 
 #include "Catena_Mx25v8035f.h"
+#include "CatenaBase.h"
 using namespace McciCatena;
 
 /****************************************************************************\
 |
-|		Manifest constants & typedefs.
-|
-|	This is strictly for private types and constants which will not
-|	be exported.
+|	Manifest constants & typedefs.
 |
 \****************************************************************************/
 
-
+static void flashDelay(uint32_t howLong);
 
 /****************************************************************************\
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only
-|	using the ROM storage class; they may be global.
-|
 \****************************************************************************/
-
 
 
 /****************************************************************************\
 |
-|	VARIABLES:
-|
-|	If program is to be ROM-able, these must be initialized
-|	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those
-|	variables owned by this module should be declared here, using the BSS
-|	keyword; this allows for linkers that dislike multiple declarations
-|	of objects.
+|	Variables.
 |
 \****************************************************************************/
 
-/*
-|| Constructors
-*/
-
-Catena_Mx25v8035f::Catena_Mx25v8035f(void)
-	{
-	this->m_Initialized = false;
-	}
-
-/*
-|| Public functions
-*/
-
+
 /*
 
 Name:	Catena_Mx25v8035f::begin
@@ -155,6 +130,7 @@ boolean Catena_Mx25v8035f::begin(
 	/* Everything seems to be properly initialised and connected */
 	this->m_Initialized = true;
 
+	/* we're not registering as a pollable object yet, so don't set m_Registered */
 	return true;
 	}
 
@@ -187,7 +163,76 @@ void Catena_Mx25v8035f::end(
 	pinMode(this->m_CS, INPUT);
 	digitalWrite(this->m_CS, 0);
 	}
+
+/*
 
+Name:	flashDelay()
+
+Function:
+	Delay, driving the poll loop.
+
+Definition:
+	void flashDelay(
+		uint32_t howLong
+		);
+
+Description:
+	The current thread is delayed for `howLong` milliseconds.
+	After each time the clock is checked, gpCatenaBase->poll() is
+	called to ensure that other activities have a chance to
+	run.
+
+Returns:
+	No explicit result.
+
+*/
+
+static void flashDelay(uint32_t howLong)
+	{
+	auto const tNow = millis();
+
+	while (millis() - tNow < howLong)
+		{
+		gpCatenaBase->poll();
+		}
+	}
+
+/*
+
+Name:	Catena_Mx25v8035f::setWel
+
+Function:
+	Set WEL in flash chip.
+
+Definition:
+	void Catena_Mx25v8035f::setWel(
+		void
+		);
+
+Description:
+	This function sets the WEL latch in the MX25V8035F chip.
+
+Returns:
+	No explicit result.
+
+*/
+
+void Catena_Mx25v8035f::setWel(void)
+	{
+	uint8_t	status[2];
+	auto const pSpi = this->m_pSpi;
+
+	while (true)
+		{
+		pSpi->transfer(this->m_CS, MX25V8035F_CMD_WREN);
+		status[0] = MX25V8035F_CMD_RDSR;
+		pSpi->transfer(this->m_CS, status, sizeof(status));
+		if ((status[1] & MX25V8035F_STS_WEL) != 0)
+			break;
+		gpCatenaBase->poll();
+		}
+	}
+
 /*
 
 Name:	Catena_Mx25v8035f::reset
@@ -216,7 +261,9 @@ void Catena_Mx25v8035f::reset(
 
 	pSpi->transfer(this->m_CS, MX25V8035F_CMD_RSTEN, SPI_LAST);
 	pSpi->transfer(this->m_CS, MX25V8035F_CMD_RST, SPI_LAST);
-	delay(100);	/* Reset recovery time: Chip Erase operation = 100ms */
+
+	/* Reset recovery time: Chip Erase operation = 100ms */
+	flashDelay(100);
 	}
 
 /*
@@ -284,16 +331,46 @@ void Catena_Mx25v8035f::eraseChip(
 	SPIClass * const pSpi = this->m_pSpi;
 	uint8_t	status[2];
 
-	do	{
-		pSpi->transfer(this->m_CS, MX25V8035F_CMD_WREN);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while ((status[1] & MX25V8035F_STS_WEL) == 0);
-
+	this->setWel();
 	pSpi->transfer(this->m_CS, MX25V8035F_CMD_CE);
 
+	this->pollWip(100);
+	}
+
+/*
+
+Name:	Catena_Mx25v8035f::pollWip()
+
+Function:
+	Loop waiting for the WIP bit to go clear, with controlled poll interval
+
+Definition:
+	void Catena_Mx25v8035f::pollWip(
+		uint32_t tPollMs
+		);
+
+Description:
+	Periodically read the status register and check the WIP bit.
+	Return as soon as it is observed to be clear. tPollMs sets the
+	interval between polls, in milliseconds.
+
+Returns:
+	No explicit result.
+
+Notes:
+	There's no timeout; if WIP never clears, this will hang forever.
+
+*/
+
+void Catena_Mx25v8035f::pollWip(
+	uint32_t tPollMs
+	)
+	{
+	uint8_t status[2];
+	auto const pSpi = this->m_pSpi;
+
 	do	{
-		delay(500);
+		flashDelay(tPollMs);
 		status[0] = MX25V8035F_CMD_RDSR;
 		pSpi->transfer(this->m_CS, status, sizeof(status));
 		} while (status[1] & MX25V8035F_STS_WIP);
@@ -336,19 +413,11 @@ void Catena_Mx25v8035f::erase(
 	data[2] = (Address >> 8) & 0xFF;
 	data[3] = Address & 0xFF;
 
-	do	{
-		pSpi->transfer(this->m_CS, MX25V8035F_CMD_WREN);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while ((status[1] & MX25V8035F_STS_WEL) == 0);
+	this->setWel();
 
 	pSpi->transfer(this->m_CS, data, sizeof(data));
 
-	do	{
-		delay(Delay);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while (status[1] & MX25V8035F_STS_WIP);
+	this->pollWip(Delay);
 	}
 
 /*
@@ -375,7 +444,7 @@ void Catena_Mx25v8035f::eraseSector(
 	uint32_t SectorAddress
 	)
 	{
-	this->erase(SectorAddress, MX25V8035F_CMD_SE, 20);
+	this->erase(SectorAddress, MX25V8035F_CMD_SE, 20 /*ms*/);
 	}
 
 /*
@@ -402,7 +471,7 @@ void Catena_Mx25v8035f::eraseBlock32(
 	uint32_t Block32Address
 	)
 	{
-	this->erase(Block32Address, MX25V8035F_CMD_BE_32K, 100);
+	this->erase(Block32Address, MX25V8035F_CMD_BE_32K, 100 /*ms*/);
 	}
 
 /*
@@ -429,7 +498,7 @@ void Catena_Mx25v8035f::eraseBlock64(
 	uint32_t Block64Address
 	)
 	{
-	this->erase(Block64Address, MX25V8035F_CMD_BE, 200);
+	this->erase(Block64Address, MX25V8035F_CMD_BE, 200 /*ms*/);
 	}
 
 /*
@@ -467,19 +536,11 @@ void Catena_Mx25v8035f::setProtection(
 	else
 		data[2] = 0;
 
-	do	{
-		pSpi->transfer(this->m_CS, MX25V8035F_CMD_WREN);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while ((status[1] & MX25V8035F_STS_WEL) == 0);
+	this->setWel();
 
 	pSpi->transfer(this->m_CS, data, sizeof(data));
 
-	do	{
-		delay(1);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while (status[1] & MX25V8035F_STS_WIP);
+	this->pollWip(1 /*ms*/);
 	}
 
 /*
@@ -564,20 +625,12 @@ size_t Catena_Mx25v8035f::programPage(
 	if (programSize > nBuffer)
 		programSize = nBuffer;
 
-	do	{
-		pSpi->transfer(this->m_CS, MX25V8035F_CMD_WREN);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while ((status[1] & MX25V8035F_STS_WEL) == 0);
+	this->setWel();
 
 	pSpi->transfer(this->m_CS, data, sizeof(data), SPI_CONTINUE);
 	pSpi->transfer(this->m_CS, pBuffer, programSize, SPI_LAST);
 
-	do	{
-		delay(1);
-		status[0] = MX25V8035F_CMD_RDSR;
-		pSpi->transfer(this->m_CS, status, sizeof(status));
-		} while (status[1] & MX25V8035F_STS_WIP);
+	this->pollWip(1 /* ms */);
 
 	return programSize;
 	}
