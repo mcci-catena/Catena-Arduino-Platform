@@ -178,7 +178,7 @@ Definition:
 
 Description:
 	The current thread is delayed for `howLong` milliseconds.
-	After each time the clock is checked, gpCatenaBase->poll() is
+	After each time the clock is checked, CatenaBase::pCatenaBase->poll() is
 	called to ensure that other activities have a chance to
 	run.
 
@@ -193,7 +193,7 @@ static void flashDelay(uint32_t howLong)
 
 	while (millis() - tNow < howLong)
 		{
-		gpCatenaBase->poll();
+		CatenaBase::pCatenaBase->poll();
 		}
 	}
 
@@ -229,7 +229,7 @@ void Catena_Mx25v8035f::setWel(void)
 		pSpi->transfer(this->m_CS, status, sizeof(status));
 		if ((status[1] & MX25V8035F_STS_WEL) != 0)
 			break;
-		gpCatenaBase->poll();
+		CatenaBase::pCatenaBase->poll();
 		}
 	}
 

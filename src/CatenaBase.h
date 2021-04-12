@@ -599,9 +599,6 @@ Returns:
 */
 // actual function is above.
 
-// global for finding the base from anywhere.
-extern CatenaBase *gpCatenaBase;
-
 }; // end namespace McciCatena
 
 
