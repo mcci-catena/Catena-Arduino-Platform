@@ -333,6 +333,11 @@ public:
                 return &this->m_CommandStream;
                 }
 
+        /// \brief return the command line collector
+        cStreamLineCollector *getCommandCollector()
+                {
+                return &this->m_Collector;
+                }
 
 /****************************************************************************\
 |
