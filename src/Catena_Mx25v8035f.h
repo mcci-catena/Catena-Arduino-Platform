@@ -37,6 +37,7 @@ Revision history:
 #pragma once
 
 #include <Arduino.h>
+#include <Catena_Flash.h>
 #include <SPI.h>
 
 /* TODO: change these to enums and constepxrs in the McciCatena namespace */
@@ -128,7 +129,7 @@ Revision history:
 
 namespace McciCatena {
 
-class Catena_Mx25v8035f
+class Catena_Mx25v8035f : public cFlash
 	{
 public:
 	Catena_Mx25v8035f(void)
@@ -143,36 +144,36 @@ public:
 	Catena_Mx25v8035f& operator=(const Catena_Mx25v8035f&&) = delete;
 
 	// set up and probe device
-	boolean begin(SPIClass *pSpi, uint8_t ChipSelectPin = D19);
-	void end(void);
+	virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin = D19) override;
+	virtual void end(void) override;
 
 	// reset chip
-	void reset(void);
+	virtual void reset(void) override;
 
 	// read id
-	void readId(uint8_t *pManufacturerId, uint16_t *pDeviceId);
+	virtual void readId(uint8_t *pManufacturerId, uint16_t *pDeviceId) override;
 
-	// chip earse
-	void eraseChip(void);
+	/// \brief chip erase
+	virtual void eraseChip(void) override;
 
-	// earse sector, block32 and block64
-	void eraseSector(uint32_t SectorAddress);
-	void eraseBlock32(uint32_t Block32Address);
-	void eraseBlock64(uint32_t Block64Address);
+	// erase sector, block32 and block64
+	virtual void eraseSector(uint32_t SectorAddress) override;
+	virtual void eraseBlock32(uint32_t Block32Address) override;
+	virtual void eraseBlock64(uint32_t Block64Address) override;
 
 	// set protection -- CATENA_MX25V8035F_PL_xxx
-	void setProtection(uint8_t protectionLevel);
+	virtual void setProtection(uint8_t protectionLevel) override;
 
 	// read a buffer
-	void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer);
+	virtual void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer) override;
 
 	// program a buffer
-	void program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer);
-	size_t programPage(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer);
+	virtual void program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
+	virtual size_t programPage(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
 
 	// power management
-	void powerDown(void);
-	void powerUp(void);
+	virtual void powerDown(void) override;
+	virtual void powerUp(void) override;
 
 private:
 	boolean		m_Initialized;

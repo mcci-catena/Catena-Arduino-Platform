@@ -39,10 +39,13 @@ Revision history:
 
 #ifdef ARDUINO_ARCH_STM32
 
+#include <Catena_Mx25v8035f.h>
+
 #include <stdlib.h>
 #include <math.h>
 
-#include "Catena_Mx25v8035f.h"
+#include <Catena_Flash.h>
+
 #include "CatenaBase.h"
 using namespace McciCatena;
 
@@ -89,7 +92,7 @@ Returns:
 
 */
 
-boolean Catena_Mx25v8035f::begin(
+bool Catena_Mx25v8035f::begin(
 	SPIClass *pSpi,
 	uint8_t ChipSelectPin
 	)
@@ -627,7 +630,7 @@ size_t Catena_Mx25v8035f::programPage(
 
 	this->setWel();
 
-	pSpi->transfer(this->m_CS, data, sizeof(data), SPI_CONTINUE);
+	pSpi->transfer(this->m_CS, data, 4, SPI_CONTINUE);
 	memcpy(data, pBuffer, programSize);
 	pSpi->transfer(this->m_CS, data, programSize, SPI_LAST);
 
