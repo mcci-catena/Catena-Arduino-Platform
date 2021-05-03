@@ -24,6 +24,7 @@ Author:
 #include <Catena_BootloaderApi.h>
 #include <Catena_Flash.h>
 #include <Catena_Log.h>
+#include <Catena_Serial.h>
 #include <CatenaBase.h>
 
 using namespace McciCatena;
@@ -58,21 +59,23 @@ Function:
 
 Definition:
     void cDownload::begin(
+            cSerialAbstract &rSerial,
+            cFlash &rFlash,
+            cBootloaderApi &rBootloaderApi
             );
 
 Description:
     Start the download module. For convenience, we ask the user to pass in a
-    cFlash object and cBootloaderApi object.
+    a cFlash object and cBootloaderApi object.
 
 Returns:
     No result is returned.
 
 */
 
-void cDownload::begin(cSerialAbstract &rSerial, cFlash &rFlash, cBootloaderApi &rBootloaderApi)
+void cDownload::begin(cFlash &rFlash, cBootloaderApi &rBootloaderApi)
     {
     // save the pointers.
-    this->m_pSerial = &rSerial;
     this->m_pFlash = &rFlash;
     this->m_pBootloaderApi = &rBootloaderApi;
 
@@ -159,12 +162,12 @@ cDownload::fsmDispatch(
             this->armRequest();
             }
 
-        auto const requestType = this->checkRequest();
+        auto const newRequest = this->checkRequest();
 
-        if (requestType != DownloadRq_t::Idle)
+        if (newRequest)
             {
             auto const regionAddress =
-                (requestType == DownloadRq_t::GetUpdate)
+                (this->m_pRequest->rq == DownloadRq_t::GetUpdate)
                     ? kUploadFileAddress
                     : kFallbackFileAddress
                     ;
@@ -202,18 +205,19 @@ cDownload::fsmDispatch(
 
     case State_t::stGetData:
         {
-        auto const nAvail = this->m_pSerial->available();
+        auto const nAvail = this->m_pRequest->available();
         auto const tNow = millis();
 
         // for USB downloads, we don't have to handshake. For others,
-        // we do, so print a '.' when we are looking for data.
+        // we do, so we want print a '<' when we are looking for data.
+        // Call back to the client to take care of it
         if (fEntry)
             {
             // record starting time.
             this->m_readTimer = tNow;
 
             if (nAvail == 0)
-                this->m_pSerial->write("<", 1);
+                this->m_pRequest->promptForData();
             }
 
         if (nAvail >= kTransferChunkBytes)
@@ -235,7 +239,7 @@ cDownload::fsmDispatch(
             // as there are overflows.
             uint8_t data[kTransferChunkBytes];
 
-            auto const nRead = this->m_pSerial->stream().readBytes(data, sizeof(data));
+            auto const nRead = this->m_pRequest->readBytes(data, sizeof(data));
 
             if (nRead != kTransferChunkBytes)
                 {
@@ -515,11 +519,64 @@ cDownload::completeRequest(
     Status_t status
     )
     {
-    if (this->m_fBusy)
+    Request_t * const pRequest = this->m_pRequest;
+    if (pRequest != nullptr)
         {
-        this->m_fBusy = false;
-        (*this->m_pCompletionFn)(this->m_pUserData, status);
+        this->m_pRequest = nullptr;
+        (*pRequest->Completion.pFunction)(pRequest->Completion.pUserData, status);
         }
 
     return State_t::stIdle;
+    }
+
+bool
+cDownload::evStartSerialDownload(
+    DownloadRq_t rq,
+    cSerialAbstract &serial,
+    Request_t &request,
+    Request_t::CompletionFn_t *pCallback,
+    void *pUserData
+    )
+    {
+    // set up the callback.
+    request.Completion.init(pCallback, pUserData);
+
+    // set up the query for available data
+    request.QueryAvailableData.init(
+        [] (void *pUserData) -> int
+            {
+            cSerialAbstract * const pSerial = (cSerialAbstract *)pUserData;
+
+            return pSerial->available();
+            },
+        (void *)&serial
+        );
+
+    // set up the "prompt"
+    request.PromptForData.init(
+        [] (void *pUserData) -> void
+            {
+            cSerialAbstract * const pSerial = (cSerialAbstract *)pUserData;
+
+            pSerial->write("<", 1);
+            },
+        (void *)&serial
+        );
+
+    // set up the transfer from source to our buffer.
+    request.ReadBytes.init(
+        [] (void *pUserData, std::uint8_t *pData, size_t nData) -> size_t
+            {
+            cSerialAbstract * const pSerial = (cSerialAbstract *)pUserData;
+
+            return pSerial->stream().readBytes(pData, nData);
+            },
+        (void *)&serial
+        );
+
+    // set up the request code.
+    request.rq = rq;
+
+    // launch the request.
+    return evStart(request);
     }

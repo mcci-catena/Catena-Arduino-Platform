@@ -39,18 +39,22 @@ namespace McciCatena {
 ///
 class cDownload : public cPollableObject
     {
-protected:
-    static constexpr uint32_t kMaxFileSize = (192 - 24) * 1024;
-    static constexpr uint32_t kUploadFileAddress = 256 * 1024;
-    static constexpr uint32_t kFallbackFileAddress = 64 * 1024;
-    static constexpr uint32_t kTransferChunkBytes = 128;
-    static constexpr uint32_t kTransferTimeoutMs = 2 * 1000;
+public:
+    /// \brief parameters
+    /// \{
+    static constexpr uint32_t kMaxFileSize = (192 - 24) * 1024;     ///< maximum download file size
+    static constexpr uint32_t kUploadFileAddress = 256 * 1024;      ///< where the update file lives in SPI flash
+    static constexpr uint32_t kFallbackFileAddress = 64 * 1024;     ///< where the fallback file lives in SPI flash
+    static constexpr uint32_t kTransferChunkBytes = 128;            ///< how many bytes in a "chunk" -- matches half-page size
+    static constexpr uint32_t kTransferTimeoutMs = 2 * 1000;        ///< how long to wait before timing out a download, in seconds.
+    /// \}
 
+    /// \brief the request codes for doing an upload
     enum class DownloadRq_t : uint8_t
         {
-        Idle = 0,
-        GetUpdate = 1,
-        GetFallback = 2,
+        Idle = 0,           ///< no request pending
+        GetUpdate = 1,      ///< set the update image and do an update
+        GetFallback = 2,    ///< set the fallback image
         };
 
 public:
@@ -64,7 +68,7 @@ public:
     cDownload& operator=(const cDownload&&) = delete;
 
     /// set up to begin operation
-    void begin(cSerialAbstract &rSerial, cFlash &rFlash, cBootloaderApi &rBoot);
+    void begin(cFlash &rFlash, cBootloaderApi &rBoot);
 
     /// poll function (from framework); drives FSM
     virtual void poll() override;
@@ -108,26 +112,99 @@ public:
         this->m_Fsm.eval();
         }
 
-    /// completion function
-    typedef void CompletionFn(void *pUserData, Status_t status);
-
-    /// request a download
-    bool evStart(bool fUpdateNotFallback, CompletionFn *pDoneFn, void *pUserData)
+    // the request object
+    struct Request_t
         {
-        if (this->m_fBusy)
+        template <typename Tfn>
+        struct Closure_t
+            {
+            Tfn *pFunction;
+            void *pUserData;
+            void init(Tfn *pFn, void *pData)
+                {
+                this->pFunction = pFn;
+                this->pUserData = pData;
+                }
+            };
+
+        /// completion function
+        typedef void CompletionFn_t(void *pUserData, Status_t status);
+        /// query available data
+        typedef int QueryAvailableDataFn_t(void *pUserData);
+        /// pull data if possible
+        typedef void PromptForDataFn_t(void *pUserData);
+        /// read bytes
+        typedef size_t ReadBytesFn_t(void *pUserData, std::uint8_t *pBuffer, size_t nBuffer);
+    
+        /// The methods
+        Closure_t<CompletionFn_t>           Completion;
+        Closure_t<QueryAvailableDataFn_t>   QueryAvailableData;
+        Closure_t<PromptForDataFn_t>        PromptForData;
+        Closure_t<ReadBytesFn_t>            ReadBytes;
+
+        /// the request code.
+        DownloadRq_t    rq;
+
+        int available(void)
+            {
+            return this->QueryAvailableData.pFunction(this->QueryAvailableData.pUserData);
+            }
+        void promptForData(void)
+            {
+            if (this->PromptForData.pFunction != nullptr)
+                this->PromptForData.pFunction(this->PromptForData.pUserData);
+            }
+        size_t readBytes(std::uint8_t *pBuffer, size_t nBuffer)
+            {
+            return this->ReadBytes.pFunction(this->ReadBytes.pUserData, pBuffer, nBuffer);
+            }
+        };
+
+
+    ///
+    /// request an abstract download
+    ///
+    /// \returns \c true if the request was launched and the callback routine
+    ///             will be called. \c false if the request was rejected; the
+    ///             callback routine will not be called.
+    ///
+    bool evStart(Request_t &request)
+        {
+        if (this->m_pRequest != nullptr)
             return false;
 
-        this->m_fBusy = true;
-        this->m_pCompletionFn = pDoneFn;
-        this->m_pUserData = pUserData;
+        this->m_pRequest = &request;
 
-        this->m_events.f.downloadRequest =
-            fUpdateNotFallback ? DownloadRq_t::GetUpdate : 
-                        DownloadRq_t::GetFallback ;
+        this->m_events.f.downloadRequest = true;
 
         this->fsmEval();
         return true;
         }
+
+    ///
+    /// request a simple serial download over the specified serial port.
+    ///
+    /// \param [in] rq is the request (typically \c DownloadRq_t::GetUpdate oir
+    ///                  \c DownloadRq_t::GetFallback.
+    /// \param [in] serial is the serial port to be used.
+    /// \param [in] request is the request block to use. It is owned by the
+    ///                 library until the completion callback (if the request
+    ///                 gets launched).
+    /// \param [in] pCallback function to be called on completion of request
+    ///                 processing, if the request is accepted.
+    /// \param [in] pUserData user context to be passed to the callback function.
+    ///
+    /// \returns \c true if the request was launched and the callback routine
+    ///             will be called. \c false if the request was rejected; the
+    ///             callback routine will not be called.
+    ///
+    bool evStartSerialDownload(
+        DownloadRq_t rq,
+        cSerialAbstract &serial,
+        Request_t &request,
+        Request_t::CompletionFn_t *pCallback,
+        void *pUserData
+        );
 
 protected:
     /// complete a download
@@ -136,18 +213,18 @@ protected:
     /// \brief arm the request logic.
     void armRequest(void)
         {
-        this->m_events.f.downloadRequest = DownloadRq_t::Idle;
+        this->m_events.f.downloadRequest = false;
         }
 
     /// \brief check whether download has been requested; reset flag.
     /// \return \c true if download requested, \c false otherwise.
-    DownloadRq_t checkRequest(void)
+    bool checkRequest(void)
         {
         auto const result = this->m_events.f.downloadRequest;
 
-        if (result != DownloadRq_t::Idle)
+        if (result)
             {
-            this->m_events.f.downloadRequest = DownloadRq_t::Idle;
+            this->m_events.f.downloadRequest = false;
             }
         return result;
         }
@@ -156,14 +233,12 @@ private:
     /// \brief the finite state machine object.
     cFSM<cDownload, State_t> m_Fsm;
 
-    cSerialAbstract *m_pSerial;     ///< reference to the serial object for the downloader.
-    cFlash *m_pFlash;       ///< reference to the flash object.
+    cFlash *m_pFlash;               ///< reference to the flash object.
     cBootloaderApi *m_pBootloaderApi;   ///< reference to the bootloader API object.
-    uint32_t m_fileSize;    ///< size of file.
-    uint32_t m_fileIndex;   ///< current byte location in file.
-    uint32_t m_readTimer;   ///< timeout timer for getData
-    CompletionFn *m_pCompletionFn;  ///< completion function for request
-    void *m_pUserData;              ///< context for request.
+    uint32_t m_fileSize;            ///< size of file.
+    uint32_t m_fileIndex;           ///< current byte location in file.
+    uint32_t m_readTimer;           ///< timeout timer for getData
+    Request_t *m_pRequest;          ///< current request or nullptr
 
     /// \brief event flags for cDownload FSM implementation
     union
@@ -174,7 +249,7 @@ private:
         /// flags as individual bits
         struct
             {
-            DownloadRq_t  downloadRequest: 8;     ///< set non-zero when it's time to download
+            bool    downloadRequest: 1; ///< set non-zero when a request arrives
             } f;
         } m_events;
 
@@ -188,9 +263,8 @@ private:
     void flushBytesToFlash();
     void initPageBuffer(uint32_t byteIndex);
     bool checkHash(uint32_t fileIndex, uint32_t fileSize);
-
-    uint8_t m_fBusy;        ///< if true, processing a request.
     };
+
 
 } // McciCatena
 
