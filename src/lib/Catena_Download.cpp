@@ -153,9 +153,6 @@ cDownload::fsmDispatch(
         {
     case State_t::stInitial:
         {
-        // for debugging
-        //gLog.setFlags(cLog::DebugFlags(gLog.getFlags() | gLog.kTrace));
-
         newState = State_t::stIdle;
         }
         break;

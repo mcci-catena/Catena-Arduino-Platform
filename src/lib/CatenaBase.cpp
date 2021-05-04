@@ -55,7 +55,8 @@ CatenaBase::begin(void)
 	{
 	UniqueID_buffer_t CpuID;
 
-	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
+	// use default debug flags
+	gLog.begin();
 
 	this->m_PollingEngine.begin();
 
