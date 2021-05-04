@@ -99,7 +99,7 @@ CatenaBase::GetPlatformForID(
 		))
 		{
 		gLog.printf(
-			cLog::DebugFlags(gLog.kInfo | gLog.kError),
+			gLog.kError,
 			"Didn't find SysEUI entry; zero local copy\n"
 			);
 		memset(pSysEui->b, 0, sizeof(pSysEui->b));
@@ -114,7 +114,7 @@ CatenaBase::GetPlatformForID(
 		uint32_t OperatingFlags;
 
 		gLog.printf(
-			cLog::DebugFlags(gLog.kInfo | gLog.kError),
+			gLog.kError,
 			"Didn't find FRAM entry; search well-known\n"
 			);
 
