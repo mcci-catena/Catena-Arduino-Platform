@@ -65,7 +65,7 @@ public:
 		kUserTrace15	= 0x80000000u,		///< User debugging trace bit 15
 		};
 
-	cLog(DebugFlags flags = DebugFlags(0))
+	cLog(DebugFlags flags = DebugFlags(kInfo | kWarning | kError | kBug))
                 : m_uDebugFlags(flags)
                 {};
 
@@ -76,7 +76,7 @@ public:
 	cLog& operator=(const cLog&&) = delete;
 
 	// initialize
-	bool begin(DebugFlags uDebugFlags = DebugFlags(kError | kBug))
+	bool begin(DebugFlags uDebugFlags = DebugFlags(kInfo | kWarning | kError | kBug))
 		{
 		this->m_uDebugFlags = uDebugFlags;
 		}
