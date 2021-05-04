@@ -194,9 +194,9 @@ cDownload::fsmDispatch(
             // erase pages containing the region
             for (auto blockAddress = regionAddress; blockAddress < regionEnd; blockAddress += 64 * 1024)
                 {
-                gLog.printf(gLog.kTrace, "erase block at 0x%x...", blockAddress);
+                gLog.printf(gLog.kVerbose, "erase block at 0x%x...", blockAddress);
                 this->m_pFlash->eraseBlock64(blockAddress);
-                gLog.printf(gLog.kTrace, "\n");
+                gLog.printf(gLog.kVerbose, "\n");
                 }
             }
         
@@ -315,7 +315,7 @@ cDownload::fsmDispatch(
                         else
                             {
                             this->m_fileSize = this->m_appInfo.imagesize + this->m_appInfo.authsize;
-                            gLog.printf(gLog.kTrace, "file size: 0x%x\n", this->m_fileSize);
+                            gLog.printf(gLog.kVerbose, "file size: 0x%x\n", this->m_fileSize);
                             }
                         }
                     }
@@ -349,7 +349,7 @@ cDownload::fsmDispatch(
 
         bool fOk;
 
-        gLog.printf(gLog.kTrace, "checking hash:");
+        gLog.printf(gLog.kVerbose, "checking hash:");
 
         // check the hash
         auto status = this->checkHash(this->m_pageAddr - this->m_fileSize, this->m_fileSize)
@@ -360,7 +360,7 @@ cDownload::fsmDispatch(
         // if successful, set the EEPROM flag
         if (status == Status_t::kSuccessful)
             {
-            gLog.printf(gLog.kTrace, " OK\nSet boot flag:");
+            gLog.printf(gLog.kVerbose, " OK\nSet boot flag:");
             uint32_t *pUpdateFlag = this->m_pBootloaderApi->getUpdateFlagAddress();
 
             if (pUpdateFlag == nullptr)
@@ -391,17 +391,21 @@ cDownload::fsmDispatch(
                 if (*pUpdateFlag != 0xFFFFFFFFu)
                     {
                     status = Status_t::kUpdateFlagSetFailure;
-                    gLog.printf(gLog.kTrace, " fail: 0x%x\n", *pUpdateFlag);
+                    if (! gLog.isEnabled(gLog.kVerbose))
+                        gLog.printf(gLog.kError, "Set boot flag:");
+                    gLog.printf(gLog.kVerbose | gLog.kError, " failed: 0x%x\n", *pUpdateFlag);
                     }
                 else
                     {
-                    gLog.printf(gLog.kTrace, " OK\n");
+                    gLog.printf(gLog.kVerbose, " OK\n");
                     }
                 }
             }
         else
             {
-            gLog.printf(gLog.kTrace, " fail\n");
+            if (! gLog.isEnabled(gLog.kVerbose))
+                gLog.printf(gLog.kError, "check hash:");
+            gLog.printf(gLog.kError, " failed\n");
             }
 
         newState = this->completeRequest(status);
@@ -489,6 +493,10 @@ cDownload::checkHash(
         uint32_t n = flashEndAddr - i;
         if (n > sizeof(this->m_pagebuffer))
             n = sizeof(this->m_pagebuffer);
+
+        // this can take awhile, so let the rest of the system have a
+        // peek in.
+        CatenaBase::pCatenaBase->poll();
 
         this->m_pFlash->read(i, this->m_pagebuffer, n);
         nRemaining = this->m_pBootloaderApi->hash_blocks(hash, this->m_pagebuffer, n);
