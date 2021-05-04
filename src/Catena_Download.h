@@ -101,6 +101,22 @@ public:
         stFinal,            ///< finish up
         };
 
+    /// names of the states.
+    static constexpr const char *getStateName(State_t s)
+        {
+        switch (s)
+            {
+        case State_t::stNoChange: return "stNoChange";
+        case State_t::stInitial: return "stInitial";
+        case State_t::stIdle: return "stIdle";
+        case State_t::stErase: return "stErase";
+        case State_t::stGetData: return "stGetData";
+        case State_t::stProgram: return "stProgram";
+        case State_t::stFinal: return "stFinal";
+        default: return "<<unknown state>>";
+            }
+        }
+
     /// dispatch FSM
     /// \param [in] curState is the current state
     /// \param [in] fEntry is true if the state is beign entered.

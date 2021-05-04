@@ -144,6 +144,11 @@ cDownload::fsmDispatch(
 
     newState = State_t::stNoChange;
 
+    if (gLog.isEnabled(gLog.kTrace) && fEntry)
+        {
+        gLog.printf(gLog.kAlways, "cDownload: enter state %s(%d)\n", getStateName(curState), int(curState));
+        }
+
     switch (curState)
         {
     case State_t::stInitial:
