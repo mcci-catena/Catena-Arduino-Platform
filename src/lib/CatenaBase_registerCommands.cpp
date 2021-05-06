@@ -321,15 +321,18 @@ static void
 printVersion(
 	cCommandStream *pThis,
 	const char *pLabel,
-	uint32_t packedVersion
+	uint32_t packedVersion,
+	bool fSemantic = false
 	)
 	{
-	pThis->printf("%s-Version: %d.%d.%d%s",
+	const char cSemantic = fSemantic ? '-' : '.';
+
+	pThis->printf("%s-Version: %d.%d.%d%c",
 		pLabel,
 		(packedVersion >> 24) & 0xFF,
 		(packedVersion >> 16) & 0xFF,
 		(packedVersion >> 8) & 0xFF,
-		(packedVersion & 0xFF) ? "." : "\n"
+		(packedVersion & 0xFF) ? cSemantic : '\n'
 		);
 
 	if (packedVersion & 0xFF)
@@ -359,14 +362,16 @@ doVersion(
 		}
 
 	pThis->printf("Board: %s\n", pCatena->CatenaName());
-	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION);
-	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION);
+	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION, true);
+	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION, true);
 	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION);
 	printVersion(pThis, "MCCIADK", mcciadk_version);
 
 	/* include the MCCI Arduino version, if known */
 	if (pCatena->kMcciArduinoVersion != 0)
-		printVersion(pThis, "MCCI-Arduino-BSP", pCatena->kMcciArduinoVersion);
+		printVersion(pThis, "MCCI-Arduino-BSP", pCatena->kMcciArduinoVersion,
+			pCatena->kMcciArduinoVersionIsSemantic
+			);
 
 	return cCommandStream::CommandStatus::kSuccess;
 	}

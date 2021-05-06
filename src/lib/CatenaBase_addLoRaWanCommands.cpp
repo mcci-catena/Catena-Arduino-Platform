@@ -47,6 +47,8 @@ struct KeyMap
 	{
 	const char *pName;
 	cFramStorage::StandardKeys uKey;
+	unsigned fieldOffset;
+	unsigned fieldSize;
 	};
 
 static KeyMap sKeyMap[] =
@@ -58,8 +60,14 @@ static KeyMap sKeyMap[] =
 	{ "appskey", cFramStorage::StandardKeys::kAppSKey, },
 	{ "devaddr", cFramStorage::StandardKeys::kDevAddr, },
 	{ "netid", cFramStorage::StandardKeys::kNetID, },
-	{ "fcntup", cFramStorage::StandardKeys::kFCntUp, },
-	{ "fcntdown", cFramStorage::StandardKeys::kFCntDown, },
+	{ "fcntup", cFramStorage::StandardKeys::kLmicSessionState,
+		offsetof(Arduino_LoRaWAN::SessionStateV1, FCntUp),
+		sizeof(Arduino_LoRaWAN::SessionStateV1::FCntUp)
+		},
+	{ "fcntdown", cFramStorage::StandardKeys::kLmicSessionState,
+		offsetof(Arduino_LoRaWAN::SessionStateV1, FCntDown),
+		sizeof(Arduino_LoRaWAN::SessionStateV1::FCntDown)
+		},
 	{ "join", cFramStorage::StandardKeys::kJoin, },
 	};
 
@@ -148,14 +156,14 @@ doConfigure(
 	{
 	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
 	cFram::Cursor cursor(pCatena->getFram());
-	static constexpr unsigned databuf_size = 16;
+	static constexpr unsigned databuf_size = 256;
 
-	auto printValue = [](cCommandStream *pThis, cFram::Cursor &cursor, const char *pName) -> cCommandStream::CommandStatus 
+	auto printValue = [](cCommandStream *pThis, cFram::Cursor &cursor, const KeyMap &p) -> cCommandStream::CommandStatus
 		{
 		uint8_t databuf[databuf_size];
 		if (! cursor.islocated())
 			{
-			pThis->printf("%s: not initialized\n", pName);
+			pThis->printf("%s: not initialized\n", p.pName);
 			return cCommandStream::CommandStatus::kNotInitialized;
 			}
 		else
@@ -170,14 +178,26 @@ doConfigure(
 
 			if (! cursor.get(databuf, size))
 				{
-				pThis->printf("%s: read error\n", pName);
+				pThis->printf("%s: read error\n", p.pName);
 				return cCommandStream::CommandStatus::kReadError;
 				}
 
-			cursor.formatvalue(
-				strbuf, sizeof(strbuf), 0,
-				databuf, size
-				);
+			if (cursor.getKey() == cFramStorage::StandardKeys::kLmicSessionState)
+				{
+				// it's a state variable
+				cursor.formatfield(strbuf, sizeof(strbuf), 0,
+					&databuf[p.fieldOffset],
+					p.fieldSize,
+					/* is number? */ true
+					);
+				}
+			else
+				{
+				cursor.formatvalue(
+					strbuf, sizeof(strbuf), 0,
+					databuf, size
+					);
+				}
 
 			pThis->printf("%s\n", strbuf);
 			return cCommandStream::CommandStatus::kSuccess;
@@ -194,20 +214,22 @@ doConfigure(
 				continue;
 
 			pThis->printf("lorawan %s %s ", argv[0], p.pName);
-			(void) printValue(pThis, cursor, p.pName);
+			(void) printValue(pThis, cursor, p);
 			}
 
 		return cCommandStream::CommandStatus::kSuccess;
 		}
 
 	const char * const pName = argv[1];
+	const KeyMap *p = nullptr;
 
-	for (auto const & p : sKeyMap)
+	for (auto const & Key : sKeyMap)
 		{
-		if (strcasecmp(p.pName, pName) == 0)
+		if (strcasecmp(Key.pName, pName) == 0)
 			{
 			// matched!
-			cursor.locate(p.uKey);
+			cursor.locate(Key.uKey);
+			p = &Key;
 			}
 		}
 
@@ -224,25 +246,49 @@ doConfigure(
 	// display
 	if (argc <= 2)
 		{
-		return printValue(pThis, cursor, pName);
+		return printValue(pThis, cursor, *p);
 		}
 	else
 		{
 		const char * const pValue = argv[2];
 		uint8_t databuf[databuf_size];
 		size_t size;
+		bool fParseOk;
 
+		/*
+		|| fcntup and fcntdown are in a bigger field, so things
+		|| get sophisticated.
+		*/
 		size = cursor.getitemsize();
 		if (size > sizeof(databuf))
 			size = sizeof(databuf);
 
 		// parse the argument according to the cursor (which
 		// specifies what will receive it
-		if (! cursor.parsevalue(
-				pValue,
-				databuf,
-				size
-				))
+		if (cursor.getKey() == cFramStorage::StandardKeys::kLmicSessionState)
+			{
+			if (! cursor.get(databuf, size))
+				{
+				pThis->printf("%s: could not create entry\n",
+					pName
+					);
+
+				return cCommandStream::CommandStatus::kCreateError;
+				}
+			fParseOk = cursor.parsefield(
+					pValue,
+					databuf + p->fieldOffset,
+					p->fieldSize,
+					true
+					);
+			}
+		else
+			fParseOk = cursor.parsevalue(
+					pValue,
+					databuf,
+					size
+					);
+		if (! fParseOk)
 			{
 			pThis->printf("%s: invalid parameter: %s\n",
 				pName, pValue

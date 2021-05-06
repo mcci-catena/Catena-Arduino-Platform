@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -55,7 +55,8 @@ CatenaBase::begin(void)
 	{
 	UniqueID_buffer_t CpuID;
 
-	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
+	// use default debug flags
+	gLog.begin();
 
 	this->m_PollingEngine.begin();
 
@@ -89,7 +90,7 @@ CatenaBase::registerObject(
 /* poll all the registered objects */
 void
 CatenaBase::poll()
-	{ 
+	{
 	this->m_PollingEngine.poll();
 	}
 

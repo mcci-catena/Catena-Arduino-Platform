@@ -44,7 +44,7 @@ using namespace McciCatena;
 |
 |		Manifest constants & typedefs.
 |
-|	This is strictly for private types and constants which will not 
+|	This is strictly for private types and constants which will not
 |	be exported.
 |
 \****************************************************************************/
@@ -55,26 +55,26 @@ using namespace McciCatena;
 |
 |	Read-only data.
 |
-|	If program is to be ROM-able, these must all be tagged read-only 
+|	If program is to be ROM-able, these must all be tagged read-only
 |	using the ROM storage class; they may be global.
 |
 \****************************************************************************/
 
 /*
-function _cpuid { 
-        echo "$1" | 
-        sed -e 's/^/0x/' -e 's/-/, 0x/g' | 
-        awk '{ 
-                $1 = "        { CpuID:  { " $1; 
-                $8 = $8 "\n\t\t   "; 
-                $16 = $16 " },"; 
-                print }' ; 
+function _cpuid {
+        echo "$1" |
+        sed -e 's/^/0x/' -e 's/-/, 0x/g' |
+        awk '{
+                $1 = "        { CpuID:  { " $1;
+                $8 = $8 "\n\t\t   ";
+                $16 = $16 " },";
+                print }' ;
 }
 */
 
 const CatenaBase::CPUID_PLATFORM_MAP Catena4410::vCpuIdToPlatform[] =
     {
-	{ CpuID:  { 0x08, 0x3b, 0xaf, 0x31, 0x35, 0x50, 0x4d, 0x51, 
+	{ CpuID:  { 0x08, 0x3b, 0xaf, 0x31, 0x35, 0x50, 0x4d, 0x51,
 		    0x20, 0x20, 0x20, 0x33, 0x1b, 0x1f, 0x11, 0xff },
 	  pPlatform: &gkPlatformCatena4410_pond,
 	  SysEUI: { 0x00, 0x02, 0xCC, 0x01, 0x00, 0x00, 0x00, 0x00 },
@@ -82,7 +82,7 @@ const CatenaBase::CPUID_PLATFORM_MAP Catena4410::vCpuIdToPlatform[] =
           OperatingFlagsSet: fUnattended,
 	},
 
-	{ CpuID:  { 0xea, 0xa3, 0x7e, 0x87, 0x35, 0x50, 0x4d, 0x51, 
+	{ CpuID:  { 0xea, 0xa3, 0x7e, 0x87, 0x35, 0x50, 0x4d, 0x51,
 		    0x20, 0x20, 0x20, 0x33, 0x3d, 0x21, 0x13, 0xff },
 	  pPlatform: &gkPlatformCatena4410_anatolian,
 	  SysEUI: { 0x00, 0x02, 0xCC, 0x01, 0x00, 0x00, 0x00, 0x01 },
@@ -90,7 +90,7 @@ const CatenaBase::CPUID_PLATFORM_MAP Catena4410::vCpuIdToPlatform[] =
           OperatingFlagsSet: fUnattended,
 	},
 
-	{ CpuID:  { 0xb0, 0xa9, 0x2f, 0x58, 0x35, 0x50, 0x4d, 0x51, 
+	{ CpuID:  { 0xb0, 0xa9, 0x2f, 0x58, 0x35, 0x50, 0x4d, 0x51,
 		    0x20, 0x20, 0x20, 0x33, 0x41, 0x23, 0x12, 0xff },
 	  pPlatform: &gkPlatformCatena4410_gh,
 	  SysEUI: { 0x00, 0x02, 0xCC, 0x01, 0x00, 0x00, 0x00, 0x02 },
@@ -223,7 +223,7 @@ const size_t Catena4410::nvCpuIdToPlatform =
 |
 |	If program is to be ROM-able, these must be initialized
 |	using the BSS keyword.  (This allows for compilers that require
-|	every variable to have an initializer.)  Note that only those 
+|	every variable to have an initializer.)  Note that only those
 |	variables owned by this module should be declared here, using the BSS
 |	keyword; this allows for linkers that dislike multiple declarations
 |	of objects.
@@ -239,7 +239,7 @@ Function:
 	Get the known platform table.
 
 Definition:
-	public: virtual 
+	public: virtual
 		void Catena4410::getCpuIdPlatformTable(
                         const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
                         size_t &nvCpuIdToPlatform

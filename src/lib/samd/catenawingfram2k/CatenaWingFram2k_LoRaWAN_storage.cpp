@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -133,35 +133,35 @@ CatenaWingFram2k::LoRaWAN::GetProvisioningStyle(
 	}
 
 void
-CatenaWingFram2k::LoRaWAN::NetSaveFCntUp(
-	uint32_t uFCntUp
-	)
-	{
-        CatenaWingFram2k * const pCatena = this->m_pCatena;
-
-        pCatena->NetSaveFCntUp(uFCntUp);
-	}
-
-void
-CatenaWingFram2k::LoRaWAN::NetSaveFCntDown(
-	uint32_t uFCntDown
-	)
-	{
-        CatenaWingFram2k * const pCatena = this->m_pCatena;
-
-        pCatena->NetSaveFCntDown(uFCntDown);
-        }
-
-void 
 CatenaWingFram2k::LoRaWAN::NetSaveSessionInfo(
-	const SessionInfo &Info, 
-	const uint8_t *pExtraInfo, 
+	const SessionInfo &Info,
+	const uint8_t *pExtraInfo,
 	size_t nExtraInfo
 	)
 	{
         CatenaWingFram2k * const pCatena = this->m_pCatena;
 
         pCatena->NetSaveSessionInfo(Info, pExtraInfo, nExtraInfo);
+	}
+
+void
+CatenaWingFram2k::LoRaWAN::NetSaveSessionState(
+	const SessionState &State
+	)
+	{
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
+
+        pCatena->NetSaveSessionState(State);
+	}
+
+bool
+CatenaWingFram2k::LoRaWAN::NetGetSessionState(
+	SessionState &State
+	)
+	{
+        CatenaWingFram2k * const pCatena = this->m_pCatena;
+
+        return pCatena->NetGetSessionState(State);
 	}
 
 #endif // ARDUINO_ARCH_SAMD

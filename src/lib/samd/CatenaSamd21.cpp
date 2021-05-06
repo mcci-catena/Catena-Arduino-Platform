@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -41,7 +41,7 @@ using namespace McciCatena;
 bool
 CatenaSamd21::cSerialReady::isReady() const
 	{
-        // unfortunately, we can't use !! Serial (or bool(Serial) -- 
+        // unfortunately, we can't use !! Serial (or bool(Serial) --
         // it doesn't really check what we want, and then it inserts
         // a 10ms delay unconditionally.
         // so we just check DTR instead.

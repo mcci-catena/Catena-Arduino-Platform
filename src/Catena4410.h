@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	October 2016
 
@@ -63,7 +63,7 @@ public:
 		PIN_SHT10_CLK = 11,
 		PIN_SHT10_DATA = 10
 		};
-	
+
 	/*
 	|| Methods
 	*/
@@ -107,11 +107,11 @@ public:
 	|| the constructor.
 	*/
 	LoRaWAN() {};
-		
+
 	/*
 	|| the begin function loads data from the local
 	|| platform's stable storage and initializes
-	|| the connection. 
+	|| the connection.
 	*/
 	// bool begin(Catena4410 *pCatena4410);
 

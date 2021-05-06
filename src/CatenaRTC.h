@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	November 2016
 
@@ -87,7 +87,7 @@ public:
 
 	void SetAlarm(const CalendarTime *pNow);
 
-	void SleepForAlarm(Alarm_Match how = MATCH_HHMMSS, 
+	void SleepForAlarm(Alarm_Match how = MATCH_HHMMSS,
 			   SleepMode howSleep = SleepMode::IdleCpu
 			   );
 

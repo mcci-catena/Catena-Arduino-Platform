@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -90,8 +90,8 @@ McciCatena::cFram::loadCache(
 
         cFramStorage::Offset offset;
 
-        for (offset = 0; 
-             offset < this->m_endOffset; 
+        for (offset = 0;
+             offset < this->m_endOffset;
              offset += object.nextObjectOffset())
                 {
                 if (! this->read(offset, (uint8_t *)&object, sizeof(object)))
@@ -234,7 +234,7 @@ Function:
 	Set the data for a given key.
 
 Definition:
-	protected: void 
+	protected: void
 		McciCatena::cFram::setCacheEntry(
 			cFramStorage::StandardKeys uKey,
 			cFramStorage::Offset offset,
@@ -249,7 +249,7 @@ Returns:
 
 */
 
-void 
+void
 McciCatena::cFram::setCacheEntry(
 	cFramStorage::StandardKeys uKey,
 	cFramStorage::Offset offset,
@@ -293,7 +293,7 @@ McciCatena::cFram::isValid()
 		return true;
 
 	nRead = this->read(0, object.getBuffer(), object.getBufferSize());
-	
+
 	if (nRead != object.getBufferSize())
 		{
 		gLog.printf(
@@ -302,7 +302,7 @@ McciCatena::cFram::isValid()
 			object.getBufferSize(),
 			nRead
 			);
-			
+
 		return false;
 		}
 
@@ -351,7 +351,7 @@ McciCatena::cFram::isValid()
 		}
 
         // get the end-of-storage pointer
-        uint32_t offsetOfEndPointer = 
+        uint32_t offsetOfEndPointer =
                 object.offsetOfReplicant(
                         object.getCurrent()
                         );
@@ -377,7 +377,7 @@ McciCatena::cFram::isValid()
                         );
                 return false;
                 }
-       
+
        // check that endpointer is valid
        if (endPointer % cFramStorage::kObjectQuantum != 0 ||
            endPointer < object.getObjectSize())
@@ -458,7 +458,7 @@ McciCatena::cFram::reset()
 	{
         cFramStorage::Object object;
         uint32_t endPointer[2];
-        
+
         // initialize the object header
         object.initialize(
                 cFramStorage::skFramGuid,
@@ -483,8 +483,8 @@ McciCatena::cFram::reset()
         // now update the replicant index
         object.setCurrent(1);
         this->write(
-                0 + object.offsetOfDiscriminator(), 
-                object.getDiscriminatorBuffer(), 
+                0 + object.offsetOfDiscriminator(),
+                object.getDiscriminatorBuffer(),
                 object.getDiscriminatorBufferSize()
                 );
 
@@ -509,7 +509,7 @@ McciCatena::cFram::allocate(
 		return cFramStorage::kInvalidOffset;
 
 	// round nBytes.
-	size_t const nAlloc = cFramStorage::getClicks(nBytes) * 
+	size_t const nAlloc = cFramStorage::getClicks(nBytes) *
 			      cFramStorage::kObjectQuantum;
 
 	if (nAlloc < nBytes)
@@ -534,7 +534,7 @@ McciCatena::cFram::writeItemData(
 	{
 	const uint8_t uKey = item.getKey();
 	const cFramStorage::Offset offset = this->m_offsetCache[uKey];
-	static const uint8_t uVers[2][3] =	
+	static const uint8_t uVers[2][3] =
 		{
 		{ 0, 0, 0 },
 		{ 1, 1, 1 },
@@ -561,7 +561,7 @@ McciCatena::cFram::writeItemData(
                         nBuffer,
                         item.getSize()
                         );
-			
+
 		return false;
 		}
 
@@ -574,7 +574,7 @@ McciCatena::cFram::writeItemData(
 			pBuffer,
 			nBuffer
 			);
-	
+
 	bool fResult;
 	const uint8_t newVer = ! this->m_uVerCache[uKey];
 
@@ -590,7 +590,7 @@ McciCatena::cFram::writeItemData(
 	if (fResult)
 		{
                 gLog.printf(
-                        gLog.kTrace, 
+                        gLog.kTrace,
                         "key(0x%x) write new version(%u): base(%u) offset(%u) size(%u)\n",
                         uKey,
                         newVer,
@@ -761,7 +761,7 @@ McciCatena::cFram::Cursor::create(
 	// write object and the default value
         cFramStorage::Offset const objOffset = offset;
 	pFram->write(offset, (uint8_t *) &object, sizeof(object));
-	
+
 	offset += sizeof(object);
 	for (auto nWrite = object.getObjectSize() - sizeof(object);
 	     nWrite > 0;
@@ -783,7 +783,7 @@ McciCatena::cFram::Cursor::create(
 		pFram->m_endOffset = offset;
                 pFram->m_offsetCache[this->m_uKey] = objOffset;
                 this->m_offset = objOffset;
-		return true;	
+		return true;
 		}
 
 	return false;
@@ -797,7 +797,7 @@ Function:
 	Set up a cursor for accessing an item.
 
 Definition:
-	public: bool 
+	public: bool
 		McciCatena::cFram::Cursor::locate(
 			const cFramStorage::StandardItem item
 			);
@@ -812,7 +812,7 @@ Returns:
 
 */
 
-bool 
+bool
 McciCatena::cFram::Cursor::locate(
 	const cFramStorage::StandardItem item
 	)
@@ -853,9 +853,9 @@ McciCatena::cFram::Cursor::locate(
 	return true;
 	}
 
-bool 
+bool
 McciCatena::cFram::Cursor::get(
-	uint8_t *pBuffer, 
+	uint8_t *pBuffer,
 	size_t nBuffer
 	)
 	{
@@ -981,7 +981,7 @@ static int getbyte(const char * &pValue, const char * &pTerm)
                 return v;
         }
 
-bool 
+bool
 McciCatena::cFram::Cursor::parsevalue(
         const char *pValue,
         uint8_t *pData,
@@ -997,8 +997,19 @@ McciCatena::cFram::Cursor::parsevalue(
         if (nData != item.getSize())
                 return false;
 
+        return parsefield(pValue, pData, nData, item.isNumber());
+        }
+
+bool
+McciCatena::cFram::Cursor::parsefield(
+        const char *pValue,
+        uint8_t *pData,
+        size_t nData,
+        bool isNumber
+        )
+        {
         // value is hex, and may have embedded '-' to separate
-        // bytes. At the end, if it's a number, we have to reverse 
+        // bytes. At the end, if it's a number, we have to reverse
         // it.... for sanity, start with zeros.  As a further
         // headache, if we have an odd-number of consecutive numeric
         // nibbles, we need to right justify, not left.
@@ -1050,7 +1061,7 @@ McciCatena::cFram::Cursor::parsevalue(
                 }
 
         // if it's a number, we now have to byte-reverse
-        if (item.isNumber())
+        if (isNumber)
                 {
                 size_t nData2 = nData/2;
                 size_t i, j;
@@ -1061,7 +1072,8 @@ McciCatena::cFram::Cursor::parsevalue(
         return true;
         }
 
-size_t 
+
+size_t
 McciCatena::cFram::Cursor::formatvalue(
         char *pBuffer,
         size_t nBuffer,
@@ -1070,7 +1082,7 @@ McciCatena::cFram::Cursor::formatvalue(
         size_t nData
         ) const
         {
-        // data has been fetched, but we need to use the 
+        // data has been fetched, but we need to use the
         // cursor info to format it.
         cFramStorage::StandardItem item;
 
@@ -1080,6 +1092,22 @@ McciCatena::cFram::Cursor::formatvalue(
         if (! this->getitem(item))
                 return iBuffer;
 
+        return formatfield(pBuffer, nBuffer, iBuffer, pData, nData, item.isNumber());
+        }
+
+size_t
+McciCatena::cFram::Cursor::formatfield(
+        char *pBuffer,
+        size_t nBuffer,
+        size_t iBuffer,
+        const uint8_t *pData,
+        size_t nData,
+        bool isNum
+        )
+        {
+        if (iBuffer < nBuffer)
+                pBuffer[iBuffer] = '\0';
+
         // if it's a number, we need to reverse it.
         // TODO(tmm@mcci.com): better formatting for GUIDs
         for (size_t i = 0; i < nData; ++i)
@@ -1087,7 +1115,7 @@ McciCatena::cFram::Cursor::formatvalue(
                 size_t j;
                 const char *pSep;
                 pSep = "-";
-                if (item.isNumber())
+                if (isNum)
                         {
                         j = nData - i - 1;
                         if (nData <= 4 || j == 0)

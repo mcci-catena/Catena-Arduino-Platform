@@ -39,28 +39,6 @@ Revision history:
 using namespace McciCatena;
 
 void
-CatenaBase::NetSaveFCntUp(
-	uint32_t uFCntUp
-	)
-	{
-	auto const pFram = this->getFram();
-
-	if (pFram != nullptr)
-		pFram->saveField(cFramStorage::kFCntUp, uFCntUp);
-	}
-
-void
-CatenaBase::NetSaveFCntDown(
-	uint32_t uFCntDown
-	)
-	{
-	auto const pFram = this->getFram();
-
-	if (pFram != nullptr)
-		pFram->saveField(cFramStorage::kFCntDown, uFCntDown);
-	}
-
-void
 CatenaBase::NetSaveSessionInfo(
 	const Arduino_LoRaWAN::SessionInfo &Info,
 	const uint8_t *pExtraInfo,
@@ -69,23 +47,57 @@ CatenaBase::NetSaveSessionInfo(
 	{
 	auto const pFram = this->getFram();
 
-	if (pFram != nullptr)
+	// note that the v1 header and the V2 header are identical in the
+	// bytes belwow.
+	if (pFram != nullptr && (Info.Header.Tag == Arduino_LoRaWAN::kSessionInfoTag_V1 ||
+				 Info.Header.Tag == Arduino_LoRaWAN::kSessionInfoTag_V2))
 		{
 		pFram->saveField(cFramStorage::kNetID,   Info.V1.NetID);
 		pFram->saveField(cFramStorage::kDevAddr, Info.V1.DevAddr);
 		pFram->saveField(cFramStorage::kNwkSKey, Info.V1.NwkSKey);
 		pFram->saveField(cFramStorage::kAppSKey, Info.V1.AppSKey);
-		pFram->saveField(cFramStorage::kFCntUp,  Info.V1.FCntUp);
-		pFram->saveField(cFramStorage::kFCntDown, Info.V1.FCntDown);
+		if (Info.Header.Tag == Arduino_LoRaWAN::kSessionInfoTag_V1)
+			{
+			pFram->saveField(cFramStorage::kFCntUp,  Info.V1.FCntUp);
+			pFram->saveField(cFramStorage::kFCntDown, Info.V1.FCntDown);
+			}
 		}
 
 	gLog.printf(
-		gLog.kAlways,
+		gLog.kInfo,
 		"NwkID:   %08x   "
 		"DevAddr: %08x\n",
 		Info.V1.NetID,
 		Info.V1.DevAddr
 		);
+	}
+
+void
+CatenaBase::NetSaveSessionState(
+	const Arduino_LoRaWAN::SessionState &State
+	)
+	{
+	auto const pFram = this->getFram();
+
+	// note that the v1 header and the V2 header are identical in the
+	// bytes belwow.
+	if (pFram != nullptr && (State.Header.Tag == Arduino_LoRaWAN::kSessionStateTag_V1))
+		{
+		pFram->saveField(cFramStorage::kLmicSessionState, State);
+		}
+	}
+
+bool
+CatenaBase::NetGetSessionState(
+	Arduino_LoRaWAN::SessionState &State
+	)
+	{
+	auto const pFram = this->getFram();
+
+	if (pFram == nullptr)
+		return false;
+
+	return pFram->getField(cFramStorage::kLmicSessionState, State);
 	}
 
 /**** end of CatenaBase_NetSave.cpp ****/

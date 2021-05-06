@@ -18,10 +18,10 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
- 
+
 Author:
 	Terry Moore, MCCI Corporation	March 2017
 
@@ -57,7 +57,7 @@ protected:
 	using Super = cPersistentStorage;
 
 public:
-        virtual bool begin() override 
+        virtual bool begin() override
                 {
                 this->resetCache();
                 this->m_endOffset = 0;
@@ -183,17 +183,17 @@ class cFram::Cursor
 	{
 public:
         // the basic constructor just fills things in.
-	Cursor(cFram *pFram) 
-                : m_pFram(pFram), 
-                  m_uKey(cFramStorage::StandardKeys::kMAX), 
-                  m_offset(cFramStorage::kInvalidOffset) 
+	Cursor(cFram *pFram)
+                : m_pFram(pFram),
+                  m_uKey(cFramStorage::StandardKeys::kMAX),
+                  m_offset(cFramStorage::kInvalidOffset)
                 {};
 
         // construct and locate
         Cursor(cFram *pFram, cFramStorage::StandardItem item);
 
         // construct and locate using key
-        Cursor(cFram *pFram, cFramStorage::StandardKeys uKey) 
+        Cursor(cFram *pFram, cFramStorage::StandardKeys uKey)
                 : Cursor{pFram, cFramStorage::vItemDefs[uKey]} {};
 
         // take a located cursor and create an object if needed
@@ -250,6 +250,14 @@ public:
                 size_t nData
                 ) const;
 
+        // parse a field
+        static bool parsefield(
+                const char *pValue,
+                uint8_t *pData,
+                size_t nData,
+                bool isNumber
+                );
+
         size_t formatvalue(
                 char *pBuffer,
                 size_t nBuffer,
@@ -257,7 +265,21 @@ public:
                 const uint8_t *pData,
                 size_t nData
                 ) const;
-	
+
+        static size_t formatfield(
+                char *pBuffer,
+                size_t nBuffer,
+                size_t iBuffer,
+                const uint8_t *pData,
+                size_t nData,
+                bool isNum
+                );
+
+        cFramStorage::StandardKeys getKey() const
+                {
+                return cFramStorage::StandardKeys(this->m_uKey);
+                }
+
 private:
         cFramStorage::StandardItem getItem()
                 {

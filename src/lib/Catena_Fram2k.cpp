@@ -18,7 +18,7 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
 
@@ -62,7 +62,7 @@ Function:
 Definition:
 	public: virtual bool
 		McciCatena::cFram2k::begin()
-	
+
 Description:
 	Initialize an cFram2K object prior to operation.
 
@@ -90,10 +90,10 @@ Function:
 	Read a string of bytes from the FRAM
 
 Definition:
-	public: virtual size_t 
+	public: virtual size_t
 		McciCatena::cFram2k::read(
-			cFramStorage::Offset uOffset, 
-			uint8_t *pBuffer, 
+			cFramStorage::Offset uOffset,
+			uint8_t *pBuffer,
 			size_t nBuffer
 			) override;
 
@@ -105,10 +105,10 @@ Returns:
 
 */
 
-size_t 
+size_t
 McciCatena::cFram2k::read(
-	cFramStorage::Offset uOffset, 
-	uint8_t *pBuffer, 
+	cFramStorage::Offset uOffset,
+	uint8_t *pBuffer,
 	size_t nBuffer
 	)
 	{
@@ -125,8 +125,8 @@ Function:
 Definition:
 	public: virtual bool
 		McciCatena::cFram2k::write(
-			cFramStorage::Offset uOffset, 
-			const uint8_t *pBuffer, 
+			cFramStorage::Offset uOffset,
+			const uint8_t *pBuffer,
 			size_t nBuffer
 			) override;
 
@@ -138,15 +138,15 @@ Returns:
 	true for success.
 
 Notes:
-        At the moment, the lower level write can't return failure status, 
+        At the moment, the lower level write can't return failure status,
         so this routine always returns true.
 
 */
 
 bool
 McciCatena::cFram2k::write(
-	cFramStorage::Offset uOffset, 
-	const uint8_t *pBuffer, 
+	cFramStorage::Offset uOffset,
+	const uint8_t *pBuffer,
 	size_t nBuffer
 	)
 	{

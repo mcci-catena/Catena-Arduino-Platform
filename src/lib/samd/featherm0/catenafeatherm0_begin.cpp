@@ -66,7 +66,7 @@ bool CatenaFeatherM0::begin()
 	if (! this->Super::begin())
 		{
 		gLog.printf(
-			gLog.kError, 
+			gLog.kError,
 			"?CatenaFeatherM0::begin:"
 			" Super::begin() failed\n"
 			);

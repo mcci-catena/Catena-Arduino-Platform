@@ -147,7 +147,7 @@ bool Catena_Mb85rc64ta::begin(
 			{
 			break;
 			}
-		
+
 		}
 
 	if (i == 8)
@@ -502,7 +502,7 @@ void Catena_Mb85rc64ta::powerUp(
 
 		this->m_pWire->beginTransmission(this->m_DeviceAddress);
 		this->m_pWire->endTransmission(false);
-	
+
 		/* tREC == Max 400us */
 		uSec = micros();
 		this->m_PowerDown = false;

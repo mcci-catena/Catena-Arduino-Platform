@@ -18,7 +18,7 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
 
@@ -65,7 +65,7 @@ namespace McciCatena {
 /* the class for Samd21-based Catenas */
 class CatenaSamd21 : public CatenaBase
 	{
-public:	
+public:
         using Super = CatenaBase;
 
 	/*

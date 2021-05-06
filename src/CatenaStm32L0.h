@@ -32,6 +32,14 @@ Author:
 
 #include <Arduino_LoRaWAN_network.h>
 
+static_assert(
+        ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(
+                ARDUINO_LORAWAN_VERSION,
+                ARDUINO_LORAWAN_VERSION_CALC(0, 9, 0, 1)
+                ),
+        "ARDUINO_LORAWAN_VERSION must be at least 0.9.0-1"
+        );
+
 namespace McciCatena {
 
 class CatenaStm32L0 : public CatenaStm32
@@ -94,7 +102,7 @@ private:
         // In future versions, this might change; some STM32L0 implementations
         // might not have a crystal so LSE won't work. But for now, we assume
         // that there's a crystal for LSE.
-#if defined(_mcci_arduino_version) 
+#if defined(_mcci_arduino_version)
 # if _mcci_arduino_version >= _mcci_arduino_version_calc(2,4,0,90)
         static constexpr bool kUsesLSE = true;          // _mcci_arduino_version indicates that LSE clock is used.
 # else
@@ -146,12 +154,16 @@ protected:
         virtual bool GetOtaaProvisioningInfo(
                         Arduino_LoRaWAN::OtaaProvisioningInfo *
                         ) override;
-        virtual void NetSaveFCntUp(uint32_t uFCntUp) override;
-        virtual void NetSaveFCntDown(uint32_t uFCntDown) override;
         virtual void NetSaveSessionInfo(
                         const SessionInfo &Info,
                         const uint8_t *pExtraInfo,
                         size_t nExtraInfo
+                        ) override;
+        virtual void NetSaveSessionState(
+                        Arduino_LoRaWAN::SessionState const &State
+                        ) override;
+        virtual bool NetGetSessionState(
+                        Arduino_LoRaWAN::SessionState &State
                         ) override;
 
         //

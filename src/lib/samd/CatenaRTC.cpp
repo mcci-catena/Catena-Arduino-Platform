@@ -18,7 +18,7 @@ Copyright notice:
 		Ithaca, NY  14850
 
 	An unpublished work.  All rights reserved.
-	
+
 	This file is proprietary information, and may not be disclosed or
 	copied without the prior permission of MCCI Corporation.
 
@@ -156,7 +156,7 @@ bool CatenaRTC::begin(bool fResetTime)
 	tmp_reg |= RTC_MODE2_CTRL_MODE_CLOCK; // set clock operating mode
 	tmp_reg |= RTC_MODE2_CTRL_PRESCALER_DIV1024; // set prescaler to 1024 for MODE2
 	tmp_reg &= ~RTC_MODE2_CTRL_MATCHCLR; // disable clear on match
-  
+
 	//According to the datasheet RTC_MODE2_CTRL_CLKREP = 0 for 24h
 	tmp_reg &= ~RTC_MODE2_CTRL_CLKREP; // 24h time representation
 
@@ -165,7 +165,7 @@ bool CatenaRTC::begin(bool fResetTime)
 	RTC->MODE2.CTRL.reg = tmp_reg;
 	RtcWaitSynchronize();
 
-	NVIC_EnableIRQ(RTC_IRQn); // enable RTC interrupt 
+	NVIC_EnableIRQ(RTC_IRQn); // enable RTC interrupt
 	NVIC_SetPriority(RTC_IRQn, 0x00);
 
 	RTC->MODE2.INTENSET.reg |= RTC_MODE2_INTENSET_ALARM0; // enable alarm interrupt
@@ -389,7 +389,7 @@ CatenaRTC::CalendarTime::Advance(
 		delta = 86400;
 		result = false;
 		}
-		
+
 
 	d = delta % 60;
 	delta /= 60;
@@ -400,7 +400,7 @@ CatenaRTC::CalendarTime::Advance(
 		Second %= 60;
 		}
 	if (delta == 0)
-		return result;			
+		return result;
 
 	d = delta % 60;
 	delta /= 60;

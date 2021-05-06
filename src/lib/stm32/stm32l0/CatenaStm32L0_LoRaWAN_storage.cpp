@@ -44,26 +44,6 @@ Revision history:
 using namespace McciCatena;
 
 void
-CatenaStm32L0::LoRaWAN::NetSaveFCntUp(
-	uint32_t uFCntUp
-	)
-	{
-        CatenaStm32L0 * const pCatena = this->m_pCatena;
-
-        pCatena->NetSaveFCntUp(uFCntUp);
-	}
-
-void
-CatenaStm32L0::LoRaWAN::NetSaveFCntDown(
-	uint32_t uFCntDown
-	)
-	{
-        CatenaStm32L0 * const pCatena = this->m_pCatena;
-
-        pCatena->NetSaveFCntDown(uFCntDown);
-        }
-
-void
 CatenaStm32L0::LoRaWAN::NetSaveSessionInfo(
 	const SessionInfo &Info,
 	const uint8_t *pExtraInfo,
@@ -73,6 +53,26 @@ CatenaStm32L0::LoRaWAN::NetSaveSessionInfo(
         CatenaStm32L0 * const pCatena = this->m_pCatena;
 
 	pCatena->NetSaveSessionInfo(Info, pExtraInfo, nExtraInfo);
+	}
+
+void
+CatenaStm32L0::LoRaWAN::NetSaveSessionState(
+	const SessionState &State
+	)
+	{
+        CatenaStm32L0 * const pCatena = this->m_pCatena;
+
+	pCatena->NetSaveSessionState(State);
+	}
+
+bool
+CatenaStm32L0::LoRaWAN::NetGetSessionState(
+	SessionState &State
+	)
+	{
+        CatenaStm32L0 * const pCatena = this->m_pCatena;
+
+	return pCatena->NetGetSessionState(State);
 	}
 
 #endif // ARDUINO_ARCH_STM32
