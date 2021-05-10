@@ -122,17 +122,25 @@ McciBootloaderPlatform_ARMv6M_SvcHandlerFn_t *toSvc(uint32_t v)
     }
 } // extern "C"
 
-
 /****************************************************************************\
 |
 |	Read-only data.
 |
 \****************************************************************************/
 
+extern "C" {
+    extern char _Mcci_AppInfo;
+}
 
 /****************************************************************************\
 |
 |	Variables.
+|
+\****************************************************************************/
+
+/****************************************************************************\
+|
+|	Code.
 |
 \****************************************************************************/
 
@@ -288,4 +296,20 @@ uint32_t cBootloaderApi::getSvc(void)
 
     this->m_svcaddr = svcAddr;
     return svcAddr;
+    }
+
+cBootloaderApi::AppInfo_t const *
+cBootloaderApi::AppInfo_t::getForRunningApp(
+    void
+    )
+    {
+    return (const AppInfo_t *)&_Mcci_AppInfo;
+    }
+
+cBootloaderApi::AppInfo_t const *
+cBootloaderApi::AppInfo_t::getForBootloader(
+    void
+    )
+    {
+    return (const AppInfo_t *)(kBootloaderAddress + 4 * 48);
     }
