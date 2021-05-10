@@ -65,6 +65,24 @@ public:
     /// \brief constant-time hash compare
     bool hash_verify(const uint8_t (&hash1)[512/8], const uint8_t (&hash2)[512/8]);
  
+    /// \brief the public key
+    struct PublicKey_t
+        {
+        std::uint8_t bytes[32];             ///< contents of the public key
+        };
+
+    /// \brief the hash
+    struct Hash_Sha512_t
+        {
+        std::uint8_t bytes[512 / 8];        ///< contents of the hash.
+        };
+
+    /// \brief the signature
+    struct Signature_t
+        {
+        std::uint8_t bytes[64];             ///< the signature
+        };
+
     /// \brief the app info block
     struct AppInfo_t
         {
@@ -86,6 +104,25 @@ public:
         uint64_t	posixTimestamp { 0 };	///< Posix timestamp of image
         uint8_t	    comment[16]; 		    ///< the comment
         uint8_t	    reserved56[16] { 0 };	///< reserved, zero.
+
+        static const AppInfo_t *getForRunningApp(void);
+        static const AppInfo_t *getForBootloader(void);
+        uint32_t getSize() const
+            {
+            return this->imagesize + this->authsize;
+            }
+        const PublicKey_t *getPublicKeyRef() const
+            {
+            return (const PublicKey_t *)(this->targetAddress + this->imagesize);
+            }
+        const Hash_Sha512_t *getHashRef() const
+            {
+            return (const Hash_Sha512_t *)(this->targetAddress + this->imagesize + sizeof(PublicKey_t));
+            }
+        const Signature_t *getSignatureRef() const
+            {
+            return (const Signature_t *)(this->targetAddress + this->imagesize + sizeof(PublicKey_t) + sizeof(Hash_Sha512_t));
+            }
         };
 
 private:
