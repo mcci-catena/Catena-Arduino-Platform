@@ -45,6 +45,9 @@ static_assert(
 #ifdef ARDUINO_ARCH_STM32
 #include <Catena_Sigfox_wapper.h>
 
+#ifdef ARDUINO_ARCH_STM32
+#include <Catena_Sigfox_wapper.h>
+
 namespace McciCatena {
 
 class CatenaStm32L0 : public CatenaStm32
