@@ -35,6 +35,9 @@ public:
 	*/
 	class LoRaWAN /* forward */;
 
+	// Sigfox binding
+	class Sigfox /* forward */;
+
 	virtual const char *CatenaName() const override { return "Catena 4420"; };
 
 protected:
@@ -68,6 +71,27 @@ public:
 	|| the constructor.
 	*/
 	LoRaWAN() {};
+
+protected:
+	/*
+	|| we use the CatenaFeatherM0 defaults
+	*/
+
+private:
+	};
+
+/*
+|| The Sigfox class for the Catena4420.
+*/
+class Catena4420::Sigfox : public CatenaFeatherM0::Sigfox
+	{
+public:
+        using Super = CatenaFeatherM0::Sigfox;
+
+	/*
+	|| the constructor.
+	*/
+	Sigfox() {};
 
 protected:
 	/*

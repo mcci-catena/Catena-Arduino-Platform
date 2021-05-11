@@ -42,6 +42,8 @@ static_assert(
         "ARDUINO_LORAWAN_VERSION must be at least 0.9.0-1"
         );
 
+#include <MCCI_Sigfox.h>
+
 namespace McciCatena {
 
 class CatenaStm32L0 : public CatenaStm32
