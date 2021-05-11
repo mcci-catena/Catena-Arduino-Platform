@@ -197,7 +197,7 @@ public:
         */
         virtual bool begin(CatenaStm32L0 *pCatena);
 
-        virtual void poll() { sigfox_loop(); };
+        virtual void poll() { this->Super::loop(); };
 
 protected:
         /*
