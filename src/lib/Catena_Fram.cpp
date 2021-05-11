@@ -544,9 +544,9 @@ McciCatena::cFram::writeItemData(
                 {
                 gLog.printf(
                         gLog.kBug,
-                        "%s: offset for uKey(%u) invalid!\n",
+                        "%s: offset for uKey(%u) invalid!, offset:(%u)\n",
                         __FUNCTION__,
-                        uKey
+                        uKey, offset
                         );
 
                 return false;

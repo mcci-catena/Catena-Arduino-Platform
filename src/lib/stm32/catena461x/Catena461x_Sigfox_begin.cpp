@@ -1,33 +1,15 @@
-/* Catena461x_LoRaWAN_begin.cpp	Thu Nov 15 2018 14:54:47 chwon */
-
 /*
 
-Module:  Catena461x_LoRaWAN_begin.cpp
+Module:  Catena461x_Sigfox_begin.cpp
 
 Function:
-	Catena461x::LoRaWAN::begin()
-
-Version:
-	V0.11.0	Thu Nov 15 2018 14:54:47 chwon	Edit level 1
+	Catena461x::Sigfox::begin()
 
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+        See accompanying LICENSE file.
 
 Author:
-	ChaeHee Won, MCCI Corporation	November 2018
-
-Revision history:
-   0.11.0  Thu Nov 15 2018 14:54:47  chwon
-	Module created.
+	Dhinesh Kumar Pitchai, MCCI Corporation	December 2020
 
 */
 
@@ -42,13 +24,13 @@ using namespace McciCatena;
 
 /*
 
-Name:	Catena461x::LoRaWAN::begin()
+Name:	Catena461x::Sigfox::begin()
 
 Function:
 	Record linkage to main Catena object and set up LoRaWAN.
 
 Definition:
-	bool Catena461x::LoRaWAN::begin(
+	bool Catena461x::Sigfox::begin(
 		Catena461x *pParent
 		);
 
@@ -61,18 +43,18 @@ Returns:
 */
 
 bool
-Catena461x::LoRaWAN::begin(
+Catena461x::Sigfox::begin(
 	Catena461x *pParent
 	)
 	{
-	gLog.printf(gLog.kTrace, "+Catena461x::LoRaWAN::begin()\n");
+	gLog.printf(gLog.kTrace, "+Catena461x::Sigfox::begin()\n");
 
 	/* call the base begin */
 	if (! this->Super::begin(pParent))
 		{
 		gLog.printf(
 			gLog.kBug,
-			"?Catena461x::LoRaWAN::begin: Super::begin() failed\n"
+			"?Catena461x::Sigfox::begin: Super::begin() failed\n"
 			);
 		return false;
 		}
@@ -83,4 +65,4 @@ Catena461x::LoRaWAN::begin(
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena461x_LoRaWAN_begin.cpp ****/
+/**** end of Catena461x_Sigfox_begin.cpp ****/

@@ -320,6 +320,9 @@ public:
 
         bool addLoRaWanCommands(void);
 
+        bool GetSigfoxConfiguringInfo(MCCI_Catena_Sigfox::SigfoxConfiguringInfo *);
+        bool addSigfoxCommands(void);
+
         // calibrate the system clock, if possible
         virtual uint32_t CalibrateSystemClock(void)
                 {
