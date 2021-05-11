@@ -12,6 +12,7 @@ Author:
 	Dhinesh Kumar Pitchai, MCCI Corporation	December 2020
 
 */
+#ifdef ARDUINO_ARCH_STM32
 
 #include <CatenaBase.h>
 
@@ -68,9 +69,9 @@ Definition:
 			) override;
 
 Description:
-	This routine fetches the OTAA provisioning info from FRAM if
+	This routine fetches the Sigfox provisioning info from FRAM if
 	available, formatting it into *pInfo.  For this to work, FRAM
-	must be initialized and the AppKey, AppEUI and DevEUI must be
+	must be initialized and the Key, PAC and DevID must be
 	available.
 
 	If pInfo is nullptr, the routine simply checks whether the info
@@ -102,8 +103,6 @@ CatenaBase::GetSigfoxConfiguringInfo(
 		return false;
 		}
 
-	/* cFram::Cursor framSigfoxCredentials(pFram); */
-
 	cFram::Cursor framDevID(pFram),
 		      framPAC(pFram),
 		      framKey(pFram),
@@ -119,9 +118,6 @@ CatenaBase::GetSigfoxConfiguringInfo(
 	    framRegion.locate(cFramStorage::vItemDefs[cFramStorage::kRegion]) &&
 	    framEncryption.locate(cFramStorage::vItemDefs[cFramStorage::kEncryption]))
 		fResult = true;
-
-	/* if (framSigfoxCredentials.locate(cFramStorage::vItemDefs[cFramStorage::kSigfoxCredentials]))
-		fResult = true; */
 
 	if (! fResult)
 		{
@@ -148,5 +144,7 @@ CatenaBase::GetSigfoxConfiguringInfo(
 
 	return true;
 	}
+
+#endif // ARDUINO_ARCH_STM32
 
 /**** end of CatenaBase_GetSigfoxConfiguringInfo.cpp ****/

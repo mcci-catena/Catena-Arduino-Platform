@@ -13,6 +13,8 @@ Author:
 
 */
 
+#ifdef ARDUINO_ARCH_STM32
+
 #include "CatenaBase.h"
 
 #include <Catena_Sigfox_wapper.h>
@@ -257,5 +259,7 @@ doConfigure(
 			}
 		}
 	}
+
+#endif // ARDUINO_ARCH_STM32
 
 /**** end of CatenaBase_addSigfoxCommands.cpp ****/

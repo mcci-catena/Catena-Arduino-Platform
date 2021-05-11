@@ -46,7 +46,10 @@ Author:
 #endif
 
 #include <Arduino_LoRaWAN.h>
+
+#ifdef ARDUINO_ARCH_STM32
 #include <Catena_Sigfox_wapper.h>
+#endif
 
 #if ! (defined(ARDUINO_LORAWAN_VERSION_COMPARE_LT) && \
         ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,0,2)))
@@ -321,8 +324,10 @@ public:
 
         bool addLoRaWanCommands(void);
 
+#ifdef ARDUINO_ARCH_STM32
         bool GetSigfoxConfiguringInfo(MCCI_Catena_Sigfox::SigfoxConfiguringInfo *);
         bool addSigfoxCommands(void);
+#endif
 
         // calibrate the system clock, if possible
         virtual uint32_t CalibrateSystemClock(void)

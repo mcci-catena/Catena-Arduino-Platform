@@ -221,5 +221,7 @@ bool CatenaStm32L0_ReadAnalog(
 
 } // namespace McciCatena
 
+#endif // ARDUINO_ARCH_STM32
+
 /**** end of CatenaStm32L0.h ****/
 #endif /* _CATENASTM32L0_H_ */
