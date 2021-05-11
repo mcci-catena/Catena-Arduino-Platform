@@ -42,6 +42,7 @@ static_assert(
         "ARDUINO_LORAWAN_VERSION must be at least 0.9.0-1"
         );
 
+#ifdef ARDUINO_ARCH_STM32
 #include <Catena_Sigfox_wapper.h>
 
 namespace McciCatena {
