@@ -48,6 +48,7 @@ Author:
 #include <Arduino_LoRaWAN.h>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef ARDUINO_ARCH_STM32
 #include <Catena_Sigfox_wapper.h>
 #endif
@@ -56,6 +57,8 @@ Author:
         ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,0,2)))
 =======
 #include <MCCI_Sigfox.h>
+=======
+>>>>>>> fd2fc6b... fix #270: Sigfox configure support
 #include <Catena_Sigfox_wapper.h>
 
 #if ! (defined(ARDUINO_LORAWAN_VERSION) && ARDUINO_LORAWAN_VERSION >= ARDUINO_LORAWAN_VERSION_CALC(0,6,0,20))

@@ -42,7 +42,6 @@ static_assert(
         "ARDUINO_LORAWAN_VERSION must be at least 0.9.0-1"
         );
 
-#include <MCCI_Sigfox.h>
 #include <Catena_Sigfox_wapper.h>
 
 namespace McciCatena {
@@ -200,7 +199,7 @@ public:
         */
         virtual bool begin(CatenaStm32L0 *pCatena);
 
-        virtual void poll() { sigfox_loop(); };
+        virtual void poll() { this->Super::loop(); };
 
 protected:
         /*
