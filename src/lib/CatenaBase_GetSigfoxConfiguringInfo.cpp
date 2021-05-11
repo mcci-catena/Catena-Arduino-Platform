@@ -103,6 +103,8 @@ CatenaBase::GetSigfoxConfiguringInfo(
 		return false;
 		}
 
+	/* cFram::Cursor framSigfoxCredentials(pFram); */
+
 	cFram::Cursor framDevID(pFram),
 		      framPAC(pFram),
 		      framKey(pFram),
@@ -118,6 +120,9 @@ CatenaBase::GetSigfoxConfiguringInfo(
 	    framRegion.locate(cFramStorage::vItemDefs[cFramStorage::kRegion]) &&
 	    framEncryption.locate(cFramStorage::vItemDefs[cFramStorage::kEncryption]))
 		fResult = true;
+
+	/* if (framSigfoxCredentials.locate(cFramStorage::vItemDefs[cFramStorage::kSigfoxCredentials]))
+		fResult = true; */
 
 	if (! fResult)
 		{

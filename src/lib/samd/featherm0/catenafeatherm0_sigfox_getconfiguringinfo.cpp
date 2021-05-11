@@ -1,11 +1,11 @@
-/* catenafeatherm0_lorawan_getotaaprovisioninginfo.cpp	Mon Dec  5 2016 02:09:31 tmm */
+/* catenafeatherm0_sigfox_getsigfoxconfiguringinfo.cpp	Mon Dec  5 2016 02:09:31 tmm */
 
 /*
 
-Module:  catenafeatherm0_lorawan_getotaaprovisioninginfo.cpp
+Module:  catenafeatherm0_sigfox_getsigfoxconfiguringinfo.cpp
 
 Function:
-	CatenaFeatherM0::LoRaWAN::GetOtaaProvisioningInfo()
+	CatenaFeatherM0::Sigfox::GetSigfoxConfiguringInfo()
 
 Version:
 	V0.4.0	Mon Dec  5 2016 02:09:31 tmm	Edit level 2
@@ -61,15 +61,14 @@ using namespace McciCatena;
 
 
 bool
-CatenaFeatherM0::LoRaWAN::GetOtaaProvisioningInfo(
-        CatenaFeatherM0::LoRaWAN::OtaaProvisioningInfo *pInfo
+CatenaFeatherM0::Sigfox::GetSigfoxConfiguringInfo(
+        Sigfox::SigfoxConfiguringInfo *pInfo
         )
         {
         CatenaFeatherM0 * const pCatena = this->m_pCatena;
         const ProvisioningInfo * const pInstance = pCatena->GetProvisioningInfo();
 
-        if (! pInstance || 
-            pInstance->Style != ProvisioningStyle::kOTAA)
+        if (! pInstance)
                 {
                 if (pInfo)
                         {

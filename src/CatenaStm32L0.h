@@ -43,6 +43,7 @@ static_assert(
         );
 
 #include <MCCI_Sigfox.h>
+#include <Catena_Sigfox_wapper.h>
 
 namespace McciCatena {
 
@@ -199,7 +200,7 @@ public:
         */
         virtual bool begin(CatenaStm32L0 *pCatena);
 
-        virtual void poll() { this->Super::loop(); };
+        virtual void poll() { sigfox_loop(); };
 
 protected:
         /*

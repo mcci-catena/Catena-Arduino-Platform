@@ -47,12 +47,19 @@ Author:
 
 #include <Arduino_LoRaWAN.h>
 
+<<<<<<< HEAD
 #ifdef ARDUINO_ARCH_STM32
 #include <Catena_Sigfox_wapper.h>
 #endif
 
 #if ! (defined(ARDUINO_LORAWAN_VERSION_COMPARE_LT) && \
         ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,0,2)))
+=======
+#include <MCCI_Sigfox.h>
+#include <Catena_Sigfox_wapper.h>
+
+#if ! (defined(ARDUINO_LORAWAN_VERSION) && ARDUINO_LORAWAN_VERSION >= ARDUINO_LORAWAN_VERSION_CALC(0,6,0,20))
+>>>>>>> ccdce72... Fix #270: updated the src to support Sigfox provisioning
 # error Arduino_LoRaWAN library is out of date. Check ARDUINO_LORAWAN_VERSION.
 #endif
 
@@ -324,10 +331,15 @@ public:
 
         bool addLoRaWanCommands(void);
 
+<<<<<<< HEAD
 #ifdef ARDUINO_ARCH_STM32
         bool GetSigfoxConfiguringInfo(MCCI_Catena_Sigfox::SigfoxConfiguringInfo *);
         bool addSigfoxCommands(void);
 #endif
+=======
+        bool GetSigfoxConfiguringInfo(MCCI_Catena_Sigfox::SigfoxConfiguringInfo *);
+        bool addSigfoxCommands(void);
+>>>>>>> ccdce72... Fix #270: updated the src to support Sigfox provisioning
 
         // calibrate the system clock, if possible
         virtual uint32_t CalibrateSystemClock(void)
