@@ -49,6 +49,11 @@ public:
                 kBme680Cal = 16,
                 kAppConf = 17,
                 kLmicSessionState = 18,
+                kDevID = 19,
+                kPAC = 20,
+                kKey = 21,
+                kRegion = 22,
+                kEncryption = 23,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };

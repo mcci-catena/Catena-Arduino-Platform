@@ -40,6 +40,9 @@ static_assert(
         "ARDUINO_LORAWAN_VERSION must be at least 0.9.0-1"
         );
 
+#ifdef ARDUINO_ARCH_STM32
+#include <Catena_Sigfox_wapper.h>
+
 namespace McciCatena {
 
 class CatenaStm32L0 : public CatenaStm32
@@ -52,6 +55,9 @@ public:
 
         // forward reference
         class LoRaWAN;
+
+	// Sigfox binding
+	class Sigfox /* forward */;
 
         // start the Stm32L0 level
         virtual bool begin(void) override;
@@ -174,6 +180,37 @@ private:
         CatenaStm32L0           *m_pCatena;
         };
 
+class CatenaStm32L0::Sigfox : public MCCI_Catena_Sigfox,
+                               public McciCatena::cPollableObject
+        {
+public:
+        using Super = MCCI_Catena_Sigfox;
+
+        /*
+        || the constructor.
+        */
+        Sigfox() {};
+
+        /*
+        || the begin function loads data from the local
+        || platform's stable storage and initializes
+        || the connection.
+        */
+        virtual bool begin(CatenaStm32L0 *pCatena);
+
+        virtual void poll() { this->Super::loop(); };
+
+protected:
+        /*
+        || we have to provide these for the lower level
+        */
+        virtual bool GetSigfoxConfiguringInfo(
+                        MCCI_Catena_Sigfox::SigfoxConfiguringInfo *
+                        ) override;
+private:
+        CatenaStm32L0           *m_pCatena;
+        };
+
 // this function is called from a trampoline C function that
 // needs to invoke analog reads for checking USB presence.
 bool CatenaStm32L0_ReadAnalog(
@@ -184,6 +221,8 @@ bool CatenaStm32L0_ReadAnalog(
         );
 
 } // namespace McciCatena
+
+#endif // ARDUINO_ARCH_STM32
 
 /**** end of CatenaStm32L0.h ****/
 #endif /* _CATENASTM32L0_H_ */
