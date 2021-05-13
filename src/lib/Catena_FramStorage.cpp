@@ -72,6 +72,12 @@ McciCatena::cFramStorage::vItemDefs[cFramStorage::kMAX] =
 
         cFramStorage::StandardItem(kAppConf, cFramStorage::MaxAppConfSize, false),
         cFramStorage::StandardItem(kLmicSessionState, sizeof(Arduino_LoRaWAN::SessionState), /* number */ false),
+
+        cFramStorage::StandardItem(kDevID, sizeof(uint8_t[4]), /* number */ true),
+        cFramStorage::StandardItem(kPAC, sizeof(uint8_t[8]), /* number */ true),
+        cFramStorage::StandardItem(kKey, sizeof(uint8_t[16]), /* number */ false),
+        cFramStorage::StandardItem(kRegion, sizeof(uint8_t), /* number */ true),
+        cFramStorage::StandardItem(kEncryption, sizeof(uint8_t), /* number */ true),
         };
 
 /****************************************************************************\
