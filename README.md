@@ -80,6 +80,9 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Checking for `cTimer` events](#checking-for-ctimer-events)
 		- [`cTimer` Utility routines](#ctimer-utility-routines)
 	- [`Catena_functional.h`](#catena_functionalh)
+	- [`cDownload`](#cdownload)
+	- [`cBootloaderApi`](#cbootloaderapi)
+	- [`cSerial`](#cserial)
 - [Command Summary](#command-summary)
 	- [Standard commands](#standard-commands)
 	- [STM32L0 commands](#stm32l0-commands)
@@ -1260,6 +1263,18 @@ The technical problem is that the `arduino.h` header file defines `min()` and `m
 
 The solution is a hack: undefine `min()` prior to including `<functional>`, and then redefine them using the well-known definitions.
 
+### `cDownload`
+
+This class may be instantiated as a general-purpose wrapper for supporting the MCCI Trusted Bootloader on STM32L0 platforms. It has two primary entry points. `cDownload::evStartSerialDownload()` starts a download over a serial port, which is assumed to support 8-bit clean data transport. `cDownload::evStart()` starts an abstract download; the client supplies a `cDownload:Request_t` object which includes callbacks for fetching data. An instance of the `cBootloaderApi` is also required.
+
+### `cBootloaderApi`
+
+This class may be instantiated as a singleton to provide the interface to the Trusted Bootloader. It allows access to the APIs exported by the bootloader, as well as to the application structures that accompany the bootloader.
+
+### `cSerial`
+
+This class provides an abstract wrapper for various Arduino Serial-like classes so that a single pointer can be used to refer to any of the possibilities (hardware serial, USB serial, software serial, etc.) It's intended primarily for use by the downloader, so doesn't provide 100% of the `Serial`-like methods.
+
 ## Command Summary
 
 ### Standard commands
@@ -1425,8 +1440,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
-| [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | HEAD | 2.3.0 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.6.0 | 0.5.3.50 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
+| [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | 4.0.0 | 3.99.0-3 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
+| [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.0 | 0.9.0-6 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Release History
