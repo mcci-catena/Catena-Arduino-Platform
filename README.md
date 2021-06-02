@@ -1446,6 +1446,19 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
+- v0.21.0 includes the following changes.
+
+  - fix [#286](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/286): support enhanced state save/restore for Arduino LoRaWAN library. Requires Arduino LoRaWAN v0.9.0-1 or later.
+  - fix [#287](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/287): switch to semantic versioning, which means that bottom 8 bits must be compared using macros, rather than directly.
+  - fix [#288](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/288): correct bugs in Si1133 driver.
+  - fix [#294](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/294): make Flash driver more `gCatena.poll()` friendly.
+  - fix [#293](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/293): don't clobber user's write buffer in `Catena_Mx25v8035f::programPage()`.
+  - remove the global `gpCanteaBase` in favor of the static `CatenaBase::pCatenaBase`.
+  - add an API to fetch a pointer to the line collector, to allow commands to collect additional input.
+  - add firmware download support, and support for the Trusted Bootloader. Firmware download can come from the serial port, or it can come from other (arbitrary) sources.
+  - fix [#295](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/295): rearrange log flags for more utility.
+  - fix [#296](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/293): add access to AppInfo block and signing info related to running app and the bootloader.
+
 - v0.20.1 includes the following changes.
 
   - fix [#275](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/275): add `cTotalizer::setDebounce()`, allowing the debounce time to be adjusted from 50ms. This can also be done in the constructor. (Version 0.20.0.30.)
