@@ -1453,7 +1453,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#288](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/288): correct bugs in Si1133 driver.
   - fix [#294](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/294): make Flash driver more `gCatena.poll()` friendly.
   - fix [#293](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/293): don't clobber user's write buffer in `Catena_Mx25v8035f::programPage()`.
-  - remove the global `gpCanteaBase` in favor of the static `CatenaBase::pCatenaBase`.
+  - remove the global `gpCatenaBase` in favor of the static `CatenaBase::pCatenaBase`.
   - add an API to fetch a pointer to the line collector, to allow commands to collect additional input.
   - add firmware download support, and support for the Trusted Bootloader. Firmware download can come from the serial port, or it can come from other (arbitrary) sources.
   - fix [#295](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/295): rearrange log flags for more utility.
