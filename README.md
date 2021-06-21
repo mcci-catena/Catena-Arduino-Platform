@@ -1446,6 +1446,10 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
+- HEAD includes the following changes.
+
+  - fix [#300](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/300): fix build issues for SAMD21 boards. (version 0.21.1-1)
+
 - v0.21.0 includes the following changes.
 
   - fix [#286](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/286): support enhanced state save/restore for Arduino LoRaWAN library. Requires Arduino LoRaWAN v0.9.0-1 or later.
