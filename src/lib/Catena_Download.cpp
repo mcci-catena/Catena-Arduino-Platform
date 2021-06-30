@@ -21,6 +21,8 @@ Author:
 
 #include "Catena_Download.h"
 
+#ifdef ARDUINO_STM32
+
 #include <Catena_BootloaderApi.h>
 #include <Catena_Flash.h>
 #include <Catena_Log.h>
@@ -590,3 +592,5 @@ cDownload::evStartSerialDownload(
     // launch the request.
     return evStart(request);
     }
+
+#endif ARDUINO_STM32

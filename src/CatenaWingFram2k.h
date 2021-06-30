@@ -144,9 +144,6 @@ protected:
         		const uint8_t *pExtraInfo,
         		size_t nExtraInfo
         		) override;
-	virtual void NetSaveSessionState(
-			const SessionState &State
-			);
         virtual void NetSaveSessionState(
                         Arduino_LoRaWAN::SessionState const &State
                         ) override;

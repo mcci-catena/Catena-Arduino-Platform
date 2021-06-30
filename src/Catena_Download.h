@@ -24,6 +24,8 @@ Author:
 #ifndef _catena_download_h_
 #define _catena_download_h_
 
+#ifdef ARDUINO_STM32
+
 #include <cstdarg>
 #include <Catena_BootloaderApi.h>
 #include <Catena_Flash.h>
@@ -283,5 +285,7 @@ private:
 
 
 } // McciCatena
+
+#endif // ARDUINO_STM32
 
 #endif // _catena_download_h_
