@@ -48,7 +48,7 @@ Author:
 #include <Arduino_LoRaWAN.h>
 
 #if ! (defined(ARDUINO_LORAWAN_VERSION_COMPARE_LT) && \
-        ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,0,2)))
+        ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,1,1)))
 # error Arduino_LoRaWAN library is out of date. Check ARDUINO_LORAWAN_VERSION.
 #endif
 
@@ -57,7 +57,7 @@ Author:
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 21, 1, 0) /* v0.21.1 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 21, 2, 2) /* v0.21.2-pre2 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
