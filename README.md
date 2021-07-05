@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.21.1...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.21.2...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-capture -->
@@ -1441,10 +1441,15 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | Library | Recommended Version | Minimum Version | Comments |
 |---------|:-------:|:----:|----------|
 | [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | 4.0.0 | 3.99.0-3 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
-| [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.0 | 0.9.0-6 | Needed in order to support the Murata module used in the Catena 4551, and for bug fixes in LoRaWAN::begin handling. |
+| [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.1 | 0.9.1-pre1 | Needed for bug fixes in session state save/restore. |
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Release History
+
+- v0.21.2 includes the following changes, non breaking, all bug fixes.
+
+  - Check SessionState for validity when fetching ABP info ([#312](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/312), `v0.21.2-pre1`).
+  - Set LMIC clock error for STM32 even when running from HSI clock; we encountered a test board that needed this and conclude that it's generally a good idea ([#313](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/313), `v0.21.2-pre2`).
 
 - v0.21.1 includes the following changes; only #305 is an API extension and it's non-breaking.
 
