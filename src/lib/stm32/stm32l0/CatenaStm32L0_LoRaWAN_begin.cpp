@@ -113,7 +113,14 @@ bool CatenaStm32L0::LoRaWAN::begin(
 
 	if (pParent->GetSystemClockRate() < 16000000)
 		{
-		LMIC_setClockError(5*65536/100);
+	        // set clock error as high as possible
+		LMIC_setClockError(5 * MAX_CLOCK_ERROR / 100);
+		}
+	else
+		{
+	        // set clock error to 0.4%; the HSI clock can be that far off,
+		// and it can kill joins if we don't set this.
+		LMIC_setClockError(4 * MAX_CLOCK_ERROR / 1000);
 		}
 
 	/* indicate success to the client */
