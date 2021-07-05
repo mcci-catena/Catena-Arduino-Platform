@@ -593,4 +593,4 @@ cDownload::evStartSerialDownload(
     return evStart(request);
     }
 
-#endif ARDUINO_STM32
+#endif /* ARDUINO_STM32 */
