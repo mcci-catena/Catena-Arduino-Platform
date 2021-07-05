@@ -138,8 +138,12 @@ CatenaBase::GetAbpProvisioningInfo(
 	    framAppSKey.locate(cFramStorage::vItemDefs[cFramStorage::kAppSKey]) &&
 	    framDevAddr.locate(cFramStorage::vItemDefs[cFramStorage::kDevAddr]) &&
 	    framNetID.locate(cFramStorage::vItemDefs[cFramStorage::kNetID]) &&
-	    framSessionState.locate(cFramStorage::vItemDefs[cFramStorage::kLmicSessionState]))
+	    framSessionState.locate(cFramStorage::vItemDefs[cFramStorage::kLmicSessionState]) &&
+	    framSessionState.get((uint8_t *)&State, sizeof(State)) &&
+	    State.isValid())
+		{
 		fResult = true;
+		}
 
 	if (! fResult)
 		{
@@ -158,7 +162,6 @@ CatenaBase::GetAbpProvisioningInfo(
 	framAppSKey.get(pInfo->AppSKey, sizeof(pInfo->AppSKey));
 	framDevAddr.getuint32(pInfo->DevAddr);
 	framNetID.getuint32(pInfo->NetID);
-	framSessionState.get((uint8_t *)&State, sizeof(State));
 	pInfo->FCntDown = State.V1.FCntDown;
 	pInfo->FCntUp = State.V1.FCntUp;
 
