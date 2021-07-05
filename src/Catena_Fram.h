@@ -280,12 +280,22 @@ public:
                 return cFramStorage::StandardKeys(this->m_uKey);
                 }
 
+        /// \brief return cursor's internal value of object size.
+	uint16_t getSavedSize() const { return this->m_uSize; }
+        /// \brief return cursor's internal value of object key.
+	uint8_t getSavedKey() const { return this->m_uKey; }
+        /// \brief return cursor's internal value of object version
+	uint8_t getSavedVer() const { return this->m_uVer; }
+        /// \brief return cursor's internal value of object location
+	uint32_t getSavedOffset() const { return this->m_offset; }
+
 private:
         cFramStorage::StandardItem getItem()
                 {
                 return cFramStorage::vItemDefs[this->m_uKey];
                 };
 
+protected:
 	cFram *m_pFram;
 	uint16_t m_uSize;
 	uint8_t m_uKey;
