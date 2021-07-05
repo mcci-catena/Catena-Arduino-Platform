@@ -489,6 +489,8 @@ McciCatena::cFram::reset()
                 );
 
         // finally, verify that the result looks good.
+        this->invalidate();
+
 	return this->isValid();
 	}
 
