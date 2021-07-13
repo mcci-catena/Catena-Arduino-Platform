@@ -615,7 +615,7 @@ McciCatena::cFram::writeItemData(
 	return fResult;
 	}
 
-void McciCatena::cFram::saveField(
+bool McciCatena::cFram::saveField(
         cFramStorage::StandardKeys uKey,
         const uint8_t *pValue,
         size_t nValue
@@ -623,15 +623,27 @@ void McciCatena::cFram::saveField(
         {
         cFram::Cursor cursor(this, uKey);
 
+        bool fResult;
+
+        fResult = true;
         if (! cursor.create())
                 {
                 gLog.printf(gLog.kError,
                         "%s: can't save uKey(0x%x) %u bytes\n",
                         __FUNCTION__, uKey, nValue
                         );
+                fResult = false;
                 }
 
-        cursor.put(pValue, nValue);
+        if (! cursor.put(pValue, nValue))
+                {
+                gLog.printf(gLog.kError, "%s: can't put uKey(0xx) %u bytes\n",
+                        __func__, uKey, nValue
+                        );
+                fResult = false;
+                }
+
+        return fResult;
         }
 
 bool McciCatena::cFram::getField(
