@@ -1445,6 +1445,9 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Release History
+- HEAD includes the following changes.
+
+  - fix [#309](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/309): add debug message to `cFram::saveField()` and set `bool` as return type. (version 0.21.3-1)
 
 - v0.21.2 includes the following changes, non breaking, all bug fixes.
 
