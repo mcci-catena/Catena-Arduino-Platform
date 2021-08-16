@@ -1,15 +1,15 @@
 /*
 
-Module:  catena_hello_lora.ino
+Module:  catena_lora_adr_rejoin.ino
 
 Function:
-        Simple hello-world (and compile-test) app
+        App for testing ADR rejoin.
 
 Copyright notice and License:
         See LICENSE file accompanying this project.
 
 Author:
-        Terry Moore, MCCI Corporation	April 2018
+        Terry Moore, MCCI Corporation	July 2021
 
 */
 
@@ -41,8 +41,7 @@ void setup()
         {
         gCatena.begin();
 
-        gCatena.SafePrintf("Hello, world (with LoRa)!\n");
-        gCatena.SafePrintf("This is a basic demo program for the MCCI Catena-Arduino-Platform library.\n");
+        gCatena.SafePrintf("This is the ADR re-join test program for the MCCI Catena-Arduino-Platform library.\n");
         gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
         gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
 
