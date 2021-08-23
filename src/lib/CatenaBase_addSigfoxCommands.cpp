@@ -173,7 +173,11 @@ doConfigure(
 				databuf, size
 				);
 
-			pThis->printf("%s\n", strbuf);
+			if (! strcmp(pName, "key"))
+				pThis->printf("**protected**\n");
+			else
+				pThis->printf("%s\n", strbuf);
+
 			return cCommandStream::CommandStatus::kSuccess;
 			}
 		};
