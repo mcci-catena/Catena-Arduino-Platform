@@ -1,0 +1,92 @@
+##############################################################################
+#
+# File: ci-arduinocli.yml
+#
+# Function:
+#   YAML file specifying how to do continuous integration for Catena-Arduino-Platform
+#   (using arduino-cli)
+#
+##############################################################################
+
+# the name that appears in the GitHub UI, the badge, etc
+name: Arduino CI
+
+# global environment
+env:
+  MCCI_CI_LIBRARY:  Catena-Arduino-Platform
+
+# specify the events that trigger runs.
+on:
+  # pull requests (default settings)
+  pull_request:
+  # pushes (default settings)
+  push:
+  # repository operations
+  repository_dispatch:
+  schedule:
+    # do a build once a week at 06:07Z Sunday
+    - cron: '7 6 * * 0'
+  
+# what to do:
+jobs:
+  
+  # define a job named "arduinocli"
+  arduinocli:
+    # select a target OS
+    runs-on:  ubuntu-latest
+    name: ${{ matrix.arch }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [samd, stm32]
+        # get info about all the configs.
+
+    # step-by-step
+    steps:
+      # check out this repo as {root}/Catena-Arduino-Platform
+      - uses: actions/checkout@v2
+        name: Check out the repo
+        with:
+          path: libraries/${{ env.MCCI_CI_LIBRARY }}
+
+      - uses: actions/checkout@v2
+        name: Set up mcci-catena-ci
+        with:
+          repository: mcci-catena/mcci-catena-ci
+          path: mcci-catena-ci
+
+      - name: "Get library: Catena-mcciadk"
+        uses: actions/checkout@v2
+        with:
+          repository: mcci-catena/Catena-mcciadk
+          path: libraries/Catena-mcciadk
+
+      - name: "Get library: MCCI_FRAM_I2C"
+        uses: actions/checkout@v2
+        with:
+          repository: mcci-catena/MCCI_FRAM_I2C
+          path: libraries/MCCI_FRAM_I2C
+
+      - name: "Get library: arduino-lorawan"
+        uses: actions/checkout@v2
+        with:
+          repository: mcci-catena/arduino-lorawan
+          path: libraries/arduino-lorawan
+          
+      - name: "Get library: arduino-lmic"
+        uses: actions/checkout@v2
+        with:
+          repository: mcci-catena/arduino-lmic
+          path: libraries/arduino-lmic
+
+      - name: Set up to build
+        run: bash mcci-catena-ci/setup.sh -l libraries/${{ env.MCCI_CI_LIBRARY }} -a ${{ matrix.arch }}
+
+      - name: Display structure of checkout
+        run: tree -d $(realpath .)
+
+      - name: Compile examples
+        run: bash mcci-catena-ci/Catena-Arduino-Platform-regress-wrap.sh -l libraries/${{env.MCCI_CI_LIBRARY}} -a ${{ matrix.arch }}
+
+### end of file ###
