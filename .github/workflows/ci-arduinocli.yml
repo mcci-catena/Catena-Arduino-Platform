@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v2
         name: Set up mcci-catena-ci
         with:
-          repository: mcci-catena/mcci-catena-ci
+          repository: mcci-catena/mcci-catena-ci/tree/issue3
           path: mcci-catena-ci
 
       - name: "Get library: Catena-mcciadk"
