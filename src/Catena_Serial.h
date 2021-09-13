@@ -31,7 +31,7 @@ namespace McciCatena {
 /// \brief Simple architecture that lets us use serial-like ports interchangably.
 ///
 /// \details
-///	The Arduino system omittted a virutal base class that all Serial ports
+///	The Arduino system omitted a virtual base class that all Serial ports
 ///	can be derived from. This means you can't have a pointer to a "serial-like"
 ///	thing, which is very inconvenient. Even if we put one in our Arduino
 ///	variant, it would not help with third-party libraries.
