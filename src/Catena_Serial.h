@@ -28,6 +28,7 @@ Author:
 
 namespace McciCatena {
 
+///
 /// \brief Simple architecture that lets us use serial-like ports interchangably.
 ///
 /// \details
@@ -46,7 +47,7 @@ namespace McciCatena {
 class cSerialAbstract
 	{
 public:
-        // constructor
+        /// \brief constructor
         cSerialAbstract() {};
 
         // neither copyable nor movable.
@@ -100,8 +101,10 @@ template <class T>
 class cSerial : public cSerialAbstract
 	{
 public:
-        // constructor
+        /// \brief constructor in case caller has a pointer to the underlying port.
         cSerial(T *pPort) : m_pPort(pPort) {}
+
+        /// \brief constructor in case caller has the LV of the underlying port.
         cSerial(T &Port) : m_pPort(&Port) {}
 
         // neither copyable nor movable.
@@ -110,11 +113,13 @@ public:
         cSerial(const cSerial&&) = delete;
         cSerial& operator=(const cSerial&&) = delete;
 
+        /// \brief return the number of bytes available in the read buffer.
         virtual int available() const override
                 {
                 return this->m_pPort->available();
                 }
 
+        /// \brief initialize the port, setting the baudrate.
         virtual void begin(unsigned long ulBaudRate) const override
                 {
                 this->m_pPort->begin(ulBaudRate);
@@ -191,6 +196,10 @@ public:
         // finally, the begin() method here uses the hasBeginWithConfig<> template
         // to select the approprialte beginWithConfig() overload.
         //
+
+        ///
+        /// \brief initialize port, setting baud rate and configuring.
+        ///
         virtual void begin(unsigned long ulBaudRate, uint16_t config) const override
                 {
                 this->beginWithConfig(
@@ -201,33 +210,44 @@ public:
                         );
                 }
 
+        ///
+        /// \brief wait for the write buffer to be drained to serial port.
+        ///
         virtual void drainWrite() const override
                 {
                 this->m_pPort->flush();
                 }
 
+        ///
+        /// \brief read one byte from a port.
+        ///
+        /// \returns next byte (in 0..255) or a negative number if read buffer is empty.
+        ///
         virtual int read() const override
                 {
                 return this->m_pPort->read();
                 }
 
+        /// \brief write a buffer, and return the number of bytes actually written.
         virtual size_t write(const uint8_t *buffer, size_t size) const override
                 {
                 return this->m_pPort->write(buffer, size);
                 }
 
+        /// \brief invoke end() method of concrete port.
         virtual void end() const override
                 {
                 this->m_pPort->end();
                 }
 
+        /// \brief return pointer to underlying port viewed as a stream.
 	virtual Stream & stream() override
 		{
 		return *m_pPort;
 		}
 
 private:
-        T *m_pPort;
+        T *m_pPort;     ///< pointer to concrete UART.
         };
 
 } // namespace McciCatena
