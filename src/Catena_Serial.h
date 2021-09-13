@@ -120,9 +120,85 @@ public:
                 this->m_pPort->begin(ulBaudRate);
                 }
 
+private:
+        //
+        // The following section deals with the polymorphism in underlying serial ports:
+        // some have port::begin(baudrate, config), others only have begin(). We use
+        // C++ template metaprogramming to allow us to use the advanced APIs if available,
+        // otherwise to ignore the config parameter.
+        //
+        // We follow Walter Brown's method https://youtu.be/a0FliKwcwXE?t=2276 for querying
+        // properties at compile time.
+        //
+        // First, the default `hasBeginWithConfig`. The compiler will choose this template
+        // if no template is found that is well-formed and more specific, and this will
+        // result in a structure that is a specialiation of std::false_type.
+        //
+        template <class, class = void>
+        struct hasBeginWithConfig
+                : /* inherit from  */ std::false_type /* so it has ::value == false */
+                { /* no extra contents */ };
+
+        //
+        // Second, we define a version that will only be well-formed if the target class
+        // has U::begin(unsigned long, uint16_t), and it will be essentially identical to
+        // std::true_type.
+        //
+        template <class U>
+        struct hasBeginWithConfig<
+                        U,
+                        std::void_t<
+                                /* packing a list of types, so take the type of... */
+                                decltype(
+                                        /* check whether we can invoke begin() with our two params */
+                                        std::declval<U>().begin(
+                                                (unsigned long)0,
+                                                (std::uint16_t)0
+                                                )
+                                        )
+                                >
+                        >
+                : /* inherit from */ std::true_type /* so it has ::value == true */
+                { /* no extra contents */ };
+
+        //
+        // Now overload beginWithConfig() with two versions, one that calls the 2-arg
+        // version of begin(), the other that calls the one-arg version.
+        //
+        // If we had C++ 2017, we could use if constexpr(), but it's not much worse to have
+        // overloads with two functions.
+        //
+        // This matches if the third argment is of type std::true_type.
+        //
+        template <class U>
+        static void beginWithConfig(U *pT, unsigned long ulBaudRate, uint16_t config, std::true_type)
+                {
+                pT->begin(ulBaudRate, config);
+                }
+
+        //
+        // This overload matches if the the third argument is of type std::false_type, and
+        // uses the one-argument begin().
+        //
+        template <typename U>
+        static void beginWithConfig(U* pT, unsigned long ulBaudRate, uint16_t config, std::false_type)
+                {
+                pT->begin(ulBaudRate);
+                }
+
+public:
+        //
+        // finally, the begin() method here uses the hasBeginWithConfig<> template
+        // to select the approprialte beginWithConfig() overload.
+        //
         virtual void begin(unsigned long ulBaudRate, uint16_t config) const override
                 {
-                this->m_pPort->begin(ulBaudRate, config);
+                this->beginWithConfig(
+                        this->m_pPort,
+                        ulBaudRate,
+                        config,
+                        hasBeginWithConfig<T> /* create object */ {}
+                        );
                 }
 
         virtual void drainWrite() const override
