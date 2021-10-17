@@ -57,7 +57,7 @@ Author:
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 21, 3, 1) /* v0.21.3-1 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 22, 0, 1) /* v0.22.0-pre1 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)

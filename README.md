@@ -1446,6 +1446,11 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
+- HEAD includes the following changes
+
+  - fix [#319](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/319): accomodate missing two-arg `UsbSerial::begin()` (v0.21.3-pre1).
+  - fix [#321](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/321): add 24-bit float encoding support (v0.22.0-pre1).
+
 - v0.21.2 includes the following changes, non breaking, all bug fixes.
 
   - Check SessionState for validity when fetching ABP info ([#312](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/312), `v0.21.2-pre1`).
