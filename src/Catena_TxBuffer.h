@@ -20,9 +20,41 @@ Author:
 
 namespace McciCatena {
 
+// the underlying types for the shared statics
+class AbstractTxBufferBase_t
+        {
+public:
+        /// \brief convert float to 24-bit representation
+        static uint32_t f2sflt24(float f); 
+ 
+        /// convert a float in [0..1) to signed 12-bit float.
+        ///
+        /// \note This a wrapper for the LMIC utility of the same name;
+        ///     doing it this way reduces namespace pollution.
+        static uint16_t f2sflt12(float f);
+
+        /// convert a float in [0..1) to signed 16-bit float.
+        ///
+        /// \note This a wrapper for the LMIC utility of the same name;
+        ///     doing it this way reduces namespace pollution.
+        static uint16_t f2sflt16(float f);
+
+        /// convert a float in [0..1) to unsigned 12-bit float.
+        ///
+        /// \note This a wrapper for the LMIC utility of the same name;
+        ///     doing it this way reduces namespace pollution.
+        static uint16_t f2uflt12(float f);
+
+        /// convert a float in [0..1) to unsigned 16-bit float.
+        ///
+        /// \note This a wrapper for the LMIC utility of the same name;
+        ///     doing it this way reduces namespace pollution.
+        static uint16_t f2uflt16(float f);
+        };
+
 // build a transmit buffer
 template <std::size_t N=32>
-class AbstractTxBuffer_t
+class AbstractTxBuffer_t : public AbstractTxBufferBase_t
         {
 private:
         uint8_t buf[N];    // this sets the largest buffer size
@@ -112,6 +144,11 @@ public:
                 union { uint32_t ui; float f; } x;
                 x.f = v;
                 put4u(x.ui);
+                }
+        /// put a 3-byte 24-bit floating point
+        void put3f(float v)
+                {
+                put3(f2sflt24(v));
                 }
         // get address of next byte to be filled
         uint8_t *getp(void)
@@ -207,12 +244,6 @@ public:
                 {
                 put2u(fracAsFloat12);
                 }
-
-        // convert a float in [0..1) to unsigned 16-bit float.
-        static uint16_t f2sflt12(float f);
-        static uint16_t f2sflt16(float f);
-        static uint16_t f2uflt12(float f);
-        static uint16_t f2uflt16(float f);
         };
 
 // for backwards compatibilty
