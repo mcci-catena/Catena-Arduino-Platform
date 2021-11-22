@@ -1,5 +1,3 @@
-/* CatenaBase.cpp	Wed Dec 05 2018 14:22:45 chwon */
-
 /*
 
 Module:  CatenaBase.cpp
@@ -7,30 +5,11 @@ Module:  CatenaBase.cpp
 Function:
 	Implemenation of class CatenaBase;
 
-Version:
-	V0.12.0	Wed Dec 05 2018 14:22:45 chwon	Edit level 2
-
 Copyright notice:
-	This file copyright (C) 2017-2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+        See accompanying LICENSE file.
 
 Author:
 	Terry Moore, MCCI Corporation	March 2017
-
-Revision history:
-   0.5.0  Sun Mar 19 2017 15:53:34  tmm
-	Module created.
-
-   0.12.0  Wed Dec 05 2018 14:22:45  chwon
-	Move common code from child class.
 
 */
 
@@ -44,8 +23,9 @@ using namespace McciCatena;
 CatenaBase *CatenaBase::pCatenaBase;
 
 /* the constructor */
-CatenaBase::CatenaBase()
+CatenaBase::CatenaBase(Version_t v)
 	{
+	this->m_appVersion = v;
 	pCatenaBase = this;
 	}
 

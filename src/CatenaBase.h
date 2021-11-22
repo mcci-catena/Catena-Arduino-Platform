@@ -13,6 +13,8 @@ Author:
 
 */
 
+/// \file
+
 #ifndef _CATENABASE_H_          /* prevent multiple includes */
 #define _CATENABASE_H_
 
@@ -47,101 +49,294 @@ Author:
 
 #include <Arduino_LoRaWAN.h>
 
+// make sure that the library we're calling is supported
 #if ! (defined(ARDUINO_LORAWAN_VERSION_COMPARE_LT) && \
         ! ARDUINO_LORAWAN_VERSION_COMPARE_LT(ARDUINO_LORAWAN_VERSION, ARDUINO_LORAWAN_VERSION_CALC(0,9,1,1)))
 # error Arduino_LoRaWAN library is out of date. Check ARDUINO_LORAWAN_VERSION.
 #endif
 
-// Catena-Arduino-Platform Version: uses semantic version for local (so local == 0 is > non-zero)
+/// \brief Pre-processor Catena-Arduino-Platform Version: uses semantic version for local (so local == 0 is > non-zero)
 #define CATENA_ARDUINO_PLATFORM_VERSION_CALC(major, minor, patch, local)        \
-        (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
+        (((UINT32_C(0) + (major)) << 24) | ((UINT32_C(0) + (minor)) << 16) | ((UINT32_C(0) + (patch)) << 8) | (UINT32_C(0) + (local)))
 
+///
+/// \brief The current version of this library, as a C pre-processor constant
+///
+/// This is a Semantic Version 2.0 version; the fourth field is the pre-release
+/// number.
+///
+/// \note Always compare versions using one of CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LT(),
+///     CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LE(), CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_GT(),
+///     or CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_GE().
+///
+/// \sa CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LT()
+///
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 22, 0, 1) /* v0.22.0-pre1 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 23, 0, 1) /* v0.23.0-pre1 */
 
+/// \brief extract major number from a version code
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
-        (((v) >> 24u) & 0xFFu)
+        (((UINT32_C(0) + (v)) >> 24) & 0xFFu)
 
+/// \brief extract minor number from a version code
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MINOR(v)    \
-        (((v) >> 16u) & 0xFFu)
+        (((UINT32_C(0) + (v)) >> 16) & 0xFFu)
 
+/// \brief extract patch number from a version code
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_PATCH(v)    \
-        (((v) >> 8u) & 0xFFu)
+        (((UINT32_C(0) + (v)) >> 8) & 0xFFu)
 
+///
+/// \brief extract local (pre-release) number from a version code
+///
+/// \note The name is historical, from before we introduced pre-release.
+/// \sa CATENA_ARDUINO_PLATFORM_VERSION_GET_PRERELEASE()
+///
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_LOCAL(v)    \
-        ((v) & 0xFFu)
+        ((UINT32_C(0) + (v)) & 0xFFu)
 
-/// \brief convert a semantic version to an integer.
+///
+/// \brief extract pre-release number from a version code
+///
+#define CATENA_ARDUINO_PLATFORM_VERSION_GET_PRERELEASE(v)    \
+        ((UINT32_C(0) + (v)) & 0xFFu)
+
+
+/// \brief convert a semantic version to an ordinal integer that can be compared.
 #define CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(v)       \
-        (((v) & 0xFFFFFF00u) | (((v) - 1) & 0xFFu))
+        (((v) & UINT32_C(0xFFFFFF00) | (((v) - UINT32_C(1)) & 0xFFu))
 
-/// \brief compare two semantic versions
-/// \return \c true if \b a is less than \b b (as a semantic version).
+/// \brief compare two semantic versions.
+/// \param[in] a, b versions to compare
+/// \return \c true if \p a is less than \p b (as a semantic version).
 #define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LT(a, b)   \
         (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) < CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
 
 /// \brief compare two semantic versions
+/// \param[in] a, b versions to compare
 /// \return \c true if \b a is greater than or equal to \b b (as a semantic version).
 #define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_GE(a, b)   \
         (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) >= CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
 
 /// \brief compare two semantic versions
+/// \param[in] a, b versions to compare
 /// \return \c true if \b a is greater than \b b (as a semantic version).
 #define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_GT(a, b)   \
         (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) > CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
 
 /// \brief compare two semantic versions
+/// \param[in] a, b versions to compare
 /// \return \c true if \b a is less than or equal to \b b (as a semantic version).
 #define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LE(a, b)   \
         (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) <= CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
 
+///
+/// \brief The common namespace for this library.
+///
 namespace McciCatena {
 
+///
+/// \brief Represent a Semantic Version constant numerically
+///
+/// \details
+///     Objects of type \c Version_t represent a subset of Semantic Version values,
+///     as defined by the Semantic Version 2.0 specification. \c major, \c minor, and
+///     \c patch may range from 0 to 255, and have the same meaning as in the specification.
+///     \c prerelease, if not zero, indicates that this version is a pre-release for
+///     the specified \c major.minor.patch release. Relational operators are defined
+///     so that pre-releases will compare less than the corresponding releases.
+///
+class Version_t
+        {
+public:
+        /// \brief create a version constant uint32_t
+        static constexpr uint32_t makeVersion(uint8_t major, uint8_t minor, uint8_t patch, uint8_t prerelease)
+                {
+                return (uint32_t(major) << 24) | (uint32_t(minor) << 16) | (uint32_t(patch << 8)) | prerelease;
+                }
 
-/* forward references */
+        /// \brief construct a \c Version_t object from parts
+        constexpr Version_t(uint8_t major, uint8_t minor, uint8_t patch, uint8_t prerelease = 0)
+                : m_version(makeVersion(major, minor, patch, prerelease)) {}
+
+        /// \brief default constuctor
+        Version_t() {};
+
+        /// \brief construct a \c Version_t object given a code.
+        constexpr Version_t(uint32_t versionCode)
+                : m_version(versionCode) {}
+
+        /// \brief return the version constant as a uint32_t. Can't be compared!
+        constexpr uint32_t getUint32() const
+                {
+                return this->m_version;
+                }
+
+        /// \brief return the version as a sequential constant. Can be compared, but doesn't match what was given.
+        constexpr uint32_t getOrdinal() const
+                {
+                return (this->m_version & 0xFFFFFF00u) | ((this->m_version - 1) & 0xFFu);
+                }
+
+        /// \brief basic relational comparison operator for \c Version_t objects
+        friend constexpr bool operator<(const Version_t &lhs, const Version_t &rhs) { return lhs.getOrdinal() < rhs.getOrdinal(); }
+
+        /// \brief basic identity comparison operator for \c Version_t objects
+        friend constexpr bool operator==(const Version_t &lhs, const Version_t &rhs) { return lhs.getUint32() == rhs.getUint32(); }
+
+        /// \brief return the Semantic Version major version of a \c Version_t value
+        constexpr uint8_t getMajor() const
+                {
+                return uint8_t(this->m_version >> 24);
+                }
+
+        /// \brief return the Semantic Version minor version of a \c Version_t value
+        constexpr uint8_t getMinor() const
+                {
+                return uint8_t(this->m_version >> 16);
+                }
+
+        /// \brief return the Semantic Version patch number from a \c Version_t value.
+        constexpr uint8_t getPatch() const
+                {
+                return uint8_t(this->m_version >> 8);
+                }
+
+        /// \breif return the Semantic Version pre-release from a \c Version_t value.
+        constexpr uint8_t getPrerelease() const
+                {
+                return uint8_t(this->m_version >> 0);
+                }
+
+        constexpr bool isPrerelease() const
+                {
+                return this->getPrerelease() != 0;
+                }
+
+private:
+        uint32_t m_version;     ///< the encoded version number
+        };
+
+/// derived relational operator
+constexpr bool operator> (const Version_t& lhs, const Version_t& rhs){ return rhs < lhs; }
+/// derived relational operator
+constexpr bool operator<=(const Version_t& lhs, const Version_t& rhs){ return !(lhs > rhs); }
+/// derived relational operator
+constexpr bool operator>=(const Version_t& lhs, const Version_t& rhs){ return !(lhs < rhs); }
+/// derived identity operator
+constexpr bool operator!=(const Version_t& lhs, const Version_t& rhs){ return !(lhs == rhs); }
+
+/* forward reference */
 struct CATENA_PLATFORM;
 
+///
+/// \brief Base class for all Catena objects
+///
 class CatenaBase
         {
 public:
-        CatenaBase();
+        /// \brief The constructor for the common behavior of any `Catena`-like object.
+        CatenaBase(Version_t v = Version_t(0));
+
+        /// \brief the destructor; virtual because this is a base class.
         virtual ~CatenaBase() {};
 
-        /*
-        || CatenaBase::kMcciArduinoVersion is the MCCI Arduino version, if known
-        || If not known, it's zero.
-        */
+        ///
+        /// \property kMcciArduinoVersion
+        ///
+        /// \brief the MCCI Arduino verion, if known. If not known, set to zero.
+        ///
 #if defined(_mcci_arduino_version)
         static constexpr uint32_t kMcciArduinoVersion = _mcci_arduino_version;
 #else
         static constexpr uint32_t kMcciArduinoVersion = 0;
 #endif
+
+        ///
+        /// \property kMcciArduinoVersionIsSemantic
+        ///
+        /// \brief \c true if the MCCI Arduino version is known to be a semantic
+        ///     verision, i.e., if non-zero last fields are pre-release numbers.
+        ///     Otherwise \c false.
+        ///
 #if defined(_mcci_arduino_version_is_semantic)
         static constexpr bool kMcciArduinoVersionIsSemantic = true;
 #else
         static constexpr bool kMcciArduinoVersionIsSemantic = false;
 #endif
-        static constexpr uint32_t versionCalc(uint8_t major, uint8_t minor, uint8_t patch, uint8_t local)
+        ///
+        /// \brief calculate a version number from the canonical four components.
+        ///
+        /// \param major is the major version number
+        /// \param minor is the minor version number
+        /// \param patch is the patch number
+        /// \param prerelease is the pre-release number
+        ///
+        /// \note Semantic Version non-zero pre-releases require care.
+        ///
+        [[deprecated("Use Version_t::makeVersion instead")]]
+        static constexpr uint32_t versionCalc(uint8_t major, uint8_t minor, uint8_t patch, uint8_t prerelease)
                 {
-                return (major << 24u) | (minor << 16u) | (patch << 8u) | local;
+                return (uint32_t(major) << 24) | (uint32_t(minor) << 16) | (uint32_t(patch) << 8) | prerelease;
                 }
 
-        /* an EUI64 */
+        /// \brief the version of the library as a constexpr
+        static constexpr Version_t kVersion = Version_t(CATENA_ARDUINO_PLATFORM_VERSION);
+
+        ///
+        /// \brief extract the base name of a file
+        ///
+        /// \param[in] s points the best candidate for the base name.
+        /// \param[in] p (if non-NULL) points to the next character to be considered.
+        ///
+        /// The string at s is scanned until the last '/' or '\\' is found, and
+        /// a pointer to the remainder of the string is returned. If \c s is NULL,
+        /// a pointer to an empty string is returned.
+        ///
+        /// \note
+        ///     This is written as a constexpr using recursion (not iteration)
+        ///     for maximum portability.
+        //
+        static constexpr const char *
+                getBaseFileName(
+                        const char *s,
+                        const char *p = nullptr
+                        )
+                {
+                return s == nullptr                  ? ""                            :
+                       p == nullptr                  ? getBaseFileName(s, s)         :
+                       p[0] == '\0'                  ? s                             :
+                       (p[0] == '/' || p[0] == '\\') ? getBaseFileName(p + 1, p + 1) :
+                                                       getBaseFileName(s, p + 1)     ;
+                }
+
+        ///
+        /// \brief a buffer for carrying an EUI64.
+        ///
         struct EUI64_buffer_t
                 {
                 uint8_t b[64/8];
                 };
+
+        ///
+        /// \brief a string buffer for carrying the canonical representation of
+        /// an EUI64, in hexadecimal with separators between bytes and a trailing
+        /// '\0'.
+        ///
         struct EUI64_string_t
                 {
                 char    c[sizeof(EUI64_buffer_t) * 3 + 1];
                 };
 
+        ///
+        /// \brief a buffer for carrying the unique ID of the underlying chip.
+        ///
         struct  UniqueID_buffer_t
                 {
                 uint8_t b[128/8];
                 };
 
-        /* a buffer big enough to hold a stringified UniqueID_buffer_t */
+        /// \brief a buffer big enough to hold a stringified UniqueID_buffer_t
         struct UniqueID_string_t
                 {
                 char    c[sizeof(UniqueID_buffer_t) * 3 + 1];
@@ -150,99 +345,135 @@ public:
         /* forward references */
         struct CPUID_PLATFORM_MAP;
 
+        ///
+        /// \brief the well-known bits in the operating flags for the device.
+        ///
+        /// Of these flags, only kUnattended and fManufacturingTest should be used
+        /// in new code.
+        ///
         enum OPERATING_FLAGS : uint32_t
                 {
-                fUnattended = 1 << 0,
-                fManufacturingTest = 1 << 1,
-                fConfirmedUplink = 1 << 16,
-                fDisableDeepSleep = 1 << 17,
-                fQuickLightSleep = 1 << 18,
-                fDeepSleepTest = 1 << 19,
+                fUnattended = 1 << 0,                           ///< operating unattended.
+                fManufacturingTest = 1 << 1,                    ///< manufacturing test mode.
+                fConfirmedUplink [[deprecated]] = 1 << 16,      ///< request confirmed LoRaWAN uplinks.
+                fDisableDeepSleep [[deprecated]] = 1 << 17,     ///< disable deep sleep for testing
+                fQuickLightSleep [[deprecated]] = 1 << 18,      ///< use quick, light sleep.
+                fDeepSleepTest [[deprecated]] = 1 << 19,        ///< test deep sleep.
                 };
 
-        // flags that describe generic platform capabilities
+        ///
+        /// \brief These flags describe generic platform capabilities.
+        ///
+        /// The use of these flags is historical. New code should not use them.
+        ///
         enum PLATFORM_FLAGS : uint32_t
                 {
-                // platform has LoRa
+                /// platform has LoRa
                 fHasLoRa = 1 << 0,
-                // platform has Bluetooth LE
+                /// platform has Bluetooth LE
                 fHasBLE = 1 << 1,
-                // platform has Wi-Fi
+                /// platform has Wi-Fi
                 fHasWiFi = 1 << 2,
-                // platform not only has LoRa, but it's wired according to TTN NYC standards
+                /// platform not only has LoRa, but it's wired according to TTN NYC standards
                 fHasTtnNycLoRa = 1 << 3,
-                // platform supports the BME280
+                /// platform supports the BME280
                 fHasBme280 = 1 << 4,
-                // platform supports the TSL 2561 Lux meter
+                /// platform supports the TSL 2561 Lux meter
                 fHasLux = 1 << 5,
-                // platform supports soil probe
+                /// platform supports soil probe
                 fHasSoilProbe = 1 << 6,
-                // platform supports external solar panel
+                /// platform supports external solar panel
                 fHasSolarPanel = 1 << 7,
-                // platform supports one-wire temperature sensor
+                /// platform supports one-wire temperature sensor
                 fHasWaterOneWire = 1 << 8,
-                // platform not only has LoRa, but it's wired per the MCCI RadioWing standard
+                /// platform not only has LoRa, but it's wired per the MCCI RadioWing standard
                 fHasTtnMcciLoRa = 1 << 9,
-                // platform has the Rohm Lux meter
+                /// platform has the Rohm Lux meter
                 fHasLuxRohm = 1 << 10,
-                // platform has i2c mux
+                /// platform has i2c mux
                 fHasI2cMux = 1 << 11,
-                // platform has FRAM
+                /// platform has FRAM
                 fHasFRAM = 1 << 12,
-                // platform has 1MB or 2MB FLASH
+                /// platform has 1MB or 2MB FLASH
                 fHasFlash = 1 << 13,
-                // platform has SI 1113 Lux sensor
+                /// platform has SI 1133 Lux sensor
                 fHasLuxSi1133 = 1 << 14,
-                // [[deprecated("use fHasLuxSi1133")]]
-                fHasLuxSi1113 = fHasLuxSi1133,
-                // platform has BME680
+                fHasLuxSi1113 [[deprecated("use fHasLuxSi1133")]] = fHasLuxSi1133,
+                /// platform has BME680
                 fHasBme680 = 1 << 15,
-                // platform has RS485 on Serial1, with A3
-                // controlling power and A4 controlling TXE
+                /// platform has RS485 on Serial1, with A3
+                /// controlling power and A4 controlling TXE
                 fHasRS485 = 1 << 16,
-                // platform uses A2 to control VOUT1 (on terminals)
+                /// platform uses A2 to control VOUT1 (on terminals)
                 fHasVout1 = 1 << 17,
-                // platform has ZMOD4410 Air Quality sensor
+                /// platform has ZMOD4410 Air Quality sensor
                 fHasZMOD4410 = 1 << 18,
-                //platform has IDT HS001
+                /// platform has IDT HS001
                 fHasHS001 = 1 << 19,
-                //platform has SHT3x sensirion
+                /// platform has SHT3x sensirion
                 fHasSHT3x = 1 << 20,
-                //platform has I2C Level Shifter
+                /// platform has I2C Level Shifter
                 fHasI2cLevelShifter = 1 << 21,
 
-                // special wiring variants all are offsets from M100...
-                // we support up to 127 variants, becuase we have 7
-                // bits and variant 0 means "base model".
+                /// special wiring variants all are offsets from M100...
+                /// we support up to 127 variants, becuase we have 7
+                /// bits and variant 0 means "base model".
                 fModNumber = 0x7Fu << 25,
                 // a few variant values that are well known.
-                  fM101 = 0x01 << 25,
-                  fM102 = 0x02 << 25,
-                  fM103 = 0x03 << 25,
-                  fM104 = 0x04 << 25,
+                  fM101 = 0x01 << 25,   ///< this is an M101 platform
+                  fM102 = 0x02 << 25,   ///< this is an M102 platform
+                  fM103 = 0x03 << 25,   ///< this is an M103 platform
+                  fM104 = 0x04 << 25,   ///< this is an M104 platform
                 };
 
-        // Get the model number from flags. constexpr to allow for
-        // most aggressive optimization.
+        /// \brief Get the model number from flags. constexpr to allow for
+        /// most aggressive optimization.
+        ///
+        /// \details
+        ///     Catenas have a "stock" or "base" configuration -- this is how they
+        ///     are built by default. At MCCI, we track variants using "M numbers"
+        ///     (a concept that we got from the Ithaca electronics scene via Ithaco,
+        ///     and ultimately, no doubt, from GE). M numbers are simply unique
+        ///     3-digit numbers; normally they start with 101, and are assigned in
+        ///     sequence. For example, the Catena 4450-M101 has been optimized for
+        ///     AC power measurement use.
+        ///
+        ///     We reserve 7 bits in the platform flags for representing M-numbers.
+        ///     Initially, at any rate, your code must know what the numbers mean.
+        ///
+        /// \return This function extracts the mod-number
+        ///     from the platform flags, and returns it as a number. If there is no
+        ///     mod number for this device, then this will return zero; otherwise it
+        ///     returns the mod number (which is always in the range [101..227].
+        ///
+        /// \sa PlatformFlags_IsModded()
+        //
         static uint32_t constexpr PlatformFlags_GetModNumber(uint32_t flags)
                 {
                 return (flags & fModNumber) ? 100u + ((flags & fModNumber) / (fModNumber & (~fModNumber + 1u))) : 0;
                 };
 
-        // Return true if this unit has been modded. constexpr to allow for
-        // most aggressive optimization.
+        ///
+        /// \brief Return true if this unit has been modded. constexpr to allow for
+        /// most aggressive optimization.
+        ///
+        /// \sa PlatformFlags_GetModNumber()
+        ///
         static bool constexpr PlatformFlags_IsModded(uint32_t flags)
                 {
                 return (flags & fModNumber) != 0;
                 }
 
-
+        /// \brief print with format to \c Serial, but don't block if using
+        /// USB Serial and the host is not connected.
         void SafePrintf(
                 const char *fmt, ...
                 );
 
+        /// \brief return the SysEUI for this system, AKA the serial number.
         virtual const EUI64_buffer_t *GetSysEUI(void);
 
+        /// \brief return the CATENA_PLATFORM object given the CPU ID and the serial number.
         const CATENA_PLATFORM *GetPlatformForID(
                 const UniqueID_buffer_t *pIdBuffer,
                 EUI64_buffer_t *pSysEUI
@@ -251,83 +482,177 @@ public:
                 return this->GetPlatformForID(pIdBuffer, pSysEUI, nullptr);
                 }
 
+        ///
+        /// \brief find the appropriate CATENA_PLATFORM object given the CPU ID and the serial number.
+        /// set \c *pOperatingFlags to the default value of the operating flags for this platform.
+        ///
         virtual const CATENA_PLATFORM *GetPlatformForID(
                 const UniqueID_buffer_t *pIdBuffer,
                 EUI64_buffer_t *pSysEUI,
                 uint32_t *pOperatingFlags
                 );
 
+        ///
+        /// \brief return the UniqueID for this CPU/SOC.
+        ///
         virtual void GetUniqueID(
                 UniqueID_buffer_t *pIdBuffer
                 ) = 0; // requires that an override be provided.
 
+        ///
+        /// \brief return the UniqueID for this CPU/SOC, as a string.
+        ///
         char *GetUniqueIDstring(
                 UniqueID_string_t *pIdStringBuffer
                 );
 
-        const inline CATENA_PLATFORM *GetPlatform(void)
+        ///
+        /// \brief return the platform structure we are to use
+        ///
+        const inline CATENA_PLATFORM *GetPlatform(void) const
                 {
                 return this->m_pPlatform;
                 }
 
-        inline uint32_t GetOperatingFlags(void)
+        ///
+        /// \brief return the current operating flags
+        ///
+        inline uint32_t GetOperatingFlags(void) const
                 {
                 return this->m_OperatingFlags;
                 }
+
+        ///
+        /// \brief set the operating flags
+        ///
         inline void SetOperatingFlags(uint32_t OperatingFlags)
                 {
                 this->m_OperatingFlags = OperatingFlags;
                 }
 
+        ///
+        /// \brief get the platform flags.
+        ///
         inline uint32_t GetPlatformFlags(void);
 
-        // get system clock rate in Hz; must be overridden
+        /// \brief get system clock rate in Hz; must be overridden
         virtual uint64_t GetSystemClockRate(void) const = 0;
 
-        // start the Catena framework.
+        ///
+        /// \brief start the Catena framework.
+        ///
+        /// \return \c true if things were successfully started.
+        ///
         virtual bool begin(void);
 
+        ///
+        /// \brief return a pointer to string containing the name of this Catena board
+        ///
         virtual const char *CatenaName(void) const = 0; // requires that an override be provided.
+
+        ///
+        /// \brief put the system to sleep for a specified number of seconds.
+        ///
+        /// \details This sleeps the system for a given number of seconds, but it
+        ///     doesn't of itself stop peripherals or make the system ready to sleep.
+        ///     That's unfortunately very situational.
+        ///
         virtual void Sleep(uint32_t howLongInSeconds) = 0; // require a concrete method
 
+        ///
+        /// \brief return a pointer to the FRAM object.
+        ///
+        /// \details The base class returns \c nullptr; it is expected that boards
+        /// that provide an FRAM will provide an override that returns the actual
+        /// pointer.
+        ///
         virtual McciCatena::cFram *getFram(void)
                 {
                 return nullptr;
                 }
 
-        // poll the engine
+        /// \brief poll all the pollable objects linked to the Catena object.
         void poll(void);
+
+        /// \brief register a pollable object to be polled by this Catena object.
         void registerObject(McciCatena::cPollableObject *pObject);
 
-        // command handling
+        /// \brief register a command dispatch table with the command processor.
         void addCommands(McciCatena::cCommandStream::cDispatch &, void *);
 
+        ///
+        /// \brief get the LoRaWAN provisioning style
+        ///
+        /// \return \c Arduino_LoRaWAN::ProvisioningStyle::kNone if LoRaWAN
+        ///     is not supported.
+        ///
+        /// \todo (tmm@mcci.com) this should be virtual.
+        ///
         Arduino_LoRaWAN::ProvisioningStyle GetProvisioningStyle(void);
+
+        ///
+        /// \brief get the LoRaWAN ABP provisioning info
+        ///
+        /// \return \c false if LoRaWAN is not supported.
+        ///
+        /// \todo (tmm@mcci.com) this should be virtual.
+        ///
         bool GetAbpProvisioningInfo(Arduino_LoRaWAN::AbpProvisioningInfo *);
+
+        ///
+        /// \brief get the LoRaWAN OTAA provisioning info
+        ///
+        /// \return \c false if LoRaWAN is not supported.
+        ///
+        /// \todo (tmm@mcci.com) this should be virtual.
+        ///
         bool GetOtaaProvisioningInfo(Arduino_LoRaWAN::OtaaProvisioningInfo *);
 
+        ///
+        /// \brief save LoRaWAN session info
+        ///
+        /// \todo (tmm@mcci.com) this should be virtual.
+        ///
         void NetSaveSessionInfo(
                 const Arduino_LoRaWAN::SessionInfo &Info,
                 const uint8_t *pExtraInfo,
                 size_t nExtraInfo
                 );
+
+        ///
+        /// \brief save LoRaWAN session state
+        ///
+        /// \todo (tmm@mcci.com) this should be virtual.
+        ///
         void NetSaveSessionState(
                 const Arduino_LoRaWAN::SessionState &State
                 );
+
+        ///
+        /// \brief get LoRaWAN session state
+        ///
+        /// \return \c false if LoRaWAN is not supported, or if
+        ///     session state could not be found.
+        ///
+        /// \todo (tmm@mcci.com) this should be virtual.
+        ///
         bool NetGetSessionState(
                 Arduino_LoRaWAN::SessionState &State
                 );
 
+        ///
+        /// \brief add the well known LoRaWAN commands to the command table.
+        ///
         bool addLoRaWanCommands(void);
 
-        // calibrate the system clock, if possible
+        /// \brief calibrate the system clock, if possible
         virtual uint32_t CalibrateSystemClock(void)
                 {
                 // if it's not possible; do nothing and return 0.
                 return 0;
                 }
 
-        // return the command processor object
+        /// \brief return the command processor object
         cCommandStream *getCommandStream()
                 {
                 return &this->m_CommandStream;
@@ -339,23 +664,21 @@ public:
                 return &this->m_Collector;
                 }
 
-/****************************************************************************\
-|
-|       The global CatenaBase pointer.
-|
-|       Code can't readily reference a global (like "gCatena") that is of
-|       a more specialized type than the one they know. So instead, we have
-|       a global pointer to the Catena, taken as a pointer to the most
-|       general object.  It's initialzed by the constructor.
-|
-\****************************************************************************/
-
+        ///
+        /// \brief the global CatenaBase pointer.
+        ///
+        /// Code can't readily reference a global (like "gCatena") that is of
+        /// a more specialized type than the one they know. So instead, we have
+        /// a global pointer to the Catena, taken as a pointer to the most
+        /// general object.  It's initialzed by the constructor.
+        ///
         static CatenaBase *pCatenaBase;
 
 protected:
+        /// \brief register the well-known system commands
         virtual void registerCommands(void);
 
-        // subclasses override a method for getting the platform table
+        /// subclasses override this method for getting the platform table
         virtual void getPlatformTable(
                 const CATENA_PLATFORM * const * &vPlatforms,
                 size_t &nvPlatforms
@@ -365,7 +688,7 @@ protected:
                 nvPlatforms = 0;
                 }
 
-        // subclasses override a method for getting the CPU ID platform table
+        /// subclasses override this method for getting the CPU ID platform table
         virtual void getCpuIdPlatformTable(
                 const CPUID_PLATFORM_MAP * &vCpuIdToPlatform,
                 size_t &nvCpuIdToPlatform
@@ -375,40 +698,52 @@ protected:
                 nvCpuIdToPlatform = 0;
                 }
 
-        // help for the command-processing framework.
+        ///
+        /// \brief Helper class for the command-processing framework.
+        ///
+        /// \details The \c cStreamLineCollector class requires a instance of
+        ///     a concrete class derived from \c cStreamLineCollector::cStreamReady
+        ///     This class allows the stream line collector to see if there really
+        ///     is an input device connected to the stream.
+        ///
         class cSerialReady : public McciCatena::cStreamLineCollector::cStreamReady
                 {
         public:
-                // return true if Serial is ready. Overridden because
-                // the Arduino !!Serial() delays 10ms unconditionally!
-                // so we need special business.
+                /// \brief return true if Serial is ready. Overridden because
+                /// the Arduino !!Serial() delays 10ms unconditionally!
+                /// so we need special business.
                 virtual bool isReady() const override;
                 };
 
-        // the callback object to use for commands (since we're on USB)
+        /// \brief the callback object to use with the default command stream.
         cSerialReady    m_SerialReady;
 
         // data objects
-        EUI64_buffer_t m_SysEUI;
-        McciCatena::cPollingEngine m_PollingEngine;
+        EUI64_buffer_t m_SysEUI;                        ///< the SysEUI we're using.
+        McciCatena::cPollingEngine m_PollingEngine;     ///< the object polling engine.
 
-        // the line collector
+        /// \brief the line collector
         McciCatena::cStreamLineCollector        m_Collector;
 
-        // the command processor
+        /// \brief the command processor
         McciCatena::cCommandStream              m_CommandStream;
 
 private:
-        uint32_t                m_OperatingFlags;
-        const CATENA_PLATFORM * m_pPlatform;
+        uint32_t                m_OperatingFlags;       ///< the operating flags
+        const CATENA_PLATFORM * m_pPlatform;            ///< the platform pointer
+        Version_t               m_appVersion;           ///< the application version
 
         // internal methods
+
+        /// \brief save the platform once it's determined.
         void savePlatform(
                 const CATENA_PLATFORM &Platform,
                 const EUI64_buffer_t *pSysEUI,
                 const uint32_t *pOperatingFlags
                 );
 
+        /// \brief search for a platform based on the CPU ID -- for short production
+        /// run devices where we can make one image with all the CPU IDs in advance.
         const CATENA_PLATFORM *getPlatformForCpuId(
                 const UniqueID_buffer_t *pIdBuffer,
                 EUI64_buffer_t *pSysEUI,
@@ -416,55 +751,29 @@ private:
                 );
         };
 
-/*
 
-Type:   CATENA_PLATFORM
-
-Function:
-        Represents common info about any Catena variant.
-
-Description:
-        Every Catena model is represented by a CATENA_PLATFORM instance.
-        This instance respresents common information about all Catenas of
-        that kind.
-
-        The platforms are organized as a tree; each node has a pointer to
-        a parent node which is a more general version of the same platform.
-
-Contents:
-        MCCIADK_GUID_WIRE Guid;
-                The GUID for this platform.
-
-        const CATENA_PLATFORM *pParent;
-                The parent platform, or NULL if this is the root for
-                this family of models.
-
-        uint32_t PlatformFlags;
-                The flags describing the capabilites of this platform. These
-                are formed by oring together flags from
-                CatenaSam21::PLATFORM_FLAGS.
-
-        uint32_t OperatingFlags;
-                Default operating flags. The actual operating flags may be
-                modified on a per-device basis.
-
-Notes:
-        Typically the platforms are referenced by name from the table of well-
-        known CPU IDs, or from the code that supplies the default platform.
-
-See Also:
-        CatenaBase, CATENA_CPUID_TO_PLATFORM
-
-*/
-
+///
+/// \brief The platform description object represents common info about any Catena variant
+///
+/// \details
+///     Every Catena model is represented by a CATENA_PLATFORM instance.
+///     This instance respresents common information about all Catenas of
+///     that kind.
+///
+///     The platforms are organized as a tree; each node has a pointer to
+///     a parent node which is a more general version of the same platform.
+///
 struct CATENA_PLATFORM
         {
-        MCCIADK_GUID_WIRE       Guid;
-        const CATENA_PLATFORM   *pParent;
-        uint32_t                PlatformFlags;
-        uint32_t                OperatingFlags;
+        MCCIADK_GUID_WIRE       Guid;                   ///< the platform GUID
+        const CATENA_PLATFORM   *pParent;               ///< the parent (more general) platform, or NULL if
+                                                        ///  this is the root for this family of models.
+        uint32_t                PlatformFlags;          ///< the flags representing the capabilities of this platform,
+                                                        ///  or'ed together from CatenaBase::PLATFORM_FLAGS.
+        uint32_t                OperatingFlags;         ///< the default operating flags for this platform.
         };
 
+// implementation of GetPlatformFlags -- here so that it's after the declaration of CATENA_PLATFORM.
 inline uint32_t CatenaBase::GetPlatformFlags(void)
         {
         const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
@@ -475,134 +784,66 @@ inline uint32_t CatenaBase::GetPlatformFlags(void)
                 return 0;
         }
 
-/*
-
-Type:   CatenaBase::CPUID_PLATFORM_MAP
-
-Function:
-        Simple structure to map a CPU ID to a Platform code.
-
-Description:
-        Many Catenas don't have NVRAM, and need to have information about
-        how the SAMD21 CPU is wired up and connected to the world. However,
-        all SAMD21s have a unique CPU ID. We take advantage of this, and the
-        relatively large Flash memory of the SAMD21, to map the unique CPU ID
-        onto a platform pointer. Unfortunately this requires manually adding
-        CPU IDs to the flash table, so this is only suitable for small volume;
-        but it works well if the number of CPUs is less than a hundred or so.
-
-        The file gk_WellKnownCpuBindings.cpp instantiates an array,
-        gk_WellKnownCpuBindings[], containing CPU ID => platform mappings.
-
-        For convenience, we also allow you to override operating flags on
-        a CPU-ID-by-CPU-ID basis.
-
-        Catenas with NVRAM use a similar concept, but the data in the NVRAM
-        provides a platform GUID, and the SysEUI, rather than mapping the
-        CPUID to a platform pointer. The platform GUID is used to find
-        a CATENA_PLATFORM, and the SysEUI provides the identity.
-
-Contents:
-        CatenaBase::UniqueID_buffer_t   CpuID;
-                The Unique CPU ID.
-
-        const CATENA_PLATFORM *pPlatform;
-                A pointer to the platform that defines this assembly.
-
-        CatenaBase::EUI64_buffer_t      SysEUI;
-                The EUI64 for this platform. If zero, then none is defined.
-
-        uint32_t OperatingFlagsClear;
-        uint32_t OperatingFlagsSet;
-                These two entries, taken together, are used to selectively
-                clear and set bits in the operating flags. Bits set in
-                OperatingFlagsClear will be cleared in the operating flags.
-                Bits set in OperatingFlagsSet will be set in the operating
-                flags. Clear is applied before set.
-
-Notes:
-        The following bash macro is generally used to generate the first
-        two lines of initiailization given the output from an MCCI test
-        program:
-
-.       function _cpuid {
-.               echo "$1" |
-.               sed -e 's/^/0x/' -e 's/-/, 0x/g' |
-.               awk '{
-.                       $1 = "        { CpuID:  { " $1;
-.                       $8 = $8 "\n\t\t   ";
-.                       $16 = $16 " },";
-.                       print }' ;
-.       }
-
-        With this macro in scope, you can write (e.g.):
-
-.       _cpuid 05-25-dc-ef-54-53-4b-50-4a-31-2e-39-36-1a-07-ff
-
-        and you'll get the first two lines of a suitable table entry.
-
-See Also:
-        gk_WellKnownCpuBindings[], CATENA_PLATFORM
-
-*/
-
+///
+/// \brief Simple structure to map a CPU ID to a Platform code.
+///
+/// \details
+///     Many Catenas don't have NVRAM, and need to have information about
+///     how the SAMD21 CPU is wired up and connected to the world. However,
+///     all SAMD21s have a unique CPU ID. We take advantage of this, and the
+///     relatively large Flash memory of the SAMD21, to map the unique CPU ID
+///     onto a platform pointer. Unfortunately this requires manually adding
+///     CPU IDs to the flash table, so this is only suitable for small volume;
+///     but it works well if the number of CPUs is less than a hundred or so.
+///
+///     The file gk_WellKnownCpuBindings.cpp instantiates an array,
+///     `gk_WellKnownCpuBindings[]`, containing CPU ID => platform mappings.
+///
+///     For convenience, we also allow you to override operating flags on
+///     a CPU-ID-by-CPU-ID basis.
+///
+///     Catenas with NVRAM use a similar concept, but the data in the NVRAM
+///     provides a platform GUID, and the SysEUI, rather than mapping the
+///     CPUID to a platform pointer. The platform GUID is used to find
+///     a CATENA_PLATFORM, and the SysEUI provides the identity.
+///
+/// \note \parblock
+///     The following bash macro is generally used to generate the first
+///     two lines of initiailization given the output from an MCCI test
+///     program:
+///
+///     \code{.sh}
+///       function _cpuid {
+///               echo "$1" |
+///               sed -e 's/^/0x/' -e 's/-/, 0x/g' |
+///               awk '{
+///                       $1 = "        { CpuID:  { " $1;
+///                       $8 = $8 "\n\t\t   ";
+///                       $16 = $16 " },";
+///                       print }' ;
+///       }
+///     \endcode
+///
+///     With this macro in scope, you can write (e.g.):
+///
+///     \code{.sh}
+///       _cpuid 05-25-dc-ef-54-53-4b-50-4a-31-2e-39-36-1a-07-ff
+///     \endcode
+///
+///     and you'll get the first two lines of a suitable table entry.
+/// \endparblock
+///
+/// \see ::gk_WellKnownCpuBindings[], CATENA_PLATFORM
+///
 struct CatenaBase::CPUID_PLATFORM_MAP
         {
-        CatenaBase::UniqueID_buffer_t   CpuID;
+        CatenaBase::UniqueID_buffer_t   CpuID;                  ///< the CPU ID to match
 
-        const CATENA_PLATFORM           *pPlatform;
-        CatenaBase::EUI64_buffer_t      SysEUI;
-        uint32_t                        OperatingFlagsClear;
-        uint32_t                        OperatingFlagsSet;
+        const CATENA_PLATFORM           *pPlatform;             ///< the platform to use
+        CatenaBase::EUI64_buffer_t      SysEUI;                 ///< the SysEUI to use
+        uint32_t                        OperatingFlagsClear;    ///< mask of operating flags to be cleared
+        uint32_t                        OperatingFlagsSet;      ///< mask of operating flags to be set
         };
-
-
-/*
-
-Name:   CatenaBase::PlatformFlags_GetModNumber()
-
-Index:  Function:       CatenaBase::PlatformFlags_IsModded();
-
-Function:
-        Return M101 etc info about this Catena instance given platform flags.
-
-Definition:
-        #include <CatenaBase.h>
-
-        static constexpr uint32_t
-                CatenaBase::PlatformFlags_GetModNumber(
-                        uint32_t uPlatformFlags
-                        );
-
-
-        static constexpr bool
-                CatenaBase::PlatformFlags_IsModded(
-                        uint32_t uPlatformFlags
-                        );
-
-Description:
-        Catenas have a "stock" or "base" configuration -- this is how they
-        are built by default. At MCCI, we track variants using "M numbers"
-        (a concept that we got from the Ithaca electronics scene via Ithaco,
-        and ultimately, no doubt, from GE). M numbers are simply unique
-        3-digit numbers; normally they start with 101, and are assigned in
-        sequence. For example, the Catena 4450-M101 has been optimized for
-        AC power measurement use.
-
-        We reserve 7 bits in the platform flags for representing M-numbers.
-        Initially, at any rate, your code must know what the numbers mean.
-
-Returns:
-        CatenaBase::PlatformFlags_GetModNumber() extracts the mod-number
-        from the platform flags, and returns it as a number. If there is no
-        mod number for this device, then this will return zero; otherwise it
-        returns the mod number (which is always in the range [101..227].
-
-        CatenaBase::PlatformFlags_IsModded() returns true if the platform
-        flags indicate that this instance has a non-zero mod number.
-
-*/
-// actual function is above.
 
 }; // end namespace McciCatena
 
