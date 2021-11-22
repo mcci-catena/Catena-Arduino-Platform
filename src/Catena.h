@@ -72,8 +72,8 @@ Author:
 # include "Catena4551.h"
 # define CATENA_H_SUPER_  McciCatena::Catena4551
 #else
-# define CATENA_H_SUPER_  /* nothing, for intellisense */
-# error Architecture not supported
+# include "CatenaBase.h"
+# define CATENA_H_SUPER_  McciCatena::CatenaBase
 #endif
 
 namespace McciCatena {
