@@ -78,15 +78,25 @@ Author:
 
 namespace McciCatena {
 
+///
+/// \brief the top-level abstract Catena object
+///
 class Catena : public CATENA_H_SUPER_
 	{
 public:
+	/// \brief the super class to be used depends on the targeted Catena.
         using Super = CATENA_H_SUPER_;
 
-        // no specific constructor.
-        Catena() {};
-
-	// uses default destructor
+	///
+	/// \brief the constructor sets the version, if one is supplied.
+	///
+	/// \param[in] appVersion, if supplied is an McciCatena::Version_t
+	///	object which specifies the version of the application.
+	///
+        Catena(Version_t appVersion = Version_t(0))
+		{
+		this->setAppVersion(appVersion);
+		}
 
 	// neither copyable nor movable
 	Catena(const Catena&) = delete;

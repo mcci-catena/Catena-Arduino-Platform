@@ -763,7 +763,6 @@ private:
                 );
         };
 
-
 ///
 /// \brief The platform description object represents common info about any Catena variant
 ///
@@ -775,6 +774,7 @@ private:
 ///     The platforms are organized as a tree; each node has a pointer to
 ///     a parent node which is a more general version of the same platform.
 ///
+
 struct CATENA_PLATFORM
         {
         MCCIADK_GUID_WIRE       Guid;                   ///< the platform GUID
@@ -847,6 +847,7 @@ inline uint32_t CatenaBase::GetPlatformFlags(void)
 ///
 /// \see ::gk_WellKnownCpuBindings[], CATENA_PLATFORM
 ///
+
 struct CatenaBase::CPUID_PLATFORM_MAP
         {
         CatenaBase::UniqueID_buffer_t   CpuID;                  ///< the CPU ID to match
