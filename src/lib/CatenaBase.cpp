@@ -23,9 +23,8 @@ using namespace McciCatena;
 CatenaBase *CatenaBase::pCatenaBase;
 
 /* the constructor */
-CatenaBase::CatenaBase(Version_t v)
+CatenaBase::CatenaBase()
     {
-    this->m_appVersion = v;
     pCatenaBase = this;
     }
 

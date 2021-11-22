@@ -236,7 +236,7 @@ class CatenaBase
         {
 public:
         /// \brief The constructor for the common behavior of any `Catena`-like object.
-        CatenaBase(Version_t v = Version_t(0));
+        CatenaBase();
 
         /// \brief the destructor; virtual because this is a base class.
         virtual ~CatenaBase() {};
@@ -674,7 +674,19 @@ public:
         ///
         static CatenaBase *pCatenaBase;
 
+        /// \brief get the application version
+        Version_t getAppVersion() const
+                {
+                return this->m_appVersion;
+                }
+
 protected:
+        /// \brief set the application version
+        void setAppVersion(Version_t v)
+                {
+                this->m_appVersion = v;
+                }
+
         /// \brief register the well-known system commands
         virtual void registerCommands(void);
 
@@ -731,7 +743,7 @@ protected:
 private:
         uint32_t                m_OperatingFlags;       ///< the operating flags
         const CATENA_PLATFORM * m_pPlatform;            ///< the platform pointer
-        Version_t               m_appVersion;           ///< the application version
+        Version_t               m_appVersion {0};       ///< the application version
 
         // internal methods
 
