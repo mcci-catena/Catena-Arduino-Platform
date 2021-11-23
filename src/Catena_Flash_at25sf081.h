@@ -20,10 +20,11 @@ Author:
 
 #include <Arduino.h>
 #include <SPI.h>
+#include <Catena_Flash.h>>
 
 namespace McciCatena {
 
-class cFlash_AT25SF081
+class cFlash_AT25SF081 : public cFlash
         {
 public:
         enum Commands : uint8_t
@@ -222,7 +223,14 @@ public:
                 }
 
 public:
-        cFlash_AT25SF081() {};
+        ///
+        /// \brief the default constructor must marks the object as uninitialized
+        ///     and not yet registered.
+        ///
+        cFlash_AT25SF081()
+                : m_Initialized(false)
+                , m_registered(false)
+                {}
 
         // uses default destructor
 
@@ -233,49 +241,56 @@ public:
         cFlash_AT25SF081& operator=(const cFlash_AT25SF081&&) = delete;
 
         // set up and probe device
-        bool begin(SPIClass *pSpi, uint8_t ChipSelectPin = 5);
+        virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin) override;
+
+        /// \brief the default chip select pin for this device is D5
+	virtual uint8_t getDefaultChipSelectPin() const override
+		{
+		return 5;
+		}
 
         // stop using device; use begin() to restart.
-        void end(void);
+        virtual void end(void) override;
 
         // reset device
-        void reset(void);
+        virtual void reset(void) override;
 
         // read ID
-        void readId(uint8_t *pManufacturerId, uint16_t *pDeviceId);
-
-        // read data
-        void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer);
-
-        // program
-        bool program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer);
-
-        // program a page
-        size_t programPage(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer);
-
-        // internal powerDown
-        void powerDown(void);
-
-        // internal powerUp.
-        void powerUp(void);
+        virtual void readId(uint8_t *pManufacturerId, uint16_t *pDeviceId) override;
 
         // chip erase
-        bool eraseChip(void);
+        virtual bool eraseChip(void) override;
 
         // erase a 4k sector
-        bool eraseSector(uint32_t SectorAddress);
+        virtual bool eraseSector(uint32_t SectorAddress) override;
 
         // erase a 32k block
-        bool eraseBlock32(uint32_t Block32Address);
+        virtual bool eraseBlock32(uint32_t Block32Address) override;
 
         // erase a 64k block
-        bool eraseBlock64(uint32_t Block64Address);
+        virtual bool eraseBlock64(uint32_t Block64Address) override;
 
-        // set protection
+        ///
+        /// \brief set protection (non-portable)
+        ///
+        /// \param[in] protectionLevel defines the level of protection.
+        ///
         bool setProtection(ProtectionBits protectionLevel);
 
-        // read status registers
-        void readStatus(uint8_t *pSr1, uint8_t *pSr2);
+        // read a buffer
+        virtual void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer) override;
+
+        // program a buffer
+        virtual bool program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
+
+        // program a page
+        virtual size_t programPage(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
+
+        // internal powerDown
+        virtual void powerDown(void) override;
+
+        // internal powerUp.
+        virtual void powerUp(void) override;
 
 protected:
         void beginTransaction()
@@ -391,9 +406,13 @@ protected:
         uint32_t get_tBegin() { return this->m_tBegin; }
         uint32_t get_tEnd() { return this->m_tEnd; }
 
+        // read status registers
+        void readStatus(uint8_t *pSr1, uint8_t *pSr2);
+
 private:
         SPISettings	m_Settings;
         bool		m_Initialized;
+        bool            m_registered;
         bool		m_PowerDown;
         uint8_t		m_CS;
         SPIClass *	m_pSpi;

@@ -13,6 +13,8 @@ Author:
 
 */
 
+/// \file
+
 #pragma once
 
 #ifndef _catena_flash_h_
@@ -23,11 +25,29 @@ Author:
 
 namespace McciCatena {
 
+///
+/// \brief Abstract class for SPI flash devices.
+///
+/// \details
+///     This base class is used as the interface for all flash drivers.
+///     At the moment, we don't allow for a lot of code sharing between
+///     various driver types, but there's no reason this couldn't be
+///     extended to support that in the future.
+///
 class cFlash
     {
 public:
-    // default constructor
+    /// \brief default constructor
     cFlash() {}
+
+    ///
+    /// \brief the default destructor is public and virtual, as recommended
+    /// by cppreference.com under [desctructors](https://en.cppreference.com/w/cpp/language/destructor).
+    ///
+    /// This allows destruction via a pointer to the base class.
+    ///
+    virtual ~cFlash() {}
+
     // neither copyable nor movable
     cFlash(const cFlash&) = delete;
     cFlash& operator=(const cFlash&) = delete;
@@ -36,38 +56,66 @@ public:
 
     // public methods
 
-    /// \brief initialize flash system
+    ///
+    /// \brief initialize flash driver
+    ///
+    /// \param[in] pSpi pointer to SPI bus for this flash device.
+    /// \param[in] ChipSelectPin pin to be used as chip-select for this flash device.
+    ///
     virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin) = 0;
 
-    /// \brief stop the flash system
+    ///
+    /// \brief get default chip-select pin
+    ///
+    virtual uint8_t getDefaultChipSelectPin() const = 0;
+
+    ///
+    /// \brief stop the flash driver
+    ///
     virtual void end() = 0;
 
-	/// \brief reset chip
+	/// \brief reset flash chip
 	virtual void reset(void) = 0;
 
+    ///
 	/// \brief read JEDEC id
+    ///
+    /// \param[out] pManufacturerId is set to the manufacturer ID read from the flash device.
+    /// \param[out] pDeviceId is set to the device ID.
+    ///
 	virtual void readId(uint8_t *pManufacturerId, uint16_t *pDeviceId) = 0;
 
-	/// \brief chip erase
-	virtual void eraseChip(void) = 0;
+    ///
+	/// \brief Issue chip erase.
+    ///
+	virtual bool eraseChip(void) = 0;
 
-    /// \brief erase a 4k page
-	virtual void eraseSector(uint32_t SectorAddress) = 0;
+    ///
+    /// \brief Erase a 4k page.
+    ///
+    /// \param[in] SectorAddress base byte address of the page to be erased.
+    ///
+	virtual bool eraseSector(uint32_t SectorAddress) = 0;
 
+    ///
     /// \brief erase a 32k page
-	virtual void eraseBlock32(uint32_t Block32Address) = 0;
+    ///
+    /// \param[in] Block32Address base byte address of the block to be erased.
+    ///
+	virtual bool eraseBlock32(uint32_t Block32Address) = 0;
 
+    ///
     /// \brief erase a 64k page
-	virtual void eraseBlock64(uint32_t Block64Address) = 0;
+	virtual bool eraseBlock64(uint32_t Block64Address) = 0;
 
-	// set protection -- CATENA_MX25V8035F_PL_xxx
-	virtual void setProtection(uint8_t protectionLevel) = 0;
+	// set protection is not portable,not part of API
+	// virtual void setProtection(uint8_t protectionLevel) = 0;
 
     /// \brief read buffer
 	virtual void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer) = 0;
 
     /// \brief program buffer
-	virtual void program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) = 0;
+	virtual bool program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) = 0;
 
     /// \brief program at most one page.
     /// \returns number of bytes not consumed from buffer.

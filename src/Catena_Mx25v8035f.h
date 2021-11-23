@@ -135,7 +135,7 @@ public:
 	Catena_Mx25v8035f(void)
 		: m_Initialized(false)
 		, m_registered(false)
-		{};
+		{}
 
 	// neither copyable nor movable
 	Catena_Mx25v8035f(const Catena_Mx25v8035f&) = delete;
@@ -144,8 +144,14 @@ public:
 	Catena_Mx25v8035f& operator=(const Catena_Mx25v8035f&&) = delete;
 
 	// set up and probe device
-	virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin = D19) override;
+	virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin) override;
 	virtual void end(void) override;
+
+	/// \brief the default chip select pin for this type of flash is D19
+	virtual uint8_t getDefaultChipSelectPin() const override
+		{
+		return D19;
+		}
 
 	// reset chip
 	virtual void reset(void) override;
@@ -153,26 +159,33 @@ public:
 	// read id
 	virtual void readId(uint8_t *pManufacturerId, uint16_t *pDeviceId) override;
 
-	/// \brief chip erase
-	virtual void eraseChip(void) override;
+	// chip erase
+	virtual bool eraseChip(void) override;
 
 	// erase sector, block32 and block64
-	virtual void eraseSector(uint32_t SectorAddress) override;
-	virtual void eraseBlock32(uint32_t Block32Address) override;
-	virtual void eraseBlock64(uint32_t Block64Address) override;
+	virtual bool eraseSector(uint32_t SectorAddress) override;
+	virtual bool eraseBlock32(uint32_t Block32Address) override;
+	virtual bool eraseBlock64(uint32_t Block64Address) override;
 
-	// set protection -- CATENA_MX25V8035F_PL_xxx
-	virtual void setProtection(uint8_t protectionLevel) override;
+	///
+	/// \brief set protection (non-portable)
+	///
+	/// \param[in] protectionLevel is a bitmask chosen from CATENA_MX25V8035F_PL_xxx
+	///
+	void setProtection(uint8_t protectionLevel);
 
-	// read a buffer
+	/// \brief read a buffer
 	virtual void read(uint32_t Address, uint8_t *pBuffer, size_t nBuffer) override;
 
-	// program a buffer
-	virtual void program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
+	/// \brief program a buffer
+	virtual bool program(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
+	/// \brief program a page, returning number of bytes written
 	virtual size_t programPage(uint32_t Address, const uint8_t *pBuffer, size_t nBuffer) override;
 
-	// power management
+	/// \brief power down the flash chip
 	virtual void powerDown(void) override;
+
+	/// \brief power up the flash chip
 	virtual void powerUp(void) override;
 
 private:
@@ -182,7 +195,7 @@ private:
 	uint8_t		m_CS;
 	SPIClass *	m_pSpi;
 
-	void erase(uint32_t Address, uint8_t Command, uint32_t Delay);
+	bool erase(uint32_t Address, uint8_t Command, uint32_t Delay);
 	void setWel(void);
 	void pollWip(uint32_t pollMs);
 	};

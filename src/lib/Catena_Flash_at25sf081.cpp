@@ -321,7 +321,7 @@ Description:
         This function erases a block (64KB).
 
 Returns:
-        true for success, false for failure.
+        true, indicating success.
 
 */
 
@@ -329,7 +329,7 @@ bool cFlash_AT25SF081::eraseBlock64(
         uint32_t Block64Address
         )
         {
-        this->erase(Block64Address, CMD_BE, Timing::tBE_64k);
+        return this->erase(Block64Address, CMD_BE, Timing::tBE_64k);
         }
 
 /*

@@ -315,7 +315,7 @@ Function:
 	Erase MX25V8035F chip
 
 Definition:
-	void Catena_Mx25v8035f::eraseChip(
+	bool Catena_Mx25v8035f::eraseChip(
 		void
 		);
 
@@ -323,11 +323,11 @@ Description:
 	This function erases MX25V8035F chip.
 
 Returns:
-	No explicit result.
+	true, indicating success.
 
 */
 
-void Catena_Mx25v8035f::eraseChip(
+bool Catena_Mx25v8035f::eraseChip(
 	void
 	)
 	{
@@ -338,6 +338,8 @@ void Catena_Mx25v8035f::eraseChip(
 	pSpi->transfer(this->m_CS, MX25V8035F_CMD_CE);
 
 	this->pollWip(100);
+
+	return true;
 	}
 
 /*
@@ -387,7 +389,7 @@ Function:
 	Erase common function
 
 Definition:
-	void Catena_Mx25v8035f::erase(
+	bool Catena_Mx25v8035f::erase(
 		uint32_t Address,
 		uint8_t Command,
 		uint32_t Delay
@@ -397,11 +399,11 @@ Description:
 	This function is common function to erases MX25V8035F flash.
 
 Returns:
-	No explicit result.
+	Always returns true (indicating success).
 
 */
 
-void Catena_Mx25v8035f::erase(
+bool Catena_Mx25v8035f::erase(
 	uint32_t Address,
 	uint8_t Command,
 	uint32_t Delay
@@ -421,6 +423,7 @@ void Catena_Mx25v8035f::erase(
 	pSpi->transfer(this->m_CS, data, sizeof(data));
 
 	this->pollWip(Delay);
+	return true;
 	}
 
 /*
@@ -431,7 +434,7 @@ Function:
 	Erase MX25V8035F sector (4KB)
 
 Definition:
-	void Catena_Mx25v8035f::eraseSector(
+	bool Catena_Mx25v8035f::eraseSector(
 		uint32_t SectorAddress
 		);
 
@@ -439,15 +442,15 @@ Description:
 	This function erases MX25V8035F sector (4KB).
 
 Returns:
-	No explicit result.
+	true, indicating success.
 
 */
 
-void Catena_Mx25v8035f::eraseSector(
+bool Catena_Mx25v8035f::eraseSector(
 	uint32_t SectorAddress
 	)
 	{
-	this->erase(SectorAddress, MX25V8035F_CMD_SE, 20 /*ms*/);
+	return this->erase(SectorAddress, MX25V8035F_CMD_SE, 20 /*ms*/);
 	}
 
 /*
@@ -458,7 +461,7 @@ Function:
 	Erase MX25V8035F block (32KB)
 
 Definition:
-	void Catena_Mx25v8035f::eraseBlock32(
+	bool Catena_Mx25v8035f::eraseBlock32(
 		uint32_t Block32Address
 		);
 
@@ -466,11 +469,11 @@ Description:
 	This function erases MX25V8035F block (32KB).
 
 Returns:
-	No explicit result.
+	true, indicating success.
 
 */
 
-void Catena_Mx25v8035f::eraseBlock32(
+bool Catena_Mx25v8035f::eraseBlock32(
 	uint32_t Block32Address
 	)
 	{
@@ -485,7 +488,7 @@ Function:
 	Erase MX25V8035F block (64KB)
 
 Definition:
-	void Catena_Mx25v8035f::eraseBlock64(
+	bool Catena_Mx25v8035f::eraseBlock64(
 		uint32_t Block64Address
 		);
 
@@ -497,11 +500,11 @@ Returns:
 
 */
 
-void Catena_Mx25v8035f::eraseBlock64(
+bool Catena_Mx25v8035f::eraseBlock64(
 	uint32_t Block64Address
 	)
 	{
-	this->erase(Block64Address, MX25V8035F_CMD_BE, 200 /*ms*/);
+	return this->erase(Block64Address, MX25V8035F_CMD_BE, 200 /*ms*/);
 	}
 
 /*
@@ -647,7 +650,7 @@ Function:
 	Program a buffer to the specified flash address
 
 Definition:
-	void Catena_Mx25v8035f::program(
+	bool Catena_Mx25v8035f::program(
 		uint32_t Address,
 		const uint8_t *pBuffer,
 		size_t nBuffer
@@ -657,11 +660,11 @@ Description:
 	This function programs a buffer to the specified flash address.
 
 Returns:
-	No explicit result.
+	True, indicating success.
 
 */
 
-void Catena_Mx25v8035f::program(
+bool Catena_Mx25v8035f::program(
 	uint32_t Address,
 	const uint8_t *pBuffer,
 	size_t nBuffer
@@ -676,6 +679,8 @@ void Catena_Mx25v8035f::program(
 		pBuffer += programSize;
 		nBuffer -= programSize;
 		}
+
+	return true;
 	}
 
 /*
