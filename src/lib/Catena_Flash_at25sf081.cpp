@@ -28,7 +28,7 @@ Function:
 Definition:
         bool cFlash_AT25SF081::begin(
                 SPIClass *pSpi,
-                uint8_t ChipSelectPin
+                int16_t ChipSelectPin
                 );
 
 Description:
@@ -41,7 +41,12 @@ Returns:
 
 */
 
-bool cFlash_AT25SF081::begin(SPIClass *pSpi, uint8_t ChipSelectPin)
+bool cFlash_AT25SF081::begin(SPIClass *pSpi)
+	{
+	return this->begin(pSpi, -1);
+	}
+
+bool cFlash_AT25SF081::begin(SPIClass *pSpi, int16_t ChipSelectPin)
         {
         uint8_t ManufacturerId;
         uint16_t DeviceId;
@@ -56,8 +61,21 @@ bool cFlash_AT25SF081::begin(SPIClass *pSpi, uint8_t ChipSelectPin)
                 return false;
                 }
 
+	if (ChipSelectPin == -1 && this->m_CS == -1)
+		{
+		gLog.printf(cLog::kError, "flash pin not set\n");
+		return false;
+		}
+	else if (! (-1 <= ChipSelectPin && ChipSelectPin <= UINT8_MAX))
+		{
+		gLog.printf(cLog::kError, "flash pin out of range: 0x%x\n", ChipSelectPin);
+		return false;
+		}
+
         this->m_pSpi = pSpi;
-        this->m_CS = ChipSelectPin;
+	if (ChipSelectPin != -1)
+		this->m_CS = ChipSelectPin;
+
         digitalWrite(ChipSelectPin, HIGH);
         pinMode(ChipSelectPin, OUTPUT);
 
@@ -101,7 +119,6 @@ bool cFlash_AT25SF081::begin(SPIClass *pSpi, uint8_t ChipSelectPin)
 
         return fResult;
         }
-
 
 /*
 

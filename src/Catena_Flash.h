@@ -57,17 +57,28 @@ public:
     // public methods
 
     ///
-    /// \brief initialize flash driver
+    /// \brief initialize flash driver with pin.
     ///
     /// \param[in] pSpi pointer to SPI bus for this flash device.
-    /// \param[in] ChipSelectPin pin to be used as chip-select for this flash device.
+    /// \param[in] ChipSelectPin pin to be used as chip-select for this flash device, or
+    ///             -1 to defer assignment.
     ///
-    virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin) = 0;
+    virtual bool begin(SPIClass *pSpi, int16_t ChipSelectPin) = 0;
 
     ///
-    /// \brief get default chip-select pin
+    /// \brief initialize flash driver using default chip select.
     ///
-    virtual uint8_t getDefaultChipSelectPin() const = 0;
+    /// \param[in] pSpi pointer to SPI bus for this flash device.
+    ///
+    /// The default chip select pin from instantiation is used (or the call returns failure if
+    /// no pin was provided).
+    ///
+    virtual bool begin(SPIClass *pSpi) = 0;
+
+    ///
+    /// \brief get chip-select pin
+    ///
+    virtual uint8_t getChipSelectPin() const = 0;
 
     ///
     /// \brief stop the flash driver

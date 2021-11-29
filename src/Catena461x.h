@@ -1,5 +1,3 @@
-/* Catena461x.h	Fri Dec 28 2018 13:54:46 chwon */
-
 /*
 
 Module:  Catena461x.h
@@ -8,20 +6,8 @@ Function:
 	class Catena461x: CatenaBase Platform to represent a Catena 461x
 	(4610, 4611, 4612, etc.)
 
-Version:
-	V0.13.0	Fri Dec 28 2018 13:54:47 chwon	Edit level 3
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying license file.
 
 Author:
 	ChaeHee Won, MCCI Corporation	November 2018

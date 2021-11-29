@@ -130,6 +130,8 @@ Author:
 #define CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LE(a, b)   \
         (CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(a) <= CATENA_ARDUINO_PLATFORM_VERSION_TO_INT(b))
 
+class TwoWire;        // a forward reference.
+
 ///
 /// \brief The common namespace for this library.
 ///
@@ -228,6 +230,107 @@ constexpr bool operator!=(const Version_t& lhs, const Version_t& rhs){ return !(
 
 /* forward reference */
 struct CATENA_PLATFORM;
+
+class cPowerControl
+        {
+public:
+        cPowerControl() {}
+        virtual uint32_t enable(bool fRequest) = 0;
+        virtual bool getRequest() const = 0;
+        virtual bool hasControl() const = 0;
+        };
+
+class cPowerControlDummy : public cPowerControl
+        {
+public:
+        virtual uint32_t enable(bool fRequest) override
+                {
+                if (fRequest)
+                        ++this->m_count;
+                else
+                        --this->m_count;
+                return 0;
+                }
+        virtual bool getRequest() const override
+                {
+                return this->m_count != 0;
+                }
+        virtual bool hasControl() const override
+                {
+                return false;
+                }
+
+private:
+        uint8_t m_count = 0;
+        };
+
+class cPowerControlGPIO : public cPowerControl
+        {
+public:
+        cPowerControlGPIO(uint8_t pin, uint16_t delayMs)
+                : m_delay(delayMs)
+                , m_pin(pin)
+                {}
+        virtual uint32_t enable(bool fRequest) override
+                {
+                if (fRequest)
+                        ++this->m_count;
+                else
+                        --this->m_count;
+                return 0;
+                }
+        virtual bool getRequest() const override
+                {
+                return this->m_count != 0;
+                }
+        virtual bool hasControl() const override
+                {
+                return false;
+                }
+
+private:
+        uint16_t m_delay;
+        uint8_t m_pin;
+        uint8_t m_count = 0;
+        };
+
+class cPowerControlNested : public cPowerControl
+        {
+public:
+        cPowerControlNested(cPowerControl &parent)
+                : m_parent(parent)
+                {}
+        virtual uint32_t enable(bool fRequest) override
+                {
+                uint8_t oldCount = this->m_count;
+                if (fRequest)
+                        {
+                        this->m_count = oldCount + 1;
+                        if (oldCount == 0)
+                                return this->m_parent.enable(true);
+                        }
+                else
+                        {
+                        if (oldCount > 0)
+                                this->m_count = oldCount - 1;
+                        if (oldCount == 1)
+                                return this->m_parent.enable(false);
+                        }
+                return 0;
+                }
+        virtual bool getRequest() const override
+                {
+                return this->m_count != 0;
+                }
+        virtual bool hasControl() const override
+                {
+                return this->m_parent.hasControl();
+                }
+
+private:
+        cPowerControl &m_parent;
+        uint8_t m_count = 0;
+        };
 
 ///
 /// \brief Base class for all Catena objects
@@ -545,6 +648,391 @@ public:
         ///
         virtual bool begin(void);
 
+        /// \defgroup setup Functions for dealing with Catena configuration variations.
+        /// \{
+
+        ///
+        /// \brief set up everything on this particaular board.
+        ///
+        /// \return \c true if setup was successful.
+        ///
+        virtual bool setup(void) = 0;
+
+        //********************************************************************
+        //
+        /// \defgroup 3v3boost Some Catenas have an on-board 3.3V boost regulator
+        //
+        //********************************************************************
+
+        ///     \{
+
+        ///
+        /// \brief enable the on-board 3.3v boost regulator. Ignored if not supported.
+        ///
+        /// \param [in] fRequest \c true to request power, \c false to retract a previous
+        ///             request.
+        ///
+        /// \return time (from millis()) when power will be ready.
+        ///
+        virtual uint32_t enable_3v3Boost(bool fRequest) = 0;
+
+        ///
+        /// \brief return \c true if the on-board 3.3v boost regulator is enabled
+        ///
+        virtual bool get_3v3BoostRequest() const = 0;
+
+        ///
+        /// \brief return \c true if there's control for an on-board 3.3v boost regulator
+        ///
+        virtual bool has_3v3BoostControl() const = 0;
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup screwterminals Most Catenas have one or more 4-pin screw
+        ///     terminals.
+        ///
+        //********************************************************************
+
+        ///     \{
+
+        ///
+        /// \brief query whether device has screw-terminal capability
+        ///
+        /// \return 0 if no screw terminals; otherwise number of 4-pin screw terminals
+        ///     in standard Catena configuration.
+        ///
+        virtual uint8_t has_screwTerminals() const = 0;
+
+        ///
+        /// \brief get label of screw terminal
+        ///
+        /// \return nullptr if iTerminal is out of range, otherwise label (like "JP4").
+        virtual const char *get_screwTerminalLabel(uint8_t iTerminal) const = 0;
+
+        ///
+        /// \brief get Arduino pin for screw terminal
+        ///
+        virtual uint8_t get_screwTerminalPin2(uint8_t iTerminal) const = 0;
+
+        ///
+        /// \brief get Arduino pin for screw terminal
+        ///
+        virtual uint8_t get_screwTerminalPin3(uint8_t iTerminal) const = 0;
+
+        ///
+        /// \brief enable power for screw terminal
+        ///
+        /// \return delay time in millis() until power will be ready.
+        ///
+        virtual uint32_t enable_screwTerminalVdd(uint8_t iTerminal, bool fState) = 0;
+
+        ///
+        /// \brief query logical power enable for screw terminal
+        ///
+        /// \return requested state
+        ///
+        virtual bool get_screwTerminalVddRequest(uint8_t iTerminal) = 0;
+
+        ///
+        /// \brief query whether there's power control for screw terminal.
+        ///
+        virtual bool has_screwTerminalVddControl(uint8_t iTerminal) = 0;
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup i2cinternal Most Catenas have an internal I2C bus;
+        ///     these APIs control the power.
+        ///
+        //********************************************************************
+
+        ///     \{
+
+        ///
+        /// \brief enable/disable power for I2C bus and associated peripherals
+        ///
+        ///     Since the I2C bus has pullups, the entire bus has to be powered up or
+        ///     down as a unit. If the pullups are not switchable on the target board,
+        ///     the I2C should be brought up and left up during begin(), and this function
+        ///     should be a no-op.
+        ///
+        ///     The implementation should allow for multiple requests for the same power
+        ///     supply, because typical boards share this supply with the flash chip.
+        ///
+        /// \return delay time until power is ready.
+        ///
+        virtual uint32_t enable_i2cVdd(bool) = 0;
+
+        ///
+        /// \brief query whether there's power control for i2c
+        ///
+        virtual bool has_i2cVddControl() const = 0;
+
+        ///
+        /// \brief query whether i2c Vdd is currently requested
+        ///
+        virtual bool get_i2cVddRequest() const = 0;
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup flash Many Catenas have an onboard flash. These APIs
+        ///     control the power and abstract access.
+        ///
+        //********************************************************************
+
+        ///     \{
+
+        virtual bool has_flash() const = 0;
+
+        virtual cFlash *get_flash() const = 0;
+
+        virtual SPIClass *get_flashBus() const = 0;
+
+        virtual uint32_t enable_flashVdd(bool) = 0;
+        virtual bool has_flashVddControl() const = 0;
+        virtual bool get_flashVddRequest() const = 0;
+
+        /// \brief determine whether flash was successfully probed
+        bool get_flashFound() const
+                {
+                return this->m_flashFound;
+                }
+
+        /// \brief record whether flash was successfully probed.
+        void set_flashFound(bool fFound)
+                {
+                this->m_flashFound = fFound;
+                }
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup fram Most Catenas have an onboard FRAM. These APIs
+        ///     control the power and abstract access.
+        ///
+        //********************************************************************
+
+        ///     \{
+        virtual bool has_fram() const = 0;
+        virtual uint32_t get_framSize() const = 0;
+
+        virtual ::TwoWire *get_framBus() const = 0;
+
+        virtual uint32_t enable_framVdd(bool) = 0;
+        virtual bool has_framVddControl() const = 0;
+        virtual bool get_framVddRequest() const = 0;
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup externali2c Some Catenas separate the external I2C from
+        ///     the internal I2C via a powered mux. These APIs control the
+        ///     external I2C, if it's present.
+        ///
+        //********************************************************************
+
+        ///     \{
+
+        /// \brief query whether there's an external i2c
+        virtual bool has_externalI2cBus() const
+                { return false; }
+
+        ///
+        /// \brief turn on power and access to to the external I2C
+        ///
+        /// \return number of millis() to wait for bus to be ready.
+        ///
+        virtual uint32_t enable_externalI2cBridgeVdd(bool fStatus)
+                { return 0; }
+
+        ///
+        /// \brief query state of request for external I2C bus.
+        ///
+        virtual bool get_externalI2cBridgeVddRequest() const
+                { return false; }
+
+        /// \brief query whether we can control the external I2C bus.
+        virtual bool has_externalI2cBridgeVddControl() const
+                { return false; }
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup tcxo Some LPWAN Catenas have a TCXO. These APIs give
+        ///     access. By default, not present and APIs do nothing.
+        ///
+        //********************************************************************
+
+        ///     \{
+        /// \brief power up the TCXO; return number of milliseconds to delay.
+        virtual uint32_t enable_tcxo(bool fStatus)
+                { return 0; }
+
+        ///
+        /// \brief query TCXO request state
+        virtual bool get_tcxoRequest() const
+                { return false; }
+
+        /// \brief query whether TCXO control is part of the design
+        virtual bool has_tcxoControl() const
+                { return false; }
+
+        ///     \}
+
+        //********************************************************************
+        ///
+        /// \defgroup sensors Catenas have a variety of integrated sensors.
+        ///     These APIs replace the platform flags used in order versions
+        ///     of this library
+        ///
+        //********************************************************************
+
+        ///     \{
+
+        /// \brief query whether there's a BME280
+        virtual bool has_BME280() const
+                { return false; }
+
+        /// \brief query whether there's a BME680
+        virtual bool has_BME680() const
+                { return false; }
+
+        /// \brief query whether there's an HS3001
+        virtual bool has_HS3001() const
+                { return false; }
+
+        /// \defgroup SHT3x These APIs relate to control of the SHT31/SHT35
+        ///             \{
+
+        /// \brief query whether there's an SHT31/35
+        virtual bool has_SHT3x() const
+                { return false; }
+
+        /// \brief enable power to the SHT31/35
+        virtual uint32_t enable_SHT3x(bool fStatus)
+                { return 0; }
+
+        /// \brief query whether the SHT31/35 power is requested
+        virtual bool get_SHT3xRequest() const
+                { return false; }
+
+        /// \brief query whether the SHT31/35 power can be controlled
+        virtual bool has_SHT3xPowerControl() const
+                { return false; }
+
+        ///             \}      SHT3x
+
+        /// \defgroup SGPC3 These APIs relate to control of the SGPC3
+        ///             \{
+
+        /// \brief query whether there's an SGPC3
+        virtual bool has_SGPC3() const
+                { return false; }
+
+        /// \brief enable power to the SHT31/35
+        virtual uint32_t enable_SGPC3(bool)
+                { return 0; }
+
+        /// \brief query whether the SHT31/35 power is requested
+        virtual bool get_SGPC3Request() const
+                { return false; }
+
+        /// \brief query whether the SHT31/35 power can be controlled
+        virtual bool has_SGPC3PowerControl() const
+                { return false; }
+
+        ///             \}      SGPC3
+
+        /// \defgroup PMS7003 These APIs relate to control of the PMS7003
+        ///             \{
+
+        /// \brief query whether there's the interface for a PMS7003
+        virtual bool has_PMS7003() const
+                { return false; }
+
+        /// \brief enable power to the PMS7003
+        ///
+        /// \return delay (in milllis) before proceeding.
+        ///
+        virtual uint32_t enable_PMS7003(bool)
+                { return 0; }
+
+        /// \brief query whether the PMS7003 power is requested
+        virtual bool get_PMS7003Request() const
+                { return false; }
+
+        virtual bool has_PMS7003Control() const
+                { return false; }
+
+        ///             \} PMS7003
+
+        /// \defgroup light These APIs relate to light sensors.
+        ///             \{
+        /// \brief query whether there's an Si1133 light sensor
+        virtual bool has_Si1133() const
+                { return false; }
+        /// \brief query whether design includes a BH1750 light sensor
+        virtual bool has_BH1750() const
+                { return false; }
+
+        ///             \} light
+        ///     \} sensors
+
+        //********************************************************************
+        ///
+        /// \defgroup usb Many Catenas can have USB device ports. These APIs
+        ///     query the configuration.
+        ///
+        //********************************************************************
+
+        ///     \{
+
+        ///
+        /// \brief query whether platform has USB port. Note that USB might
+        ///     not be configured in this build.
+        ///
+        virtual bool has_usbPort() const
+                { return false; }
+
+        ///
+        /// \brief query configuration to see whether the console is configured
+        ///     to use the USB port
+        ///
+        virtual bool get_consoleIsUsb() const
+                { return false; }
+
+        ///
+        /// \brief query whether Vbus can be measured.
+        ///
+        ///     Catenas designed prior to 2018 or so didn't consistently make
+        ///     Vbus measurable. This API returns whether the measurement is a
+        ///     standard feature.
+        ///
+        virtual bool has_usbVbusMeasurementStandard() const
+                { return false; }
+
+        ///
+        /// \brief query the Vbus measurement pin.
+        ///
+        ///     Even if Vbus measurement is not standard, Catenas with USB
+        ///     often have pre-assigned pins where Vbus would be measured if
+        ///     the appropriate resistor is stuffed. This API returns that pin,
+        ///     or zero.
+        ///
+        virtual uint8_t get_usbVbusMeasurementPin() const
+                { return 0; }
+
+        ///     \} usb
+
+        /// \}  setup
         ///
         /// \brief return a pointer to string containing the name of this Catena board
         ///
@@ -680,6 +1168,17 @@ public:
                 return this->m_appVersion;
                 }
 
+        ///
+        /// \brief delay n millis while polling
+        ///
+        void delay(uint32_t nMillis)
+                {
+                auto const tStart = millis();
+
+                while (millis() - tStart < nMillis)
+                        this->poll();
+                }
+
 protected:
         /// \brief set the application version
         void setAppVersion(Version_t v)
@@ -739,6 +1238,8 @@ protected:
 
         /// \brief the command processor
         McciCatena::cCommandStream              m_CommandStream;
+
+        bool                    m_flashFound = false;   ///< set true if flash was probed.
 
 private:
         uint32_t                m_OperatingFlags;       ///< the operating flags

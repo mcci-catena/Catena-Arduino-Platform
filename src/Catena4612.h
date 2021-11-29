@@ -1,5 +1,3 @@
-/* Catena4612.h	Fri Dec 28 2018 13:58:18 chwon */
-
 /*
 
 Module:  Catena4612.h
@@ -7,30 +5,11 @@ Module:  Catena4612.h
 Function:
 	class Catena4612: CatenaBase Platform to represent a Catena 4612
 
-Version:
-	V0.13.0	Fri Dec 28 2018 13:58:19 chwon	Edit level 2
-
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+	See accompanying license file.
 
 Author:
 	ChaeHee Won, MCCI Corporation	November 2018
-
-Revision history:
-   0.11.0  Thu Nov 15 2018 15:07:23 chwon
-	Module created.
-
-   0.13.0  Fri Dec 28 2018 13:58:19  chwon
-	Add ReadVbat() and ReadVbus() override.
 
 */
 
@@ -64,6 +43,77 @@ public:
 	virtual const char *CatenaName() const override { return "Catena 4612"; };
 	virtual float ReadVbat(void) const override;
 	virtual float ReadVbus(void) const override;
+
+        virtual const char *get_screwTerminalLabel(uint8_t iTerminal) const override
+		{
+		static const char jp4[] = "JP4";
+		static const char jp5[] = "JP5";
+		return iTerminal == 0 ? jp4 : iTerminal == 1 ? jp5 : nullptr;
+		}
+
+        virtual uint8_t get_screwTerminalPin2(uint8_t iTerminal) const override
+		{
+		return iTerminal == 0 ? D5 : iTerminal == 1 ? A1 : 0;
+		}
+        virtual uint8_t get_screwTerminalPin3(uint8_t iTerminal) const override
+		{
+		return iTerminal == 0 ? D12 : iTerminal == 1 ? A2 : 0;
+		}
+
+        virtual bool has_BME280() const override
+		{ return true; }
+        // virtual bool has_BME680() const override;
+        // virtual bool has_HS3001() const override;
+        // virtual bool has_SHT3x() const override;
+        // virtual uint32_t enable_SHT3x(bool fStatus) override;
+        // virtual bool get_SHT3xRequest() const override;
+        // virtual bool has_SHT3xPowerControl() const override;
+        // virtual bool has_SGPC3() const override;
+        // virtual uint32_t enable_SGPC3(bool) override;
+        // virtual bool get_SGPC3Request() const override;
+        // virtual bool has_SGPC3PowerControl() const override;
+        // virtual bool has_PMS7003() const override;
+        // virtual uint32_t enable_PMS7003(bool fStatus) override;
+        // virtual bool get_PMS7003Request() const override;
+        // virtual bool has_PMS7003Control() const override;
+        virtual bool has_Si1133() const override
+		{ return true; }
+        // virtual bool has_BH1750() const override;
+        // virtual bool get_PMS7003Request() const override;
+        virtual uint32_t enable_tcxo(bool fStatus) override
+		{ return this->m_tcxo.enable(fStatus); }
+        virtual bool get_tcxoRequest() const override
+		{ return this->m_tcxo.getRequest(); }
+        virtual bool has_tcxoControl() const override
+		{ return this->m_tcxo.hasControl(); }
+        virtual bool has_usbPort() const override
+		{
+		return true;
+		}
+        virtual bool get_consoleIsUsb() const override
+		{
+#ifdef USBCON
+		return true;
+#else
+		return false;
+#endif
+		}
+        virtual bool has_usbVbusMeasurementStandard() const override
+		{ return true; }
+        virtual uint8_t get_usbVbusMeasurementPin() const override
+		{ return APIN_VBUS_SENSE; }
+
+protected:
+	cPowerControlGPIO  m_Vout1 = cPowerControlGPIO{ D10, 10 };
+	cPowerControlGPIO  m_Vout2 = cPowerControlGPIO{ D11, 10 };
+	cPowerControlNested m_screwTerminal[2] = { cPowerControlNested{this->m_Vout1}, cPowerControlNested{this->m_Vout2} };
+	cPowerControlGPIO  m_PB8 = cPowerControlGPIO{ D33, 10 };
+	cPowerControlNested m_3v3 = cPowerControlNested{ this->m_PB8 };
+	cPowerControlNested m_tcxo = cPowerControlNested{ this->m_PB8 };
+	cPowerControlDummy m_flashVdd;
+	cPowerControlDummy m_i2cVdd;
+	cPowerControlDummy m_framVdd;
+	cPowerControlDummy m_externalI2cBridgeVdd;
 
 protected:
 	// we are required to provide a table of platforms

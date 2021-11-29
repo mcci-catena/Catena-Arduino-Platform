@@ -45,8 +45,9 @@ Revision history:
 #include <math.h>
 
 #include <Catena_Flash.h>
-
+#include <Catena_Log.h>
 #include "CatenaBase.h"
+
 using namespace McciCatena;
 
 /****************************************************************************\
@@ -81,7 +82,7 @@ Function:
 Definition:
 	boolean Catena_Mx25v8035f::begin(
 		SPIClass *pSpi,
-		uint8_t ChipSelectPin
+		int16_t ChipSelectPin
 		);
 
 Description:
@@ -93,8 +94,15 @@ Returns:
 */
 
 bool Catena_Mx25v8035f::begin(
+	SPIClass *pSpi
+	)
+	{
+	return this->begin(pSpi, -1);
+	}
+
+bool Catena_Mx25v8035f::begin(
 	SPIClass *pSpi,
-	uint8_t ChipSelectPin
+	int16_t ChipSelectPin
 	)
 	{
 	uint8_t ManufacturerId;
@@ -104,12 +112,24 @@ bool Catena_Mx25v8035f::begin(
 	if (pSpi == NULL)
 		{
 		// invalid parameter
-		Serial.println("pSpi is NULL");
+		gLog.printf(cLog::kError, "pSpi is NULL\n");
+		return false;
+		}
+
+	if (ChipSelectPin == -1 && this->m_CS == -1)
+		{
+		gLog.printf(cLog::kError, "flash pin not set\n");
+		return false;
+		}
+	else if (! (-1 <= ChipSelectPin && ChipSelectPin <= UINT8_MAX))
+		{
+		gLog.printf(cLog::kError, "flash pin out of range: 0x%x\n", ChipSelectPin);
 		return false;
 		}
 
 	this->m_pSpi = pSpi;
-	this->m_CS = ChipSelectPin;
+	if (ChipSelectPin != -1)
+		this->m_CS = ChipSelectPin;
 
 	pSpi->beginTransaction(this->m_CS, SpiSettings);
 

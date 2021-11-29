@@ -85,7 +85,70 @@ public:
 	virtual float ReadVbat(void) const override;
 	virtual float ReadVbus(void) const override;
 
+        virtual const char *get_screwTerminalLabel(uint8_t iTerminal) const override
+		{
+		static const char jp3[] = "JP3";
+		static const char jp4[] = "JP4";
+		return iTerminal == 0 ? jp3 : iTerminal == 1 ? jp4 : nullptr;
+		}
+
+        virtual uint8_t get_screwTerminalPin2(uint8_t iTerminal) const override
+		{
+		return iTerminal == 0 ? D5 : iTerminal == 1 ? A1 : 0;
+		}
+        virtual uint8_t get_screwTerminalPin3(uint8_t iTerminal) const override
+		{
+		return iTerminal == 0 ? D12 : iTerminal == 1 ? A2 : 0;
+		}
+
+        virtual bool has_BME280() const override
+		{ return true; }
+        // virtual bool has_BME680() const override;
+        // virtual bool has_HS3001() const override;
+        // virtual bool has_SHT3x() const override;
+        // virtual uint32_t enable_SHT3x(bool fStatus) override;
+        // virtual bool get_SHT3xRequest() const override;
+        // virtual bool has_SHT3xPowerControl() const override;
+        // virtual bool has_SGPC3() const override;
+        // virtual uint32_t enable_SGPC3(bool) override;
+        // virtual bool get_SGPC3Request() const override;
+        // virtual bool has_SGPC3PowerControl() const override;
+        // virtual bool has_PMS7003() const override;
+        // virtual uint32_t enable_PMS7003(bool fStatus) override;
+        // virtual bool get_PMS7003Request() const override;
+        // virtual bool has_PMS7003Control() const override;
+        virtual bool has_Si1133() const override
+		{ return true; }
+        // virtual bool has_BH1750() const override;
+        // virtual bool get_PMS7003Request() const override;
+        // virtual uint32_t enable_tcxo(bool fStatus) override;
+        // virtual bool get_tcxoRequest() const override;
+        // virtual bool has_txcoControl() const override;
+        virtual bool has_usbPort() const override
+		{
+		return true;
+		}
+        virtual bool get_consoleIsUsb() const override
+		{
+#ifdef USBCON
+		return true;
+#else
+		return false;
+#endif
+		}
+        virtual bool has_usbVbusMeasurementStandard() const override
+		{ return true; }
+        virtual uint8_t get_usbVbusMeasurementPin() const override
+		{ return APIN_VBUS_SENSE; }
+
 protected:
+	cPowerControlDummy m_3v3;
+	cPowerControlDummy m_flashVdd;
+	cPowerControlDummy m_screwTerminal[2];
+	cPowerControlDummy m_i2cVdd;
+	cPowerControlDummy m_framVdd;
+	cPowerControlDummy m_externalI2cBridgeVdd;
+	cPowerControlDummy m_tcxo;
 
 private:
 	};

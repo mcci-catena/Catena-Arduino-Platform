@@ -36,10 +36,15 @@ Revision history:
 
 #pragma once
 
+class SPIClass;
+class TwoWire;
+
 namespace McciCatena {
 
 // the forward-reference scalar types from CatenaBase
 class CatenaBase;
+
+class cFlash;
 
 } /* namespace McciCatena */
 

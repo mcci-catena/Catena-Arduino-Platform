@@ -137,6 +137,13 @@ public:
 		, m_registered(false)
 		{}
 
+	Catena_Mx25v8035f(uint8_t ChipSelectPin)
+		: m_CS(ChipSelectPin)
+		, m_csInitialized(true)
+		, m_Initialized(false)
+		, m_registered(false)
+		{}
+
 	// neither copyable nor movable
 	Catena_Mx25v8035f(const Catena_Mx25v8035f&) = delete;
 	Catena_Mx25v8035f& operator=(const Catena_Mx25v8035f&) = delete;
@@ -144,13 +151,14 @@ public:
 	Catena_Mx25v8035f& operator=(const Catena_Mx25v8035f&&) = delete;
 
 	// set up and probe device
-	virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin) override;
+	virtual bool begin(SPIClass *pSpi) override;
+	virtual bool begin(SPIClass *pSpi, int16_t ChipSelectPin) override;
 	virtual void end(void) override;
 
 	/// \brief the default chip select pin for this type of flash is D19
-	virtual uint8_t getDefaultChipSelectPin() const override
+	virtual uint8_t getChipSelectPin() const override
 		{
-		return D19;
+		return this->m_CS;
 		}
 
 	// reset chip
@@ -189,9 +197,10 @@ public:
 	virtual void powerUp(void) override;
 
 private:
-	boolean		m_Initialized;
-	boolean		m_PowerDown;
-	boolean		m_registered;
+	bool		m_Initialized;
+	bool		m_PowerDown;
+	bool		m_registered;
+	bool		m_csInitialized;
 	uint8_t		m_CS;
 	SPIClass *	m_pSpi;
 

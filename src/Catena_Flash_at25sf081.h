@@ -230,6 +230,17 @@ public:
         cFlash_AT25SF081()
                 : m_Initialized(false)
                 , m_registered(false)
+                , m_csInitialized(false)
+                {}
+
+        ///
+        /// \brief the constructor with CS pin provided.
+        ///
+        cFlash_AT25SF081(uint8_t ChipSelectPin)
+                : m_CS(ChipSelectPin)
+                , m_csInitialized(true)
+                , m_Initialized(false)
+                , m_registered(false)
                 {}
 
         // uses default destructor
@@ -241,12 +252,13 @@ public:
         cFlash_AT25SF081& operator=(const cFlash_AT25SF081&&) = delete;
 
         // set up and probe device
-        virtual bool begin(SPIClass *pSpi, uint8_t ChipSelectPin) override;
+	virtual bool begin(SPIClass *pSpi) override;
+        virtual bool begin(SPIClass *pSpi, int16_t ChipSelectPin) override;
 
         /// \brief the default chip select pin for this device is D5
-	virtual uint8_t getDefaultChipSelectPin() const override
+	virtual uint8_t getChipSelectPin() const override
 		{
-		return 5;
+		return this->m_CS;
 		}
 
         // stop using device; use begin() to restart.
@@ -414,6 +426,7 @@ private:
         bool		m_Initialized;
         bool            m_registered;
         bool		m_PowerDown;
+        bool            m_csInitialized;
         uint8_t		m_CS;
         SPIClass *	m_pSpi;
         uint32_t	m_nesting;
