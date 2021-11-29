@@ -22,7 +22,9 @@ Author:
 #pragma once
 
 #ifndef _catena_download_h_
+/// \cond
 #define _catena_download_h_
+/// \endcond
 
 #ifdef ARDUINO_STM32
 

@@ -231,52 +231,181 @@ constexpr bool operator!=(const Version_t& lhs, const Version_t& rhs){ return !(
 /* forward reference */
 struct CATENA_PLATFORM;
 
+///
+/// \brief Base class for power controls
+///
+/// \details
+///     Being battery-powered devices, Catenas have implementation-specific
+///     features for controlling local power. A specific Catena instance will
+///     provide a number of objects derived from McciCatena::cPowerControl.
+///
+///     Concrete types derived from cPowerControl include dummy (cPowerControlDummy),
+///     power supplies controlled by GPIOs (cPowerControlGPIO), and nested
+///     (or shared) power supplies (cPowerControlNested). The concrete McciCatena::Catena
+///     object will set up the relationships.
+///
+///     The portable methods for controlling specific supplies are defined in CatenaBase,
+///     and supplied by McciCatena::Catena (or sometimes by the concrete CatenaXXXX object.)
+///
 class cPowerControl
         {
 public:
         cPowerControl() {}
+        ///
+        /// \brief Enable/disable power
+        ///
+        /// \param fRequest indicates whether power is to be requested (true)
+        ///     or whether a request is to be released (false).
+        ///
+        /// \return
+        ///     Number of milliseconds to delay for change to take effect.
+        ///
+        ///     Power controls maintain a reference count of power requests.
+        ///     The count is initially zero. It increments with each true
+        ///     fRequest, and it decrements with each false fRequest. Thus,
+        ///     enable/disable requests nest.
+        ///
+        ///     When the control changes state from off to on, the control
+        ///     typically will return a non-zero number of millilseconds to
+        ///     delay to allow the power supply to turn on.  Similarly, when
+        ///     the control changes state from on to off, the concrete control
+        ///     will return a count of milliseconds to delay to allow the
+        ///     power supply to turn off.
+        ///
+        ///     By convention, a group of related controls will turn on the
+        ///     related power supply whenever an control in the group is
+        ///     requesting power; and will turn off the related power supply
+        ///     whenever no controls are requesting power.
+        ///    
         virtual uint32_t enable(bool fRequest) = 0;
+
+        ///
+        /// \brief Get current power request state for a control.
+        ///
+        /// \return
+        ///     `true` if control is logically requesting power, `false` otherwise.
+        ///     The result is not specified if this->hasControl() is false. 
+        ///
         virtual bool getRequest() const = 0;
+
+        ///
+        /// \brief Query whether this power control object implements control.
+        ///
+        /// \return
+        ///     \c true if this->enable() actually manipulates power.
+        ///
+        ///     For consistency, it's convenient to provide power controls,
+        ///     even if they're not implemented. For example, you might want
+        ///     to make sure power to the first screw terminal is turned on.
+        ///     However, it may also be important to know whether power
+        ///     control is really implemented on the board that's the target
+        ///     of this compilation. Hence this API.
+        ///
         virtual bool hasControl() const = 0;
         };
 
+///
+/// \brief Concrete power control object for unimplemented power features.
+///
+/// \details
+///     We model unimplemented power features as "always on". We don't
+///     bother to waste effort incrementing/decrementing counters.
+///
 class cPowerControlDummy : public cPowerControl
         {
 public:
+        ///
+        /// \brief Implment power control for a dummy control.
+        ///
+        /// \return Always zero, as no delay is ever needed.
+        ///
         virtual uint32_t enable(bool fRequest) override
                 {
-                if (fRequest)
-                        ++this->m_count;
-                else
-                        --this->m_count;
                 return 0;
                 }
+        ///
+        /// \brief Get power-request state for a dummy control.
+        ///
+        /// \return \c true, as a dummy control is modeled as
+        ///     a power supply that's aways on.
+        ///
         virtual bool getRequest() const override
                 {
-                return this->m_count != 0;
+                return true;
                 }
+        ///
+        /// \brief Return appropriate results for a dummy power control.
+        ///
+        /// \return \c false, because this control can't be enabled/disabled.
+        ///
         virtual bool hasControl() const override
                 {
                 return false;
                 }
 
 private:
-        uint8_t m_count = 0;
         };
 
+///
+/// \brief Represent a power supply controlled by a GPIO.
+///
+/// \details
+///     Often, power supplies are controled by a GPIO that is active
+///     high. This version of a cPowerControl implements such a
+///     supply.
+///
+///     GPIO controls are characterized by two parameters: the
+///     (Arduino) pin that controls the supply, and the delay (in
+///     milliseconds to wait when changing the state of the power
+///     supply. These are supplied to the constructor.
+///
 class cPowerControlGPIO : public cPowerControl
         {
 public:
+        ///
+        /// \brief Construct a GPIO-controlled power supply.
+        ///
+        /// \param [in] pin species the GPIO pin that controls the supply.
+        /// \param [in] delayMs the delay to request, in milliseconds, after any change.
+        ///
         cPowerControlGPIO(uint8_t pin, uint16_t delayMs)
-                : m_delay(delayMs)
+                : m_delayOff(delayMs)
+                , m_delayOn(delayMs)
                 , m_pin(pin)
                 {}
+
+        ///
+        /// \brief Request power from a GPIO-controlled supply.
+        ///
+        /// If the state changes from off to on, the output pin is configured,
+        /// and then the pin is driven high.  If the state changes from on to off,
+        /// the pin is driven low.
+        ///
+        /// \return Number of milliseconds to delay. Zero if not changing state.
+        ///
         virtual uint32_t enable(bool fRequest) override
                 {
+                uint8_t oldCount = this->m_count;
+
                 if (fRequest)
-                        ++this->m_count;
+                        {
+                        this->m_count = oldCount + 1;
+                        if (oldCount == 0)
+                                {
+                                pinMode(this->m_pin, OUTPUT);
+                                digitalWrite(this->m_pin, 1);
+                                return this->m_delayOn;
+                                }
+                        }
                 else
-                        --this->m_count;
+                        {
+                        this->m_count = oldCount - 1;
+                        if (oldCount == 1)
+                                {
+                                digitalWrite(this->m_pin, 0);
+                                return this->m_delayOff;
+                                }
+                        }
                 return 0;
                 }
         virtual bool getRequest() const override
@@ -289,17 +418,52 @@ public:
                 }
 
 private:
-        uint16_t m_delay;
+        uint16_t m_delayOn;
+        uint16_t m_delayOff;
         uint8_t m_pin;
         uint8_t m_count = 0;
         };
 
+///
+/// \brief Nested/shared power control
+///
+/// \details
+///     It's common for functions to share a common power supply. It's
+///     also common for the sharing arrangements to be different on
+///     different Catena boards. This type of control lets the control
+///     of several logical functions be aggregated in a single logical
+///     supply.
+/// 
 class cPowerControlNested : public cPowerControl
         {
 public:
+        ///
+        /// \brief Instantiate a nested supply.
+        ///
+        /// \param [in] parent refers to the parent power supply,
+        ///     which is typicaly (but not necessarily) a cPowerControlGPIO
+        ///     object.
+        ///
+        /// The parent object is reference is stored internally.
+        ///
         cPowerControlNested(cPowerControl &parent)
                 : m_parent(parent)
                 {}
+        ///
+        /// \brief Reqeust a change to a nested supply.
+        ///
+        /// \param [in] fRequest signals the desired state.
+        ///
+        /// Whenever the local state changes from not-requested to requested,
+        /// the parent object is requested. Similary, whenever the local
+        /// state changes from requested to not-requested, the parent object
+        /// is released.
+        ///
+        /// \return The number of milliseconds to delay to allow the power
+        ///     suppply to settle. This is zero unless we try to change the
+        ///     state of the parent; and in that case, it's the value retured
+        ///     by the parent.
+        ///
         virtual uint32_t enable(bool fRequest) override
                 {
                 uint8_t oldCount = this->m_count;
@@ -648,20 +812,29 @@ public:
         ///
         virtual bool begin(void);
 
-        /// \defgroup setup Functions for dealing with Catena configuration variations.
+        /// \name Setup & Configuration
+        ///
+        /// \details
+        ///     Methods for dealing with Catena configuration variations.
         /// \{
 
         ///
-        /// \brief set up everything on this particaular board.
+        /// \brief set up everything on this particular board.
+        ///
+        ///     This should be called from your `setup()` function.
         ///
         /// \return \c true if setup was successful.
         ///
         virtual bool setup(void) = 0;
 
         //********************************************************************
-        //
-        /// \defgroup 3v3boost Some Catenas have an on-board 3.3V boost regulator
-        //
+        ///
+        /// \name 3.3V Boost Regulator
+        ///
+        /// \details
+        ///     Some Catenas have an on-board 3.3V boost regulator. These
+        ///     APIs provide generic access to that feature.
+        ///
         //********************************************************************
 
         ///     \{
@@ -690,8 +863,12 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup screwterminals Most Catenas have one or more 4-pin screw
-        ///     terminals.
+        /// \name Screw Terminals
+        ///
+        /// \details
+        ///     Most Catenas have one or more 4-pin screw
+        ///     terminals. These APIs provide generic access for prompting
+        ///     and for writing portable code.
         ///
         //********************************************************************
 
@@ -744,8 +921,11 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup i2cinternal Most Catenas have an internal I2C bus;
-        ///     these APIs control the power.
+        /// \name Internal I2C
+        ///
+        /// \details
+        ///     Most Catenas have an internal I2C bus; some have power
+        ///     control for those busses. These APIs control the bus.
         ///
         //********************************************************************
 
@@ -778,12 +958,15 @@ public:
 
         ///     \}
 
-        //********************************************************************
+        // ********************************************************************
         ///
-        /// \defgroup flash Many Catenas have an onboard flash. These APIs
+        /// \name Flash
+        ///
+        /// \details
+        ///     Many Catenas have an onboard flash. These APIs
         ///     control the power and abstract access.
         ///
-        //********************************************************************
+        // ********************************************************************
 
         ///     \{
 
@@ -813,7 +996,10 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup fram Most Catenas have an onboard FRAM. These APIs
+        /// \name FRAM
+        ///
+        /// \details
+        ///     Most Catenas have an onboard FRAM. These APIs
         ///     control the power and abstract access.
         ///
         //********************************************************************
@@ -832,7 +1018,10 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup externali2c Some Catenas separate the external I2C from
+        /// \name External I2C
+        ///
+        /// \details
+        ///     Catenas separate the external I2C from
         ///     the internal I2C via a powered mux. These APIs control the
         ///     external I2C, if it's present.
         ///
@@ -866,8 +1055,13 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup tcxo Some LPWAN Catenas have a TCXO. These APIs give
-        ///     access. By default, not present and APIs do nothing.
+        /// \name TCXO
+        ///
+        /// \details
+        ///     Some LPWAN Catenas have a TCXO (temperature-controlled crystal
+        ///     oscillator). These APIs give
+        ///     access. By default, the TCXO is not present and these APIs
+        ///     do nothing.
         ///
         //********************************************************************
 
@@ -889,7 +1083,10 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup sensors Catenas have a variety of integrated sensors.
+        /// \name On-board Sensors
+        ///
+        /// \details
+        ///     Catenas have a variety of integrated sensors.
         ///     These APIs replace the platform flags used in order versions
         ///     of this library
         ///
@@ -909,7 +1106,8 @@ public:
         virtual bool has_HS3001() const
                 { return false; }
 
-        /// \defgroup SHT3x These APIs relate to control of the SHT31/SHT35
+        /// \name SHT3x
+        /// \details These APIs relate to control of the SHT31/SHT35
         ///             \{
 
         /// \brief query whether there's an SHT31/35
@@ -930,7 +1128,8 @@ public:
 
         ///             \}      SHT3x
 
-        /// \defgroup SGPC3 These APIs relate to control of the SGPC3
+        /// \name SGPC3
+        /// \details These APIs relate to control of the SGPC3
         ///             \{
 
         /// \brief query whether there's an SGPC3
@@ -951,7 +1150,8 @@ public:
 
         ///             \}      SGPC3
 
-        /// \defgroup PMS7003 These APIs relate to control of the PMS7003
+        /// \name PMS7003
+        /// \details These APIs relate to control of the PMS7003
         ///             \{
 
         /// \brief query whether there's the interface for a PMS7003
@@ -974,7 +1174,10 @@ public:
 
         ///             \} PMS7003
 
-        /// \defgroup light These APIs relate to light sensors.
+        /// \name Light Sensors
+        ///
+        /// \details
+        ///     These APIs relate to light sensors.
         ///             \{
         /// \brief query whether there's an Si1133 light sensor
         virtual bool has_Si1133() const
@@ -988,7 +1191,10 @@ public:
 
         //********************************************************************
         ///
-        /// \defgroup usb Many Catenas can have USB device ports. These APIs
+        /// \name USB
+        ///
+        /// \details
+        ///     Catenas can have USB device ports. These APIs
         ///     query the configuration.
         ///
         //********************************************************************

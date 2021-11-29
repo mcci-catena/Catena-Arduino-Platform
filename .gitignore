@@ -48,3 +48,4 @@ __vm
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+docs

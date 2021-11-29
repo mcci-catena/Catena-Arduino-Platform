@@ -16,7 +16,9 @@ Author:
 #pragma once
 
 #ifndef _CATENA_COMMANDSTREAM_VMICRO_FIXUP_H_
+/// \cond
 #define _CATENA_COMMANDSTREAM_VMICRO_FIXUP_H_
+/// \endcond
 
 typedef McciCatena::cCommandStream::CommandStatus CommandStatus;
 typedef McciCatena::cCommandStream cCommandStream;

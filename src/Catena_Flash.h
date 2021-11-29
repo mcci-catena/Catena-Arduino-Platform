@@ -18,7 +18,9 @@ Author:
 #pragma once
 
 #ifndef _catena_flash_h_
+/// \cond
 #define _catena_flash_h_
+/// \endcond
 
 #include <Arduino.h>
 #include <SPI.h>

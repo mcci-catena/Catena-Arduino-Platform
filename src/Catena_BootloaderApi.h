@@ -22,7 +22,9 @@ Author:
 #pragma once
 
 #ifndef _catena_bootloaderapi_h_
-#define _catena_bootloaderapi_h_
+/// \cond
+#  define _catena_bootloaderapi_h_
+/// \endcond
 
 #include <Arduino.h>
 #include <cstdint>

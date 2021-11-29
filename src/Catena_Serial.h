@@ -22,7 +22,9 @@ Author:
 #pragma once
 
 #ifndef _catena_serial_h_
+/// \cond
 #define _catena_serial_h_
+/// \endcond
 
 #include <Catena.h>
 

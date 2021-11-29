@@ -22,7 +22,9 @@ Author:
 /// \file
 
 #ifndef _Catena_AppObjects_h_
+/// \cond
 #define _Catena_AppObjects_h_	/* prevent multiple includes */
+/// \endcond
 
 #pragma once
 
@@ -71,13 +73,13 @@ namespace McciCatena {
 
 } // end namespace McciCatena
 
-#define	CATENA_PLATFORM_FLASH_TYPE_UNSPECIFIED	0
-#define	CATENA_PLATFORM_FLASH_TYPE_AS25SF081	1
-#define	CATENA_PLATFORM_FLASH_TYPE_MX25V8035F	2
-
-
 // compute compile-time variables that are used to control things
 // This parallels settings in Catena.h
+
+#define	CATENA_PLATFORM_FLASH_TYPE_UNSPECIFIED	0	///< type of on-board flash is not specified.
+#define	CATENA_PLATFORM_FLASH_TYPE_AS25SF081	1	///< On-board flash is a AS25SF081 1-Mbyte flash.
+#define	CATENA_PLATFORM_FLASH_TYPE_MX25V8035F	2	///< On-board flash is an MX25V8035F 1-Mbyte flash.
+
 #if defined(MCCI_CATENA_4450)
 # define CATENA_PLATFORM_HAS_BOOTLOADER	0
 # define CATENA_PLATFORM_HAS_FLASH	0
