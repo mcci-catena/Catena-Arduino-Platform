@@ -51,7 +51,7 @@ PROJECT_BRIEF          = "Platform for advanced software development for MCCI Ca
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           =assets/0000eelogo-IoT-24pt-198x63-offset.png
+PROJECT_LOGO           = assets/0000eelogo-IoT-24pt-198x63-offset.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
