@@ -119,12 +119,14 @@ cDate::GpsTime_t cDate::getGpsTime() const
 // set time from interval referenced to Common epoch
 bool cDate::setCommonTime(CommonTime_t t)
     {
-    return this->setGpsTime(getGpsTime(t));
+    return this->setGpsTime(t);
     }
 
 // set time from interval referenced to GPS epoch
 bool cDate::setGpsTime(GpsTime_t t)
     {
+    t -= kCommonToGpsSeconds;
+
     if (! isValidGpsTime(t))
         return false;
 
