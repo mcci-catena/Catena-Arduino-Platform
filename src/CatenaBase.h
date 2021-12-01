@@ -152,7 +152,7 @@ class Version_t
         {
 public:
         /// \brief create a version constant uint32_t
-        static constexpr uint32_t makeVersion(uint8_t major, uint8_t minor, uint8_t patch, uint8_t prerelease)
+        static constexpr uint32_t makeVersion(uint8_t major, uint8_t minor, uint8_t patch, uint8_t prerelease = 0)
                 {
                 return (uint32_t(major) << 24) | (uint32_t(minor) << 16) | (uint32_t(patch << 8)) | prerelease;
                 }
