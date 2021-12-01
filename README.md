@@ -13,6 +13,7 @@ _Apologies_: This document is a work in progress, and is published in this inter
 
 - [Overview](#overview)
 - [Coding Practices](#coding-practices)
+- [Standard Application Framework Initialization](#standard-application-framework-initialization)
 - [Components](#components)
 	- [Namespace `McciCatena`](#namespace-mccicatena)
 	- [Class `Catena` and header file `Catena.h`](#class-catena-and-header-file-catenah)
@@ -126,6 +127,33 @@ In order to assist people who are not everyday readers and writer of C++, this l
 6. We don't use most of the standard C++ library (because of the frequent use of exceptions), nor do we use exceptions in our own code. The exception framework tends to be inefficient, and it's a source of coding problems because the error paths are not directly visible.
 
 7. However, we do take advantage of some of the C++-11 header files, such as `<functional>`, `<type_traits>`, and `<cstdint>`.  (Sometimes we have to do extra work for this.)
+
+## Standard Application Framework Initialization
+
+The framework handles the following.
+
+* Turns on the 3.3V boost regulator if needed (4612, 4618, 4630)
+* Turns on the I2C bus termination power and power to the peripherals (so the bus can work).
+* Initialize the external SPI flash interface (if external SPI flash is available on this platform).
+* I2C initialization
+* Serial port initialization at default speed.
+* Checks bit zero of the operating flags, and delays if zero and no serial port is attached.
+* Instantiates a command-line interface via `Serial`, with standard commands, including firmawre download if the platform supports a boot loader and SPI flash.
+* Initializes the sensors for the platform (put BME280 in standby)
+* LoRaWAN setup with LMIC
+* provides a consistent sleep API
+* turning on the 32kHz clock and using it to discipline the ms/micros timebase
+* abstracting the built-in sensors (T, RH, optional P)
+* allows for one or more extensions (for FeatherWings) to provide setup, initialization, sleep, and recovery methods.
+* prints a standard sign-on message
+
+You must do the following:
+
+* Create a standard application object for your board. This may be `McciCatena::Catena gCatena;`; or it may be a more specific class for your board that wraps the Catena object with even more specific information about the application.
+* In `setup()`, add options before calling `gCatena.setup()`.  For example, `gCatena.useLoRaWAN();` if using LoRaWAN, or `gCatena.useSigfox();` if using Sigfox. Note that these imply use of the standard framework. `gCatena.useSerialBaudrate(n)` sets the baudrate to `n`.
+* In Arduino `setup()`, call `gCatena.setup()`. This tells the framework that you're using the full framework.
+
+Then in Arduino `loop()`, call `gCatena.loop()`.
 
 ## Components
 
