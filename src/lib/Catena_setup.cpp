@@ -180,6 +180,7 @@ Catena::setup(
         }
 
     Serial.begin(115200);
+    this->setup_banner();
 
 #if CATENA_PLATFORM_HAS_DOWNLOAD
     /* add our application-specific commands */
@@ -209,6 +210,39 @@ Catena::setup(
     }
 
 #undef FUNCTION
+
+bool Catena::setup_banner(void)
+    {
+    auto const putDashes = [this](unsigned n=79) -> void
+        {
+        for (unsigned i = 0; i < n; ++i)
+            this->SafePrintf("-");
+        this->SafePrintf("\n");
+        };
+
+    char sVersion[Version_t::kVersionBufferSize];
+    this->getAppVersion().toBuffer(sVersion, sizeof(sVersion));
+
+    auto const pSketchName = this->getSketchName();
+    auto const pSketchDescription = this->getSketchDescription();
+
+    putDashes(0);   // newline
+    putDashes();
+
+    this->SafePrintf("This is %s V%s.\n", pSketchName ? pSketchName : "<unknown sketch>", sVersion);
+    if (pSketchDescription != nullptr)
+        this->SafePrintf("%s\n", pSketchDescription);
+
+        this->SafePrintf("Board: %s  SYSCLK: %u MHz  USB: %sabled\n",
+                            this->CatenaName(),
+                            unsigned(this->GetSystemClockRate() / (1000 * 1000)),
+                            this->get_consoleIsUsb() ? "en" : "dis"
+                        );
+        this->SafePrintf("Enter 'help' for a list of commands.\n");
+
+    putDashes();
+    putDashes(0);    // newline
+    }
 
 bool Catena::setup_flash(void)
     {

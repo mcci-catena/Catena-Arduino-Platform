@@ -90,12 +90,23 @@ public:
 	///
 	/// \brief the constructor sets the version, if one is supplied.
 	///
-	/// \param[in] appVersion, if supplied is an McciCatena::Version_t
+	/// \param[in] appVersion, if supplied, is an McciCatena::Version_t
 	///	object which specifies the version of the application.
 	///
-        Catena(Version_t appVersion = Version_t(0))
+	/// \param[in] pFileName, if specified, should be \c __FILE__,
+	///	the name of the input .ino file.  The directory portion
+	///	will be stripped.
+	///
+	/// \param[in] pSketchDescription, if specified, is a one-line description
+	///	of the sketch.
+	///
+        Catena(Version_t appVersion = Version_t(0), const char *pFileName = nullptr, const char *pSketchDescription = nullptr)
 		{
 		this->setAppVersion(appVersion);
+		if (pFileName != nullptr)
+			this->setSketchName(Catena::getBaseFileName(pFileName));
+		if (pSketchDescription != nullptr)
+			this->setSketchDescription(pSketchDescription);
 		}
 
 	// neither copyable nor movable
@@ -251,6 +262,8 @@ protected:
 private:
 	/// \brief local routine to isolate the flash / download setup.
 	bool setup_flash(void);
+	/// \brief local routine to display the sign-on banner
+	bool setup_banner(void);
 	};
 
 } // namespace McciCatena

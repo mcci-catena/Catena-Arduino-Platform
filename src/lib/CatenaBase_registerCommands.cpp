@@ -325,18 +325,24 @@ printVersion(
 	bool fSemantic = false
 	)
 	{
-	const char cSemantic = fSemantic ? '-' : '.';
+	const Version_t v(packedVersion);
 
-	pThis->printf("%s-Version: %d.%d.%d%c",
+	pThis->printf("%s: %d.%d.%d",
 		pLabel,
-		(packedVersion >> 24) & 0xFF,
-		(packedVersion >> 16) & 0xFF,
-		(packedVersion >> 8) & 0xFF,
-		(packedVersion & 0xFF) ? cSemantic : '\n'
+		v.getMajor(),
+		v.getMinor(),
+		v.getPatch()
 		);
 
-	if (packedVersion & 0xFF)
-		pThis->printf("%d\n", packedVersion & 0xFF);
+	if (v.isPrerelease())
+		{
+		if (fSemantic)
+			pThis->printf("-pre%d", v.getPrerelease());
+		else
+			pThis->printf(".%d", v.getPrerelease());
+		}
+
+	pThis->printf("\n");
 	}
 
 /* Older versions of MCCI ADK don't have a version. Accomodate that. */
@@ -362,16 +368,24 @@ doVersion(
 		}
 
 	pThis->printf("Board: %s\n", pCatena->CatenaName());
-	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION, true);
-	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION, true);
-	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION);
-	printVersion(pThis, "MCCIADK", mcciadk_version);
+
+	// print sketch name & version if defined.
+	do	{
+		auto const pSketchName = pCatena->getSketchName();
+		if (pSketchName != nullptr)
+			printVersion(pThis, pSketchName, pCatena->getAppVersion().getUint32(), true);
+		} while (0);
 
 	/* include the MCCI Arduino version, if known */
 	if (pCatena->kMcciArduinoVersion != 0)
 		printVersion(pThis, "MCCI-Arduino-BSP", pCatena->kMcciArduinoVersion,
 			pCatena->kMcciArduinoVersionIsSemantic
 			);
+
+	printVersion(pThis, "Catena-Arduino-Platform", CATENA_ARDUINO_PLATFORM_VERSION, true);
+	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION, true);
+	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION, true);
+	printVersion(pThis, "MCCIADK", mcciadk_version);
 
 	return cCommandStream::CommandStatus::kSuccess;
 	}

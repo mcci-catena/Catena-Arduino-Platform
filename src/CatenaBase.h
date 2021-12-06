@@ -72,7 +72,7 @@ Author:
 /// \sa CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LT()
 ///
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 23, 0, 1) /* v0.23.0-pre1 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 23, 0, 2) /* v0.23.0-pre2 */
 
 /// \brief extract major number from a version code
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
@@ -157,6 +157,9 @@ public:
                 return (uint32_t(major) << 24) | (uint32_t(minor) << 16) | (uint32_t(patch << 8)) | prerelease;
                 }
 
+        /// \brief the size of a text version (without leading 'v', with trailing null)
+        static constexpr size_t kVersionBufferSize = sizeof("255.255.255-pre255");
+
         /// \brief construct a \c Version_t object from parts
         constexpr Version_t(uint8_t major, uint8_t minor, uint8_t patch, uint8_t prerelease = 0)
                 : m_version(makeVersion(major, minor, patch, prerelease)) {}
@@ -204,16 +207,20 @@ public:
                 return uint8_t(this->m_version >> 8);
                 }
 
-        /// \breif return the Semantic Version pre-release from a \c Version_t value.
+        /// \brief return the Semantic Version pre-release from a \c Version_t value.
         constexpr uint8_t getPrerelease() const
                 {
                 return uint8_t(this->m_version >> 0);
                 }
 
+        /// \brief test whether a version is a pre-release
         constexpr bool isPrerelease() const
                 {
                 return this->getPrerelease() != 0;
                 }
+
+        /// \brief build a version string in a buffer
+        size_t toBuffer(char *pBuffer, size_t nBuffer) const;
 
 private:
         uint32_t m_version;     ///< the encoded version number
@@ -1375,6 +1382,26 @@ public:
                 }
 
         ///
+        /// \brief return the sketch filename
+        ///
+        /// \return name of sketch, or \c nullptr if not set.
+        ///
+        const char *getSketchName() const
+                {
+                return this->m_pSketchName;
+                }
+
+        ///
+        /// \brief return the sketch description
+        ///
+        /// \return description of sketch, or \c nullptr if not set.
+        ///
+        const char *getSketchDescription() const
+                {
+                return this->m_pSketchDescription;
+                }
+
+        ///
         /// \brief delay n millis while polling
         ///
         void delay(uint32_t nMillis)
@@ -1387,9 +1414,25 @@ public:
 
 protected:
         /// \brief set the application version
-        void setAppVersion(Version_t v)
+        inline void setAppVersion(Version_t v)
                 {
                 this->m_appVersion = v;
+                }
+
+        /// \brief set the sketch name
+        ///
+        /// \note this caches a reference to \param pName.
+        inline void setSketchName(const char *pName)
+                {
+                this->m_pSketchName = pName;
+                }
+
+        /// \brief set the sketch description
+        ///
+        /// \note this caches a reference to \param pDesc.
+        inline void setSketchDescription(const char *pDesc)
+                {
+                this->m_pSketchDescription = pDesc;
                 }
 
         /// \brief register the well-known system commands
@@ -1451,6 +1494,9 @@ private:
         uint32_t                m_OperatingFlags;       ///< the operating flags
         const CATENA_PLATFORM * m_pPlatform;            ///< the platform pointer
         Version_t               m_appVersion {0};       ///< the application version
+        const char *            m_pSketchName {nullptr};        ///< the file name of the sketch
+        const char *            m_pSketchDescription {nullptr}; ///< the application description
+
 
         // internal methods
 
