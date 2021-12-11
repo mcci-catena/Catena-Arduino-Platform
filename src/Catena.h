@@ -313,8 +313,12 @@ protected:
 private:
 	/// \brief local routine to isolate the flash / download setup.
 	bool setup_flash(void);
-	/// \brief local routine to display the sign-on banner
-	bool setup_banner(void);
+	/// \brief local routine to display the first part of the common sign-on banner
+	void setup_banner_pre(void);
+	/// \brief local routine to display the final part of the sign-on banner
+	void setup_banner_post(void);
+	/// \brief local routine to put dashes (as part of the sign-on display)
+	void putDashes(unsigned n=79);
 	};
 
 } // namespace McciCatena

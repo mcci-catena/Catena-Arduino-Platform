@@ -183,7 +183,7 @@ Catena::setup(
         }
 
     Serial.begin(115200);
-    this->setup_banner();
+    this->setup_banner_pre();
 
 #if CATENA_PLATFORM_HAS_DOWNLOAD
     /* add our application-specific commands */
@@ -216,6 +216,8 @@ Catena::setup(
         fResult = pObject->dispatch(this);
         }
 
+    this->setup_banner_post();
+
     this->m_setupResult = fResult;
     this->m_setupRun = true;
 
@@ -224,23 +226,23 @@ Catena::setup(
 
 #undef FUNCTION
 
-bool Catena::setup_banner(void)
+void Catena::putDashes(unsigned n)
     {
-    auto const putDashes = [this](unsigned n=79) -> void
-        {
-        for (unsigned i = 0; i < n; ++i)
-            this->SafePrintf("-");
-        this->SafePrintf("\n");
-        };
+    for (unsigned i = 0; i < n; ++i)
+        this->SafePrintf("-");
+    this->SafePrintf("\n");
+    }
 
+void Catena::setup_banner_pre(void)
+    {
     char sVersion[Version_t::kVersionBufferSize];
     this->getAppVersion().toBuffer(sVersion, sizeof(sVersion));
 
     auto const pSketchName = this->getSketchName();
     auto const pSketchDescription = this->getSketchDescription();
 
-    putDashes(0);   // newline
-    putDashes();
+    this->putDashes(0);   // newline
+    this->putDashes();
 
     this->SafePrintf("This is %s V%s.\n", pSketchName ? pSketchName : "<unknown sketch>", sVersion);
     if (pSketchDescription != nullptr)
@@ -251,10 +253,14 @@ bool Catena::setup_banner(void)
                         unsigned(this->GetSystemClockRate() / (1000 * 1000)),
                         this->get_consoleIsUsb() ? "en" : "dis"
                     );
+    }
+
+void Catena::setup_banner_post(void)
+    {
     this->SafePrintf("Enter 'help' for a list of commands.\n");
 
-    putDashes();
-    putDashes(0);    // newline
+    this->putDashes();
+    this->putDashes(0);    // newline
     }
 
 bool Catena::setup_flash(void)
