@@ -107,6 +107,16 @@ Catena::usingLoRaWAN(
 
 			pCatena->registerObject(pLoRaWAN);
 
+			/* once */
+				{
+				char sRegion[32];
+				pCatena->SafePrintf(
+					"Configured network: %s, region %s\n",
+					pLoRaWAN->GetNetworkName(),
+					pLoRaWAN->GetRegionString(sRegion, sizeof(sRegion))
+					);
+				}
+
 			return true;
 			}
 		);
