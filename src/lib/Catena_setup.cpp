@@ -157,6 +157,9 @@ Catena::setup(
     void
     )
     {
+    if (this->m_setupRun)
+        return this->m_setupResult;
+
     /// TODO(tmm@mcci.com) this should really be in begin().
     delay(this->enable_3v3Boost(true));
     delay(this->enable_i2cVdd(true));
@@ -205,8 +208,18 @@ Catena::setup(
 #endif
         }
 
-    // always successful
-    return true;
+    /* run the list of initializers */
+    bool fResult = true;
+
+    for (auto pObject = this->m_pInitializationList; fResult && pObject != nullptr; pObject = pObject->getNext())
+        {
+        fResult = pObject->dispatch(this);
+        }
+
+    this->m_setupResult = fResult;
+    this->m_setupRun = true;
+
+    return this->m_setupResult;
     }
 
 #undef FUNCTION
@@ -233,12 +246,12 @@ bool Catena::setup_banner(void)
     if (pSketchDescription != nullptr)
         this->SafePrintf("%s\n", pSketchDescription);
 
-        this->SafePrintf("Board: %s  SYSCLK: %u MHz  USB: %sabled\n",
-                            this->CatenaName(),
-                            unsigned(this->GetSystemClockRate() / (1000 * 1000)),
-                            this->get_consoleIsUsb() ? "en" : "dis"
-                        );
-        this->SafePrintf("Enter 'help' for a list of commands.\n");
+    this->SafePrintf("Board: %s  SYSCLK: %u MHz  USB: %sabled\n",
+                        this->CatenaName(),
+                        unsigned(this->GetSystemClockRate() / (1000 * 1000)),
+                        this->get_consoleIsUsb() ? "en" : "dis"
+                    );
+    this->SafePrintf("Enter 'help' for a list of commands.\n");
 
     putDashes();
     putDashes(0);    // newline

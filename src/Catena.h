@@ -115,12 +115,47 @@ public:
 	Catena(const Catena&&) = delete;
 	Catena& operator=(const Catena&&) = delete;
 
+	///
+	/// \brief Top-level wrapper for LoRaWAN class, for setup() support
+	///
+	/// \details
+	///	In order to support Catena::usingLoRaWAN(), we need a LoRaWAN
+	///	object that includes a cSetupQueue object.
+	///
+	class LoRaWAN : public Super::LoRaWAN
+		{
+	public:
+		/// \brief Constructor is just the default.
+		LoRaWAN() {}
+
+		/// \brief Provide a virtual destructor
+		virtual ~LoRaWAN() {}
+
+	protected:
+		// for initialization, Catena class can access protected members
+		friend Catena;
+
+		/// \brief Return pointer to setup queue
+		cSetupQueue *getSetupQueue()
+			{
+			return &this->m_setupQueue;
+			}
+
+		///
+		/// \brief The setup queue element.
+		///
+		/// This element is used to add the LoRaWAN object to the
+		/// list of things to be initialized by Catena::setup().
+		///
+		cSetupQueue	m_setupQueue;
+		};
+
         ///
         /// \brief implementation: set up everything on this particular board.
         ///
         /// \return \c true if setup was successful.
         ///
-        virtual bool setup(void) override;
+        virtual bool setup() override;
 
 	virtual uint32_t enable_3v3Boost(bool fRequest) override
 		{
@@ -257,7 +292,23 @@ public:
         // virtual bool has_BH1750() const override;
         // virtual bool get_PMS7003Request() const override;
 
+	///
+	/// \brief Inform the platform that you are using LoRaWAN on this platform.
+	///
+	/// Calling this pulls in an instance of Catena::LoRaWAN, and arranges for
+	/// it to be initialized by Catena::setup().
+	///
+	/// \note This can't be virtual,
+	/// because that causes the code to get linked in and not optimized away.
+	///
+	/// \return
+	///	\c true if we succeeded in registering the object (or initializing
+	///	if, if Catena::setup() has already run).
+	///
+	bool usingLoRaWAN();
+
 protected:
+	virtual bool usingObject(cSetupQueue &Object, void *pClientData, cSetupQueue::SetupFn_t *pFn) override;
 
 private:
 	/// \brief local routine to isolate the flash / download setup.

@@ -283,7 +283,7 @@ public:
         ///     related power supply whenever an control in the group is
         ///     requesting power; and will turn off the related power supply
         ///     whenever no controls are requesting power.
-        ///    
+        ///
         virtual uint32_t enable(bool fRequest) = 0;
 
         ///
@@ -291,7 +291,7 @@ public:
         ///
         /// \return
         ///     `true` if control is logically requesting power, `false` otherwise.
-        ///     The result is not specified if this->hasControl() is false. 
+        ///     The result is not specified if this->hasControl() is false.
         ///
         virtual bool getRequest() const = 0;
 
@@ -440,7 +440,7 @@ private:
 ///     different Catena boards. This type of control lets the control
 ///     of several logical functions be aggregated in a single logical
 ///     supply.
-/// 
+///
 class cPowerControlNested : public cPowerControl
         {
 public:
@@ -502,6 +502,112 @@ private:
         cPowerControl &m_parent;
         uint8_t m_count = 0;
         };
+
+/****************************************************************************\
+|
+|	Initialization
+|
+\****************************************************************************/
+
+class Catena;   // forward reference
+
+///
+/// \brief Queue element for registering initializers for Catena::setup().
+///
+/// In order to simplify initialization, to promote reuse of sketches,
+/// and to centralize code, we have one Catena::setup() routine, which
+/// sketches are expected to call. However, there may be differences from
+/// platform to platform; and so we allow code to register functions to
+/// be called from the setup() handler.
+///
+/// Each object to be registered should have an associated `cSetupQueue`
+/// object. This may be embedded in the object to be registered, or
+/// may be separate. These objets are gathered into
+/// a list, and processed in FIFO order by Catena::setup().
+///
+class cSetupQueue
+        {
+public:
+        ///
+        /// \brief Symbolic type for object-specific setup() functions.
+        ///
+        /// \param [in] pClientData arbitrary pointer for use by caller,
+        ///                         but typically points to the object.
+        /// \param [in] pCatena     points to the Catena object.
+        ///
+        /// \return Functions of this type must return \c true if
+        ///     initialization was successful, or \c false if
+        ///     initialization failed.  Initialization failure is
+        ///     treated as a critical failure by Catena::setup().
+        ///
+        typedef bool (SetupFn_t)(void *pClientData, Catena *pCatena);
+
+        /// \brief Return pointer to successor of this node.
+        cSetupQueue *getNext() const
+                {
+                return this->m_pNext;
+                }
+
+        ///
+        /// \brief Append a node to the list headed by this node.
+        ///
+        /// \param [in] NodeToAppend    is the node to be appended.
+        ///
+        /// \note
+        ///     To save memory, a singly-linked list is used. To preserve FIFO order
+        ///     of setup calls, the node is appended to the list. The requires an
+        ///     O(n) search for the end of the list. Since this is only called at
+        ///     initialization time, we think this is an acceptable trade-off.
+        ///
+        void append(cSetupQueue &NodeToAppend)
+                {
+                auto pNode = this;
+
+                NodeToAppend.m_pNext = nullptr;
+
+                while (pNode->m_pNext != nullptr)
+                        pNode = pNode->m_pNext;
+
+                pNode->m_pNext = &NodeToAppend;
+                }
+
+        ///
+        /// \brief Initialize a cSetupQueue node.
+        ///
+        /// \param [in] pClientData     is set as the client data to be passed to pSetupFn.
+        /// \param [in] pSetupFn        points to the function to be called to do the
+        ///                             object-specific setup. Often this is a lambda.
+        ///
+        /// \return
+        ///     Reference to the cSetupQueue node.
+        ///
+        cSetupQueue &init(void *pClientData, SetupFn_t *pSetupFn)
+                {
+                this->m_pSetupFn = pSetupFn;
+                this->m_pUserData = pClientData;
+                this->m_pNext = nullptr;
+                return *this;
+                }
+
+        ///
+        /// \brief Call the setup function for this node.
+        ///
+        bool dispatch(Catena *pCatena) const
+                {
+                return this->m_pSetupFn(this->m_pUserData, pCatena);
+                }
+
+private:
+        cSetupQueue     *m_pNext = nullptr;     ///< list thread
+        SetupFn_t       *m_pSetupFn;            ///< object setup function for this node.
+        void            *m_pUserData;           ///< client data for this node.
+        };
+
+/****************************************************************************\
+|
+|	CatenaBase
+|
+\****************************************************************************/
 
 ///
 /// \brief Base class for all Catena objects
@@ -1244,8 +1350,8 @@ public:
                 { return 0; }
 
         ///     \} usb
-
         /// \}  setup
+
         ///
         /// \brief return a pointer to string containing the name of this Catena board
         ///
@@ -1435,6 +1541,29 @@ protected:
                 this->m_pSketchDescription = pDesc;
                 }
 
+        ///
+        /// \brief Arrange for object to be set up by Catena::setup().
+        ///
+        /// \param [in] Object is the initializion queue object.
+        /// \param [in] pClientData is the context pointer for the setup function
+        /// \param [in] pFn is the setup function to be registered.
+        ///
+        /// \details
+        ///     Normally this function should be called before
+        ///     Catena::setup() is invoked; it adds the object
+        ///     to the list of objects to be initialized by
+        ///     Catena::setup().  If called after Catena::setup()
+        ///     has been run, the object is initialized immediately.
+        ///
+        /// \returns
+        ///     If Catena::setup() has not been called, this function
+        ///     returns `true`. If Catena::setup() failed, this
+        ///     function returns `false`. Otherwise, the object's
+        ///     setup() function is invoked, and its result is
+        ///     returned.
+        ///
+        virtual bool usingObject(cSetupQueue &Object, void *pClientData, cSetupQueue::SetupFn_t *pFn) = 0;
+
         /// \brief register the well-known system commands
         virtual void registerCommands(void);
 
@@ -1488,7 +1617,12 @@ protected:
         /// \brief the command processor
         McciCatena::cCommandStream              m_CommandStream;
 
+        /// \brief the pointer to additional objects to be initialized
+        cSetupQueue *m_pInitializationList = nullptr;
+
         bool                    m_flashFound = false;   ///< set true if flash was probed.
+        bool                    m_setupRun = false;     ///< set once setup has been run.
+        bool                    m_setupResult;          ///< memoized result of running setup.
 
 private:
         uint32_t                m_OperatingFlags;       ///< the operating flags
@@ -1496,7 +1630,6 @@ private:
         Version_t               m_appVersion {0};       ///< the application version
         const char *            m_pSketchName {nullptr};        ///< the file name of the sketch
         const char *            m_pSketchDescription {nullptr}; ///< the application description
-
 
         // internal methods
 

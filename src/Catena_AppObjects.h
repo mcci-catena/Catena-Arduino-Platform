@@ -71,6 +71,13 @@ namespace McciCatena {
    ///
    extern cBootloaderApi gBootloaderApi;
 
+   ///
+   /// \brief the LoRaWAN API object
+   ///
+   /// This object is only referenced if Catena::usingLoRaWAN() is called (before or after Catena::setup() is called).
+   ///
+   extern Catena::LoRaWAN gLoRaWAN;
+
 } // end namespace McciCatena
 
 // compute compile-time variables that are used to control things
