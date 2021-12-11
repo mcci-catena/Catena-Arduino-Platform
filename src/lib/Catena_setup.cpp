@@ -274,7 +274,7 @@ bool Catena::setup_flash(void)
 
     auto &flashSpi = *pFlashSpi;
 
-    gLog.printf(cLog::kInfo, "Init Flash\n");
+    gLog.printf(cLog::kVerbose, "Init Flash\n");
     flashSpi.begin();
 
     if (gFlash.begin(&flashSpi))
@@ -284,7 +284,7 @@ bool Catena::setup_flash(void)
 
 		gFlash.readId(&ManufacturerId, &DeviceId);
 		gLog.printf(
-            cLog::kInfo,
+            cLog::kVerbose,
 			"FLASH found, ManufacturerId=%02x, DeviceId=%04x\n",
 			ManufacturerId, DeviceId
 			);
