@@ -109,10 +109,10 @@ StatusLed McciCatena::gLed (LED_BUILTIN);
 
 /* instantiate SPI */
 SPIClass McciCatena::gSPI2(
-		Catena::PIN_SPI2_MOSI,
-		Catena::PIN_SPI2_MISO,
-		Catena::PIN_SPI2_SCK
-		);
+        Catena::PIN_SPI2_MOSI,
+        Catena::PIN_SPI2_MISO,
+        Catena::PIN_SPI2_SCK
+        );
 
 #endif
 
@@ -279,15 +279,15 @@ bool Catena::setup_flash(void)
 
     if (gFlash.begin(&flashSpi))
         {
-		uint8_t ManufacturerId;
-		uint16_t DeviceId;
+        uint8_t ManufacturerId;
+        uint16_t DeviceId;
 
-		gFlash.readId(&ManufacturerId, &DeviceId);
-		gLog.printf(
+        gFlash.readId(&ManufacturerId, &DeviceId);
+        gLog.printf(
             cLog::kVerbose,
-			"FLASH found, ManufacturerId=%02x, DeviceId=%04x\n",
-			ManufacturerId, DeviceId
-			);
+            "FLASH found, ManufacturerId=%02x, DeviceId=%04x\n",
+            ManufacturerId, DeviceId
+            );
 
         this->set_flashFound(true);
         }
