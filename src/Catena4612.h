@@ -107,9 +107,8 @@ protected:
 	cPowerControlGPIO  m_Vout1 = cPowerControlGPIO{ D10, 10 };
 	cPowerControlGPIO  m_Vout2 = cPowerControlGPIO{ D11, 10 };
 	cPowerControlNested m_screwTerminal[2] = { cPowerControlNested{this->m_Vout1}, cPowerControlNested{this->m_Vout2} };
-	cPowerControlGPIO  m_PB8 = cPowerControlGPIO{ D33, 10 };
-	cPowerControlNested m_3v3 = cPowerControlNested{ this->m_PB8 };
-	cPowerControlNested m_tcxo = cPowerControlNested{ this->m_PB8 };
+	cPowerControlGPIO m_3v3 = cPowerControlGPIO{ D14, 10 };
+	cPowerControlGPIO m_tcxo = cPowerControlGPIO{ D33, 2 };
 	cPowerControlDummy m_flashVdd;
 	cPowerControlDummy m_i2cVdd;
 	cPowerControlDummy m_framVdd;
