@@ -21,6 +21,7 @@ Author:
 #include "Catena_Log.h"
 
 #include <cstring>
+#include <mcciadk_baselib.h>
 
 using namespace McciCatena;
 
@@ -32,11 +33,15 @@ using namespace McciCatena;
 
 static cCommandStream::CommandFn doConfigure;
 static cCommandStream::CommandFn doJoin;
+static cCommandStream::CommandFn doStatus;
+static cCommandStream::CommandFn doSubband;
 
 static const cCommandStream::cEntry sDispatchEntries[] =
 	{
 	{ "configure", doConfigure },
 	{ "join", doJoin },
+	{ "status", doStatus },
+	{ "subband", doSubband },
 	};
 
 static cCommandStream::cDispatch
@@ -361,6 +366,185 @@ doJoin(
 	LMIC_unjoin();
 	LMIC_startJoining();
 	return cCommandStream::CommandStatus::kSuccess;
+	}
+
+/*
+
+Name:	doStatus()
+
+Function:
+	Implement the LoRaWAN status command
+
+Definition:
+	static cCommandStream::CommandFn doStatus;
+
+	static cCommandStream::CommandStatus
+		doStatus(
+			cCommandStream *pThis,
+			void *pContext,
+			int argc,
+			char **argv
+			);
+
+Description:
+	This function checks arguments, then displays some things that
+	are set by the MAC.
+
+	The parsed syntax:
+
+	lorawan status
+
+Returns:
+	Command status
+
+*/
+
+static cCommandStream::CommandStatus
+doStatus(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+
+	if (argc > 1)
+		return cCommandStream::CommandStatus::kInvalidParameter;
+
+	pThis->printf("Data rate: %d\n", LMIC.datarate);
+	pThis->printf("Configured subband: %d\n", ARDUINO_LMIC_CFG_SUBBAND);
+
+#if CFG_LMIC_EU_like
+	pThis->printf("EU-like configuration\n");
+#elif CFG_LMIC_US_like
+	pThis->printf("US-like channel mask: ");
+	for (auto const & mask : LMIC.channelMap)
+		{
+		pThis->printf("%02x %02x ", mask & 0xFF, (mask >> 8) & 0xff);
+		}
+	pThis->printf("\n");
+
+#endif
+	pThis->printf("Uplink repeat: %d\n", LMIC.upRepeat);
+	pThis->printf("Rx1 data rate offset: %d\n", LMIC.rx1DrOffset);
+	pThis->printf("Rx2 data rate %u\n", LMIC.dn2Dr);
+	pThis->printf("Rx1 window delay (secs): %u\n", LMIC.rxDelay);
+	pThis->printf("Tx Channel: %u\n", LMIC.txChnl);
+
+	size_t nData = LMIC.dataBeg + LMIC.dataLen;
+	char buffer[80];
+	if (LMIC.dataBeg > 0)
+		{
+		pThis->printf("Rx Buffer MAC portion:\n");
+		for (uint32_t i = 0; i < LMIC.dataBeg; i += 16)
+			{
+			uint32_t n = LMIC.dataBeg - i;
+			if (n > 16)
+				n = 16;
+			McciAdkLib_FormatDumpLine(buffer, sizeof(buffer), 0, i, LMIC.frame + i, n);
+			pThis->printf("%s\n", buffer);
+			}
+		}
+	if (LMIC.dataLen > 0)
+		{
+		pThis->printf("Rx Buffer data:\n");
+		for (uint32_t i = 0; i < LMIC.dataLen; i += 16)
+			{
+			uint32_t n = LMIC.dataLen - i;
+			if (n > 16)
+				n = 16;
+			McciAdkLib_FormatDumpLine(
+				buffer, sizeof(buffer), 0,
+				i, LMIC.frame + LMIC.dataBeg + i, n
+				);
+			pThis->printf("%s\n", buffer);
+			}
+		}
+
+	return cCommandStream::CommandStatus::kSuccess;
+	}
+
+/*
+
+Name:	doSubband()
+
+Function:
+	Implement the LoRaWAN subband command
+
+Definition:
+	static cCommandStream::CommandFn doSubband;
+
+	static cCommandStream::CommandStatus
+		doSubband(
+			cCommandStream *pThis,
+			void *pContext,
+			int argc,
+			char **argv
+			);
+
+Description:
+	This function checks arguments, then sets the subband.
+
+	The parsed syntax:
+
+	lorawan subband #
+
+	If # is -1, then the subband is reset; otherwise the subband.
+
+Returns:
+	Command status
+
+*/
+
+static cCommandStream::CommandStatus
+doSubband(
+	cCommandStream *pThis,
+	void *pContext,
+	int argc,
+	char **argv
+	)
+	{
+#if !CFG_LMIC_US_like
+	pThis->printf("%s %s not supported in this region\n", argc[0]);
+	return cCommandStream::CommandStatus::kError;
+#else
+	uint32_t uSubband;
+	bool fError;
+	int32_t sb;
+	constexpr unsigned kNumChannels = sizeof(LMIC.channelMap) * 8 - 16;
+
+	if (argc != 2)
+		return cCommandStream::CommandStatus::kInvalidParameter;
+
+	auto const nc = McciAdkLib_BufferToUint32(argv[1], strlen(argv[1]), 0, &uSubband, &fError);
+	if (fError || argv[1][nc] != '\0')
+		return cCommandStream::CommandStatus::kInvalidParameter;
+
+	if (int32_t(uSubband) == -1)
+		{
+		sb = -1;
+		}
+	else if (uSubband >= kNumChannels)
+		{
+		return cCommandStream::CommandStatus::kInvalidParameter;
+		}
+	else
+		{
+		sb = int32_t(uSubband);
+		}
+
+	if (sb < 0)
+		{
+		for (uint8_t i = 0; i < kNumChannels / 8; ++i)
+			LMIC_disableSubBand(i);
+		}
+	else
+		{
+		LMIC_selectSubBand(sb);
+		}
+
+	return cCommandStream::CommandStatus::kSuccess;
+#endif
 	}
 
 /**** end of CatenaBase_addLoRaWanCommands.cpp ****/
