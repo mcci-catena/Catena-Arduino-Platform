@@ -17,7 +17,7 @@ Author:
 #include "CatenaBase.h"
 
 #include <Arduino_LoRaWAN_lmic.h>
-
+#include "Catena.h"
 #include "Catena_Log.h"
 
 #include <cstring>
@@ -411,8 +411,20 @@ doStatus(
 	if (argc > 1)
 		return cCommandStream::CommandStatus::kInvalidParameter;
 
-	pThis->printf("Data rate: %d\n", LMIC.datarate);
+	do	{
+		extern Catena::LoRaWAN gLoRaWAN;
+
+		char sRegion[16];
+		pThis->printf("Target network: %s / %s\n",
+						gLoRaWAN.GetNetworkName(),
+						gLoRaWAN.GetRegionString(sRegion, sizeof(sRegion))
+						);
+		} while (0);
+
 	pThis->printf("Configured subband: %d\n", ARDUINO_LMIC_CFG_SUBBAND);
+
+	pThis->printf("Tx Channel: %u\n", LMIC.txChnl);
+	pThis->printf("Data rate: %d\n", LMIC.datarate);
 
 #if CFG_LMIC_EU_like
 	pThis->printf("EU-like configuration\n");
@@ -429,7 +441,6 @@ doStatus(
 	pThis->printf("Rx1 data rate offset: %d\n", LMIC.rx1DrOffset);
 	pThis->printf("Rx2 data rate %u\n", LMIC.dn2Dr);
 	pThis->printf("Rx1 window delay (secs): %u\n", LMIC.rxDelay);
-	pThis->printf("Tx Channel: %u\n", LMIC.txChnl);
 
 	size_t nData = LMIC.dataBeg + LMIC.dataLen;
 	char buffer[80];
