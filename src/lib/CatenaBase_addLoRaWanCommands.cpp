@@ -500,7 +500,9 @@ Description:
 
 	lorawan subband #
 
-	If # is -1, then the subband is reset; otherwise the subband.
+	If # is -1, then the subband is reset (so that all channels 
+	are enabled); otherwise the subband must be a small number in
+	[0..7], and is used to set the current subband mask.
 
 Returns:
 	Command status
@@ -516,13 +518,15 @@ doSubband(
 	)
 	{
 #if !CFG_LMIC_US_like
-	pThis->printf("%s %s not supported in this region\n", argc[0]);
+	pThis->printf("%s not supported in this region\n", argv[0]);
 	return cCommandStream::CommandStatus::kError;
 #else
 	uint32_t uSubband;
 	bool fError;
 	int32_t sb;
-	constexpr unsigned kNumChannels = sizeof(LMIC.channelMap) * 8 - 16;
+	// TODO(tmm@mcci.com) get this from the LMIC, rather than using
+	// the bitmap size.
+	constexpr unsigned kNumSubbands = sizeof(LMIC.channelMap) * 8 - 16;
 
 	if (argc != 2)
 		return cCommandStream::CommandStatus::kInvalidParameter;
@@ -535,7 +539,7 @@ doSubband(
 		{
 		sb = -1;
 		}
-	else if (uSubband >= kNumChannels)
+	else if (uSubband >= kNumSubbands)
 		{
 		return cCommandStream::CommandStatus::kInvalidParameter;
 		}
@@ -546,8 +550,9 @@ doSubband(
 
 	if (sb < 0)
 		{
-		for (uint8_t i = 0; i < kNumChannels / 8; ++i)
-			LMIC_disableSubBand(i);
+		// enable all subbands
+		for (uint8_t i = 0; i < kNumSubbands; ++i)
+			LMIC_enableSubBand(i);
 		}
 	else
 		{
