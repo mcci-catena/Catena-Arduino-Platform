@@ -46,11 +46,7 @@ bool cDate::setDate(
 // set time portion of clock, return true if valid.
 bool cDate::setTime(Hour_t h, Minute_t m, Second_t s)
     {
-    if (! (0 <= h && h <= 23))
-        return false;
-    if (! (0 <= m && m <= 59))
-        return false;
-    if (! (0 <= s && s <= 59))
+    if (! isValidHourMinuteSecond(h, m, s))
         return false;
 
     this->m_hour = h;
