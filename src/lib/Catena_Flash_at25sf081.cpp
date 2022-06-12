@@ -177,7 +177,6 @@ void cFlash_AT25SF081::readId(
         uint16_t *pDeviceId
         )
         {
-        SPIClass * const pSpi = this->m_pSpi;
         uint8_t data[4];
 
         this->powerUp();
@@ -215,8 +214,6 @@ bool cFlash_AT25SF081::eraseChip(
         void
         )
         {
-        uint8_t	status[2];
-
         this->powerUp();
 
         if (! this->writeEnable())
@@ -254,7 +251,6 @@ bool cFlash_AT25SF081::erase(
         Timing Delay
         )
         {
-        uint8_t	status[2];
         uint8_t data[4];
 
         this->powerUp();
@@ -377,7 +373,6 @@ bool cFlash_AT25SF081::setProtection(
         ProtectionBits protectionLevel
         )
         {
-        uint8_t	status[2];
         uint8_t data[3];
 
         this->powerUp();
@@ -465,7 +460,6 @@ size_t cFlash_AT25SF081::programPage(
         size_t nBuffer
         )
         {
-        SPIClass * const pSpi = this->m_pSpi;
         uint8_t data[4];
         size_t	programSize;
 
