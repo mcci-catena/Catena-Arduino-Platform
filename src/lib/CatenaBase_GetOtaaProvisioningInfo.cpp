@@ -115,7 +115,7 @@ CatenaBase::GetOtaaProvisioningInfo(
 			);
 
 		if (pInfo != nullptr)
-			memset(pInfo, 0, sizeof(pInfo));
+			memset(pInfo, 0, sizeof(*pInfo));
 
 		return false;
 		}
@@ -140,7 +140,7 @@ CatenaBase::GetOtaaProvisioningInfo(
 			);
 
 		if (pInfo != nullptr)
-			memset(pInfo, 0, sizeof(pInfo));
+			memset(pInfo, 0, sizeof(*pInfo));
 
 		return false;
 		}
