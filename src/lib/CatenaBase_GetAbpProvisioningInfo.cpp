@@ -119,7 +119,7 @@ CatenaBase::GetAbpProvisioningInfo(
 			);
 
 		if (pInfo != nullptr)
-			memset(pInfo, 0, sizeof(pInfo));
+			memset(pInfo, 0, sizeof(*pInfo));
 
 		return false;
 		}
@@ -153,7 +153,7 @@ CatenaBase::GetAbpProvisioningInfo(
 			);
 
 		if (pInfo != nullptr)
-			memset(pInfo, 0, sizeof(pInfo));
+			memset(pInfo, 0, sizeof(*pInfo));
 
 		return false;
 		}
