@@ -136,7 +136,7 @@ McciCatena::cStreamLineCollector::readAsync(
 	size_t nBuffer		// the buffer size
 	)
 	{
-        static const char FUNCTION[] = "McciCatena::cStreamLineCollector::readAsync";
+        // static const char FUNCTION[] = "McciCatena::cStreamLineCollector::readAsync";
 
 	if (pFn == nullptr)
                 {
@@ -165,7 +165,7 @@ McciCatena::cStreamLineCollector::poll(
 	void
 	)
 	{
-        static const char FUNCTION[] = "McciCatena::cStreamLineCollector::poll";
+        // static const char FUNCTION[] = "McciCatena::cStreamLineCollector::poll";
 
 	// if the stream is not set, give up.
 	if (this->m_pStream == nullptr)
