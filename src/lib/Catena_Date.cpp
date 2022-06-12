@@ -124,6 +124,7 @@ bool cDate::setGpsTime(GpsTime_t t)
     if (! isValidGpsTime(t))
         return false;
 
+    // convert to time since zero.
     t += CommonTime_t(86400) * kGpsDayZero();
 
     this->m_second = t % 60;
@@ -134,15 +135,15 @@ bool cDate::setGpsTime(GpsTime_t t)
     t /= 24;    // t is now in days.
 
     /*
-    || t is now days since the epoch year. Convert to proleptic gregorian days.
+    || t is now days since day zero, and is positive. Convert to proleptic gregorian days.
     */
-    std::int_fast32_t gregorianDay = int(t);
+    std::uint_fast32_t gregorianDay = std::uint_fast32_t(t);
 
     /*
-    || multiply by 365.2425 to get approximate gregorian year.
+    || divide by 365.2425 to get approximate gregorian year.
     */
     /* represent 365.2425 * 400: 146,097 */
-    constexpr std::int_fast32_t k = 365 * 400 + 400 / 4 - 400 / 100 + 1;
+    constexpr std::uint_fast32_t k = 365 * 400 + 400 / 4 - 400 / 100 + 1;
 
     // Compute year, rounding. This is off by
     // +/- one over the range from 0 to 65535
@@ -168,14 +169,15 @@ bool cDate::setGpsTime(GpsTime_t t)
         }
 
     // final checks
-    if (! (kMinYear <= candidateGregorianYear && candidateGregorianYear <= kMaxYear))
+    static_assert(kMinYear == 0, "code assumes kMinYear is zero");
+    if (! (/* kMinYear <= candidateGregorianYear && */ candidateGregorianYear <= kMaxYear))
         return false;
 
     // zero-origin day number:
-    auto dayOfYear = gregorianDay - std::int_fast32_t(firstDayOfCandidateYear);
-
-    if (dayOfYear < 0)
+    if (gregorianDay < firstDayOfCandidateYear)
         return false;
+
+    auto dayOfYear = gregorianDay - firstDayOfCandidateYear;
 
     for (unsigned iMonth = 0; iMonth < 12; ++iMonth)
         {
