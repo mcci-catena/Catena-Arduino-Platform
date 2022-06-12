@@ -184,7 +184,7 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 			*pValue = 6;
 
 			ADC1->CHSELR = (1u << Channel);
-			for (auto i = 1; i < ReadCount; ++i)
+			for (auto i = 1u; i < ReadCount; ++i)
 				{
 				++*pValue;
 
