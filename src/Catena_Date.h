@@ -100,7 +100,9 @@ public:
 
     static constexpr bool isValidYearMonthDay(Year_t year, Month_t month, Day_t day)
         {
-        return (kMinYear <= year && year <= kMaxYear) &&
+        static_assert(std::numeric_limits<Year_t>::min() == kMinYear, "Year_t must not be signed");
+        static_assert(std::numeric_limits<Year_t>::max() == kMaxYear, "code assumes kMaxYear is UINT16_MAX");
+        return /* (kMinYear <= year && year <= kMaxYear) && */
                (1 <= month && month <= 12) &&
                (1 <= day && day <= (month == 2 ? 28 + isLeapYear(year) :
                                    ((1 << (month - 1)) & kMonthsWith31Days) != 0 ? 31 :
