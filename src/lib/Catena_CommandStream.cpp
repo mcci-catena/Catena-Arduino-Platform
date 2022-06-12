@@ -189,8 +189,14 @@ McciCatena::cCommandStream::parseAndDispatch()
         pBuffer = this->m_buffer;
         pEndBuffer = pBuffer + this->m_nRead;
 
+        // loop through command line, finding arguments and stuffing
+        // into argv.
+        //
+        // argc is an int for consistency with years of history;
+        // but gcc complains about the comparison if we don't compare
+        // as unsigned.
         for (argc = 0;
-             argc < sizeof(this->m_argv)/sizeof(this->m_argv[0]) - 1;
+             unsigned(argc) < sizeof(this->m_argv)/sizeof(this->m_argv[0]) - 1;
              ++argc)
                 {
                 uint8_t c;
@@ -213,8 +219,10 @@ McciCatena::cCommandStream::parseAndDispatch()
         if (pBuffer != pEndBuffer)
                 return -1;
 
+        // make sure argv[] is nullptr-terminated.
         this->m_argv[argc] = nullptr;
 
+        // invoke command, return result.
         return this->dispatch(argc, this->m_argv);
         }
 
