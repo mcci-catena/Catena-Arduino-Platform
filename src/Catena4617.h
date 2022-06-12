@@ -21,46 +21,8 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENA461X_H_
-# include "Catena461x.h"
-#endif
+#error "The Catena 4617 is not supported. Use a library version prior to v0.23"
 
-namespace McciCatena {
-
-class Catena4617 : public Catena461x
-	{
-public:
-        using Super = Catena461x;
-
-        // no specific constructor.
-        Catena4617() {};
-
-	// uses default destructor
-
-	// neither copyable nor movable
-	Catena4617(const Catena4617&) = delete;
-	Catena4617& operator=(const Catena4617&) = delete;
-	Catena4617(const Catena4617&&) = delete;
-	Catena4617& operator=(const Catena4617&&) = delete;
-
-	virtual const char *CatenaName() const override { return "Catena 4617"; };
-	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
-
-protected:
-	// we are required to provide a table of platforms
-	virtual void getPlatformTable(
-		const CATENA_PLATFORM * const * &vPlatforms,
-		size_t &nvPlatforms
-		) override;
-
-private:
-	// the known platforms
-	static const CATENA_PLATFORM(* const vPlatforms[]);
-	static const size_t nvPlatforms;
-	};
-
-} // namespace McciCatena
 
 /**** end of Catena4617.h ****/
 #endif /* _Catena4617_H_ */

@@ -1,5 +1,3 @@
-/* Catena4551.h	Wed Dec 13 2017 17:29:35 tmm */
-
 /*
 
 Module:  Catena4551.h
@@ -7,30 +5,11 @@ Module:  Catena4551.h
 Function:
 	class Catena4551: CatenaBase Platform to represent a Catena 4551
 
-Version:
-	V0.7.0	Wed Dec 13 2017 17:29:35 tmm	Edit level 2
-
 Copyright notice:
-	This file copyright (C) 2017 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation.
+        See accompanying LICENSE file.
 
 Author:
 	ChaeHee Won, MCCI Corporation	October 2017
-
-Revision history:
-   0.6.0  Fri Oct 13 2017 15:19:30  chwon
-	Module created.
-
-   0.7.0  Wed Dec 13 2017 17:29:35  tmm
-	Refactor.
 
 */
 
@@ -39,44 +18,7 @@ Revision history:
 
 #pragma once
 
-#ifndef _CATENA455X_H_
-# include "Catena455x.h"
-#endif
-
-namespace McciCatena {
-
-class Catena4551 : public Catena455x
-	{
-public:
-        using Super = Catena455x;
-
-        // no specific constructor.
-        Catena4551() {};
-
-	// uses default destructor
-
-	// neither copyable nor movable
-	Catena4551(const Catena4551&) = delete;
-	Catena4551& operator=(const Catena4551&) = delete;
-	Catena4551(const Catena4551&&) = delete;
-	Catena4551& operator=(const Catena4551&&) = delete;
-
-	virtual const char *CatenaName() const override { return "Catena 4551"; };
-
-protected:
-	// we are required to provide a table of platforms
-	virtual void getPlatformTable(
-		const CATENA_PLATFORM * const * &vPlatforms,
-		size_t &nvPlatforms
-		) override;
-
-private:
-	// the known platforms
-	static const CATENA_PLATFORM(* const vPlatforms[]);
-	static const size_t nvPlatforms;
-	};
-
-} // namespace McciCatena
+#error "The Catena 4551 is not supported. Use a library version prior to v0.23"
 
 /**** end of Catena4551.h ****/
 #endif /* _CATENA4551_H_ */
