@@ -219,7 +219,8 @@ public:
 
         static constexpr uint32_t SPICLOCK(uint32_t v)
                 {
-                return v > PLATFORM_MAX_SCLK ? PLATFORM_MAX_SCLK : v;
+                constexpr uint32_t kMaxSclk (PLATFORM_MAX_SCLK);
+                return v > kMaxSclk ? kMaxSclk : v;
                 }
 
 public:
