@@ -117,8 +117,6 @@ McciCatena::cFramStorage::Object::initialize(
 	bool fReplicated
 	)
 	{
-        static const char FUNCTION[] = "cFramStorage::Object::initialize";
-
 	// compute number of clicks based on value size and whether
 	// there's one copy or two.
 	const uint16_t nClicks = neededClicks(valueSizeInBytes, fReplicated);
