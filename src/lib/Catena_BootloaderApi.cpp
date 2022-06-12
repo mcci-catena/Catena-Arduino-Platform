@@ -283,7 +283,6 @@ uint32_t cBootloaderApi::getSvc(void)
 
     // look for the SVC pointer.
     uint32_t const vects = SCB->VTOR;
-    uint32_t result;
 
     this->m_svcaddr = kNotFound;
     if (vects == kBootloaderAddress)
