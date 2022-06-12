@@ -29,9 +29,6 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
-static cCommandStream::CommandFn doPlatformGUID;
-static cCommandStream::CommandFn doSysEUI;
-
 
 /****************************************************************************\
 |
