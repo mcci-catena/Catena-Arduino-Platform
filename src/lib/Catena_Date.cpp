@@ -262,7 +262,11 @@ bool cDate::parseDateIso8601(
         return false;
     if (nYear == 2)
         nYear += 2000;
-    if (! (kMinYear <= year && year <= kMaxYear))
+    static_assert(
+        kMinYear == std::numeric_limits<decltype(year)>::min(),
+        "code assumes kMinYear is lower limit of year"
+        );
+    if (! (/* kMinYear <= year && */ year <= kMaxYear))
         return false;
 
     /* consume year and '-' */
