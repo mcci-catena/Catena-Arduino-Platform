@@ -35,6 +35,7 @@ Revision history:
 
 #include "Catena_Log.h"
 #include <cstdio>
+#include "Catena_limits.h"
 
 using namespace McciCatena;
 
@@ -317,9 +318,11 @@ McciCatena::cStreamLineCollector::doEcho(std::uint8_t c)
 	if (this->m_fNoEcho)
 		return;
 
+	static_assert(std::numeric_limits<decltype(c)>::min() == 0, "code assumes c is unsigned");
+
 	if (c == kCr || c == kLf || c == kTab)
 		this->write(c);
-	else if (0 <= c && c <= 0x1f)
+	else if (/* 0 <= c && */ c <= 0x1f)
 		{
 		this->echoControl(c);
 		}
@@ -546,21 +549,34 @@ McciCatena::cStreamLineCollector::Columnator::adjustColumn(std::uint8_t c, bool 
 		goto normal;
 
 	case EncodingState::UTF8:
-		if (0xC0 <= c & c <= 0xFF)
+		static_assert(
+			std::numeric_limits<decltype(c)>::max() == 0xFF,
+			"code assumes max value of c is 0xFF"
+			);
+		if (0xC0 <= c /* && c <= 0xFF */)
+			/* this is part of a UTF8 sequence, go on */
 			return;
+		/* this is the end of a UTF8 sequence */
 		this->m_state = EncodingState::Normal;
 		goto normal;
 
 	default:
 	case EncodingState::Normal:
 	normal:
+		/* normal printing character: just increment column */
 		if ((0x20 <= c && c <= 0x7E) || (0x80 <= c && c < 0xC0))
 			{
 			if (this->m_column < kColumnMax)
 				++this->m_column;
 			break;
 			}
-		else if (0xC0 <= c && c <= 0xFF)
+
+		/* detect start of UTF8 sequence */
+		static_assert(
+			std::numeric_limits<decltype(c)>::max() == 0xFF,
+			"code assumes max value of c is 0xFF"
+			);
+		if (0xC0 <= c /* && c <= 0xFF */)
 			{
 			this->m_state = EncodingState::UTF8;
 			break;
