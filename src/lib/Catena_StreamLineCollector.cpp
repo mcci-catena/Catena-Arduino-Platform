@@ -532,6 +532,7 @@ McciCatena::cStreamLineCollector::Columnator::adjustColumn(std::uint8_t c, bool 
 		if (0x30 <= c && c <= 0x3F)
 			// parameter byte.
 			return;
+		/*FALLTHROUGH*/
 
 	case EncodingState::CSI2:
 		if (0x20 <= c && c <= 0x2F)
