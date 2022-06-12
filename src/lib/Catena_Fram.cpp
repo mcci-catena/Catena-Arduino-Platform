@@ -74,7 +74,6 @@ McciCatena::cFram::loadCache(
 	)
         {
         cFramStorage::Object object;
-        const MCCIADK_GUID_WIRE * const pGuid = &cFramStorage::skFramGuid;
 
 	this->resetCache();
 
@@ -1017,7 +1016,6 @@ McciCatena::cFram::Cursor::parsefield(
         // nibbles, we need to right justify, not left.
         std::memset(pData, 0, nData);
 
-        char c;
         size_t i;
 
         i = 0;
