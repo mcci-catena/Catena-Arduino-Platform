@@ -104,14 +104,23 @@ public:
 		{ return APIN_VBUS_SENSE; }
 
 protected:
+	/// on the Catena 4612, VOUT1 is controlled by D10
 	cPowerControlGPIO  m_Vout1 = cPowerControlGPIO{ D10, 10 };
+	/// on the Catena 4612, VOUT2 is controlled by D11
 	cPowerControlGPIO  m_Vout2 = cPowerControlGPIO{ D11, 10 };
+	/// on the Catena 4612, each screw terminal has its own VOUT
 	cPowerControlNested m_screwTerminal[2] = { cPowerControlNested{this->m_Vout1}, cPowerControlNested{this->m_Vout2} };
+	/// on the Catena 4612, the 3.3v regulator is enabled by D14
 	cPowerControlGPIO m_3v3 = cPowerControlGPIO{ D14, 10 };
+	/// on the Catena 4612, there's a TCXO controlled by D33
 	cPowerControlGPIO m_tcxo = cPowerControlGPIO{ D33, 2 };
+	/// on the Catena 4612, flash is always powered
 	cPowerControlDummy m_flashVdd;
+	/// on the Catena 4612, i2c is always powered
 	cPowerControlDummy m_i2cVdd;
+	/// on the Catena 4612, FRAM is always powered
 	cPowerControlDummy m_framVdd;
+	/// on the Catena 4612, there's no external I2C bridge
 	cPowerControlDummy m_externalI2cBridgeVdd;
 
 protected:
