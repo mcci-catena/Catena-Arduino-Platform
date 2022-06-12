@@ -1063,9 +1063,9 @@ McciCatena::cFram::Cursor::parsefield(
         // if it's a number, we now have to byte-reverse
         if (isNumber)
                 {
-                size_t nData2 = nData/2;
+                const size_t nData2 = nData/2;
                 size_t i, j;
-                for (i = 0, j = nData-1; i < nData/2; ++i, --j)
+                for (i = 0, j = nData-1; i < nData2; ++i, --j)
                         std::swap(pData[i], pData[j]);
                 }
 
