@@ -240,8 +240,6 @@ boolean Catena_Si1133::configure(
 	uint8_t uMeasurementCount
 	)
 	{
-	uint8_t	uChannelBase;
-
 	if (uMode > sizeof(sk_Config) / sizeof(sk_Config[0]))
 		return false;
 
