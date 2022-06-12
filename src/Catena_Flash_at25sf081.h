@@ -20,7 +20,7 @@ Author:
 
 #include <Arduino.h>
 #include <SPI.h>
-#include <Catena_Flash.h>>
+#include <Catena_Flash.h>
 
 namespace McciCatena {
 
