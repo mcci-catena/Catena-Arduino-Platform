@@ -357,7 +357,6 @@ bool Catena_Mx25v8035f::eraseChip(
 	)
 	{
 	SPIClass * const pSpi = this->m_pSpi;
-	uint8_t	status[2];
 
 	this->setWel();
 	pSpi->transfer(this->m_CS, MX25V8035F_CMD_CE);
@@ -435,7 +434,6 @@ bool Catena_Mx25v8035f::erase(
 	)
 	{
 	SPIClass * const pSpi = this->m_pSpi;
-	uint8_t	status[2];
 	uint8_t data[4];
 
 	data[0] = Command;
@@ -557,7 +555,6 @@ void Catena_Mx25v8035f::setProtection(
 	)
 	{
 	SPIClass * const pSpi = this->m_pSpi;
-	uint8_t	status[2];
 	uint8_t data[3];
 
 	data[0] = MX25V8035F_CMD_WRSR;
@@ -643,7 +640,6 @@ size_t Catena_Mx25v8035f::programPage(
 	)
 	{
 	SPIClass * const pSpi = this->m_pSpi;
-	uint8_t	status[2];
 	uint8_t data[MX25V8035F_PAGE_SIZE];
 	size_t	programSize;
 
