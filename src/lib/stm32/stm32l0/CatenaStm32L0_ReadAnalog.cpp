@@ -103,7 +103,6 @@ bool McciCatena::CatenaStm32L0_ReadAnalog(
 	uint32_t	vChannel;
 	bool		fStatusOk;
 	constexpr uint32_t AdcClockModeAsync = 0;
-	constexpr uint32_t AdcClockModePclk2 = ADC_CFGR2_CKMODE_0;
 	/* the clock we'll use: */
 	constexpr uint32_t AdcClockMode = AdcClockModeAsync;
 
