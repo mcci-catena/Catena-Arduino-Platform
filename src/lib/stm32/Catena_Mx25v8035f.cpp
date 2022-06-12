@@ -116,8 +116,9 @@ bool Catena_Mx25v8035f::begin(
 		return false;
 		}
 
-	if (ChipSelectPin == -1 && this->m_CS == -1)
+	if (ChipSelectPin == -1 && this->m_CS == UINT8_MAX)
 		{
+		// [1] prevent us from proceeding if both ChipSelectPin and m_CS are "not specified"
 		gLog.printf(cLog::kError, "flash pin not set\n");
 		return false;
 		}
@@ -129,8 +130,12 @@ bool Catena_Mx25v8035f::begin(
 
 	this->m_pSpi = pSpi;
 	if (ChipSelectPin != -1)
+		// [2] make sure m_CS has a value.
 		this->m_CS = ChipSelectPin;
 
+	// at this point, m_CS is valid by [1] and [2] above.
+
+	// start the operation.
 	pSpi->beginTransaction(this->m_CS, SpiSettings);
 
 	/* force to put stand-by mode, just in case */
