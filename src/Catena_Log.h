@@ -79,6 +79,7 @@ public:
 	bool begin(DebugFlags uDebugFlags = DebugFlags(kInfo | kWarning | kError | kBug))
 		{
 		this->m_uDebugFlags = uDebugFlags;
+		return true;
 		}
 
 	// old, incorrect polarity: return false if isEnabled() is true..
