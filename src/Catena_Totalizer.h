@@ -55,8 +55,8 @@ public:
 	static constexpr uint16_t kDefault_msDebounce = 50;
 
 	cTotalizer(uint8_t pin = kPinUndefined)
-		: m_pin(pin)
-		, m_msDebounce(kDefault_msDebounce)
+		: m_msDebounce(kDefault_msDebounce)
+		, m_pin(pin)
 		{};
 
 	// setup, passing in a pin
