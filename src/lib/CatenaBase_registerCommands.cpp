@@ -400,7 +400,7 @@ doEcho(
 	char **argv
 	)
 	{
-	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
+	// CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
 	auto result = cCommandStream::CommandStatus::kSuccess;
 
 	if (argc > 2)
