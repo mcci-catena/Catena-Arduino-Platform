@@ -154,12 +154,14 @@ cDownload::fsmDispatch(
 
     switch (curState)
         {
+    // initialize
     case State_t::stInitial:
         {
         newState = State_t::stIdle;
         }
         break;
 
+    // wait for a request
     case State_t::stIdle:
         {
         if (fEntry)
@@ -183,6 +185,7 @@ cDownload::fsmDispatch(
         }
         break;
 
+    // erase the target region.
     case State_t::stErase:
         {
         const uint32_t regionAddress = this->m_pageAddr;
@@ -208,6 +211,8 @@ cDownload::fsmDispatch(
         }
         break;
 
+    // accumulate data until we have enough to program, or until there's
+    // no more data.
     case State_t::stGetData:
         {
         auto const nAvail = this->m_pRequest->available();
@@ -252,6 +257,7 @@ cDownload::fsmDispatch(
         }
         break;
 
+    // program a page
     case State_t::stProgram:
         {
         if (fEntry)
@@ -355,6 +361,9 @@ cDownload::fsmDispatch(
         }
         break;
 
+    // Finish up. Write out partial page, check validity, set the update
+    // flag if valid so that next boot will transfer the data to the
+    // processor flash. Complete the request.
     case State_t::stFinal:
         {
         if (fEntry)
