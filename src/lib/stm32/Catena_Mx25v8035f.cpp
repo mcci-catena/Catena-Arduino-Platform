@@ -500,7 +500,7 @@ bool Catena_Mx25v8035f::eraseBlock32(
 	uint32_t Block32Address
 	)
 	{
-	this->erase(Block32Address, MX25V8035F_CMD_BE_32K, 100 /*ms*/);
+	return this->erase(Block32Address, MX25V8035F_CMD_BE_32K, 100 /*ms*/);
 	}
 
 /*
