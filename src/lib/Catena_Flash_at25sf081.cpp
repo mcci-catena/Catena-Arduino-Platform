@@ -61,8 +61,10 @@ bool cFlash_AT25SF081::begin(SPIClass *pSpi, int16_t ChipSelectPin)
                 return false;
                 }
 
-	if (ChipSelectPin == -1 && this->m_CS == -1)
+	if (ChipSelectPin == -1 && this->m_CS == uint8_t(-1))
 		{
+                // [1] prevent trying to proceed if user passed in
+                // -1, and we have no pre-existing value in this->m_CS.
 		gLog.printf(cLog::kError, "flash pin not set\n");
 		return false;
 		}
@@ -74,10 +76,12 @@ bool cFlash_AT25SF081::begin(SPIClass *pSpi, int16_t ChipSelectPin)
 
         this->m_pSpi = pSpi;
 	if (ChipSelectPin != -1)
+                // [2] set m_CS
 		this->m_CS = ChipSelectPin;
 
-        digitalWrite(ChipSelectPin, HIGH);
-        pinMode(ChipSelectPin, OUTPUT);
+        // at this point, m_CS is the chip select -- by [1] and [2] above.
+        digitalWrite(this->m_CS, HIGH);
+        pinMode(this->m_CS, OUTPUT);
 
         /* force out of deep-sleep mode, just in case */
         this->m_PowerDown = true;
