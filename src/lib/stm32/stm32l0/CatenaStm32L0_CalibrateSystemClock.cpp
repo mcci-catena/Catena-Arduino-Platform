@@ -115,7 +115,7 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 	uint32_t CalibLow;
 	uint32_t CalibHigh;
 	uint32_t mSecond;
-	uint32_t mSecondNew;
+	uint32_t mSecondNew = 0;
 	uint32_t mSecondLow;
 	uint32_t mSecondHigh;
 	bool fHaveSeenLow;
