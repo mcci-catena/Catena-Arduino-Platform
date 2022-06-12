@@ -131,7 +131,6 @@ McciCatena::cFram::doReset(
         )
         {
         cFram * const pFram = static_cast<cFram *>(pContext);
-        cCommandStream::CommandStatus status;
         bool fResult;
 
         if (argc > 2)
