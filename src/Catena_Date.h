@@ -111,9 +111,12 @@ public:
 
     static constexpr bool isValidHourMinuteSecond(Hour_t h, Minute_t m, Second_t s)
         {
-        return (0 <= h && h <= 23) &&
-               (0 <= m && m <= 59) &&
-               (0 <= s && s <= 59);
+        static_assert(std::numeric_limits<Hour_t>::min() == 0, "code assumes Hour_t is unsigned");
+        static_assert(std::numeric_limits<Minute_t>::min() == 0, "code assumes Minute_t is unsigned");
+        static_assert(std::numeric_limits<Second_t>::min() == 0, "code assumes Second_t is unsigned");
+        return (/* 0 <= h && */ h <= 23) &&
+               (/* 0 <= m && */ m <= 59) &&
+               (/* 0 <= s && */ s <= 59);
         }
 
     // return day in year (0..364 or 0..365)
