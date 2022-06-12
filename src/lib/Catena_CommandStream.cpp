@@ -281,7 +281,6 @@ McciCatena::cCommandStream::dispatch(
                 do
                         {
                         const char * const pGroupName = pThis->m_pGroupName;
-                        CommandFn *pCommandFn;
                         const cEntry *pEntry;
 
                         if (pGroupName == nullptr)
