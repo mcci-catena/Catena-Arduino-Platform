@@ -238,10 +238,10 @@ public:
         /// \brief the constructor with CS pin provided.
         ///
         cFlash_AT25SF081(uint8_t ChipSelectPin)
-                : m_CS(ChipSelectPin)
-                , m_csInitialized(true)
-                , m_Initialized(false)
+                : m_Initialized(false)
                 , m_registered(false)
+                , m_csInitialized(true)
+                , m_CS(ChipSelectPin)
                 {}
 
         // uses default destructor
