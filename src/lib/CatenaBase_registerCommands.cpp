@@ -271,6 +271,8 @@ doReset(
 		}
 
 	NVIC_SystemReset();
+	/*NOTREACHED*/
+	__builtin_unreachable();
 	}
 
 /*
