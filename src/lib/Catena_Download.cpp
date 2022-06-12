@@ -372,8 +372,6 @@ cDownload::fsmDispatch(
             this->flushBytesToFlash();
             }
 
-        bool fOk;
-
         gLog.printf(gLog.kVerbose, "checking hash:");
 
         // check the hash
