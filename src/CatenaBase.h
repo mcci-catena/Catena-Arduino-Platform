@@ -376,8 +376,8 @@ public:
         /// \param [in] delayMs the delay to request, in milliseconds, after any change.
         ///
         cPowerControlGPIO(uint8_t pin, uint16_t delayMs)
-                : m_delayOff(delayMs)
-                , m_delayOn(delayMs)
+                : m_delayOn(delayMs)
+                , m_delayOff(delayMs)
                 , m_pin(pin)
                 {}
 
