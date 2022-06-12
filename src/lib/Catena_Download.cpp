@@ -28,6 +28,7 @@ Author:
 #include <Catena_Log.h>
 #include <Catena_Serial.h>
 #include <CatenaBase.h>
+#include <type_traits>
 
 using namespace McciCatena;
 
@@ -224,10 +225,26 @@ cDownload::fsmDispatch(
                 this->m_pRequest->promptForData();
             }
 
-        if (nAvail >= kTransferChunkBytes)
+        // check for errors from the read.
+        if (nAvail < 0)
+            {
+            newState = this->completeRequest(Status_t::kDownloadReadError);
+            }
+        //
+        // Check whether we've received enough to handle another page write
+        //
+        // We know nAvail is non-negative, and it's bounded by the size of
+        // the USB buffer, so the cast is safe. The std::remove_cv work
+        // is needed so that GCC doesn't complain about the discarded
+        // attributes when we apply to nAvail.
+        //
+        else if (std::remove_cv<decltype(kTransferChunkBytes)>::type(nAvail) >= kTransferChunkBytes)
             {
             newState = State_t::stProgram;
             }
+        //
+        // otherwise check for timeout.
+        //
         else if (tNow - this->m_readTimer > kTransferTimeoutMs)
             {
             newState = this->completeRequest(Status_t::kDownloadReadTimeout);
