@@ -14,16 +14,17 @@ Author:
 */
 
 #include <Catena.h>
+#include <Catena_AppObjects.h>
 #include <Catena_Led.h>
 
 using namespace McciCatena;
 
 // declare the global object for the platform.
-Catena gCatena;
-Catena::LoRaWAN gLoRaWAN;
-
-// declare the LED object
-StatusLed gLed (Catena::PIN_STATUS_LED);
+Catena gCatena(
+        Version_t{CATENA_ARDUINO_PLATFORM_VERSION},
+        __FILE__,
+        "Simple hello-world sketc with LoRaWAN"
+        );
 
 // declare the callback function.
 Arduino_LoRaWAN::SendBufferCbFn uplinkDone;
@@ -36,19 +37,13 @@ uint8_t uplinkBuffer[] = { 0xCA, 0xFE, 0xBA, 0xBE };
 
 void setup()
         {
-        gCatena.begin();
+        gCatena.usingLoRaWAN();
+        gCatena.setup();
 
         gCatena.SafePrintf("Hello, world (with LoRa)!\n");
         gCatena.SafePrintf("This is a basic demo program for the MCCI Catena-Arduino-Platform library.\n");
-        gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
-        gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
 
-        gLed.begin();
-        gCatena.registerObject(&gLed);
         gLed.Set(LedPattern::FastFlash);
-
-        gLoRaWAN.begin(&gCatena);
-        gCatena.registerObject(&gLoRaWAN);
 
         if (! gLoRaWAN.IsProvisioned())
                 gCatena.SafePrintf("LoRaWAN not provisioned yet. Use the commands to set it up.\n");
