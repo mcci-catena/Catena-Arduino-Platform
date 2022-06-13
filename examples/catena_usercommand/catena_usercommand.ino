@@ -14,6 +14,7 @@ Author:
 */
 
 #include <Catena.h>
+#include <Catena_AppObjects.h>
 #include <Catena_CommandStream.h>
 #include <Catena_Led.h>
 
@@ -29,10 +30,11 @@ Author:
 using namespace McciCatena;
 
 // instantiate the global object for the platform.
-Catena gCatena;
-
-// instantiate the LED object
-StatusLed gLed (Catena::PIN_STATUS_LED);
+Catena gCatena(
+        Version_t{CATENA_ARDUINO_PLATFORM_VERSION},
+        __FILE__,
+        "User-command example"
+        );
 
 /*
 || The next few lines give the datastructures needed for extending
@@ -65,16 +67,7 @@ sMyExtraCommands_top(
 // setup is called once.
 void setup()
         {
-        gCatena.begin();
-
-        /* wait 5 seconds */
-        auto const now = millis();
-        while (millis() - now < 5000)
-                /* wait */;
-
-        /* wait for a UAR connection */
-        while (! Serial)
-                /* wait */;
+        gCatena.setup();
 
         /* add our application-specific commands */
         gCatena.addCommands(
@@ -90,12 +83,8 @@ void setup()
 
 
         gCatena.SafePrintf("This is the user-command demo program for the MCCI Catena-Arduino-Platform library.\n");
-        gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
         gCatena.SafePrintf("Enter 'application hello' to exercise the minimial extra command.\n");
-        gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
 
-        gLed.begin();
-        gCatena.registerObject(&gLed);
         gLed.Set(LedPattern::FastFlash);
         }
 
