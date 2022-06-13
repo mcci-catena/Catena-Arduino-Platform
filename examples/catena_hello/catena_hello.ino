@@ -14,27 +14,21 @@ Author:
 */
 
 #include <Catena.h>
+#include <Catena_AppObjects.h>
 #include <Catena_Led.h>
 
 using namespace McciCatena;
 
 // declare the global object for the platform.
-Catena gCatena;
-
-// declare the LED object
-StatusLed gLed (Catena::PIN_STATUS_LED);
+Catena gCatena(Version_t{CATENA_ARDUINO_PLATFORM_VERSION}, __FILE__, "Simple hello-world sketch");
 
 void setup()
         {
-        gCatena.begin();
+        gCatena.setup();
 
         gCatena.SafePrintf("Hello, world!\n");
         gCatena.SafePrintf("This is a basic demo program for the MCCI Catena-Arduino-Platform library.\n");
-        gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
-        gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
 
-        gLed.begin();
-        gCatena.registerObject(&gLed);
         gLed.Set(LedPattern::FastFlash);
         }
 
