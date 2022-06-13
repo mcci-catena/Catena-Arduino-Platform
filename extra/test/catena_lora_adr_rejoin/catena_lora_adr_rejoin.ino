@@ -14,17 +14,18 @@ Author:
 */
 
 #include <Catena.h>
+#include <Catena_AppObjects.h>
 #include <Catena_Led.h>
 #include <arduino_lmic.h>
 
 using namespace McciCatena;
 
 // declare the global object for the platform.
-Catena gCatena;
-Catena::LoRaWAN gLoRaWAN;
-
-// declare the LED object
-StatusLed gLed (Catena::PIN_STATUS_LED);
+Catena gCatena(
+        Version_t{CATENA_ARDUINO_PLATFORM_VERSION},
+        __FILE__,
+        "Link ADR / rejoin test sketch"
+        );
 
 // declare the callback function.
 Arduino_LoRaWAN::SendBufferCbFn uplinkDone;
@@ -39,18 +40,12 @@ uint32_t nSent = 0;
 
 void setup()
         {
-        gCatena.begin();
+        gCatena.setup();
+        gCatena.usingLoRaWAN();
 
         gCatena.SafePrintf("This is the ADR re-join test program for the MCCI Catena-Arduino-Platform library.\n");
-        gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
-        gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
 
-        gLed.begin();
-        gCatena.registerObject(&gLed);
         gLed.Set(LedPattern::FastFlash);
-
-        gLoRaWAN.begin(&gCatena);
-        gCatena.registerObject(&gLoRaWAN);
 
         if (! gLoRaWAN.IsProvisioned())
                 {
