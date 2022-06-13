@@ -354,6 +354,9 @@ doJoin(
 	char **argv
 	)
 	{
+	MCCIADK_API_PARAMETER(pThis);
+	MCCIADK_API_PARAMETER(pContext);
+	MCCIADK_API_PARAMETER(argv);
 
 	if (argc > 1)
 		return cCommandStream::CommandStatus::kInvalidParameter;

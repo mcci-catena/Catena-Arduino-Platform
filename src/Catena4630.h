@@ -53,6 +53,8 @@ public:
 	///
         virtual const char *get_screwTerminalLabel(uint8_t iTerminal) const override
 		{
+		MCCIADK_API_PARAMETER(iTerminal);
+
 		return nullptr;
 		}
 
@@ -65,6 +67,8 @@ public:
 	///
         virtual uint8_t get_screwTerminalPin2(uint8_t iTerminal) const override
 		{
+		MCCIADK_API_PARAMETER(iTerminal);
+
 		return 0;
 		}
 	///
@@ -76,6 +80,8 @@ public:
 	///
         virtual uint8_t get_screwTerminalPin3(uint8_t iTerminal) const override
 		{
+		MCCIADK_API_PARAMETER(iTerminal);
+
 		return 0;
 		}
 

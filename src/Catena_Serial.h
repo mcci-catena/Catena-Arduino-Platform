@@ -190,6 +190,8 @@ private:
         template <typename U>
         static void beginWithConfig(U* pT, unsigned long ulBaudRate, uint16_t config, std::false_type)
                 {
+                MCCIADK_API_PARAMETER(config);
+
                 pT->begin(ulBaudRate);
                 }
 

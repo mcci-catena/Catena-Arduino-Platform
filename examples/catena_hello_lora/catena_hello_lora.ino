@@ -72,6 +72,8 @@ void loop()
 
 void uplinkDone(void *pCtx, bool fSuccess)
         {
+        MCCIADK_API_PARAMETER(pCtx);
+
         gfTxDone = true;
         gfSuccess = fSuccess;
         }

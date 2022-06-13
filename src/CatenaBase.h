@@ -328,6 +328,8 @@ public:
         ///
         virtual uint32_t enable(bool fRequest) override
                 {
+		MCCIADK_API_PARAMETER(fRequest);
+
                 return 0;
                 }
         ///
@@ -1152,7 +1154,11 @@ public:
         /// \return number of millis() to wait for bus to be ready.
         ///
         virtual uint32_t enable_externalI2cBridgeVdd(bool fStatus)
-                { return 0; }
+                {
+		MCCIADK_API_PARAMETER(fStatus);
+
+                return 0;
+                }
 
         ///
         /// \brief query state of request for external I2C bus.
@@ -1181,7 +1187,11 @@ public:
         ///     \{
         /// \brief power up the TCXO; return number of milliseconds to delay.
         virtual uint32_t enable_tcxo(bool fStatus)
-                { return 0; }
+                {
+		MCCIADK_API_PARAMETER(fStatus);
+
+                return 0;
+                }
 
         ///
         /// \brief query TCXO request state
@@ -1229,7 +1239,11 @@ public:
 
         /// \brief enable power to the SHT31/35
         virtual uint32_t enable_SHT3x(bool fStatus)
-                { return 0; }
+                {
+		MCCIADK_API_PARAMETER(fStatus);
+
+                return 0;
+                }
 
         /// \brief query whether the SHT31/35 power is requested
         virtual bool get_SHT3xRequest() const
@@ -1250,8 +1264,12 @@ public:
                 { return false; }
 
         /// \brief enable power to the SHT31/35
-        virtual uint32_t enable_SGPC3(bool)
-                { return 0; }
+        virtual uint32_t enable_SGPC3(bool fStatus)
+                {
+		MCCIADK_API_PARAMETER(fStatus);
+
+                return 0;
+                }
 
         /// \brief query whether the SHT31/35 power is requested
         virtual bool get_SGPC3Request() const
@@ -1275,8 +1293,12 @@ public:
         ///
         /// \return delay (in milllis) before proceeding.
         ///
-        virtual uint32_t enable_PMS7003(bool)
-                { return 0; }
+        virtual uint32_t enable_PMS7003(bool fStatus)
+                {
+		MCCIADK_API_PARAMETER(fStatus);
+
+                return 0;
+                }
 
         /// \brief query whether the PMS7003 power is requested
         virtual bool get_PMS7003Request() const

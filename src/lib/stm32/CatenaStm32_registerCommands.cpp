@@ -90,6 +90,9 @@ doCpuid(
         char **argv
         )
         {
+	MCCIADK_API_PARAMETER(argc);
+	MCCIADK_API_PARAMETER(argv);
+
 	CatenaStm32 * const pCatena = static_cast<CatenaStm32 *>(pContext);
 
 	CatenaStm32::UniqueID_string_t CpuIDstring;

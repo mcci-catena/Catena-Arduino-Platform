@@ -45,6 +45,9 @@ CatenaBase::NetSaveSessionInfo(
 	size_t nExtraInfo
 	)
 	{
+	MCCIADK_API_PARAMETER(pExtraInfo);
+	MCCIADK_API_PARAMETER(nExtraInfo);
+
 	auto const pFram = this->getFram();
 
 	// note that the v1 header and the V2 header are identical in the

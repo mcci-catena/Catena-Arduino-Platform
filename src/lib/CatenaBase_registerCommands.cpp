@@ -265,6 +265,10 @@ doReset(
 	char **argv
 	)
 	{
+	MCCIADK_API_PARAMETER(pContext);
+	MCCIADK_API_PARAMETER(pThis);
+	MCCIADK_API_PARAMETER(argv);
+
 	if (argc != 1)
 		{
 		return cCommandStream::CommandStatus::kInvalidParameter;
@@ -359,6 +363,8 @@ doVersion(
 	char **argv
 	)
 	{
+	MCCIADK_API_PARAMETER(argv);
+
 	CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
 
 	if (argc != 1)
@@ -400,6 +406,8 @@ doEcho(
 	char **argv
 	)
 	{
+	MCCIADK_API_PARAMETER(pContext);
+
 	// CatenaBase * const pCatena = static_cast<CatenaBase *>(pContext);
 	auto result = cCommandStream::CommandStatus::kSuccess;
 

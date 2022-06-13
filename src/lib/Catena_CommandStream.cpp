@@ -43,6 +43,8 @@ static cCommandStream::cDispatch sDefault(
 static cCommandStream::CommandStatus
 doEcho(cCommandStream *pThis, void *pContext, int argc, char**argv)
         {
+        MCCIADK_API_PARAMETER(pContext);
+
         for (int i = 1; i < argc; ++i)
                 {
                 pThis->printf(
@@ -79,6 +81,8 @@ McciCatena::cCommandStream::readComplete(
         size_t nBuffer
         )
         {
+        MCCIADK_UNREFERENCED_PARAMETER(pBuffer);
+
         this->m_fReadPending = false;
         this->m_fReadComplete = true;
         this->m_ReadStatus = uStatus;
@@ -336,6 +340,9 @@ McciCatena::cCommandStream::dispatchHelp(
         char **argv
         )
         {
+        MCCIADK_API_PARAMETER(argc);
+        MCCIADK_API_PARAMETER(argv);
+
         // walk all the tables and print simple help.
         auto const pHead = this->m_pHead;
         if (pHead != nullptr)

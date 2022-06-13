@@ -94,6 +94,8 @@ doCalibration(
 	char **argv
 	)
 	{
+	MCCIADK_API_PARAMETER(argv);
+
 	CatenaStm32L0 * const pCatena = static_cast<CatenaStm32L0 *>(pContext);
 
 	if (argc <= 1)

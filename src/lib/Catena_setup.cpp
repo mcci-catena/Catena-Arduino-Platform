@@ -361,6 +361,9 @@ static cCommandStream::CommandStatus cmdUpdate(
         char **argv
         )
         {
+        MCCIADK_API_PARAMETER(pContext);
+        MCCIADK_API_PARAMETER(argc);
+
         pThis->printf(
                 "Update firmware: echo off, timeout %d seconds\n",
                 (cDownload::kTransferTimeoutMs + 500) / 1000

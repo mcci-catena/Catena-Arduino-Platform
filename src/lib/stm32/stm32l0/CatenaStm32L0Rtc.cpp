@@ -17,6 +17,7 @@ Author:
 
 #include "CatenaStm32L0Rtc.h"
 #include "Catena_Log.h"
+#include "mcciadk_env.h"
 
 using namespace McciCatena;
 
@@ -61,6 +62,8 @@ void HAL_RTC_AlarmAEventCallback(
 	RTC_HandleTypeDef *	hRtc
 	)
 	{
+	MCCIADK_API_PARAMETER(hRtc);
+
 	if (gs_pAlarm)
 		*gs_pAlarm = 1;
 	}

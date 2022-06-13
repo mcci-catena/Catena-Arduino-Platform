@@ -130,6 +130,7 @@ McciCatena::cFram::doReset(
         char **argv
         )
         {
+        MCCIADK_API_PARAMETER(pThis);
         cFram * const pFram = static_cast<cFram *>(pContext);
         bool fResult;
 
