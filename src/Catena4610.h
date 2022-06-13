@@ -133,7 +133,7 @@ protected:
 	cPowerControlGPIO m_tcxo = cPowerControlGPIO{ D33, 2 };
 	/// on the Catena 4610, flash is always powered
 	cPowerControlDummy m_flashVdd;
-	/// on the Catena 4610, i2c is alwasy powered
+	/// on the Catena 4610, i2c is always powered
 	cPowerControlDummy m_i2cVdd;
 	/// on the Catena 4610, FRAM is always powered
 	cPowerControlDummy m_framVdd;
