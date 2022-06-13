@@ -15,6 +15,7 @@ Author:
 */
 
 #include <Catena.h>
+#include <Catena_AppObjects.h>
 #include <Catena_CommandStream.h>
 #include <Catena_FSM.h>
 #include <Catena_Led.h>
@@ -267,10 +268,7 @@ private:
 \****************************************************************************/
 
 // instantiate the global object for the platform.
-Catena gCatena;
-
-// instantiate the LED object
-StatusLed gLed (Catena::PIN_STATUS_LED);
+Catena gCatena(Version_t{CATENA_ARDUINO_PLATFORM_VERSION}, __FILE__, "FSM demo sketch");
 
 // instantiate the turnstile
 Turnstile gTurnstile (gCatena, gLed);
@@ -314,16 +312,7 @@ sMyExtraCommands_top(
 // setup is called once.
 void setup()
         {
-        gCatena.begin();
-
-        /* wait 2 seconds */
-        auto const now = millis();
-        while (millis() - now < 2000)
-                /* wait */;
-
-        /* wait for a UART connection */
-        while (! Serial)
-                /* wait */;
+        gCatena.setup();
 
         /* add our application-specific commands */
         gCatena.addCommands(
@@ -339,11 +328,7 @@ void setup()
 
 
         gCatena.SafePrintf("This is the FSM demo program for the MCCI Catena-Arduino-Platform library.\n");
-        gCatena.SafePrintf("Enter 'help' for a list of commands.\n");
-        gCatena.SafePrintf("(remember to select 'Line Ending: Newline' at the bottom of the monitor window.)\n");
 
-        gLed.begin();
-        gCatena.registerObject(&gLed);
         gTurnstile.begin();
         }
 
