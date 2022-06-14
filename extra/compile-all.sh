@@ -145,14 +145,14 @@ function _scanargs {
             _fatal "Unrecognized option:" "$opt"
             ;;
         * )
-            break
+            OPTSKETCHES+=( "$opt" )
             ;;
         esac
         IOPT=$((IOPT + 1))
     done
 
     shift $(( IOPT ))
-    OPTSKETCHES=( "$@" )
+    OPTSKETCHES+=( "$@" )
 
     if [[ "${#OPTFQBN[@]}" -eq 0 ]]; then
         _verbose "Using default FQBN: $OPTFQBN_DEFAULT"
