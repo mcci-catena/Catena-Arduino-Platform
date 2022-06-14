@@ -72,7 +72,7 @@ Author:
 /// \sa CATENA_ARDUINO_PLATFORM_VERSION_COMPARE_LT()
 ///
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 23, 0, 2) /* v0.23.0-pre2 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 99, 0, 3) /* v0.99.0-pre3 */
 
 /// \brief extract major number from a version code
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
