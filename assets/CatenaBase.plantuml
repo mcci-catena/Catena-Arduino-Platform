@@ -133,14 +133,6 @@ abstract class CatenaStm32L0 {
 }
 
 
-abstract class Catena455x {
-  +enum ANALOG_PINS;
-  +enum DIGITAL_PINS;
-  +bool begin();
-  +float ReadVbat() const;
-  +float ReadVbus() const;
-}
-
 abstract class Catena461x {
   +enum ANALOG_PINS;
   +enum DIGITAL_PINS;
@@ -213,12 +205,6 @@ class Catena4470 {
 !endif
 
 !if ($enableStm32 == 1)
-class Catena4551 {
-  +const char *CatenaName() const;
-  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
-  -{static}const size_t nvPlatforms;
-}
-
 class Catena4610 {
   +const char *CatenaName() const;
   #void getPlatformTable();
@@ -226,21 +212,7 @@ class Catena4610 {
   -{static}const size_t nvPlatforms;
 }
 
-class Catena4611 {
-  +const char *CatenaName() const;
-  #void getPlatformTable();
-  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
-  -{static}const size_t nvPlatforms;
-}
-
 class Catena4612 {
-  +const char *CatenaName() const;
-  #void getPlatformTable();
-  -{static}const CATENA_PLATFORM(* const vPlatforms[]);
-  -{static}const size_t nvPlatforms;
-}
-
-class Catena4617 {
   +const char *CatenaName() const;
   #void getPlatformTable();
   -{static}const CATENA_PLATFORM(* const vPlatforms[]);
@@ -297,16 +269,12 @@ CatenaWingFram2k <|-- Catena4470
 
 !if ($enableStm32 == 1)
 CatenaStm32 <|-- CatenaStm32L0
-CatenaStm32L0 <|-- Catena455x
 CatenaStm32L0 <|-- Catena461x
 CatenaStm32L0 <|-- Catena463x
 CatenaStm32L0 <|-- Catena480x
 
-Catena455x <|-- Catena4551
 Catena461x <|-- Catena4610
-Catena461x <|-- Catena4611
 Catena461x <|-- Catena4612
-Catena461x <|-- Catena4617
 Catena461x <|-- Catena4618
 Catena463x <|-- Catena4630
 Catena480x <|-- Catena4801

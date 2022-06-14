@@ -1,7 +1,7 @@
 @startuml
 /'
 
-Module:	CatenaBase.plantuml
+Module:	Catena_PollableInterface.plantuml
 
 Function:
 	PlantUML reference source for cPollableInterface class diagram.

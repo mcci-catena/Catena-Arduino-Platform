@@ -4,7 +4,7 @@ Module:  Catena461x.h
 
 Function:
 	class Catena461x: CatenaBase Platform to represent a Catena 461x
-	(4610, 4611, 4612, etc.)
+	(4610, 4612, etc.)
 
 Copyright notice:
 	See accompanying license file.
@@ -91,7 +91,7 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena 455x. Assumes The Things Network
+|| The LoRaWAN class for the Catena 461x. Assumes The Things Network
 */
 class Catena461x::LoRaWAN : public CatenaStm32L0::LoRaWAN
 	{

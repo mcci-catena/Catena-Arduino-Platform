@@ -80,7 +80,7 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena 455x. Assumes The Things Network
+|| The LoRaWAN class for the Catena 463x. Assumes The Things Network
 */
 class Catena463x::LoRaWAN : public CatenaStm32L0::LoRaWAN
 	{
