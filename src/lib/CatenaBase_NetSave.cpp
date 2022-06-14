@@ -68,8 +68,8 @@ CatenaBase::NetSaveSessionInfo(
 
 	gLog.printf(
 		gLog.kInfo,
-		"NwkID:   %08x   "
-		"DevAddr: %08x\n",
+		"NwkID:   %08" PRIx32 "   "
+		"DevAddr: %08" PRIx32 "\n",
 		Info.V1.NetID,
 		Info.V1.DevAddr
 		);

@@ -103,7 +103,7 @@ doCalibration(
 		uint32_t Calib;
 
 		Calib = pCatena->CalibrateSystemClock();
-		pThis->printf("calibration result: %u\n", Calib);
+		pThis->printf("calibration result: %" PRIu32 "\n", Calib);
 
 		return cCommandStream::CommandStatus::kSuccess;
 		}

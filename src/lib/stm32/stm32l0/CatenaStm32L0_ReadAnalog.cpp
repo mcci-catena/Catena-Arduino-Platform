@@ -448,8 +448,8 @@ uint32_t CatenaStm32L0::ReadAnalog(
 		{
 		gLog.printf(
 			gLog.kError,
-			"?CatenaStm32L0::ReadAnalog(%u):"
-			" CatenaStm32L0_ReadAnalog() failed (%u)\n",
+			"?CatenaStm32L0::ReadAnalog(%" PRIu32 "):"
+			" CatenaStm32L0_ReadAnalog() failed (%" PRIu32 ")\n",
 			Channel,
 			vResult
 			);

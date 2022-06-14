@@ -483,7 +483,7 @@ size_t cFlash_AT25SF081::programPage(
                 this->readStatus(&sr1, &sr2);
                 gLog.printf(
                         gLog.kError,
-                        "** writeEnable for program page %#x failed: sr1=%#02x sr2=%#02x **\n",
+                        "** writeEnable for program page %#" PRIx32 " failed: sr1=%#02x sr2=%#02x **\n",
                         Address, sr1, sr2
                         );
                 return 0;
@@ -500,7 +500,7 @@ size_t cFlash_AT25SF081::programPage(
                 this->readStatus(&sr1, &sr2);
                 gLog.printf(
                         gLog.kError,
-                        "** writeWait for program page %#x failed tBegin=%u tEnd=%u delta=%u sr1=%#02x sr2=%#02x**\n",
+                        "** writeWait for program page %#" PRIx32 " failed tBegin=%" PRIu32 " tEnd=%" PRIu32 " delta=%" PRIu32 " sr1=%#02x sr2=%#02x**\n",
                         Address, this->m_tBegin, this->m_tEnd, this->m_tEnd - this->m_tBegin,
                         sr1, sr2
                         );

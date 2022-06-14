@@ -132,7 +132,7 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 		}
 	gLog.printf(
 		gLog.kTrace,
-		"+CatenaStm32L0::CalibrateSystemClock: %cSICalib=%u\n",
+		"+CatenaStm32L0::CalibrateSystemClock: %cSICalib=%" PRIu32 "\n",
 		fCalibrateMSI ? 'M' : 'H',
 		Calib
 		);
@@ -155,7 +155,7 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 			mSecondNew = mSecond;
 		gLog.printf(
 			gLog.kTrace,
-			" Calib=%u %u msec\n",
+			" Calib=%" PRIu32 " %" PRIu32 " msec\n",
 			Calib,
 			mSecond
 			);
@@ -291,7 +291,7 @@ uint32_t CatenaStm32L0::CalibrateSystemClock(void)
 
 	gLog.printf(
 		gLog.kTrace,
-		"-CatenaStm32L0::CalibrateSystemClock: %cSICalib=%u %u msec\n",
+		"-CatenaStm32L0::CalibrateSystemClock: %cSICalib=%" PRIu32 " %" PRIu32 " msec\n",
 		fCalibrateMSI ? 'M' : 'H',
 		CalibNew,
 		mSecondNew

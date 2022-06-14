@@ -28,6 +28,7 @@ Author:
 #include <Catena_Log.h>
 #include <Catena_Serial.h>
 #include <CatenaBase.h>
+#include <cstdint>
 #include <type_traits>
 
 using namespace McciCatena;
@@ -197,7 +198,7 @@ cDownload::fsmDispatch(
             // erase pages containing the region
             for (auto blockAddress = regionAddress; blockAddress < regionEnd; blockAddress += 64 * 1024)
                 {
-                gLog.printf(gLog.kVerbose, "erase block at 0x%x...", blockAddress);
+                gLog.printf(gLog.kVerbose, "erase block at 0x%" PRIx32 "...", blockAddress);
                 this->m_pFlash->eraseBlock64(blockAddress);
                 gLog.printf(gLog.kVerbose, "\n");
                 }
@@ -337,7 +338,7 @@ cDownload::fsmDispatch(
                         else
                             {
                             this->m_fileSize = this->m_appInfo.imagesize + this->m_appInfo.authsize;
-                            gLog.printf(gLog.kVerbose, "file size: 0x%x\n", this->m_fileSize);
+                            gLog.printf(gLog.kVerbose, "file size: 0x%" PRIx32 "\n", this->m_fileSize);
                             }
                         }
                     }
@@ -416,7 +417,7 @@ cDownload::fsmDispatch(
                     status = Status_t::kUpdateFlagSetFailure;
                     if (! gLog.isEnabled(gLog.kVerbose))
                         gLog.printf(gLog.kError, "Set boot flag:");
-                    gLog.printf(gLog.kVerbose | gLog.kError, " failed: 0x%x\n", *pUpdateFlag);
+                    gLog.printf(gLog.kVerbose | gLog.kError, " failed: 0x%" PRIx32 "\n", *pUpdateFlag);
                     }
                 else
                     {

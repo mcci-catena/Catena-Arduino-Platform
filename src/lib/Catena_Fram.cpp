@@ -46,6 +46,12 @@ using namespace McciCatena;
 |
 \****************************************************************************/
 
+static_assert(
+        std::is_same<cFramStorage::Offset, std::uint32_t>::value,
+        "offset must be uint32_t"
+        );
+#define PRIxOFFSET PRIx32        // shorthand.
+
 /*
 
 Name:	McciCatena::cFram::loadCache()
@@ -97,7 +103,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: read error at offset 0x%x\n",
+                                "%s: read error at offset 0x%" PRIxOFFSET "\n",
                                 __func__,
                                 offset
                                 );
@@ -108,7 +114,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: invalid object at offset 0x%x\n",
+                                "%s: invalid object at offset 0x%" PRIxOFFSET "\n",
                                 __func__,
                                 offset
                                 );
@@ -123,7 +129,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: mismatch guid/key at offset 0x%x\n",
+                                "%s: mismatch guid/key at offset 0x%" PRIxOFFSET "\n",
                                 __func__,
                                 offset
                                 );
@@ -138,7 +144,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: replication mispmatch at offset 0x%x\n",
+                                "%s: replication mispmatch at offset 0x%" PRIxOFFSET "\n",
                                 __func__,
                                 offset
                                 );
@@ -149,7 +155,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: mismatch size at offset 0x%x, got %u, expected %u\n",
+                                "%s: mismatch size at offset 0x%" PRIxOFFSET ", got %u, expected %u\n",
                                 __func__,
                                 offset,
                                 object.getDataSize(),
@@ -163,7 +169,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kTrace,
-                                "%s: cache key 0x%x at offset 0x%x\n",
+                                "%s: cache key 0x%x at offset 0x%" PRIxOFFSET "\n",
                                 __func__,
                                 uThisKey,
                                 offset
@@ -175,7 +181,7 @@ McciCatena::cFram::loadCache(
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: key %u at offset 0x%x duplicate of offset 0x%x\n",
+                                "%s: key %u at offset 0x%" PRIxOFFSET " duplicate of offset 0x%" PRIxOFFSET "\n",
                                 __func__,
                                 uThisKey,
                                 offset,
@@ -185,7 +191,7 @@ McciCatena::cFram::loadCache(
                 }
         gLog.printf(
                 gLog.kTrace,
-                "%s: cache loaded through offset 0x%x (end offset 0x%x)\n",
+                "%s: cache loaded through offset 0x%" PRIxOFFSET " (end offset 0x%" PRIxOFFSET ")\n",
                 __func__,
                 offset,
                 this->m_endOffset
@@ -310,7 +316,7 @@ McciCatena::cFram::isValid()
 		{
 		gLog.printf(
 			gLog.kError,
-			"first object not standard: %08x\n",
+			"first object not standard: %08" PRIx32 "\n",
 			object.uSizeKey
 			);
 
@@ -322,7 +328,7 @@ McciCatena::cFram::isValid()
 		{
 		gLog.printf(
 			gLog.kError,
-			"first object size not valid: %08x objectSize(%u) dataSize(%u)\n",
+			"first object size not valid: %08" PRIxOFFSET " objectSize(%u) dataSize(%u)\n",
 			object.uSizeKey,
                         object.getObjectSize(),
                         object.getDataSize()
@@ -383,7 +389,7 @@ McciCatena::cFram::isValid()
                 {
                 gLog.printf(
                         gLog.kError,
-                        "invalid end pointer %u\n",
+                        "invalid end pointer %" PRIu32 "\n",
                         endPointer
                         );
                 return false;
@@ -394,7 +400,7 @@ McciCatena::cFram::isValid()
 	this->m_endOffset = endPointer;
         gLog.printf(
                 gLog.kTrace,
-                "%s: end pointer set to 0x%x\n",
+                "%s: end pointer set to 0x%" PRIu32 "\n",
                 __func__,
                 endPointer
                 );
@@ -546,7 +552,7 @@ McciCatena::cFram::writeItemData(
                 gLog.printf(
                         gLog.kBug,
                         "%s: offset for uKey(%u) invalid!\n",
-                        __FUNCTION__,
+                        __func__,
                         uKey
                         );
 
@@ -558,7 +564,7 @@ McciCatena::cFram::writeItemData(
 		gLog.printf(
 			gLog.kBug,
 			"%s: nBuffer(%u) != item.getSize()(%u)\n",
-			__FUNCTION__,
+			__func__,
                         nBuffer,
                         item.getSize()
                         );
@@ -592,7 +598,7 @@ McciCatena::cFram::writeItemData(
 		{
                 gLog.printf(
                         gLog.kTrace,
-                        "key(0x%x) write new version(%u): base(%u) offset(%u) size(%u)\n",
+                        "key(0x%x) write new version(%u): base(%#" PRIxOFFSET ") offset(%#" PRIxOFFSET ") size(%zu)\n",
                         uKey,
                         newVer,
                         offset,
@@ -626,7 +632,7 @@ void McciCatena::cFram::saveField(
                 {
                 gLog.printf(gLog.kError,
                         "%s: can't save uKey(0x%x) %u bytes\n",
-                        __FUNCTION__, uKey, nValue
+                        __func__, uKey, nValue
                         );
                 }
 
@@ -753,6 +759,7 @@ McciCatena::cFram::Cursor::create(
 		gLog.printf(
 			gLog.kError,
 			"%s: can't allocate 0x%#x bytes\n",
+                        __func__,
 			object.getObjectSize()
 			);
 
@@ -890,7 +897,7 @@ McciCatena::cFram::Cursor::put(
                 gLog.printf(
                         gLog.kBug,
                         "%s: can't put to un%s cursor: "
-                        "uSize(0x%x) uKey(0x%x) uVer(%u) offset(0x%x)\n",
+                        "uSize(0x%x) uKey(0x%x) uVer(%u) offset(0x%" PRIxOFFSET ")\n",
                         FUNCTION,
                         (! this->islocated()) ? "located" : "bound",
                         this->m_uSize,

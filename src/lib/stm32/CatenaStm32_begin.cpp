@@ -130,7 +130,7 @@ bool CatenaStm32::begin(
 	/* do the platform begin */
 	gLog.printf(
 		gLog.kTrace,
-		"+CatenaStm32::begin(%x, %x)\n",
+		"+CatenaStm32::begin(%" PRIx32 ", %" PRIx32 ")\n",
 		uClearMask,
 		uSetMask
 		);

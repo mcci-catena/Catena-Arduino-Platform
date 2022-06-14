@@ -30,6 +30,7 @@ Author:
 #include <Catena_Serial.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <cinttypes>
 
 using namespace McciCatena;
 
@@ -365,7 +366,7 @@ static cCommandStream::CommandStatus cmdUpdate(
         MCCIADK_API_PARAMETER(argc);
 
         pThis->printf(
-                "Update firmware: echo off, timeout %d seconds\n",
+                "Update firmware: echo off, timeout %" PRIu32 " seconds\n",
                 (cDownload::kTransferTimeoutMs + 500) / 1000
                 );
 
