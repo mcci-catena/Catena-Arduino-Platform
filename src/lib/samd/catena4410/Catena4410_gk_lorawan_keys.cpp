@@ -40,7 +40,7 @@ using namespace McciCatena;
 
 /*
 
-Use the script extra/make-lorawan-keys-entry.sh to generate
+Use the script extras/make-lorawan-keys-entry.sh to generate
 the entries in this table.
 
 */
