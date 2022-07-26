@@ -114,6 +114,19 @@ const CATENA_PLATFORM gkPlatformCatena4610_m104 =
 		CatenaBase::fM104
 	};
 
+const CATENA_PLATFORM gkPlatformCatena4610_v2 =
+	{
+	Guid: GUID_HW_CATENA_4610_V2_BASE(WIRE),
+	pParent: &gkPlatformCatena4610,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasSHT3x |
+		CatenaBase::fHasLuxLtr329 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash
+	};
+
 const CATENA_PLATFORM (* const Catena4610::vPlatforms[]) =
 	{
 	// entry 0 is the default
