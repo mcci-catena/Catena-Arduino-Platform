@@ -212,6 +212,8 @@ public:
                 fHasI2cLevelShifter = 1 << 21,
                 //platform has LTR329 Lux sensor
                 fHasLuxLtr329 = 1 << 22,
+                //platform has LIS2HH12 Accelerometer
+                fHasLIS2HH12 = 1 << 23,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
