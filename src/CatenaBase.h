@@ -210,6 +210,10 @@ public:
                 fHasSHT3x = 1 << 20,
                 //platform has I2C Level Shifter
                 fHasI2cLevelShifter = 1 << 21,
+                //platform has GPS SAM-M8Q
+                fHasSAMM8Q = 1 << 22,
+                //platform has ADS131M04
+                fHasADS131M04 = 1 << 23,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
