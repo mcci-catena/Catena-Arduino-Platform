@@ -74,6 +74,7 @@ extern const CATENA_PLATFORM	gkPlatformCatena4612_m103;
 extern const CATENA_PLATFORM	gkPlatformCatena4612_m104;
 extern const CATENA_PLATFORM	gkPlatformCatena4617;
 extern const CATENA_PLATFORM	gkPlatformCatena4618;
+extern const CATENA_PLATFORM	gkPlatformCatena4618_v2;
 
 extern const CATENA_PLATFORM	gkPlatformCatena4630;
 
