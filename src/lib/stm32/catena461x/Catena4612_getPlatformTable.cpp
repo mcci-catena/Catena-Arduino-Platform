@@ -114,6 +114,19 @@ const CATENA_PLATFORM gkPlatformCatena4612_m104 =
 		CatenaBase::fM104
 	};
 
+const CATENA_PLATFORM gkPlatformCatena4612_v2 =
+	{
+	Guid: GUID_HW_CATENA_4612_V2_BASE(WIRE),
+	pParent: &gkPlatformCatena4612,
+	PlatformFlags:
+		CatenaBase::fHasLoRa |
+		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasBme280 |
+		CatenaBase::fHasLuxLtr329 |
+		CatenaBase::fHasFRAM |
+		CatenaBase::fHasFlash
+	};
+
 const CATENA_PLATFORM (* const Catena4612::vPlatforms[]) =
 	{
 	// entry 0 is the default
@@ -122,6 +135,7 @@ const CATENA_PLATFORM (* const Catena4612::vPlatforms[]) =
 	&gkPlatformCatena4612_m102,
 	&gkPlatformCatena4612_m103,
 	&gkPlatformCatena4612_m104,
+	&gkPlatformCatena4612_v2,
 	};
 
 const size_t Catena4612::nvPlatforms = sizeof(Catena4612::vPlatforms) / sizeof(Catena4612::vPlatforms[0]);

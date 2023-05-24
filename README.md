@@ -1448,7 +1448,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 - HEAD includes the following changes
 
-  - fix [#346](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/346): add support to Catena4618 with LTR329 sensor (v0.22.0-pre6)
+  - fix [#346](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/346): add support to Catena4618 and Catena 4612 with LTR329 sensor (v0.22.0-pre7)
   - fix [#342](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/342): add support to Catena4610 version-2 (v0.22.0-pre5).
   - fix [#319](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/319): accomodate missing two-arg `UsbSerial::begin()` (v0.21.3-pre1).
   - fix [#321](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/321): add 24-bit float encoding support (v0.22.0-pre1).
