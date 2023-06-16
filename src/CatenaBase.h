@@ -57,7 +57,7 @@ Author:
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 22, 0, 4) /* v0.22.0-pre4 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 22, 0, 5) /* v0.22.0-pre5 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
@@ -210,6 +210,8 @@ public:
                 fHasSHT3x = 1 << 20,
                 //platform has I2C Level Shifter
                 fHasI2cLevelShifter = 1 << 21,
+                //platform has LTR329 Lux sensor
+                fHasLuxLtr329 = 1 << 22,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
