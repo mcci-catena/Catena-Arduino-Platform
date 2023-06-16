@@ -130,6 +130,7 @@ const CATENA_PLATFORM gkPlatformCatena4610_v2 =
 const CATENA_PLATFORM (* const Catena4610::vPlatforms[]) =
 	{
 	// entry 0 is the default
+	&gkPlatformCatena4610_v2,
 	&gkPlatformCatena4610,
 	&gkPlatformCatena4610_m101,
 	&gkPlatformCatena4610_m102,
