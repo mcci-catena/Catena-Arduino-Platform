@@ -4,7 +4,7 @@ This library provides a simple-to-use framework for taking advantage of many of 
 
 _Apologies_: This document is a work in progress, and is published in this intermediate form in hopes that it will still be better than nothing.
 
-[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.21.2...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/Catena-Arduino-Platform.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/Catena-Arduino-Platform/latest.svg)](https://github.com/mcci-catena/Catena-Arduino-Platform/compare/v0.22.0...master) [![Build Status](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform.svg?branch=master)](https://travis-ci.com/mcci-catena/Catena-Arduino-Platform)
 
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-capture -->
@@ -1446,12 +1446,12 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
-- HEAD includes the following changes
+- v0.22.0 includes the following changes.
 
   - fix [#346](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/346): add support to Catena4618 and Catena 4612 with LTR329 sensor (v0.22.0-pre7)
   - fix [#342](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/342): add support to Catena4610 version-2 (v0.22.0-pre5).
-  - fix [#319](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/319): accomodate missing two-arg `UsbSerial::begin()` (v0.21.3-pre1).
   - fix [#321](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/321): add 24-bit float encoding support (v0.22.0-pre1).
+  - fix [#319](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/319): accomodate missing two-arg `UsbSerial::begin()` (v0.21.3-pre1).
 
 - v0.21.2 includes the following changes, non breaking, all bug fixes.
 
