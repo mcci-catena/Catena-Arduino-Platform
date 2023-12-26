@@ -49,6 +49,10 @@ public:
                 kBme680Cal = 16,
                 kAppConf = 17,
                 kLmicSessionState = 18,
+                kCOSensitivity = 19,
+                kO3Sensitivity = 20,
+                kNO2Sensitivity = 21,
+                kSO2Sensitivity = 22,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };
