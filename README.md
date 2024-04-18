@@ -1456,8 +1456,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
-- v0.22.1 includes the following changes.
-  - fix [#350](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/350): add library support for STM32Lxx watchdog timer (v0.22.1-pre1)
+- v0.23.0 includes the following changes.
+  - fix [#350](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/350): add library support for STM32Lxx watchdog timer (v0.23.0-pre1)
 
 - v0.22.0 includes the following changes.
 
