@@ -73,6 +73,8 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [Synchronous Command Functions](#synchronous-command-functions)
 		- [Asynchronous Command Functions](#asynchronous-command-functions)
 	- [Clock Management and Calibration](#clock-management-and-calibration)
+	- [Watchdog Timer](#watchdog-timer)
+		- [SafeDelay()](#safedelay)
 	- [Si1133 driver](#si1133-driver)
 	- [`cTimer` Timer object](#ctimer-timer-object)
 		- [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
@@ -1102,6 +1104,14 @@ An asynchronous command function allows for work to continue after the initial f
 
 On some platforms, the system clock needs to be calibrated explicitly in order for the real-time ticks from `micros()` and `millis()` to be accurate. Do this by calling `uint32_t gCatena.CalibrateSystemClock()`. This function updates the clock calibration, and returns a platform-specific value indicative of the calibration. On platforms that don't support (or that don't need) calibration, a dummy implementation is provided that returns 0.
 
+### Watchdog Timer
+
+The independent watchdog is used to detect and resolve malfunctions due to software failures. It triggers a reset sequence when it is not refreshed within the expected time-window (we use 26 seconds time-window). Along with the watchdog timer, we use `SafeDelay()` function.
+
+#### SafeDelay()
+
+It serves as an alternative to the Arduino `delay()` function. Its purpose is to refresh the watchdog time-window, thus preventing any potential resets during delay operations within the application. Like Arduino `delay()`, it accepts milliseconds as a parameter.
+
 ### Si1133 driver
 
 The library includes a simple driver for the SiLabs 1133 light sensor found on many Catena boards.
@@ -1445,6 +1455,9 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
 
 ## Release History
+
+- v0.23.0 includes the following changes.
+  - fix [#350](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/350): add library support for STM32Lxx watchdog timer (v0.23.0-pre1)
 
 - v0.22.0 includes the following changes.
 

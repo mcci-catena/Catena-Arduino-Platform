@@ -28,6 +28,7 @@ Author:
 #include <Catena_Log.h>
 #include <Catena_Serial.h>
 #include <CatenaBase.h>
+#include <Catena_WatchdogTimer.h>
 
 using namespace McciCatena;
 
@@ -489,7 +490,9 @@ cDownload::checkHash(
 
     for (auto i = flashBaseAddr; i < flashEndAddr; )
         {
+        gIwdgTimer.refreshWatchdog();
         uint32_t n = flashEndAddr - i;
+
         if (n > sizeof(this->m_pagebuffer))
             n = sizeof(this->m_pagebuffer);
 
@@ -497,8 +500,13 @@ cDownload::checkHash(
         // peek in.
         CatenaBase::pCatenaBase->poll();
 
+        gIwdgTimer.refreshWatchdog();
         this->m_pFlash->read(i, this->m_pagebuffer, n);
+
+        gIwdgTimer.refreshWatchdog();
         nRemaining = this->m_pBootloaderApi->hash_blocks(hash, this->m_pagebuffer, n);
+
+        gIwdgTimer.refreshWatchdog();
 
         // advance
         i += n;
