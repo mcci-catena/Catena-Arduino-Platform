@@ -50,6 +50,8 @@ public:
                 kAppConf = 17,
                 kLmicSessionState = 18,
                 kUplinkInterval = 19,
+                kDataLogHeader = 20,
+                kDataLogBuffer = 21,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };
@@ -102,7 +104,11 @@ public:
 
         static const StandardItem vItemDefs[kMAX];
 
-        class Object;
+        class Object;           // forward reference.
+        struct DataLogHeader_t; // forward reference
+        struct DataLogBuffer_t; // forward referencce
+
+        static constexpr uint16_t kDataLogBufferSize = 2048;
 
         enum : uint32_t
                 {
@@ -387,6 +393,186 @@ public:
 
         // check whether the object is formally valid
         bool isValid(void) const;
+        };
+
+///
+/// @brief the header for the FRAM-based data log
+///
+/// @details
+///     We support a limited data logging function, for storing a FIFO queue of fixed-size
+///     records in a buffer in FRAM. This is implememnted with two FRAM objects. A single
+///     DataLogBuffer_t is allocated storing the data elements; pointers are retained using
+///     a separate cFramStorage::DataLogHeader_t object.
+///
+///     Unlike the buffer, the header is maintained using normal cFramStorage techniques;
+///     it is therefore updated reliably. It contains the classic ring-buffer insert and
+///     remove pointers. It also needs to remember the size of the buffer, so it knows
+///     how to handle wrap-around. So that we can handle software updates sanely, it keeps
+///     an idea of the size of the objects recorded and of the data format; if care is taken
+///     to update the data format when things change, software should be able to recognize
+///     a log buffer that it doesn't understand and take appropriate action.
+///
+///     The names of methods and type for the Data Logging Header are modeled on the names
+///     used in the C++ standard header <dequeue>. We don't implement all the operations,
+///     from <dequeue>, but since a ring buffer is fundamentally a dequeue,
+///     it seems sane to follow that naming convention.
+///
+///     Bear in mind, however, that the methods of the DataLogHeader_t do not move data
+///     to the FRAM; there is a wrapper driver that takes care of this. The code here
+///     manipulates the indices but another layer needs to carefully stage the writing
+///     of the ring buffer headers, and stage the writing of the header vs the data
+///     at the appropriate moments.
+///
+
+struct cFramStorage::DataLogHeader_t
+        {
+public:
+        using size_type = uint16_t;
+
+        enum class OverflowPolicy_t : uint8_t
+                {
+                kDropOldest = 0,
+                kDropNew = 1,
+                };
+
+        ///
+        /// @brief check whether the structure read from FRAM is consistent with current software
+        /// @param version      [in] the version tag for the data log buffer used by the current software.
+        /// @param buffersize   [in] the size of the log buffer desired by the current software.
+        /// @param itemsize     [in] the size of each item in the buffer
+        /// @return \c true if things look ok, \c false if things look out of sync.
+        ///
+        /// \c version only needs to change if the data format changes but the size of an item doesn't change.
+        /// \c buffersize is normally read from the buffer object; the software's idea of the size should
+        /// only be used when creating the buffer object.
+        ///
+        bool queryVersionMatch(uint8_t version, uint16_t buffersize, uint16_t itemsize) const
+                {
+                return version == this->m_version &&
+                       buffersize == this->m_buffersize &&
+                       itemsize == this->m_itemsize
+                       ;
+                }
+
+        /// @brief calculate the maximum capacity of the buffer
+        /// @return number of elements that will fit.
+        ///
+        /// @details If itemsize is zero, the result will be zero.
+        ///
+        /// @note The name is based on the similar function in <dequeue>.
+        /// \c this->max_size() is also the largest permitted index value
+        /// in the buffer. It's one less than the allocation size of the
+        /// buffer (in units of itemsize)
+        constexpr size_type max_size() const
+                {
+                return (this->m_itemsize == 0)                  ? 0 :
+                       (this->m_buffersize < this->m_itemsize)  ? 0 :
+                                                                  (this->m_buffersize / this->m_itemsize - 1);
+                }
+
+        /// @brief check whether the ring-buffer control structure is self-consistent.
+        /// @return true if things look reasonable.
+        bool queryConsistent() const
+                {
+                // basic checks
+                if (this->m_itemsize == 0)
+                        return false;
+
+                uint16_t const nItems = this->m_buffersize / this->m_itemsize;
+                if (nItems == 0)
+                        return false;
+
+                if (this->m_insert >= nItems || this->m_remove >= nItems)
+                        return false;
+
+                return true;
+                }
+
+        /// @brief empty the ring buffer header
+        ///
+        /// @details
+        ///     The reset pointer is advanced to the head.
+        ///
+        /// @note The name is based on the similar function in <dequeue>.
+        void clear()
+                {
+                if (this->m_insert < this->max_size())
+                        this->m_remove = this->m_insert;
+                else
+                        this->m_remove = this->m_insert = 0;
+                }
+
+        /// @brief return the number of elements currently in the buffer
+        /// @return the count, in 0 .. max_size().
+        constexpr size_type size() const
+                {
+                if (this->m_remove <= this->m_insert)
+                        return this->m_insert - this->m_remove;
+                else
+                        return this->m_insert + this->max_size() + 1 - this->m_remove;
+                }
+
+        bool push_back(size_type &insertIndex)
+                {
+                insertIndex = this->m_insert;
+
+                return this->push_back();
+                }
+
+        bool push_back(void)
+                {
+                if (this->size() == this->max_size())
+                        {
+                        ++this->m_nDropped;
+                        return false;
+                        }
+
+                if (this->m_insert == this->max_size())
+                        this->m_insert = 0;
+                else
+                        ++this->m_insert;
+                return true;
+                }
+
+        bool pop_front(size_type &removeIndex)
+                {
+                removeIndex = this->m_remove;
+                return this->pop_front();
+                }
+
+        bool pop_front()
+                {
+                if (this->size() == 0)
+                        return false;
+                else
+                        {
+                        if (this->m_remove == this->max_size())
+                                this->m_remove = 0;
+                        else
+                                ++this->m_remove;
+
+                        return true;
+                        }
+                }
+
+        constexpr size_type indexToOffset(size_type bufferIndex) const
+                {
+                return bufferIndex * this->m_itemsize;
+                }
+
+private:
+        size_type       m_insert;
+        size_type       m_remove;
+        size_type       m_buffersize;
+        size_type       m_itemsize;
+        uint16_t        m_nDropped;
+        uint8_t         m_version;
+        OverflowPolicy_t m_overflowPolicy;
+        };
+
+struct cFramStorage::DataLogBuffer_t
+        {
+        uint8_t         m_buffer[kDataLogBufferSize];
         };
 
 }; // namespace McciCatena
