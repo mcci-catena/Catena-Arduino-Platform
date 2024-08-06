@@ -878,6 +878,36 @@ McciCatena::cFram::Cursor::get(
 	}
 
 bool
+McciCatena::cFram::Cursor::getPartialValue(
+	uint8_t *pBuffer,
+	size_t nBuffer,
+        size_t offsetInValue
+	)
+	{
+	if (! this->m_pFram->isReady())
+		return false;
+	if (this->m_offset == cFramStorage::kInvalidOffset)
+		return false;
+
+        auto const overallSize = this->m_uSize;
+        if (offsetInValue > overallSize)
+                offsetInValue = overallSize;
+        if (nBuffer > overallSize - offsetInValue)
+                nBuffer = overallSize - offsetInValue;
+        
+        if (nBuffer == 0)
+                return true;
+                
+	return this->m_pFram->read(
+		this->m_offset + cFramStorage::dataOffset(this->m_uSize, this->m_uVer) + offsetInValue,
+                pBuffer,
+                nBuffer
+		);
+
+	return false;
+	}
+
+bool
 McciCatena::cFram::Cursor::put(
 	const uint8_t *pBuffer,
 	size_t nBuffer
@@ -908,6 +938,106 @@ McciCatena::cFram::Cursor::put(
 		nBuffer
 		);
 	}
+
+/*
+
+Name:	cFram::Cursor::putPartialValue()
+
+Function:
+        Modify contents of the underlying Fram value in place.
+
+Definition:
+        bool cFram::Cursor::putPartialValue(
+                size_t offsetInValue,
+                const uint8_t *pBuffer,
+                size_t nBuffer
+                );
+
+Description:
+        This API allows a program to modify a portion of an FRAM
+        data value without having to do a read/modify/write on the
+        entire value. This is particularly convenient for FRAM entries
+        that are large, as it save lots of useless read/write cycles.
+
+        pBuffer/nBuffer describe the range of bytes to be written.
+        offsetInValue gives the starting byte index within the value.
+
+        The routine knows the szie of the overall object in FRAM, and
+        won't write beyond its limits. If offsetInValue is too large,
+        the routine does nothing; if offsetInValue in in range, but
+        nBuffer would extend beyond the defined length of the object,
+        nBuffer is trimmed to stay in limits.
+
+Returns:
+        No explicit result.
+
+Notes:
+        
+
+*/
+
+bool
+McciCatena::cFram::Cursor::putPartialValue(
+        size_t offsetInValue,
+        const uint8_t *pBuffer,
+        size_t nBuffer
+        )
+        {
+        static const char FUNCTION[] = "cFram::Cursor::putPartialValue";
+
+        if (! this->islocated() ||
+            ! this->isbound())
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "%s: can't put to un%s cursor: "
+                        "uSize(0x%x) uKey(0x%x) uVer(%u) offset(0x%x)\n",
+                        FUNCTION,
+                        (! this->islocated()) ? "located" : "bound",
+                        this->m_uSize,
+                        this->m_uKey,
+                        this->m_uVer,
+                        this->m_offset
+                        );
+		return false;
+                }
+
+        auto const & item = cFramStorage::vItemDefs[this->m_uKey];
+
+        if (! item.isReplicated())
+                {
+                gLog.printf(
+                        gLog.kBug,
+                        "%s: object is replicated, partial update not supported: "
+                        "uSize(0x%x) uKey(0x%x) uVer(%u) offset(0x%x)\n",
+                        FUNCTION,
+                        this->m_uSize,
+                        this->m_uKey,
+                        this->m_uVer,
+                        this->m_offset
+                        );
+		return false;
+                }
+
+        auto const overallSize = this->m_uSize;
+        if (offsetInValue > overallSize)
+                offsetInValue = overallSize;
+        if (nBuffer > overallSize - offsetInValue)
+                nBuffer = overallSize - offsetInValue;
+        
+        if (nBuffer == 0)
+                return true;
+        
+        return this->m_pFram->write(
+                        offsetInValue + 
+                                cFramStorage::dataOffset(
+                                        item.getSize(),
+                                        0
+                                        ),
+                        pBuffer,
+                        nBuffer
+                        );
+        }
 
 bool
 McciCatena::cFram::Cursor::getitem(

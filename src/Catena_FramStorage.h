@@ -105,7 +105,7 @@ public:
         static const StandardItem vItemDefs[kMAX];
 
         class Object;           // forward reference.
-        struct DataLogHeader_t; // forward reference
+        class DataLogHeader_t; // forward reference
         struct DataLogBuffer_t; // forward referencce
 
         static constexpr uint16_t kDataLogBufferSize = 2048;
@@ -423,7 +423,6 @@ public:
 ///     of the ring buffer headers, and stage the writing of the header vs the data
 ///     at the appropriate moments.
 ///
-
 struct cFramStorage::DataLogHeader_t
         {
 public:
@@ -434,6 +433,29 @@ public:
                 kDropOldest = 0,
                 kDropNew = 1,
                 };
+
+        DataLogHeader_t()
+                : m_version(0)
+                , m_buffersize(0)
+                , m_insert(0)
+                , m_remove(0)
+                , m_nDropped(0)
+                , m_overflowPolicy(OverflowPolicy_t::kDropOldest)
+                , m_itemsize(1)
+                , m_numSlots(0)
+                {}
+
+        DataLogHeader_t(uint8_t version, size_type buffersize, uint16_t itemsize, OverflowPolicy_t policy)
+                : m_version(version)
+                , m_buffersize(buffersize < 1 ? 1 : buffersize)
+                , m_insert(0)
+                , m_remove(0)
+                , m_nDropped(0)
+                , m_overflowPolicy(policy)
+                , m_itemsize(itemsize < 1 ? 1 : itemsize)
+                , m_numSlots(this->m_buffersize / this->m_itemsize)
+                {
+                }
 
         ///
         /// @brief check whether the structure read from FRAM is consistent with current software
@@ -453,6 +475,36 @@ public:
                        itemsize == this->m_itemsize
                        ;
                 }
+        
+        bool initialize(uint8_t version, uint16_t buffersize, uint16_t itemsize, OverflowPolicy_t policy)
+                {
+                bool result = true;
+
+                if (buffersize == 0)
+                        {
+                        result = false;
+                        buffersize = 1;
+                        }
+                if (itemsize == 0)
+                        {
+                        result = false;
+                        itemsize = buffersize;
+                        }
+                size_type const numSlots = buffersize / itemsize;
+                if (numSlots < 1)
+                        {
+                        result = false;
+                        }
+
+                this->m_version = version;
+                this->m_buffersize = buffersize;
+                this->m_insert = 0;
+                this->m_remove = 0;
+                this->m_nDropped = 0;
+                this->m_overflowPolicy = policy;
+                this->m_numSlots = numSlots;
+                return result;
+                }
 
         /// @brief calculate the maximum capacity of the buffer
         /// @return number of elements that will fit.
@@ -463,11 +515,9 @@ public:
         /// \c this->max_size() is also the largest permitted index value
         /// in the buffer. It's one less than the allocation size of the
         /// buffer (in units of itemsize)
-        constexpr size_type max_size() const
+        size_type max_size() const
                 {
-                return (this->m_itemsize == 0)                  ? 0 :
-                       (this->m_buffersize < this->m_itemsize)  ? 0 :
-                                                                  (this->m_buffersize / this->m_itemsize - 1);
+                return this->m_numSlots - 1;
                 }
 
         /// @brief check whether the ring-buffer control structure is self-consistent.
@@ -482,18 +532,23 @@ public:
                 if (nItems == 0)
                         return false;
 
+                if (nItems != this->m_numSlots)
+                        return false;
+
                 if (this->m_insert >= nItems || this->m_remove >= nItems)
                         return false;
 
                 return true;
                 }
 
+        ///
         /// @brief empty the ring buffer header
         ///
         /// @details
         ///     The reset pointer is advanced to the head.
         ///
         /// @note The name is based on the similar function in <dequeue>.
+        ///
         void clear()
                 {
                 if (this->m_insert < this->max_size())
@@ -504,42 +559,91 @@ public:
 
         /// @brief return the number of elements currently in the buffer
         /// @return the count, in 0 .. max_size().
-        constexpr size_type size() const
+        size_type size() const
                 {
                 if (this->m_remove <= this->m_insert)
                         return this->m_insert - this->m_remove;
                 else
-                        return this->m_insert + this->max_size() + 1 - this->m_remove;
+                        return this->m_insert + this->m_numSlots - this->m_remove;
                 }
 
+        ///
+        /// @brief allocate room for entry at end of queue, return index of entry
+        /// @param insertIndex [out] is set to the index of the inserted entry
+        /// @return \c true if an entry was successfully added; \c false otherwise.
+        ///     If successful, \c insertIndex is set to the index
+        ///     of the new entry; otherwise its value is not defined.
+        ///
+        ///     Assumses consistency.
+        ///
         bool push_back(size_type &insertIndex)
                 {
-                insertIndex = this->m_insert;
-
-                return this->push_back();
+                return this->push_back(&insertIndex);
                 }
 
-        bool push_back(void)
+        ///
+        /// @brief make room (if possible) for an appended entry.
+        /// @param  [in] pInsertIndex - optional pointer to variable to receive
+        ///                             insertion slot index.
+        /// @return \c true if an entry was made available, \c false if not.
+        ///
+        ///     As a side effect, if data will be lost (either by advancing over
+        ///     a slot that's already occupied, or by indicating that no entry
+        ///     is available), the discarded-data counter is incremented.
+        ///
+        bool push_back(size_type *pInsertIndex = nullptr)
                 {
-                if (this->size() == this->max_size())
+                if (this->size() >= this->max_size())
                         {
                         ++this->m_nDropped;
+
                         return false;
                         }
 
-                if (this->m_insert == this->max_size())
+                // if pointing at last entry, wrap aound
+                size_type const oldInsert = this->m_insert;
+                if (oldInsert == this->max_size())
                         this->m_insert = 0;
                 else
-                        ++this->m_insert;
+                        this->m_insert = oldInsert + 1;
+                
+                if (pInsertIndex)
+                        *pInsertIndex = oldInsert;
+
                 return true;
                 }
 
-        bool pop_front(size_type &removeIndex)
+        ///
+        /// @brief return the slot index of the entry at the head of (or desired relative 
+        ///        position in) the queue.
+        /// @param [out] entryIndex - if result is \c true, set to the slot index of the
+        ///                           requested entry.
+        /// @param [in] iDesiredEntry - optional index of desired entry. If omitted or zero,
+        ///                             the head entry is desired; if 1, the second entry is
+        ///                             desired, and so forth.
+        /// @return \c true if and only if the desired entry is present in the queue.
+        ///
+        bool peek_front(size_type &entryIndex, size_type iDesiredEntry = 0) const
                 {
-                removeIndex = this->m_remove;
-                return this->pop_front();
+                if (this->size() < iDesiredEntry)
+                        return false;
+                else
+                        {
+                        // no need to compute modulus for head.
+                        if (iDesiredEntry == 0)
+                                entryIndex = this->m_remove;
+                        else
+                                entryIndex = (this->m_remove + iDesiredEntry) % this->m_numSlots;
+
+                        return true;
+                        }
                 }
 
+        ///
+        /// @brief remove the head element from the queue.
+        /// @return \c true if an entry was removed, \c false if queue was
+        ///         already empty.
+        ///
         bool pop_front()
                 {
                 if (this->size() == 0)
@@ -555,21 +659,75 @@ public:
                         }
                 }
 
-        constexpr size_type indexToOffset(size_type bufferIndex) const
+        ///
+        /// @brief convert a slot index to a byte offset in the buffer
+        /// @param entryIndex - 
+        /// @return the byte index, given the item size.
+        ///
+        size_type indexToOffset(size_type entryIndex) const
                 {
-                return bufferIndex * this->m_itemsize;
+                return entryIndex * this->m_itemsize;
+                }
+
+        size_type queryDropped(void) const
+                {
+                return this->m_nDropped;
+                }
+        
+        size_type adjustDropped(size_type adjustment)
+                {
+                auto nDropped = this->m_nDropped;
+
+                if (nDropped < adjustment)
+                        {
+                        adjustment = nDropped;
+                        }
+                nDropped -= adjustment;
+                this->m_nDropped = nDropped;
+                return nDropped;
+                }
+
+        size_type queryItemSize() const
+                {
+                return this->m_itemsize;
+                }
+        
+        OverflowPolicy_t queryOverflowPolicy() const
+                {
+                return this->m_overflowPolicy;
+                }
+
+        size_type absoluteIndex(size_type iEntry) const
+                {
+                return (this->m_remove + iEntry) % this->m_numSlots;
                 }
 
 private:
-        size_type       m_insert;
-        size_type       m_remove;
-        size_type       m_buffersize;
-        size_type       m_itemsize;
-        uint16_t        m_nDropped;
-        uint8_t         m_version;
-        OverflowPolicy_t m_overflowPolicy;
+        size_type       m_insert;       ///< insert pointer, in slots
+        size_type       m_remove;       ///< removal pointer, in slots
+        size_type       m_buffersize;   ///< buffer size in bytes
+        size_type       m_itemsize;     ///< item size in bytes
+        size_type       m_numSlots;     ///< number of slots (capacity + 1)
+        uint16_t        m_nDropped;     ///< count of dropped entries since last succesful insert
+        uint8_t         m_version;      ///< version -- set by caller, used for consistency
+                                        ///  checks on boot. Change this if interpretation of
+                                        ///  data buffer changed -- the API doesn't support
+                                        ///  that, and you need handle it at the outer layer,
+                                        ///  or just discard older data.
+        OverflowPolicy_t m_overflowPolicy;      ///< what do do when the buffer is full, Choices
+                                                ///  are either to discard the new data, or
+                                                ///  discard the oldest data.
         };
 
+///
+/// @brief The buffer data type for the FRAM-based data log
+///
+/// @details
+///     Becasue of implementation restrictions in cFramStorage, we need a data type with
+///     a size for the buffer. The buffer is not meant to be read all at once into memory,
+///     and we don't expect ever to instantiate an object of this type. But this is how
+///     we set the size: by declaring an object with the appropriate size.
+///
 struct cFramStorage::DataLogBuffer_t
         {
         uint8_t         m_buffer[kDataLogBufferSize];
