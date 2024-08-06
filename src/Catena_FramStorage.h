@@ -434,7 +434,7 @@ public:
                 kDropNew = 1,
                 };
 
-        DataLogHeader_t()
+        constexpr DataLogHeader_t()
                 : m_version(0)
                 , m_buffersize(0)
                 , m_insert(0)
@@ -445,7 +445,7 @@ public:
                 , m_numSlots(0)
                 {}
 
-        DataLogHeader_t(uint8_t version, size_type buffersize, uint16_t itemsize, OverflowPolicy_t policy)
+        constexpr DataLogHeader_t(uint8_t version, size_type buffersize, uint16_t itemsize, OverflowPolicy_t policy)
                 : m_version(version)
                 , m_buffersize(buffersize < 1 ? 1 : buffersize)
                 , m_insert(0)
@@ -476,7 +476,7 @@ public:
                        ;
                 }
         
-        bool initialize(uint8_t version, uint16_t buffersize, uint16_t itemsize, OverflowPolicy_t policy)
+        constexpr bool initialize(uint8_t version, uint16_t buffersize, uint16_t itemsize, OverflowPolicy_t policy)
                 {
                 bool result = true;
 
@@ -515,7 +515,7 @@ public:
         /// \c this->max_size() is also the largest permitted index value
         /// in the buffer. It's one less than the allocation size of the
         /// buffer (in units of itemsize)
-        size_type max_size() const
+        constexpr size_type max_size() const
                 {
                 return this->m_numSlots - 1;
                 }
@@ -559,7 +559,7 @@ public:
 
         /// @brief return the number of elements currently in the buffer
         /// @return the count, in 0 .. max_size().
-        size_type size() const
+        constexpr size_type size() const
                 {
                 if (this->m_remove <= this->m_insert)
                         return this->m_insert - this->m_remove;
@@ -623,7 +623,7 @@ public:
         ///                             desired, and so forth.
         /// @return \c true if and only if the desired entry is present in the queue.
         ///
-        bool peek_front(size_type &entryIndex, size_type iDesiredEntry = 0) const
+        constexpr bool peek_front(size_type &entryIndex, size_type iDesiredEntry = 0) const
                 {
                 if (this->size() < iDesiredEntry)
                         return false;
@@ -664,12 +664,12 @@ public:
         /// @param entryIndex - 
         /// @return the byte index, given the item size.
         ///
-        size_type indexToOffset(size_type entryIndex) const
+        constexpr size_type indexToOffset(size_type entryIndex) const
                 {
                 return entryIndex * this->m_itemsize;
                 }
 
-        size_type queryDropped(void) const
+        constexpr size_type queryDropped(void) const
                 {
                 return this->m_nDropped;
                 }
@@ -687,17 +687,17 @@ public:
                 return nDropped;
                 }
 
-        size_type queryItemSize() const
+        constexpr size_type queryItemSize() const
                 {
                 return this->m_itemsize;
                 }
         
-        OverflowPolicy_t queryOverflowPolicy() const
+        constexpr OverflowPolicy_t queryOverflowPolicy() const
                 {
                 return this->m_overflowPolicy;
                 }
 
-        size_type absoluteIndex(size_type iEntry) const
+        constexpr size_type absoluteIndex(size_type iEntry) const
                 {
                 return (this->m_remove + iEntry) % this->m_numSlots;
                 }
