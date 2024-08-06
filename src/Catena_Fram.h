@@ -199,7 +199,7 @@ public:
         // take a located cursor and create an object if needed
         bool create(void);
 
-        // test whether a cursro is bound to an object
+        // test whether a cursor is bound to an object
         bool isbound() const
                 {
                 return this->m_uKey != cFramStorage::StandardKeys::kMAX;
@@ -209,6 +209,35 @@ public:
         bool islocated() const
                 {
                 return this->m_offset != cFramStorage::kInvalidOffset;
+                }
+
+        bool isinitialized() const
+                {
+                return this->m_pFram != nullptr;
+                }
+        
+        bool initialize(cFram *pFram)
+                {
+                if (pFram == nullptr)
+                        {
+                        // invalid paramter
+                        return false;
+                        }
+                
+                else if (this->m_pFram == nullptr)
+                        {
+                        // not set
+                        this->m_pFram = pFram;
+                        return true;
+                        }
+                else if (this->m_pFram == pFram)
+                        {
+                        // not changing.
+                        return true;
+                        }
+                else
+                        // already set and trying to chagne.
+                        return false;
                 }
 
         // set up a cursor to match a standard item
@@ -234,6 +263,16 @@ public:
 		return this->get((uint8_t *)&v, sizeof(v));
 		}
 
+        // get an object.
+        template <class T>
+        bool get(T &v)
+                {
+                return this->get((uint8_t *)&v, sizeof(v));
+                }
+
+        // get a part of a value
+        bool getPartialValue(uint8_t *pBuffer, size_t nBuffer, size_t offset);
+
         // put a buffer
 	bool put(const uint8_t *pBuffer, size_t nBuffer);
 
@@ -242,6 +281,16 @@ public:
 		{
 		return this->put((const uint8_t *)&v, sizeof(v));
 		}
+
+        // put an object
+        template <class T>
+        bool put(const T &v)
+                {
+                return this->put((const uint8_t *)&v, sizeof(v));
+                }
+
+        // put a part of a value
+        bool putPartialValue(size_t offset, const uint8_t *pBuffer, size_t nBuffer);
 
         // parse a value
         bool parsevalue(
