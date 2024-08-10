@@ -52,10 +52,11 @@ Notes:
 
 bool
 FramRingBuffer_t::initializeFromFram(
-        uint8_t version, size_type itemsize, OverflowPolicy_t policy
+        uint8_t version, size_type base_itemsize, OverflowPolicy_t policy
         )
         {
         auto const pCatena = CatenaBase::pCatenaBase;
+        const size_t itemsize = base_itemsize + sizeof(sequence_type);
 	auto pFram = pCatena->getFram();
         bool fMustInitializeLogHeader = false;
 
@@ -157,6 +158,7 @@ Function:
 
 Definition:
         bool FramRingBuffer_t::put_tail(
+                sequence_type sequenceNumber,
                 const uint8_t *pBuffer,
                 size_type nBuffer
                 );
@@ -167,7 +169,7 @@ Description:
         while updating just results in the data being discarded.
 
 Returns:
-        true if data was written, false otehrwise.
+        true if data was written, false otherwise.
 
 Notes:
         This is a protected method; typically only the abstract template
@@ -178,18 +180,23 @@ Notes:
         If overwriting old entries, we must first delete the old head and
         confirm the deletion. Then we can append.
 
+        This call advances the sequence number.
+
 */
 
 #define FUNCTION "FramRingBuffer_t::put_tail"
 
 bool
 FramRingBuffer_t::put_tail(
+        sequence_type sequenceNumber,
         const uint8_t *pBuffer,
         size_type nBuffer
         )
         {
-        if (nBuffer > this->m_logheader.queryItemSize())
-                nBuffer = this->m_logheader.queryItemSize();
+        const size_type max_buffer = this->m_logheader.queryItemSize() - sizeof(sequence_type);
+
+        if (nBuffer > max_buffer)
+                nBuffer = max_buffer;
         
         size_type itemIndex;
         if (! this->m_logheader.push_back(&itemIndex))
@@ -209,8 +216,26 @@ FramRingBuffer_t::put_tail(
         // convert itemIndex to byte index
         auto const byteIndex = this->m_logheader.indexToOffset(itemIndex);
 
+        //
+        // write the sequence number
+        // force little-endian. Throw a compile error if
+        // we decide to change size of sequence_type.
+        //
+        bool fResult;
+        static_assert(sizeof(sequence_type) == 2);
+        uint8_t sequence_buffer[2];
+
+        sequence_buffer[0] = uint8_t(sequenceNumber & 0xFF);
+        sequence_buffer[1] = uint8_t(sequenceNumber >> 8);
+
+        fResult = this->m_logBufferCursor.putPartialValue(byteIndex, sequence_buffer, sizeof(sequence_buffer));
+
         // write the buffer
-        auto fResult = this->m_logBufferCursor.putPartialValue(byteIndex, pBuffer, nBuffer);
+        if (fResult)
+                fResult = this->m_logBufferCursor.putPartialValue(
+                                byteIndex + sizeof(sequenceNumber),
+                                pBuffer, nBuffer
+                                );
 
         if (fResult)
                 {
@@ -232,6 +257,7 @@ Function:
 
 Definition:
         bool FramRingBuffer_t::peek_front(
+                sequence_type &sequenceNumber
                 uint8_t *pBuffer,
                 size_type nBuffer,
                 size_type iEntry // defaults to zero
@@ -253,18 +279,117 @@ Notes:
 
 bool
 FramRingBuffer_t::peek_front(
+        sequence_type &sequenceNumber,
         uint8_t *pBuffer,
         size_type nBuffer,
         size_type iEntry // defaults to zero
         )
         {
+        bool fResult;
+        static_assert(sizeof(sequence_type) == 2);
+        uint8_t sequence_buffer[2];
+
         if (iEntry >= this->m_logheader.size())
                 return false;
         
         size_type const iItem = this->m_logheader.absoluteIndex(iEntry);
         size_type const byteIndex = this->m_logheader.indexToOffset(iItem);
 
-        return this->m_logBufferCursor.getPartialValue(pBuffer, nBuffer, byteIndex);
+        fResult = this->m_logBufferCursor.getPartialValue(sequence_buffer, sizeof(sequence_buffer), byteIndex);
+        if (fResult)
+                fResult = this->m_logBufferCursor.getPartialValue(pBuffer, nBuffer, byteIndex + sizeof(sequence_buffer));
+
+        if (fResult)
+                sequenceNumber = sequence_buffer[0] + (sequence_buffer[1] << 8);
+        
+        return fResult;
+        }
+
+#undef FUNCTION
+
+/*
+
+Name:	FramRingBuffer_t::newSequenceNumber()
+
+Function:
+        Assign a new sequence number and record the decision.
+
+Definition:
+        bool FramRingBuffer_t::newSequenceNumber(
+                FramRingBuffer_t::sequence_type &sequenceNumber
+                );
+
+Description:
+        A sequence number is issued, updating FRAM so that the sequence number
+        can't be immediately reused.
+
+Returns:
+        This function returns true if the sequence number was successfully
+        assigned, false otherwise. If false, then sequenceNumber is not changed.
+
+Notes:
+        
+
+*/
+
+#define FUNCTION "FramRingBuffer_t::newSequenceNumber"
+
+bool
+FramRingBuffer_t::newSequenceNumber(
+        FramRingBuffer_t::sequence_type &sequenceNumber
+        )
+        {
+        auto const newSequenceNumber = this->m_logheader.querySequenceNumber();
+
+        this->m_logheader.advanceSequence();
+        if (! this->m_logHeaderCursor.put(this->m_logheader))
+                {
+                this->m_logheader.setSequenceNumber(newSequenceNumber);
+                return false;
+                }
+        else
+                {
+                sequenceNumber = newSequenceNumber;
+                return true;
+                }
+        }
+
+#undef FUNCTION
+
+/*
+
+Name:	FramRingBuffer_t::clear()
+
+Function:
+        Clear and save the ring buffer header.
+
+Definition:
+        bool FramRingBuffer_t::clear(
+                void
+                );
+
+Description:
+        The ring buffer pointers are re-initialized. Sequence number is not
+        changed
+
+Returns:
+        This function returns true if and only if the header was successfully
+        saved to FRAM.
+
+Notes:
+
+
+*/
+
+#define FUNCTION "FramRingBuffer_t::clear"
+
+bool
+FramRingBuffer_t::clear(
+        void
+        )
+        {
+        this->m_logheader.clear();
+        return this->m_logHeaderCursor.put(this->m_logheader);
         }
 
 #undef FUNCTION

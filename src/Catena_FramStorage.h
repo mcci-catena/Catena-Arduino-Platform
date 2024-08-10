@@ -427,6 +427,7 @@ struct cFramStorage::DataLogHeader_t
         {
 public:
         using size_type = uint16_t;
+        using sequence_type = uint16_t;
 
         enum class OverflowPolicy_t : uint8_t
                 {
@@ -443,6 +444,7 @@ public:
                 , m_overflowPolicy(OverflowPolicy_t::kDropOldest)
                 , m_itemsize(1)
                 , m_numSlots(0)
+                , m_sequenceNumber(0)
                 {}
 
         constexpr DataLogHeader_t(uint8_t version, size_type buffersize, uint16_t itemsize, OverflowPolicy_t policy)
@@ -454,6 +456,7 @@ public:
                 , m_overflowPolicy(policy)
                 , m_itemsize(itemsize < 1 ? 1 : itemsize)
                 , m_numSlots(this->m_buffersize / this->m_itemsize)
+                , m_sequenceNumber(0)
                 {
                 }
 
@@ -702,18 +705,39 @@ public:
                 return (this->m_remove + iEntry) % this->m_numSlots;
                 }
 
+        constexpr sequence_type querySequenceNumber() const
+                {
+                return this->m_sequenceNumber;
+                }
+        
+        void setSequenceNumber(uint32_t sequenceNumber)
+                {
+                this->m_sequenceNumber = sequenceNumber;
+                }
+
+        void advanceSequence()
+                {
+                ++this->m_sequenceNumber;
+                }
+
+        constexpr size_type queryNumSlots() const
+                {
+                return this->m_numSlots;
+                }
+
 private:
-        size_type       m_insert;       ///< insert pointer, in slots
-        size_type       m_remove;       ///< removal pointer, in slots
-        size_type       m_buffersize;   ///< buffer size in bytes
-        size_type       m_itemsize;     ///< item size in bytes
-        size_type       m_numSlots;     ///< number of slots (capacity + 1)
-        uint16_t        m_nDropped;     ///< count of dropped entries since last succesful insert
-        uint8_t         m_version;      ///< version -- set by caller, used for consistency
-                                        ///  checks on boot. Change this if interpretation of
-                                        ///  data buffer changed -- the API doesn't support
-                                        ///  that, and you need handle it at the outer layer,
-                                        ///  or just discard older data.
+        uint32_t        m_sequenceNumber;       ///< monotonically increasing sequence number
+        size_type       m_insert;               ///< insert pointer, in slots
+        size_type       m_remove;               ///< removal pointer, in slots
+        size_type       m_buffersize;           ///< buffer size in bytes
+        size_type       m_itemsize;             ///< item size in bytes
+        size_type       m_numSlots;             ///< number of slots (capacity + 1)
+        uint16_t        m_nDropped;             ///< count of dropped entries since last succesful insert
+        uint8_t         m_version;              ///< version -- set by caller, used for consistency
+                                                ///  checks on boot. Change this if interpretation of
+                                                ///  data buffer changed -- the API doesn't support
+                                                ///  that, and you need handle it at the outer layer,
+                                                ///  or just discard older data.
         OverflowPolicy_t m_overflowPolicy;      ///< what do do when the buffer is full, Choices
                                                 ///  are either to discard the new data, or
                                                 ///  discard the oldest data.
