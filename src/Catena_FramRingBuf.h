@@ -52,7 +52,7 @@ public:
 
         // constructor
         FramRingBuffer_t(uint8_t version, size_type itemsize, OverflowPolicy_t policy)
-                : m_logheader(version, this->getBufferSize(), itemsize, policy)
+                : m_logheader(version, this->getBufferSize(), itemsize + sizeof(sequence_type), policy)
                 {}
 
 protected:

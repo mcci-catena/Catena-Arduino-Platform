@@ -710,7 +710,7 @@ public:
                 return this->m_sequenceNumber;
                 }
         
-        void setSequenceNumber(uint32_t sequenceNumber)
+        void setSequenceNumber(uint16_t sequenceNumber)
                 {
                 this->m_sequenceNumber = sequenceNumber;
                 }
@@ -726,7 +726,7 @@ public:
                 }
 
 private:
-        uint32_t        m_sequenceNumber;       ///< monotonically increasing sequence number
+        uint16_t        m_sequenceNumber;       ///< monotonically increasing sequence number
         size_type       m_insert;               ///< insert pointer, in slots
         size_type       m_remove;               ///< removal pointer, in slots
         size_type       m_buffersize;           ///< buffer size in bytes
