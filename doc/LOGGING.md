@@ -181,7 +181,7 @@ bool retransmit_matching_uplink(sequence_type start, sequence_type end)
 	{
 	if (no_wraparound && start <= seqno && seqno <= end)
 	    do_retransmit(item);
-	else if (start <= seqno || seqno <= end)
+	else if (!noWraparound && (start <= seqno || seqno <= end))
 	    do_retransmit(item);
 	else
 	    /* skip */;
