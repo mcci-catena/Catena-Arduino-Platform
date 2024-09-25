@@ -1004,7 +1004,7 @@ McciCatena::cFram::Cursor::putPartialValue(
 
         auto const & item = cFramStorage::vItemDefs[this->m_uKey];
 
-        if (! item.isReplicated())
+        if (item.isReplicated())
                 {
                 gLog.printf(
                         gLog.kBug,
@@ -1029,7 +1029,7 @@ McciCatena::cFram::Cursor::putPartialValue(
                 return true;
         
         return this->m_pFram->write(
-                        offsetInValue + 
+                        this->m_offset + offsetInValue +
                                 cFramStorage::dataOffset(
                                         item.getSize(),
                                         0
