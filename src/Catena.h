@@ -67,6 +67,9 @@ Author:
 #elif defined(ARDUINO_MCCI_MODEL_4916)
 # include "Model4916.h"
 # define CATENA_H_SUPER_  McciCatena::Model4916
+#elif defined(ARDUINO_MCCI_MODEL_4917)
+# include "Model4917.h"
+# define CATENA_H_SUPER_  McciCatena::Model4917
 /* fallback in case it's SAMD but not what we expect */
 #elif defined(ARDUINO_ARCH_SAMD)
 # include "CatenaSamd21.h"
