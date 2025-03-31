@@ -57,7 +57,7 @@ Author:
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 24, 0, 0) /* v0.24.0 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 25, 0, 1) /* v0.25.0-pre1 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
@@ -212,6 +212,10 @@ public:
                 fHasI2cLevelShifter = 1 << 21,
                 //platform has LTR329 Lux sensor
                 fHasLuxLtr329 = 1 << 22,
+                //platform has GPS SAM-M8Q
+                fHasSAMM8Q = 1 << 24,
+                //platform has ADS131M04
+                fHasADS131M04 = 1 << 25,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
