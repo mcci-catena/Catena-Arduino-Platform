@@ -218,6 +218,10 @@ public:
                 fHasSAMM8Q = 1 << 24,
                 //platform has ADS131M04
                 fHasADS131M04 = 1 << 25,
+                //platform has ADS1015
+                fHasADS1015 = 1 << 26,
+                //platform has BMP581
+                fHasBMP581 = 1 << 27,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
