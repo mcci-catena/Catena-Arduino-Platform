@@ -50,6 +50,10 @@ public:
                 kAppConf = 17,
                 kLmicSessionState = 18,
                 kUplinkInterval = 19,
+                kCOSensitivity = 20,
+                kO3Sensitivity = 21,
+                kNO2Sensitivity = 22,
+                kSO2Sensitivity = 23,
                 // when you add something, also update McciCatena::cFramStorage::vItemDefs[]!
                 kMAX
                 };
