@@ -37,10 +37,11 @@ const CATENA_PLATFORM gkPlatformModel4933 =
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasSHT3x |
-		CatenaBase::fHasADS131M04 |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasBMP581 |
-		CatenaBase::fHasFlash
+		CatenaBase::fHasFlash,
+        PlatformFlags2:
+		CatenaBase::fHasADS131M04 |
+		CatenaBase::fHasBMP581
 	};
 
 const CATENA_PLATFORM (* const Model4933::vPlatforms[]) =
