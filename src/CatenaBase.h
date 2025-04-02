@@ -57,7 +57,7 @@ Author:
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 24, 0, 0) /* v0.24.0 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 25, 0, 4) /* v0.25.0-pre4 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
@@ -212,6 +212,10 @@ public:
                 fHasI2cLevelShifter = 1 << 21,
                 //platform has LTR329 Lux sensor
                 fHasLuxLtr329 = 1 << 22,
+                //platform has LIS2HH12 Accelerometer
+                fHasLIS2HH12 = 1 << 23,
+                //platform has GPS SAM-M8Q
+                fHasSAMM8Q = 1 << 24,
 
                 // special wiring variants all are offsets from M100...
                 // we support up to 127 variants, becuase we have 7
@@ -222,6 +226,17 @@ public:
                   fM102 = 0x02 << 25,
                   fM103 = 0x03 << 25,
                   fM104 = 0x04 << 25,
+                };
+
+        // flags that describe generic platform capabilities
+        enum PLATFORM_FLAGS2 : uint32_t
+                {
+                //platform has ADS131M04
+                fHasADS131M04 = 1 << 0,
+                //platform has ADS1015
+                fHasADS1015 = 1 << 1,
+                //platform has BMP581
+                fHasBMP581 = 1 << 2,
                 };
 
         // Get the model number from flags. constexpr to allow for
@@ -282,6 +297,7 @@ public:
                 }
 
         inline uint32_t GetPlatformFlags(void);
+        inline uint32_t GetPlatformFlags2(void);
 
         // get system clock rate in Hz; must be overridden
         virtual uint64_t GetSystemClockRate(void) const = 0;
@@ -464,6 +480,7 @@ struct CATENA_PLATFORM
         MCCIADK_GUID_WIRE       Guid;
         const CATENA_PLATFORM   *pParent;
         uint32_t                PlatformFlags;
+        uint32_t                PlatformFlags2;
         uint32_t                OperatingFlags;
         };
 
@@ -473,6 +490,16 @@ inline uint32_t CatenaBase::GetPlatformFlags(void)
 
         if (pPlatform != nullptr)
                 return pPlatform->PlatformFlags;
+        else
+                return 0;
+        }
+
+inline uint32_t CatenaBase::GetPlatformFlags2(void)
+        {
+        const CATENA_PLATFORM * const pPlatform = this->m_pPlatform;
+
+        if (pPlatform != nullptr)
+                return pPlatform->PlatformFlags2;
         else
                 return 0;
         }
