@@ -57,7 +57,7 @@ Author:
         (((major) << 24u) | ((minor) << 16u) | ((patch) << 8u) | (local))
 
 #define CATENA_ARDUINO_PLATFORM_VERSION \
-        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 25, 0, 1) /* v0.25.0-pre1 */
+        CATENA_ARDUINO_PLATFORM_VERSION_CALC(0, 25, 0, 2) /* v0.25.0-pre2 */
 
 #define CATENA_ARDUINO_PLATFORM_VERSION_GET_MAJOR(v)    \
         (((v) >> 24u) & 0xFFu)
@@ -237,6 +237,12 @@ public:
                 fHasADS1015 = 1 << 1,
                 //platform has BMP581
                 fHasBMP581 = 1 << 2,
+                //platform has SHT4X sensirion
+                fHasSHT4X = 1 << 3,
+                //platform has nPM1300
+                fHasNpm1300 = 1 << 4,
+                //platform has LIS2DUXS12 accelerometer
+                fHasLIS2DUXS12 = 1 << 5,
                 };
 
         // Get the model number from flags. constexpr to allow for
