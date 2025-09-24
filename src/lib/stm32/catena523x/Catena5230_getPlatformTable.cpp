@@ -33,7 +33,7 @@ const CATENA_PLATFORM gkPlatformCatena5230 =
 		CatenaBase::fHasTtnNycLoRa |
 		CatenaBase::fHasLuxLtr329 |
 		CatenaBase::fHasFRAM |
-		CatenaBase::fHasFlash
+		CatenaBase::fHasFlash,
 	PlatformFlags2:
 		CatenaBase::fHasSHT4X |
 		CatenaBase::fHasNpm1300 |

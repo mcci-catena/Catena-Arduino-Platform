@@ -19,9 +19,13 @@ Author:
 #include "Catena523x.h"
 
 #include "Catena_Log.h"
+#include <MCCI_Catena_nPM1300.h>
 
 using namespace McciCatena;
+using namespace McciCatenaNpm1300;
 
+McciCatenaNpm1300::cNPM1300 gNpm1300 {WirePMIC};
+
 /*
 
 Name:	Catena523x::begin()
@@ -45,6 +49,11 @@ bool Catena523x::begin()
 	Serial.begin(115200);
 	Wire.begin();
 	delay(1000);
+	// PMIC I2C begin
+	WirePMIC.begin();
+	delay(1000);
+	// begin PMIC module
+	gNpm1300.begin();
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 	gLog.printf(
 		gLog.kTrace,
