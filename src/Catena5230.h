@@ -42,8 +42,8 @@ public:
 	Catena5230& operator=(const Catena5230&&) = delete;
 
 	virtual const char *CatenaName() const override { return "Catena 5230"; };
-	// virtual float ReadVbat(void) const override;
-	// virtual float ReadVbus(void) const override;
+	virtual float ReadVbat(void) const override;
+	virtual float ReadVbus(void) const override;
 
 protected:
 	// we are required to provide a table of platforms

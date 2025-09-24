@@ -37,6 +37,7 @@ Author:
 
 #include <cstdarg>
 #include <Catena_limits.h>
+#include <cstdint>
 
 // now, back to reality
 #include "Stream.h"
