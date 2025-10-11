@@ -51,7 +51,7 @@ using namespace McciCatenaNpm1300;
 |
 \****************************************************************************/
 
-extern McciCatenaNpm1300::cNPM1300 gNpm1300;
+extern McciCatenaNpm1300::cNPM1300 npm1300;
 
 /****************************************************************************\
 |
@@ -80,36 +80,16 @@ extern McciCatenaNpm1300::cNPM1300 gNpm1300;
 float
 Catena5230::ReadVbat(void) const
 	{
-	float volt = gNpm1300.measureVbat();
+	float volt = npm1300.measureVbat();
 	return volt;
 	}
 
 float
 Catena5230::ReadVbus(void) const
 	{
-	float volt = gNpm1300.measureVbus();
+	float volt = npm1300.measureVbus();
 	return volt;
 	}
-
-#if defined(ARDUINO_MCCI_CATENA_5230) && defined(USBD_LL_ConnectionState_WEAK)
-
-extern "C" {
-
-uint32_t USBD_LL_ConnectionState(void)
-	{
-	float vBus;
-
-	// get the bus voltage
-	vBus = gNpm1300.measureVbus();
-	// convert the voltage to millivoltage
-	float vBusMilli = vBus * 1000;
-
-	return 1; // (vBusMilli < 2500) ? 0 : 1;
-	}
-
-}
-
-#endif // ARDUINO_MCCI_CATENA_5230
 
 #endif // ARDUINO_ARCH_STM32
 
