@@ -24,7 +24,7 @@ Author:
 using namespace McciCatena;
 using namespace McciCatenaNpm1300;
 
-McciCatenaNpm1300::cNPM1300 gNpm1300 {WirePMIC};
+McciCatenaNpm1300::cNPM1300 npm1300 {WirePMIC};
 
 /*
 
@@ -53,7 +53,7 @@ bool Catena523x::begin()
 	WirePMIC.begin();
 	delay(1000);
 	// begin PMIC module
-	gNpm1300.begin();
+	npm1300.begin();
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 	gLog.printf(
 		gLog.kTrace,
