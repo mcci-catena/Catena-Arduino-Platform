@@ -76,6 +76,9 @@ Author:
 #elif defined(ARDUINO_MCCI_MODEL_4933) || defined(ARDUINO_MODEL_4933)
 # include "Model4933.h"
 # define CATENA_H_SUPER_  McciCatena::Model4933
+#elif defined(ARDUINO_MCCI_CATENA_5220)
+# include "Catena5220.h"
+# define CATENA_H_SUPER_  McciCatena::Catena5220
 #elif defined(ARDUINO_MCCI_CATENA_5230)
 # include "Catena5230.h"
 # define CATENA_H_SUPER_  McciCatena::Catena5230
