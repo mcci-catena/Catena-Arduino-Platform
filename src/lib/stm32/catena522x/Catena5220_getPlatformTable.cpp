@@ -36,6 +36,7 @@ const CATENA_PLATFORM gkPlatformCatena5220 =
 	PlatformFlags:
 		CatenaBase::fHasLoRa |
 		CatenaBase::fHasTtnNycLoRa |
+		CatenaBase::fHasRS485 |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
 	PlatformFlags2:
