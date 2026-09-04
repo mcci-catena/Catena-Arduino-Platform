@@ -31,7 +31,7 @@ Revision history:
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
+#if defined(ARDUINO_ARCH_STM32) && defined(ARDUINO_MCCI_CATENA_5230)
 
 #include "Catena5230.h"
 #include "Catena_Log.h"
@@ -41,7 +41,7 @@ Revision history:
 
 using namespace McciCatena;
 using namespace McciCatenaNpm1300;
-
+
 /****************************************************************************\
 |
 |		Manifest constants & typedefs.
@@ -91,6 +91,6 @@ Catena5230::ReadVbus(void) const
 	return volt;
 	}
 
-#endif // ARDUINO_ARCH_STM32
+#endif // ARDUINO_ARCH_STM32 && ARDUINO_MCCI_CATENA_5230
 
 /**** end of Catena5230_ReadAnalog.cpp ****/
