@@ -14,7 +14,7 @@ Author:
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
+#if defined(ARDUINO_ARCH_STM32) && defined(ARDUINO_MCCI_CATENA_5230)
 
 #include "Catena523x.h"
 
@@ -23,7 +23,7 @@ Author:
 
 using namespace McciCatena;
 using namespace McciCatenaNpm1300;
-
+
 McciCatenaNpm1300::cNPM1300 npm1300 {WirePMIC};
 
 /*
@@ -68,6 +68,6 @@ bool Catena523x::begin()
 	return true;
 	}
 
-#endif // ARDUINO_ARCH_STM32
+#endif // ARDUINO_ARCH_STM32 && ARDUINO_MCCI_CATENA_5230
 
 /**** end of Catena523x_begin.cpp ****/
