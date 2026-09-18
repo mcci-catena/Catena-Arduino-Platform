@@ -156,6 +156,14 @@ script:
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4802) $THISLIB/examples/catena_hello/catena_hello.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4802) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4916) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4916) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4917) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4917) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4931) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4931) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4933) $THISLIB/examples/catena_hello/catena_hello.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4933) $THISLIB/examples/catena_hello/catena_hello_lora.ino
 
  #
  # test the user-command and fsm examples on the 4610
