@@ -36,6 +36,11 @@ _Apologies_: This document is a work in progress, and is published in this inter
 		- [GUIDs for the Catena 480x family](#guids-for-the-catena-480x-family)
 			- [Catena 4801](#catena-4801)
 			- [Catena 4802](#catena-4802)
+		- [GUIDs for the MCCI Model 49xx boards](#guids-for-the-mcci-model-49xx-boards)
+			- [Model 4916](#model-4916)
+			- [Model 4917](#model-4917)
+			- [Model 4931](#model-4931)
+			- [Model 4933](#model-4933)
 		- [GUIDs for Adafruit Feather M0s](#guids-for-adafruit-feather-m0s)
 	- [Polling Framework](#polling-framework)
 		- [Making a class pollable](#making-a-class-pollable)
@@ -169,6 +174,10 @@ Class                 | Header File             | Description
 `Catena4630`          | `Catena4630.h`          | MCCI Catena 4630 Murata-based board with Air Quality Sensor.
 `Catena4801`          | `Catena4801.h`          | MCCI Catena 4801 Murata-based board with Modbus.
 `Catena4802`          | `Catena4802.h`          | MCCI Catena 4802 Murata-based board with Modbus and Temperature sensor.
+`Model4916`           | `Model4916.h`           | MCCI Model 4916 Murata-based board for air-quality monitoring.
+`Model4917`           | `Model4917.h`           | MCCI Model 4917 Murata-based board for temperature monitoring using a OneWire probe.
+`Model4931`           | `Model4931.h`           | MCCI Model 4931 Murata-based board for sap-flow monitoring.
+`Model4933`           | `Model4933.h`           | MCCI Model 4933 Murata-based board for air-quality monitoring.
 
 ### Class derivation
 
@@ -362,6 +371,40 @@ Name | GUID | Description
 Name | GUID | Description
 -----|------|------------
 `CATENA_4802_BASE` | `daaf345e-b5d5-4a32-a303-3ac70b81d260` | Base Catena 4802, assuming no modifications or customizations.
+
+#### GUIDs for the MCCI Model 49xx boards
+
+##### Model 4916
+
+The Model 4916 is a dedicated board for air-quality monitoring, with a non-rechargeable battery, GPS, and BME680, SHT31-DIS-F, IPS7100, Spec Sensors (CO, NO2, SO2 and O3) and SCD30 sensors.
+
+Name | GUID | Description
+-----|------|------------
+`MODEL_4916_BASE` | `2eadd9eb-80e3-4e14-99c6-851f036ffa8d` | Base Model 4916, assuming no modifications or customizations.
+
+##### Model 4917
+
+The Model 4917 is a dedicated board for temperature monitoring using an external OneWire probe; it has no on-board sensors.
+
+Name | GUID | Description
+-----|------|------------
+`MODEL_4917_BASE` | `d9d35ffd-1859-4686-900c-dd7fd5941886` | Base Model 4917, assuming no modifications or customizations.
+
+##### Model 4931
+
+The Model 4931 is a dedicated board for sap-flow monitoring, with a rechargeable LiPo battery, BMP581 and SHT35 sensors, and connections for a OneWire sensor, Davis rain gauge, MS10 soil sensor, pressure transducer, solar panel and SD card.
+
+Name | GUID | Description
+-----|------|------------
+`MODEL_4931_BASE` | `d5bb121d-f5e6-4755-b510-f8723c5dc9b9` | Base Model 4931, assuming no modifications or customizations.
+
+##### Model 4933
+
+The Model 4933 is a dedicated board for air-quality monitoring, with a rechargeable LiPo battery, BMP581, SHT35, IPS7100 sensors and Spec Sensors (CO, NO2, SO2 and O3).
+
+Name | GUID | Description
+-----|------|------------
+`MODEL_4933_BASE` | `3626d5de-f251-4466-be24-d4c767cf1812` | Base Model 4933, assuming no modifications or customizations.
 
 #### GUIDs for Adafruit Feather M0s
 
