@@ -31,12 +31,15 @@ Function:
 
 Definition:
         bool Model4931::LoRaWAN::begin(
-        Model4931 *pParent
-        );
+                Model4931 *pParent
+                );
+
 Description:
         We record parent pointers, and other useful things for later.
+
 Returns:
         true for success, false for failure.
+
 */
 
 bool

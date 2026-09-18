@@ -35,15 +35,15 @@ public:
 
     // uses default destructor
 
-	// neither copyable nor movable
-	Model4917(const Model4917&) = delete;
-	Model4917& operator=(const Model4917&) = delete;
-	Model4917(const Model4917&&) = delete;
-	Model4917& operator=(const Model4917&&) = delete;
+    // neither copyable nor movable
+    Model4917(const Model4917&) = delete;
+    Model4917& operator=(const Model4917&) = delete;
+    Model4917(const Model4917&&) = delete;
+    Model4917& operator=(const Model4917&&) = delete;
 
-	virtual const char *CatenaName() const override { return "Model 4917"; };
-	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
+    virtual const char *CatenaName() const override { return "Model 4917"; };
+    virtual float ReadVbat(void) const override;
+    virtual float ReadVbus(void) const override;
 
     // LoRaWAN binding
     class LoRaWAN /* forward */;
@@ -86,7 +86,7 @@ virtual void getPlatformTable(
     ) override;
 
 private:
-// the known platforms
+    // the known platforms
     static const CATENA_PLATFORM(* const vPlatforms[]);
     static const size_t nvPlatforms;
     };
