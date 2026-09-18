@@ -3,7 +3,7 @@
 Module:  Model4931.h
 
 Function:
-        class Model4931: CatenaBase Platform to represent a Catena 4931
+        class Model4931: CatenaBase Platform to represent a Model 4931
         (such as the 4931).
 
 Copyright notice:
@@ -41,9 +41,9 @@ public:
     Model4931(const Model4931&&) = delete;
     Model4931& operator=(const Model4931&&) = delete;
 
-	virtual const char *CatenaName() const override { return "Model 4931"; };
-	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
+    virtual const char *CatenaName() const override { return "Model 4931"; };
+    virtual float ReadVbat(void) const override;
+    virtual float ReadVbus(void) const override;
 
     // LoRaWAN binding
     class LoRaWAN /* forward */;

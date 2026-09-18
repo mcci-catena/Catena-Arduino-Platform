@@ -41,9 +41,9 @@ public:
     Model4933(const Model4933&&) = delete;
     Model4933& operator=(const Model4933&&) = delete;
 
-	virtual const char *CatenaName() const override { return "Model 4933"; };
-	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
+    virtual const char *CatenaName() const override { return "Model 4933"; };
+    virtual float ReadVbat(void) const override;
+    virtual float ReadVbus(void) const override;
 
     // LoRaWAN binding
     class LoRaWAN /* forward */;
@@ -62,7 +62,7 @@ public:
         ANALOG_CHANNEL_A3 = 3,
         ANALOG_CHANNEL_A4 = 2,
         ANALOG_CHANNEL_VBAT = ANALOG_CHANNEL_A1,
-	ANALOG_CHANNEL_VBUS = ANALOG_CHANNEL_A0,
+        ANALOG_CHANNEL_VBUS = ANALOG_CHANNEL_A0,
         ANALOG_CHANNEL_VREF = 17,
         };
 

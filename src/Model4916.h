@@ -35,15 +35,15 @@ public:
 
     // uses default destructor
 
-	// neither copyable nor movable
-	Model4916(const Model4916&) = delete;
-	Model4916& operator=(const Model4916&) = delete;
-	Model4916(const Model4916&&) = delete;
-	Model4916& operator=(const Model4916&&) = delete;
+    // neither copyable nor movable
+    Model4916(const Model4916&) = delete;
+    Model4916& operator=(const Model4916&) = delete;
+    Model4916(const Model4916&&) = delete;
+    Model4916& operator=(const Model4916&&) = delete;
 
-	virtual const char *CatenaName() const override { return "Model 4916"; };
-	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
+    virtual const char *CatenaName() const override { return "Model 4916"; };
+    virtual float ReadVbat(void) const override;
+    virtual float ReadVbus(void) const override;
 
     // LoRaWAN binding
     class LoRaWAN /* forward */;
