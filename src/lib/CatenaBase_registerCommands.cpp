@@ -17,7 +17,7 @@ Author:
 #include "CatenaBase.h"
 
 #include "Catena_CommandStream.h"
-#include <mcciadk_env.h>
+#include <mcciadk_baselib.h>
 #include <Arduino_LoRaWAN.h>
 #include <Arduino_LoRaWAN_lmic.h>
 
@@ -306,10 +306,15 @@ Description:
 	The output:
 
 		Board: name
-		Platform-version: X.Y.Z[.local]
-		Arduino-LoRaWAN-version: X.Y.Z[.local]
-		Arduino-LMIC-version: X.Y.Z[.local]
-		MCCIADK-version: X.Y.Z[.local]
+		Platform-Version: X.Y.Z[-preN]
+		Arduino-LoRaWAN-Version: X.Y.Z[-preN]
+		Arduino-LMIC-Version: X.Y.Z[-preN]
+		MCCIADK-Version: X.Y.Z[-preN]
+		MCCI-Arduino-BSP-Version: X.Y.Z[-preN]
+
+	A BSP that does not define _mcci_arduino_version_is_semantic
+	is shown as X.Y.Z[.local], because its local field might not
+	be a pre-release number.
 
 Returns:
 	Command status.
@@ -322,9 +327,22 @@ printVersion(
 	cCommandStream *pThis,
 	const char *pLabel,
 	uint32_t packedVersion,
-	bool fSemantic = false
+	bool fSemantic = true
 	)
 	{
+#if defined(MCCIADKLIB_FORMAT_VERSION_BUFFER_SIZE)
+	/* the ADK can format it: X.Y.Z or X.Y.Z-preN */
+	if (fSemantic)
+		{
+		char buf[MCCIADKLIB_FORMAT_VERSION_BUFFER_SIZE];
+
+		McciAdkLib_FormatVersion(buf, sizeof(buf), 0, packedVersion);
+		pThis->printf("%s-Version: %s\n", pLabel, buf);
+		return;
+		}
+#endif
+
+	/* older ADK, or a version whose local field isn't a pre-release */
 	const char cSemantic = fSemantic ? '-' : '.';
 
 	pThis->printf("%s-Version: %d.%d.%d%c",
@@ -362,8 +380,8 @@ doVersion(
 		}
 
 	pThis->printf("Board: %s\n", pCatena->CatenaName());
-	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION, true);
-	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION, true);
+	printVersion(pThis, "Platform", CATENA_ARDUINO_PLATFORM_VERSION);
+	printVersion(pThis, "Arduino-LoRaWAN", ARDUINO_LORAWAN_VERSION);
 	printVersion(pThis, "Arduino-LMIC", ARDUINO_LMIC_VERSION);
 	printVersion(pThis, "MCCIADK", mcciadk_version);
 
