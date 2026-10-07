@@ -1452,9 +1452,12 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 |---------|:-------:|:----:|----------|
 | [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | 4.0.0 | 3.99.0-3 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.1 | 0.9.1-pre1 | Needed for bug fixes in session state save/restore. |
-| [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 0.2.1 | 0.1.2 | Needed for miscellaneous definitions |
+| [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 1.1.0 | 0.1.2 | Needed for miscellaneous definitions. With 1.1.0 or later, `system version` shows pre-releases as `X.Y.Z-preN`. |
 
 ## Release History
+
+- v0.24.2 (in progress) includes the following changes.
+  - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
 
 - v0.24.1 fixes an error in `library.properties` that prevented installation with newer versions of the Arduino IDE [#364](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/356), [#355](https://github.com/mcci-catena/Catena-Arduino-Platform/pull/355). Thanks to [Aidan McNay](https://github.com/Aidan-McNay) for the pull request.
 
