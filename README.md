@@ -1499,6 +1499,15 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 
 ## Release History
 
+- v0.25.0 (in progress) includes the following changes.
+  - fix [#345](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/345): add support for Model 4916 (v0.25.0-pre1)
+  - fix [#344](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/344): add support for Model 4917 (v0.25.0-pre2)
+  - fix [#360](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/360): add support for Model 4931
+  - fix [#361](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/361): add support for Model 4933 (v0.25.0-pre4)
+  - fix [#363](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/363): add `PlatformFlags2` support for new boards
+  - Horizontal review and code cleanup for Model 4916, 4917, 4931, and 4933 (header/comment consistency, formatting)
+  - Merged in the `system version` pre-release formatting fix from [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370) (v0.24.2) so this release is sequenced on top of it
+
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
 
