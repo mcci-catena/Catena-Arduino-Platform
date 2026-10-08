@@ -139,31 +139,31 @@ script:
  # *** TESTS FOR STM32L0 / Catena 4551, 46xx, 480x boards ****
  # test each of the STM32L0 boards
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4551) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4551) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4551) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4611) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4611) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4611) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4612) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4617) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4617) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4617) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4618) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4618) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4618) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4630) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4630) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4630) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4801) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4802) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4802) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4802) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4916) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4916) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4916) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4917) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4917) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4917) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4931) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4931) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4931) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4933) $THISLIB/examples/catena_hello/catena_hello.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4933) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_model_4933) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
  #
  # test the user-command and fsm examples on the 4610
@@ -171,10 +171,10 @@ script:
  - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610) $THISLIB/examples/catena_fsm/catena_fsm.ino
 
  # test each of the regions for 4610 (using it as an example). us915 already tested
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 eu868  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 au915  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923jp) $THISLIB/examples/catena_hello/catena_hello_lora.ino
- - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 in866  ) $THISLIB/examples/catena_hello/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 eu868  ) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 au915  ) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923  ) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 as923jp) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
+ - _notstm32l0 || arduino --verify $(_stm32l0opts mcci_catena_4610 in866  ) $THISLIB/examples/catena_hello_lora/catena_hello_lora.ino
 
 ### end of file ###
