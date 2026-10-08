@@ -82,6 +82,11 @@ extern const CATENA_PLATFORM	gkPlatformCatena4630;
 extern const CATENA_PLATFORM	gkPlatformCatena4801;
 extern const CATENA_PLATFORM	gkPlatformCatena4802;
 
+extern const CATENA_PLATFORM	gkPlatformModel4916;
+extern const CATENA_PLATFORM	gkPlatformModel4917;
+extern const CATENA_PLATFORM	gkPlatformModel4931;
+extern const CATENA_PLATFORM	gkPlatformModel4933;
+
 } /* namespace McciCatena */
 
 /**** end of Catena_Platforms.h ****/
