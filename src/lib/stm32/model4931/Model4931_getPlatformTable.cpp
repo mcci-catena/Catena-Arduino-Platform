@@ -42,7 +42,7 @@ const CATENA_PLATFORM gkPlatformModel4931 =
 		CatenaBase::fHasWaterOneWire |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
-        PlatformFlags2:
+	PlatformFlags2:
 		CatenaBase::fHasADS1015 |
 		CatenaBase::fHasBMP581
 	};

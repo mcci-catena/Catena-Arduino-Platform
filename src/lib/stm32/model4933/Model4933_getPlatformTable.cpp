@@ -39,7 +39,7 @@ const CATENA_PLATFORM gkPlatformModel4933 =
 		CatenaBase::fHasSHT3x |
 		CatenaBase::fHasFRAM |
 		CatenaBase::fHasFlash,
-        PlatformFlags2:
+	PlatformFlags2:
 		CatenaBase::fHasADS131M04 |
 		CatenaBase::fHasBMP581
 	};
