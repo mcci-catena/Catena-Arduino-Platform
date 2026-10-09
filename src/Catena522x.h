@@ -3,7 +3,7 @@
 Module:  Catena522x.h
 
 Function:
-        class Catena5220: CatenaBase Platform to represent a Catena 5220
+        class Catena522x: CatenaBase Platform to represent a Catena 522x
         (such as the 5220).
 
 Copyright notice:
@@ -14,8 +14,8 @@ Author:
 
 */
 
-#ifndef _CATENA522x_H_	/* prevent multiple includes */
-#define _CATENA522x_H_
+#ifndef _CATENA522X_H_	/* prevent multiple includes */
+#define _CATENA522X_H_
 
 #pragma once
 
@@ -101,4 +101,4 @@ private:
 } // namespace McciCatena
 
 /**** end of Catena522x.h ****/
-#endif /* _CATENA522x_H_ */
+#endif /* _CATENA522X_H_ */

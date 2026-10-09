@@ -58,4 +58,4 @@ Catena5220::ReadVbus(void) const
 
 #endif // ARDUINO_ARCH_STM32
 
-/**** end of Catena5220_ReadAnalog.cpp ****/
+/**** end of Catena5220_ReadVoltage.cpp ****/

@@ -3,7 +3,7 @@
 Module:  Catena523x.h
 
 Function:
-        class Catena5230: CatenaBase Platform to represent a Catena 5230
+        class Catena523x: CatenaBase Platform to represent a Catena 523x
         (such as the 5230).
 
 Copyright notice:
@@ -14,8 +14,8 @@ Author:
 
 */
 
-#ifndef _CATENA523x_H_	/* prevent multiple includes */
-#define _CATENA523x_H_
+#ifndef _CATENA523X_H_	/* prevent multiple includes */
+#define _CATENA523X_H_
 
 #pragma once
 
@@ -44,12 +44,6 @@ public:
 	// LoRaWAN binding
 	class LoRaWAN /* forward */;
 
-	// enum ANALOG_PINS
-	// 	{
-	// 	APIN_VBAT_SENSE = A3,
-	// 	APIN_VBUS_SENSE = A4,
-	// 	};
-
 	enum ANALOG_CHANNELS
 		{
 		ANALOG_CHANNEL_A0 = 4,
@@ -57,8 +51,6 @@ public:
 		ANALOG_CHANNEL_A2 = 2,
 		ANALOG_CHANNEL_A3 = 0,
 		ANALOG_CHANNEL_A4 = 1,
-		// ANALOG_CHANNEL_VBAT = ANALOG_CHANNEL_A3,
-		// ANALOG_CHANNEL_VBUS = ANALOG_CHANNEL_A4,
 		ANALOG_CHANNEL_VREF = 17,
 		};
 
@@ -80,7 +72,7 @@ private:
 	};
 
 /*
-|| The LoRaWAN class for the Catena 455x. Assumes The Things Network
+|| The LoRaWAN class for the Catena 523x. Assumes The Things Network
 */
 class Catena523x::LoRaWAN : public CatenaStm32L0::LoRaWAN
 	{
@@ -103,4 +95,4 @@ private:
 } // namespace McciCatena
 
 /**** end of Catena523x.h ****/
-#endif /* _CATENA523x_H_ */
+#endif /* _CATENA523X_H_ */

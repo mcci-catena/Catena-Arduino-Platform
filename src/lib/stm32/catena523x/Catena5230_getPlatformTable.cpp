@@ -3,8 +3,7 @@
 Module:  Catena5230_getPlatformTable.cpp
 
 Function:
-        class Catena5230: CatenaBase Platform to represent a Catena 5230
-        (such as the 5230).
+        Catena5230::getPlatformTable()
 
 Copyright notice:
         See accompanying LICENSE file.

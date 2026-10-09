@@ -19,7 +19,7 @@ Author:
 
 #pragma once
 
-#ifndef _CATENA522x_H_
+#ifndef _CATENA522X_H_
 # include "Catena522x.h"
 #endif
 

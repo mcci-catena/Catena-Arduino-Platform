@@ -1,33 +1,15 @@
-/* Catena5230_ReadAnalog.cpp	Fri Dec 28 2018 14:01:42 chwon */
-
 /*
 
-Module:  Catena5230_ReadAnalog.cpp
+Module:  Catena5230_ReadVoltage.cpp
 
 Function:
-	Catena5230::ReadVbat() and Catena5230::ReadVbus()
-
-Version:
-	V0.13.0	Fri Dec 28 2018 14:01:42 chwon	Edit level 1
+        Catena5230::ReadVbat() and Catena5230::ReadVbus()
 
 Copyright notice:
-	This file copyright (C) 2018 by
-
-		MCCI Corporation
-		3520 Krums Corners Road
-		Ithaca, NY  14850
-
-	An unpublished work.  All rights reserved.
-
-	This file is proprietary information, and may not be disclosed or
-	copied without the prior permission of MCCI Corporation
+        See accompanying LICENSE file.
 
 Author:
-	ChaeHee Won, MCCI Corporation	December 2018
-
-Revision history:
-   0.13.0  Fri Dec 28 2018 14:01:42  chwon
-	Module created.
+        Murali, MCCI Corporation	Sep 2025
 
 */
 
@@ -93,4 +75,4 @@ Catena5230::ReadVbus(void) const
 
 #endif // ARDUINO_ARCH_STM32 && ARDUINO_MCCI_CATENA_5230
 
-/**** end of Catena5230_ReadAnalog.cpp ****/
+/**** end of Catena5230_ReadVoltage.cpp ****/

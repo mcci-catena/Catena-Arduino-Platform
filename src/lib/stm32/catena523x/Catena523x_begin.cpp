@@ -3,8 +3,7 @@
 Module:  Catena523x_begin.cpp
 
 Function:
-        class Catena5230: CatenaBase Platform to represent a Catena 5230
-        (such as the 5230).
+        Catena523x::begin()
 
 Copyright notice:
         See accompanying LICENSE file.
