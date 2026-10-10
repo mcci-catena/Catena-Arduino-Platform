@@ -23,6 +23,11 @@ Author:
 # include "CatenaStm32L0.h"
 #endif
 
+namespace McciCatenaNpm1300 {
+/* forward reference */
+class cNPM1300;
+}
+
 namespace McciCatena {
 
 class Catena523x : public CatenaStm32L0
@@ -70,6 +75,11 @@ protected:
 
 private:
 	};
+
+// the single nPM1300 PMIC instance for this board, defined in
+// Catena523x_begin.cpp; see Catena_WatchdogTimer.h for the same
+// one-instance-per-library pattern used elsewhere in this library.
+extern McciCatenaNpm1300::cNPM1300 gNpm1300;
 
 /*
 || The LoRaWAN class for the Catena 523x. Assumes The Things Network

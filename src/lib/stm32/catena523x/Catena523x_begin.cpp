@@ -23,7 +23,9 @@ Author:
 using namespace McciCatena;
 using namespace McciCatenaNpm1300;
 
-McciCatenaNpm1300::cNPM1300 npm1300 {WirePMIC};
+// the single nPM1300 PMIC instance for this board; declared extern
+// in Catena523x.h.
+McciCatenaNpm1300::cNPM1300 McciCatena::gNpm1300 {WirePMIC};
 
 /*
 
@@ -51,7 +53,7 @@ bool Catena523x::begin()
 	// PMIC I2C begin
 	WirePMIC.begin();
 	// begin PMIC module
-	if (! npm1300.begin())
+	if (! gNpm1300.begin())
 		{
 		gLog.printf(
 			gLog.kError,

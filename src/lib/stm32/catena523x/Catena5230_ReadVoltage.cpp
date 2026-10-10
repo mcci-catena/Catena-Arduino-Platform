@@ -33,8 +33,6 @@ using namespace McciCatenaNpm1300;
 |
 \****************************************************************************/
 
-extern McciCatenaNpm1300::cNPM1300 npm1300;
-
 /****************************************************************************\
 |
 |	Read-only data.
@@ -62,14 +60,14 @@ extern McciCatenaNpm1300::cNPM1300 npm1300;
 float
 Catena5230::ReadVbat(void) const
 	{
-	float volt = npm1300.measureVbat();
+	float volt = gNpm1300.measureVbat();
 	return volt;
 	}
 
 float
 Catena5230::ReadVbus(void) const
 	{
-	float volt = npm1300.measureVbus();
+	float volt = gNpm1300.measureVbus();
 	return volt;
 	}
 
