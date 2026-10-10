@@ -80,6 +80,8 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [Clock Management and Calibration](#clock-management-and-calibration)
 	- [Watchdog Timer](#watchdog-timer)
 		- [SafeDelay()](#safedelay)
+	- [nPM1300 PMIC](#npm1300-pmic)
+		- [Using the PMIC in a sketch](#using-the-pmic-in-a-sketch)
 	- [Si1133 driver](#si1133-driver)
 	- [`cTimer` Timer object](#ctimer-timer-object)
 		- [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
@@ -1155,6 +1157,49 @@ The independent watchdog is used to detect and resolve malfunctions due to softw
 
 It serves as an alternative to the Arduino `delay()` function. Its purpose is to refresh the watchdog time-window, thus preventing any potential resets during delay operations within the application. Like Arduino `delay()`, it accepts milliseconds as a parameter.
 
+### nPM1300 PMIC
+
+The Catena 5230 uses a Nordic nPM1300 power management IC (PMIC) to manage its rechargeable LiPo/Li-Ion battery and to measure battery and system voltages. Support is provided by the separate [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) library, listed in `depends=` in `library.properties`.
+
+Following the same single-instance pattern used for the [Watchdog Timer](#watchdog-timer), `Catena523x.h` declares one shared driver instance, `McciCatena::gNpm1300`, defined once in `Catena523x_begin.cpp`. Both the library and the sketch use this same instance; a sketch does not declare its own `cNPM1300` object.
+
+`Catena523x::begin()` calls `gNpm1300.begin()` during platform start-up. A sketch that needs direct PMIC access (for example, to call `setBuck_1()`) should `#include <MCCI_Catena_nPM1300.h>` and refer to `McciCatena::gNpm1300` directly, the same way sketches refer to `McciCatena::gIwdgTimer`.
+
+`Catena5230::ReadVbat()` and `Catena5230::ReadVbus()` read the battery and USB bus voltages via `gNpm1300.measureVbat()` and `gNpm1300.measureVbus()`.
+
+#### Using the PMIC in a sketch
+
+```c++
+#include <Catena.h>
+#include <MCCI_Catena_nPM1300.h>
+
+extern McciCatena::Catena gCatena;
+
+using namespace McciCatena;
+
+void setup_pmic()
+    {
+    if (! gNpm1300.begin())
+        {
+        gCatena.SafePrintf("nPM1300 begin() failed\n");
+        }
+    }
+
+void loop_pmic()
+    {
+    float const vBat = gNpm1300.measureVbat();
+    float const vBus = gNpm1300.measureVbus();
+
+    gCatena.SafePrintf("Vbat:    %d mV\n", (int) (vBat * 1000.0f));
+    gCatena.SafePrintf("Vbus:    %d mV\n", (int) (vBus * 1000.0f));
+
+    // disable Buck 1 (for example, to shed load before a long sleep)
+    gNpm1300.setBuck_1(false);
+    }
+```
+
+As with `gIwdgTimer`, the sketch doesn't construct its own `cNPM1300` object: it just includes `<MCCI_Catena_nPM1300.h>` and refers to `McciCatena::gNpm1300`, the single instance already owned by the library.
+
 ### Si1133 driver
 
 The library includes a simple driver for the SiLabs 1133 light sensor found on many Catena boards.
@@ -1507,6 +1552,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#363](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/363): add `PlatformFlags2` support for new boards
   - Horizontal review and code cleanup for Model 4916, 4917, 4931, and 4933 (header/comment consistency, formatting)
   - Merged in the `system version` pre-release formatting fix from [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370) (v0.24.2) so this release is sequenced on top of it
+  - fix [#368](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/368): add support for Catena 5220
+  - fix [#369](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/369): add support for Catena 5230
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
