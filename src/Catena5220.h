@@ -3,8 +3,7 @@
 Module:  Catena5220.h
 
 Function:
-        class Catena5220: CatenaBase Platform to represent a Catena 5220
-        (such as the 5220).
+        class Catena5220: CatenaBase Platform to represent a Catena 5220.
 
 Copyright notice:
         See accompanying LICENSE file.

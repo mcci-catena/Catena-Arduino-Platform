@@ -37,6 +37,14 @@ Author:
 
 #include <cstdarg>
 #include <Catena_limits.h>
+
+// this header uses std::uint8_t/std::uint32_t throughout. Building
+// with arm-none-eabi-gcc 6-2017-q2-update, these were visible via a
+// transitive include from the Arduino core; with arm-none-eabi-gcc
+// 14.3 Rel1, they are not, and the build fails with errors such as
+// "'uint8_t' in namespace 'std' does not name a type". Include
+// <cstdint> explicitly so this header doesn't depend on what some
+// other header happens to pull in.
 #include <cstdint>
 
 // now, back to reality

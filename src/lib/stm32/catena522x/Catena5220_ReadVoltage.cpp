@@ -53,6 +53,7 @@ Catena5220::ReadVbat(void) const
 float
 Catena5220::ReadVbus(void) const
 	{
+	// the 5220 has no USB connector and so no VBUS to sense.
 	return 0.0;
 	}
 

@@ -50,9 +50,14 @@ bool Catena523x::begin()
 	delay(1000);
 	// PMIC I2C begin
 	WirePMIC.begin();
-	delay(1000);
 	// begin PMIC module
-	npm1300.begin();
+	if (! npm1300.begin())
+		{
+		gLog.printf(
+			gLog.kError,
+			"?Catena523x::begin: npm1300.begin() failed\n"
+			);
+		}
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 	gLog.printf(
 		gLog.kTrace,

@@ -13,7 +13,7 @@ Author:
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
+#if defined(ARDUINO_ARCH_STM32) && defined(ARDUINO_MCCI_CATENA_5230)
 
 #include "Catena5230.h"
 
@@ -85,4 +85,6 @@ Catena5230::getPlatformTable(
 
 } /* namespace McciCatena */
 
-#endif // ARDUINO_ARCH_STM32
+#endif // ARDUINO_ARCH_STM32 && ARDUINO_MCCI_CATENA_5230
+
+/**** end of Catena5230_getPlatformTable.cpp ****/

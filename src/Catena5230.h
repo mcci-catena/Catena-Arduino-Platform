@@ -3,8 +3,7 @@
 Module:  Catena5230.h
 
 Function:
-        class Catena5230: CatenaBase Platform to represent a Catena 5230
-        (such as the 5230).
+        class Catena5230: CatenaBase Platform to represent a Catena 5230.
 
 Copyright notice:
         See accompanying LICENSE file.

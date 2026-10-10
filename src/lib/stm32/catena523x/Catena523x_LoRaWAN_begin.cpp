@@ -13,7 +13,7 @@ Author:
 
 */
 
-#ifdef ARDUINO_ARCH_STM32
+#if defined(ARDUINO_ARCH_STM32) && defined(ARDUINO_MCCI_CATENA_5230)
 
 #include "Catena523x.h"
 
@@ -63,6 +63,6 @@ Catena523x::LoRaWAN::begin(
 	return true;
 	}
 
-#endif // ARDUINO_ARCH_STM32
+#endif // ARDUINO_ARCH_STM32 && ARDUINO_MCCI_CATENA_5230
 
 /**** end of Catena523x_LoRaWAN_begin.cpp ****/

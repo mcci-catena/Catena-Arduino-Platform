@@ -91,3 +91,5 @@ Catena5220::getPlatformTable(
 } /* namespace McciCatena */
 
 #endif // ARDUINO_ARCH_STM32
+
+/**** end of Catena5220_getPlatformTable.cpp ****/
