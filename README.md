@@ -1159,46 +1159,45 @@ It serves as an alternative to the Arduino `delay()` function. Its purpose is to
 
 ### nPM1300 PMIC
 
-The Catena 5230 uses a Nordic nPM1300 power management IC (PMIC) to manage its rechargeable LiPo/Li-Ion battery and to measure battery and system voltages. Support is provided by the separate [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) library, listed in `depends=` in `library.properties`.
+The Catena 5230 uses a Nordic nPM1300 power management IC (PMIC) to manage its rechargeable LiPo/Li-Ion battery, to measure battery and system voltages, and -- on this board specifically -- to power the FRAM, the flash, and the on-board sensors via its own regulator outputs (VOUT1, LSOUT2). Support is provided by the separate [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) library (v1.1.0 or later required; see [Other Libraries and Versions Required](#other-libraries-and-versions-required)), listed in `depends=` in `library.properties`.
 
-Following the same single-instance pattern used for the [Watchdog Timer](#watchdog-timer), `Catena523x.h` declares one shared driver instance, `McciCatena::gNpm1300`, defined once in `Catena523x_begin.cpp`. Both the library and the sketch use this same instance; a sketch does not declare its own `cNPM1300` object.
+Unlike the [Watchdog Timer](#watchdog-timer) (which is part of the STM32 itself, and present on every board), the nPM1300 is a part on the 5230 board specifically. `Catena523x` holds a pointer, `m_pNpm1300`, to the single instance (private, file-scope storage in `Catena523x_begin.cpp`), rather than exposing it as a free global. Access it through `getPmic()`:
 
-`Catena523x::begin()` calls `gNpm1300.begin()` during platform start-up. A sketch that needs direct PMIC access (for example, to call `setBuck_1()`) should `#include <MCCI_Catena_nPM1300.h>` and refer to `McciCatena::gNpm1300` directly, the same way sketches refer to `McciCatena::gIwdgTimer`.
+```c++
+McciCatenaNpm1300::cNPM1300 &getPmic(void) const;
+```
 
-`Catena5230::ReadVbat()` and `Catena5230::ReadVbus()` read the battery and USB bus voltages via `gNpm1300.measureVbat()` and `gNpm1300.measureVbus()`.
+`Catena523x::begin()` is the only code that calls the driver's `begin()`. Because the PMIC's own outputs power the FRAM, the flash, and the on-board sensors on this board, a PMIC that fails to start means those peripherals have no power either -- so `Catena523x::begin()` fails outright (and the error is logged) rather than letting the rest of the platform start up around silently-dead peripherals. A sketch can still check `isPmicRunning()` if it needs to confirm PMIC state directly:
+
+```c++
+bool isPmicRunning(void) const;
+```
+
+`Catena5230::ReadVbat()` and `Catena5230::ReadVbus()` read the battery and USB bus voltages via the PMIC member; since `begin()` already failed if the PMIC isn't running, these are only reached when the PMIC is known good.
 
 #### Using the PMIC in a sketch
 
 ```c++
 #include <Catena.h>
-#include <MCCI_Catena_nPM1300.h>
 
 extern McciCatena::Catena gCatena;
 
-using namespace McciCatena;
-
-void setup_pmic()
-    {
-    if (! gNpm1300.begin())
-        {
-        gCatena.SafePrintf("nPM1300 begin() failed\n");
-        }
-    }
-
 void loop_pmic()
     {
-    float const vBat = gNpm1300.measureVbat();
-    float const vBus = gNpm1300.measureVbus();
+    McciCatenaNpm1300::cNPM1300 &pmic = gCatena.getPmic();
+
+    float const vBat = pmic.measureVbat();
+    float const vBus = pmic.measureVbus();
 
     gCatena.SafePrintf("Vbat:    %d mV\n", (int) (vBat * 1000.0f));
     gCatena.SafePrintf("Vbus:    %d mV\n", (int) (vBus * 1000.0f));
 
     // disable Buck 1 (for example, to shed load before a long sleep)
-    gNpm1300.setBuck_1(false);
+    pmic.setBuck_1(false);
     }
 ```
 
-As with `gIwdgTimer`, the sketch doesn't construct its own `cNPM1300` object: it just includes `<MCCI_Catena_nPM1300.h>` and refers to `McciCatena::gNpm1300`, the single instance already owned by the library.
+The sketch doesn't construct its own `cNPM1300` object, and doesn't call `begin()` on it -- `gCatena.begin()` (via `Catena523x::begin()`) already did that during platform start-up.
 
 ### Si1133 driver
 
@@ -1541,6 +1540,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | 4.0.0 | 3.99.0-3 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.1 | 0.9.1-pre1 | Needed for bug fixes in session state save/restore. |
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 1.1.0 | 0.1.2 | Needed for miscellaneous definitions. With 1.1.0 or later, `system version` shows pre-releases as `X.Y.Z-preN`. |
+| [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) | 1.1.0 | 1.1.0 | Required for Catena 5230. Earlier versions have a `begin()` that can report success when the PMIC never answered, and `measureVbus()` reads the wrong ADC result bits. |
 
 ## Release History
 
