@@ -60,14 +60,20 @@ using namespace McciCatenaNpm1300;
 float
 Catena5230::ReadVbat(void) const
 	{
-	float volt = gNpm1300.measureVbat();
+	// Catena523x::begin() fails outright if the PMIC doesn't start (see
+	// the comment there), so by the time this is called, m_pNpm1300 is
+	// known to be running.
+	float volt = this->m_pNpm1300->measureVbat();
 	return volt;
 	}
 
 float
 Catena5230::ReadVbus(void) const
 	{
-	float volt = gNpm1300.measureVbus();
+	// Catena523x::begin() fails outright if the PMIC doesn't start (see
+	// the comment there), so by the time this is called, m_pNpm1300 is
+	// known to be running.
+	float volt = this->m_pNpm1300->measureVbus();
 	return volt;
 	}
 

@@ -3,7 +3,7 @@
 Module:  Catena523x_begin.cpp
 
 Function:
-        Catena523x::begin()
+        Catena523x::Catena523x() and Catena523x::begin()
 
 Copyright notice:
         See accompanying LICENSE file.
@@ -18,14 +18,20 @@ Author:
 #include "Catena523x.h"
 
 #include "Catena_Log.h"
-#include <MCCI_Catena_nPM1300.h>
 
 using namespace McciCatena;
 using namespace McciCatenaNpm1300;
 
-// the single nPM1300 PMIC instance for this board; declared extern
-// in Catena523x.h.
-McciCatenaNpm1300::cNPM1300 McciCatena::gNpm1300 {WirePMIC};
+namespace {
+// the single nPM1300 PMIC instance for this board. Private, file-scope
+// storage -- reached only through Catena523x::getPmic(), not a
+// library-wide free global.
+McciCatenaNpm1300::cNPM1300 gNpm1300Storage {WirePMIC};
+}
+
+Catena523x::Catena523x()
+	: m_pNpm1300(&gNpm1300Storage)
+	{}
 
 /*
 
@@ -52,14 +58,24 @@ bool Catena523x::begin()
 	delay(1000);
 	// PMIC I2C begin
 	WirePMIC.begin();
-	// begin PMIC module
-	if (! gNpm1300.begin())
+
+	// begin the PMIC. On the Catena 5230, the PMIC's own regulator
+	// outputs (VOUT1, LSOUT2) are what power the FRAM, the flash, and
+	// the on-board sensors -- they are not powered directly from the
+	// battery/USB rails. So if the PMIC doesn't start, those
+	// peripherals have no power either, and the board can't do its
+	// job even though the MCU and radio might still be alive. Fail
+	// begin() outright rather than limping along with silently-dead
+	// peripherals.
+	if (! this->m_pNpm1300->begin())
 		{
 		gLog.printf(
 			gLog.kError,
-			"?Catena523x::begin: npm1300.begin() failed\n"
+			"?Catena523x::begin: PMIC begin() failed\n"
 			);
+		return false;
 		}
+
 	gLog.begin(cLog::DebugFlags(gLog.kError | gLog.kBug));
 	gLog.printf(
 		gLog.kTrace,
