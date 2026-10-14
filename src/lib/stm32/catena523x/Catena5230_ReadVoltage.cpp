@@ -62,8 +62,20 @@ Catena5230::ReadVbat(void) const
 	{
 	// Catena523x::begin() fails outright if the PMIC doesn't start (see
 	// the comment there), so by the time this is called, m_pNpm1300 is
-	// known to be running.
-	float volt = this->m_pNpm1300->measureVbat();
+	// known to be running. measureVbat() can still fail on a given call
+	// (I2C error, or the conversion didn't finish in time); ReadVbat()'s
+	// signature has no way to report that, so log it and return 0.0,
+	// an otherwise-impossible battery voltage.
+	float volt;
+	if (! this->m_pNpm1300->measureVbat(volt))
+		{
+		gLog.printf(
+			gLog.kError,
+			"?Catena5230::ReadVbat: measureVbat() failed: %s\n",
+			this->m_pNpm1300->getLastErrorName()
+			);
+		return 0.0f;
+		}
 	return volt;
 	}
 
@@ -72,8 +84,20 @@ Catena5230::ReadVbus(void) const
 	{
 	// Catena523x::begin() fails outright if the PMIC doesn't start (see
 	// the comment there), so by the time this is called, m_pNpm1300 is
-	// known to be running.
-	float volt = this->m_pNpm1300->measureVbus();
+	// known to be running. measureVbus() can still fail on a given call
+	// (I2C error, or the conversion didn't finish in time); ReadVbus()'s
+	// signature has no way to report that, so log it and return 0.0,
+	// an otherwise-impossible bus voltage.
+	float volt;
+	if (! this->m_pNpm1300->measureVbus(volt))
+		{
+		gLog.printf(
+			gLog.kError,
+			"?Catena5230::ReadVbus: measureVbus() failed: %s\n",
+			this->m_pNpm1300->getLastErrorName()
+			);
+		return 0.0f;
+		}
 	return volt;
 	}
 
