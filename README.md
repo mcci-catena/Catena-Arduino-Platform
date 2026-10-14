@@ -80,6 +80,8 @@ _Apologies_: This document is a work in progress, and is published in this inter
 	- [Clock Management and Calibration](#clock-management-and-calibration)
 	- [Watchdog Timer](#watchdog-timer)
 		- [SafeDelay()](#safedelay)
+	- [nPM1300 PMIC](#npm1300-pmic)
+		- [Using the PMIC in a sketch](#using-the-pmic-in-a-sketch)
 	- [Si1133 driver](#si1133-driver)
 	- [`cTimer` Timer object](#ctimer-timer-object)
 		- [Catena_Timer.h header file and initialization](#catena_timerh-header-file-and-initialization)
@@ -1155,6 +1157,48 @@ The independent watchdog is used to detect and resolve malfunctions due to softw
 
 It serves as an alternative to the Arduino `delay()` function. Its purpose is to refresh the watchdog time-window, thus preventing any potential resets during delay operations within the application. Like Arduino `delay()`, it accepts milliseconds as a parameter.
 
+### nPM1300 PMIC
+
+The Catena 5230 uses a Nordic nPM1300 power management IC (PMIC) to manage its rechargeable LiPo/Li-Ion battery, to measure battery and system voltages, and -- on this board specifically -- to power the FRAM, the flash, and the on-board sensors via its own regulator outputs (VOUT1, LSOUT2). Support is provided by the separate [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) library (v1.1.0 or later required; see [Other Libraries and Versions Required](#other-libraries-and-versions-required)), listed in `depends=` in `library.properties`.
+
+Unlike the [Watchdog Timer](#watchdog-timer) (which is part of the STM32 itself, and present on every board), the nPM1300 is a part on the 5230 board specifically. `Catena523x` holds a pointer, `m_pNpm1300`, to the single instance (private, file-scope storage in `Catena523x_begin.cpp`), rather than exposing it as a free global. Access it through `getPmic()`:
+
+```c++
+McciCatenaNpm1300::cNPM1300 &getPmic(void) const;
+```
+
+`Catena523x::begin()` is the only code that calls the driver's `begin()`. Because the PMIC's own outputs power the FRAM, the flash, and the on-board sensors on this board, a PMIC that fails to start means those peripherals have no power either -- so `Catena523x::begin()` fails outright (and the error is logged) rather than letting the rest of the platform start up around silently-dead peripherals. A sketch can still check `isPmicRunning()` if it needs to confirm PMIC state directly:
+
+```c++
+bool isPmicRunning(void) const;
+```
+
+`Catena5230::ReadVbat()` and `Catena5230::ReadVbus()` read the battery and USB bus voltages via the PMIC member; since `begin()` already failed if the PMIC isn't running, these are only reached when the PMIC is known good.
+
+#### Using the PMIC in a sketch
+
+```c++
+#include <Catena.h>
+
+extern McciCatena::Catena gCatena;
+
+void loop_pmic()
+    {
+    McciCatenaNpm1300::cNPM1300 &pmic = gCatena.getPmic();
+
+    float const vBat = pmic.measureVbat();
+    float const vBus = pmic.measureVbus();
+
+    gCatena.SafePrintf("Vbat:    %d mV\n", (int) (vBat * 1000.0f));
+    gCatena.SafePrintf("Vbus:    %d mV\n", (int) (vBus * 1000.0f));
+
+    // disable Buck 1 (for example, to shed load before a long sleep)
+    pmic.setBuck_1(false);
+    }
+```
+
+The sketch doesn't construct its own `cNPM1300` object, and doesn't call `begin()` on it -- `gCatena.begin()` (via `Catena523x::begin()`) already did that during platform start-up.
+
 ### Si1133 driver
 
 The library includes a simple driver for the SiLabs 1133 light sensor found on many Catena boards.
@@ -1496,6 +1540,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | 4.0.0 | 3.99.0-3 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.1 | 0.9.1-pre1 | Needed for bug fixes in session state save/restore. |
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 1.1.0 | 0.1.2 | Needed for miscellaneous definitions. With 1.1.0 or later, `system version` shows pre-releases as `X.Y.Z-preN`. |
+| [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) | 1.1.0 | 1.1.0 | Required for Catena 5230. Earlier versions have a `begin()` that can report success when the PMIC never answered, and `measureVbus()` reads the wrong ADC result bits. |
 
 ## Release History
 
@@ -1507,6 +1552,8 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#363](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/363): add `PlatformFlags2` support for new boards
   - Horizontal review and code cleanup for Model 4916, 4917, 4931, and 4933 (header/comment consistency, formatting)
   - Merged in the `system version` pre-release formatting fix from [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370) (v0.24.2) so this release is sequenced on top of it
+  - fix [#368](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/368): add support for Catena 5220
+  - fix [#369](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/369): add support for Catena 5230
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
