@@ -1017,7 +1017,7 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
 1. Determine the GUID and key you want to use. If you are adding the item as part of the Catena library, you can use the GUID `GUID_FRAM_CATENA_V1(WIRE)`, `{1DE7CDCD-0647-4B3C-A18D-8138A3D9613F}`; add the key to `McciCatena::cFramStorage::StandardKeys`, defined in `Catena_FramStorage.h`.
 
-   There is no presentable way to use a non-standard GUID; several changes must be made in `Catena_Fram.cpp` to enable this.
+   An application should not add keys to the library's table; it uses its own GUID and an item table instead (see "Application FRAM items" below).
 
 2. Ultimately, the metadata for your new object is represented by a 32-bit value of type `cFramStorage::StandardItem`. The constructor takes three (optionally four) arguments:
 
@@ -1035,6 +1035,38 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 5. To set the value of your object, you can use `gCatena.getFram()->saveField(uKey, Value)`; this is a templated function which will write Value to the object identified by `uKey`.
 
    - You may also use `gCatena.getFram()->saveField(uKey, (const uint8_t *)&buffer, sizeof(buffer))`.
+
+#### Application FRAM items
+
+An application keeps its own items under its own GUID, so it never collides with the library's keys and isn't limited to `kAppConf`'s 64 bytes.
+
+1. Generate a GUID for the application, and describe its items with `cFramStorage::StandardItem` values (key, size, number or byte string, replicated or not). Keys need not be consecutive; any 8-bit value works, including numbers the standard table uses.
+
+   ```c++
+   static const MCCIADK_GUID_WIRE kMyGuid = MCCIADK_GUID_GEN_INIT(WIRE, /* ... */);
+   static const cFramStorage::StandardItem kMyItems[] =
+       {
+       cFramStorage::StandardItem(0, sizeof(MyParams_t), /* number */ false),
+       cFramStorage::StandardItem(1, sizeof(uint32_t), /* number */ true),
+       };
+   static cFram::AppItemTable<2> gMyTable(kMyGuid, kMyItems);
+   ```
+
+   `cFram::AppItemTable<N>` holds the offset and version caches for its N items. The table must stay in existence while the FRAM is used, so make it static or global.
+
+2. Register the table, before or after the FRAM becomes valid: `gCatena.getFram()->registerItemTable(gMyTable)`. If the store is already valid, registration scans it for the table's objects; otherwise the scan happens when the store is validated.
+
+3. Use a cursor bound to the table and a key, as for standard items:
+
+   ```c++
+   cFram::Cursor cursor(gCatena.getFram(), gMyTable, 0);
+   if (cursor.create())
+       cursor.put((const uint8_t *)&params, sizeof(params));
+   ```
+
+   `create()` appends the object if it doesn't exist yet; `get()` and `put()` take buffers of exactly the item's size. If an item's size changes between firmware versions, the old object no longer matches; `create()` appends a new one.
+
+Host tests for the FRAM code are in `test/host` (`make -C test/host`, with `MCCIADK` set to Catena-mcciadk's `src` directory if it isn't a sibling of this library). They run against a RAM-backed mock FRAM.
 
 #### Class hierarchy within the FRAM library
 
@@ -1556,6 +1588,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#368](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/368): add support for Catena 5220
   - fix [#369](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/369): add support for Catena 5230
   - fix [#376](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/376): `ReadVbus()` takes an optional `bool *pfOk`, set false when the result isn't a measurement; `CatenaStm32L0::ReadAnalog()` takes the same optional argument. A class outside the library that overrides `ReadVbus(void)` must change its signature to match (v0.25.0-pre3)
+  - fix [#379](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/379): applications can register their own FRAM items under their own GUID (`cFram::registerItemTable()`, `cFram::AppItemTable<N>`, `cFram::Cursor(pFram, table, key)`); a cursor's `get()` after `put()` now reads the new value; host tests in `test/host` (v0.25.0-pre4)
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
