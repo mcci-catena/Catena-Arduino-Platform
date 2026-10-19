@@ -1,0 +1,166 @@
+##############################################################################
+#
+# File: ci-arduinocli.yml
+#
+# Function:
+#   Continuous integration for Catena-Arduino-Platform: compile the
+#   examples for every supported board with arduino-cli
+#   (ci/build-examples.sh), and run the host tests (test/host).
+#
+##############################################################################
+
+# the name that appears in the GitHub UI, the badge, etc
+name: Arduino CI
+
+env:
+  MCCI_CI_LIBRARY: Catena-Arduino-Platform
+
+on:
+  # pull requests (default settings): builds the PR merge commit
+  pull_request:
+  # pushes to master and to tags only. A feature branch with an open PR
+  # would otherwise build twice.
+  push:
+    branches: [master]
+    tags: ['v*']
+  repository_dispatch:
+  schedule:
+    # once a week, 06:17Z Sunday
+    - cron: '17 6 * * 0'
+
+jobs:
+
+  # One job per board, and one per architecture for the region builds, so
+  # each job takes a few minutes. Boards missing from the newest released
+  # board package (today the Catena 5220 and 5230) are skipped, with a
+  # message, by ci/build-examples.sh.
+  arduinocli:
+    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: samd-4410,     arch: samd,  args: "-b mcci_catena_4410" }
+          - { name: samd-4420,     arch: samd,  args: "-b mcci_catena_4420" }
+          - { name: samd-4450,     arch: samd,  args: "-b mcci_catena_4450" }
+          - { name: samd-4460,     arch: samd,  args: "-b mcci_catena_4460" }
+          - { name: samd-4470,     arch: samd,  args: "-b mcci_catena_4470" }
+          - { name: samd-regions,  arch: samd,  args: "-R" }
+          - { name: stm32-4551,    arch: stm32, args: "-b mcci_catena_4551" }
+          - { name: stm32-4610,    arch: stm32, args: "-b mcci_catena_4610" }
+          - { name: stm32-4611,    arch: stm32, args: "-b mcci_catena_4611" }
+          - { name: stm32-4612,    arch: stm32, args: "-b mcci_catena_4612" }
+          - { name: stm32-4617,    arch: stm32, args: "-b mcci_catena_4617" }
+          - { name: stm32-4618,    arch: stm32, args: "-b mcci_catena_4618" }
+          - { name: stm32-4630,    arch: stm32, args: "-b mcci_catena_4630" }
+          - { name: stm32-4801,    arch: stm32, args: "-b mcci_catena_4801" }
+          - { name: stm32-4802,    arch: stm32, args: "-b mcci_catena_4802" }
+          - { name: stm32-4916,    arch: stm32, args: "-b mcci_model_4916" }
+          - { name: stm32-4917,    arch: stm32, args: "-b mcci_model_4917" }
+          - { name: stm32-4931,    arch: stm32, args: "-b mcci_model_4931" }
+          - { name: stm32-4933,    arch: stm32, args: "-b mcci_model_4933" }
+          - { name: stm32-5220,    arch: stm32, args: "-b mcci_catena_5220" }
+          - { name: stm32-5230,    arch: stm32, args: "-b mcci_catena_5230" }
+          - { name: stm32-regions, arch: stm32, args: "-R" }
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Check out the repo
+        with:
+          path: libraries/${{ env.MCCI_CI_LIBRARY }}
+
+      - uses: actions/checkout@v4
+        name: Set up mcci-catena-ci
+        with:
+          repository: mcci-catena/mcci-catena-ci
+          path: mcci-catena-ci
+
+      # the libraries library.properties "depends" names, and RTCZero for SAMD.
+      - name: "Get library: arduino-lmic"
+        uses: actions/checkout@v4
+        with:
+          repository: mcci-catena/arduino-lmic
+          path: deps/arduino-lmic
+
+      - name: "Get library: arduino-lorawan"
+        uses: actions/checkout@v4
+        with:
+          repository: mcci-catena/arduino-lorawan
+          path: deps/arduino-lorawan
+
+      - name: "Get library: Catena-mcciadk"
+        uses: actions/checkout@v4
+        with:
+          repository: mcci-catena/Catena-mcciadk
+          path: deps/Catena-mcciadk
+
+      - name: "Get library: MCCI_FRAM_I2C"
+        uses: actions/checkout@v4
+        with:
+          repository: mcci-catena/MCCI_FRAM_I2C
+          path: deps/MCCI_FRAM_I2C
+
+      # MCCI-Catena-nPM1300 is private, so the workflow token can't check
+      # it out. Only the Catena 5230 needs it, and the released board
+      # package doesn't have the 5230 yet, so the 5230 jobs skip their
+      # builds; the step may fail without failing the job.
+      - name: "Get library: MCCI-Catena-nPM1300"
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: mcci-catena/MCCI-Catena-nPM1300
+          path: deps/MCCI-Catena-nPM1300
+
+      - name: "Get library: RTCZero"
+        uses: actions/checkout@v4
+        with:
+          repository: mcci-catena/RTCZero
+          path: deps/RTCZero
+
+      - name: Set up to build
+        run: bash mcci-catena-ci/setup.sh -l libraries/${{ env.MCCI_CI_LIBRARY }} -a ${{ matrix.arch }}
+
+      - name: Compile examples
+        run: bash libraries/${{ env.MCCI_CI_LIBRARY }}/ci/build-examples.sh -a ${{ matrix.arch }} -L deps ${{ matrix.args }}
+
+  # Host tests of the FRAM code (test/host), with the host compiler.
+  host-tests:
+    name: host tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ env.MCCI_CI_LIBRARY }}
+
+      - uses: actions/checkout@v4
+        name: "Get library: Catena-mcciadk"
+        with:
+          repository: mcci-catena/Catena-mcciadk
+          path: Catena-mcciadk
+
+      - name: Build and run
+        run: |
+          if [ -f ${{ env.MCCI_CI_LIBRARY }}/test/host/Makefile ]; then
+            make -C ${{ env.MCCI_CI_LIBRARY }}/test/host MCCIADK=$(realpath Catena-mcciadk/src)
+          else
+            echo "no test/host in this commit"
+          fi
+
+  # The one check a branch rule needs to require: it passes only when every
+  # matrix job and the host tests passed.
+  result:
+    name: Arduino CI result
+    needs: [arduinocli, host-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the results
+        run: |
+          echo "matrix result: ${{ needs.arduinocli.result }}"
+          echo "host tests:    ${{ needs.host-tests.result }}"
+          test "${{ needs.arduinocli.result }}" = success
+          test "${{ needs.host-tests.result }}" = success
+
+### end of file ###

@@ -22,7 +22,7 @@ Board packages are installed from `https://github.com/mcci-catena/arduino-boards
 
 Required library dependencies (must be installed or cloned alongside): MCCI FRAM I2C, arduino-lmic, arduino-lorawan, Catena-mcciadk, RTCZero, MCCI LTR-329ALS.
 
-CI runs via Travis (.travis.yml) doing compile-only verification across 14+ board variants and 6 LoRaWAN regions. No unit test framework; testing is compilation-based using the example sketches.
+CI runs on GitHub Actions (`.github/workflows/ci-arduinocli.yml`): `ci/build-examples.sh` compiles the examples with arduino-cli for every SAMD and STM32 board (one job per board, plus one per architecture for the regions), and the host tests in `test/host` run with the host compiler. The "Arduino CI result" job passes only if every other job did. Run the build locally with `ci/build-examples.sh -a {samd|stm32} -L {libraries} [-b board | -R]`; see the script's header.
 
 ## Architecture
 
