@@ -1595,6 +1595,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#369](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/369): add support for Catena 5230
   - fix [#376](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/376): `ReadVbus()` takes an optional `bool *pfOk`, set false when the result isn't a measurement; `CatenaStm32L0::ReadAnalog()` takes the same optional argument. A class outside the library that overrides `ReadVbus(void)` must change its signature to match (v0.25.0-pre3)
   - fix [#379](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/379): applications can register their own FRAM items under their own GUID (`cFram::registerItemTable()`, `cFram::AppItemTable<N>`, `cFram::Cursor(pFram, table, key)`); a cursor's `get()` after `put()` now reads the new value; host tests in `test/host` (v0.25.0-pre4)
+  - fix [#383](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/383): on STM32L0, the RTC keeps its calendar across a reset that doesn't lose power; `CatenaStm32L0Rtc::begin()` set the calendar to 2000-01-01 at every boot because its marker write to backup register DR0 was ignored (v0.25.0-pre5)
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
