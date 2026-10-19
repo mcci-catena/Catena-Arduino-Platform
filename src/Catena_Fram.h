@@ -50,6 +50,138 @@ Revision history:
 
 namespace McciCatena {
 
+/*
+
+Name:	McciCatena::cFramItemTable
+
+Function:
+	A table of FRAM items stored under one GUID.
+
+Description:
+	Each object in the FRAM carries a GUID and a one-byte key. The
+	platform's standard items (cFramStorage::vItemDefs) form one table,
+	under cFramStorage::skFramGuid. An application can describe its own
+	items in a table under its own GUID, and register it with
+	cFram::registerItemTable(); cFram::Cursor then reads and writes
+	those items as it does standard ones.
+
+	Items are found by key, not by position in the table, so keys need
+	not be consecutive. The table also holds the caches for its items
+	(the offset of each object and its current replicant), which the
+	caller provides, sized for the table; cFramAppItemTable<N> provides
+	them for N items.
+
+*/
+
+class cFramItemTable
+	{
+public:
+	cFramItemTable(
+		const MCCIADK_GUID_WIRE &guid,
+		const cFramStorage::StandardItem *pItems,
+		unsigned nItems,
+		cFramStorage::Offset *pOffsetCache,
+		uint8_t *pVerCache
+		)
+		: m_pGuid(&guid)
+		, m_pItems(pItems)
+		, m_nItems(nItems)
+		, m_pOffsetCache(pOffsetCache)
+		, m_pVerCache(pVerCache)
+		{}
+
+	// neither copyable nor movable: the FRAM keeps a pointer to it.
+	cFramItemTable(const cFramItemTable&) = delete;
+	cFramItemTable& operator=(const cFramItemTable&) = delete;
+	cFramItemTable(const cFramItemTable&&) = delete;
+	cFramItemTable& operator=(const cFramItemTable&&) = delete;
+
+	const MCCIADK_GUID_WIRE &getGuid() const
+		{
+		return *this->m_pGuid;
+		}
+
+	unsigned getCount() const
+		{
+		return this->m_nItems;
+		}
+
+	// the index of the item with key uKey, or -1 if there is none.
+	int findKey(uint8_t uKey) const
+		{
+		if (uKey < this->m_nItems && this->m_pItems[uKey].getKey() == uKey)
+			return uKey;
+
+		for (unsigned i = 0; i < this->m_nItems; ++i)
+			if (this->m_pItems[i].getKey() == uKey)
+				return int(i);
+
+		return -1;
+		}
+
+	const cFramStorage::StandardItem &getItem(unsigned i) const
+		{
+		return this->m_pItems[i];
+		}
+
+	cFramStorage::Offset getOffset(unsigned i) const
+		{
+		return this->m_pOffsetCache[i];
+		}
+
+	uint8_t getVer(unsigned i) const
+		{
+		return this->m_pVerCache[i];
+		}
+
+	void setEntry(unsigned i, cFramStorage::Offset offset, uint8_t uVer)
+		{
+		this->m_pOffsetCache[i] = offset;
+		this->m_pVerCache[i] = uVer;
+		}
+
+	void setVer(unsigned i, uint8_t uVer)
+		{
+		this->m_pVerCache[i] = uVer;
+		}
+
+	// forget every cached object.
+	void resetCache()
+		{
+		for (unsigned i = 0; i < this->m_nItems; ++i)
+			this->setEntry(i, cFramStorage::kInvalidOffset, 0);
+		}
+
+private:
+	friend class cFram;
+
+	const MCCIADK_GUID_WIRE *m_pGuid;
+	const cFramStorage::StandardItem *m_pItems;
+	unsigned m_nItems;
+	cFramStorage::Offset *m_pOffsetCache;
+	uint8_t *m_pVerCache;
+	cFramItemTable *m_pNext = nullptr;	// in the FRAM's list of tables
+	};
+
+// an application's item table, with caches for its N items.
+template <unsigned N>
+class cFramAppItemTable : public cFramItemTable
+	{
+public:
+	cFramAppItemTable(
+		const MCCIADK_GUID_WIRE &guid,
+		const cFramStorage::StandardItem (&items)[N]
+		)
+		: cFramItemTable(guid, items, N, m_offsetCache, m_verCache)
+		{
+		this->resetCache();
+		}
+
+private:
+	cFramStorage::Offset m_offsetCache[N];
+	uint8_t m_verCache[N];
+	};
+
 // this is a dummy layer for refactoring later
 class cFram : public cPersistentStorage
 	{
@@ -93,6 +225,21 @@ public:
         virtual void invalidate() override { this->m_fReady = false; }
 
 	class Cursor;
+
+	using ItemTable = cFramItemTable;
+	template <unsigned N> using AppItemTable = cFramAppItemTable<N>;
+
+	// register an application's item table. If the store is valid, scan
+	// it now for the table's objects; otherwise the scan happens when the
+	// store becomes valid. Registering a table again does nothing. The
+	// table must outlive the FRAM object, or at least its use.
+	bool registerItemTable(ItemTable &table);
+
+	// the table of standard items.
+	ItemTable &getStandardTable()
+		{
+		return this->m_standardTable;
+		}
 
 	// initialize the commands
 	bool addCommands();
@@ -159,8 +306,26 @@ protected:
         // offset of first free byte in FRAM
         cFramStorage::Offset m_endOffset;
 
+        // the standard items, using the caches above; first in the list
+        // of tables.
+        ItemTable m_standardTable
+                {
+                cFramStorage::skFramGuid,
+                cFramStorage::vItemDefs,
+                cFramStorage::kMAX,
+                m_offsetCache,
+                m_uVerCache
+                };
+
+        // the registered tables, starting with the standard one.
+        ItemTable *m_pTables = &m_standardTable;
+
         // load the cache from the media.
         void loadCache(void);
+
+        // scan the media and fill the caches: of table pOnly, or of every
+        // registered table if pOnly is null.
+        void scanObjects(ItemTable *pOnly);
 
         // forget the cache contents.
         void resetCache(void);
@@ -172,6 +337,14 @@ protected:
 
         bool writeItemData(
                 cFramStorage::StandardItem item,
+                const uint8_t *pBuffer,
+                size_t nBuffer
+                );
+
+        // write the data of item iItem of table.
+        bool writeItemData(
+                ItemTable &table,
+                unsigned iItem,
                 const uint8_t *pBuffer,
                 size_t nBuffer
                 );
@@ -189,6 +362,13 @@ public:
                   m_offset(cFramStorage::kInvalidOffset)
                 {};
 
+        // construct and locate an item of an item table by key
+        Cursor(cFram *pFram, ItemTable &table, uint8_t uKey)
+                : Cursor{pFram}
+                {
+                (void) this->locate(table, uKey);
+                }
+
         // construct and locate
         Cursor(cFram *pFram, cFramStorage::StandardItem item);
 
@@ -199,10 +379,10 @@ public:
         // take a located cursor and create an object if needed
         bool create(void);
 
-        // test whether a cursro is bound to an object
+        // test whether a cursor is bound to an item
         bool isbound() const
                 {
-                return this->m_uKey != cFramStorage::StandardKeys::kMAX;
+                return this->m_pTable != nullptr;
                 }
 
         // test whether a cursor was located
@@ -218,6 +398,11 @@ public:
                 {
                 return this->locate(cFramStorage::vItemDefs[uKey]);
                 }
+
+        // set up a cursor for the item with key uKey in table. The cursor
+        // is bound if the table has that key, and located if the object
+        // exists.
+        bool locate(ItemTable &table, uint8_t uKey);
 
         // return the standard item associated with this cursor
         bool getitem(cFramStorage::StandardItem &) const;
@@ -292,14 +477,16 @@ public:
 private:
         cFramStorage::StandardItem getItem()
                 {
-                return cFramStorage::vItemDefs[this->m_uKey];
+                return this->m_pTable->getItem(this->m_iItem);
                 };
 
 protected:
 	cFram *m_pFram;
+	ItemTable *m_pTable = nullptr;	// null: not bound
 	uint16_t m_uSize;
 	uint8_t m_uKey;
 	uint8_t m_uVer;
+	uint8_t m_iItem = 0;		// index of the item in m_pTable
 	uint32_t m_offset;
 	};
 
