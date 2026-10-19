@@ -83,7 +83,7 @@ public:
 	// methods
 	virtual bool begin() override;
 	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
+	virtual float ReadVbus(bool *pfOk = nullptr) const override;
 
 protected:
 

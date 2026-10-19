@@ -78,14 +78,18 @@ Catena5230::ReadVbat(void) const
 	}
 
 float
-Catena5230::ReadVbus(void) const
+Catena5230::ReadVbus(bool *pfOk) const
 	{
 	// the driver's measureVbus() fails if the PMIC isn't running, or on
-	// an I2C error or a conversion that doesn't finish in time.
-	// ReadVbus() can't report failure, so it logs it and returns 0.0,
-	// an otherwise-impossible bus voltage.
+	// an I2C error or a conversion that doesn't finish in time. Then
+	// log it, return 0.0, and report the failure through pfOk.
 	float volt;
-	if (! this->m_pNpm1300->measureVbus(volt))
+	const bool fOk = this->m_pNpm1300->measureVbus(volt);
+
+	if (pfOk != nullptr)
+		*pfOk = fOk;
+
+	if (! fOk)
 		{
 		gLog.printf(
 			gLog.kError,

@@ -51,9 +51,9 @@ Model4917::ReadVbat(void) const
 	}
 
 float
-Model4917::ReadVbus(void) const
+Model4917::ReadVbus(bool *pfOk) const
 	{
-	float volt = this->ReadAnalog(Model4917::ANALOG_CHANNEL_VBUS, 6, 3);
+	float volt = this->ReadAnalog(Model4917::ANALOG_CHANNEL_VBUS, 6, 3, pfOk);
 	return volt / 1000;
 	}
 

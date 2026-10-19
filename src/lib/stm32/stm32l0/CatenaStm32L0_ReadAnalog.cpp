@@ -419,21 +419,24 @@ Definition:
 	uint32_t CatenaStm32L0::ReadAnalog(
 		uint32_t Channel,
 		uint32_t ReadCount,
-		uint32_t Multiplier
+		uint32_t Multiplier,
+		bool *pfOk
 		);
 
 Description:
-	This function reads the analog value for the given channel.
+	This function reads the analog value for the given channel. If
+	pfOk isn't null, *pfOk is set true on success, false on failure.
 
 Returns:
-	Analog value
+	Analog value; 0x0FFF if the read failed.
 
 */
 
 uint32_t CatenaStm32L0::ReadAnalog(
 	uint32_t Channel,
 	uint32_t ReadCount,
-	uint32_t Multiplier
+	uint32_t Multiplier,
+	bool *pfOk
 	) const
 	{
 	uint32_t	vResult;
@@ -456,6 +459,9 @@ uint32_t CatenaStm32L0::ReadAnalog(
 			);
 		vResult = 0x0FFFu;
 		}
+
+	if (pfOk != nullptr)
+		*pfOk = fStatusOk;
 
 	return vResult;
 	}

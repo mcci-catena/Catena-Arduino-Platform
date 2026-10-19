@@ -82,13 +82,13 @@ Catena4612::ReadVbat(void) const
 	}
 
 float
-Catena4612::ReadVbus(void) const
+Catena4612::ReadVbus(bool *pfOk) const
 	{
 	// on the Catena 4612, the Vbus divider impedance is very high,
 	// so charge transfer from the previous channel causes problems.
 	// Therefore, let's read one extra time; the prvious ADC will
 	// have had some time to bleed off.
-	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 6, 3);
+	float volt = this->ReadAnalog(Catena461x::ANALOG_CHANNEL_VBUS, 6, 3, pfOk);
 	return volt / 1000;
 	}
 
