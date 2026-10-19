@@ -1159,21 +1159,21 @@ It serves as an alternative to the Arduino `delay()` function. Its purpose is to
 
 ### nPM1300 PMIC
 
-The Catena 5230 uses a Nordic nPM1300 power management IC (PMIC) to manage its rechargeable LiPo/Li-Ion battery, to measure battery and system voltages, and -- on this board specifically -- to power the FRAM, the flash, and the on-board sensors via its own regulator outputs (VOUT1, LSOUT2). Support is provided by the separate [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) library (v1.1.0 or later required; see [Other Libraries and Versions Required](#other-libraries-and-versions-required)), listed in `depends=` in `library.properties`.
+The Catena 5230 uses a Nordic nPM1300 power management IC (PMIC) to manage its rechargeable LiPo/Li-Ion battery, to measure battery and system voltages, and to power the on-board sensors (VOUT1) and other peripherals through its load switches. Support is provided by the separate [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) library, v1.2.0 or later (see [Other Libraries and Versions Required](#other-libraries-and-versions-required)), listed in `depends=` in `library.properties`. v1.2.0 is needed for `begin(cNPM1300::Ntc)` and for the `bool measureX(float &)` functions that `ReadVbat()` and `ReadVbus()` use.
 
-Unlike the [Watchdog Timer](#watchdog-timer) (which is part of the STM32 itself, and present on every board), the nPM1300 is a part on the 5230 board specifically. `Catena523x` holds a pointer, `m_pNpm1300`, to the single instance (private, file-scope storage in `Catena523x_begin.cpp`), rather than exposing it as a free global. Access it through `getPmic()`:
+Use the PMIC through `getPmic()`:
 
 ```c++
 McciCatenaNpm1300::cNPM1300 &getPmic(void) const;
 ```
 
-`Catena523x::begin()` is the only code that calls the driver's `begin()`. Because the PMIC's own outputs power the FRAM, the flash, and the on-board sensors on this board, a PMIC that fails to start means those peripherals have no power either -- so `Catena523x::begin()` fails outright (and the error is logged) rather than letting the rest of the platform start up around silently-dead peripherals. A sketch can still check `isPmicRunning()` if it needs to confirm PMIC state directly:
+`Catena523x::begin()` calls the driver's `begin()`, stating that the 5230 has no battery thermistor; sketches must not call the driver's `begin()` themselves. If the PMIC doesn't start, `Catena523x::begin()` returns `false`, because the PMIC powers the on-board sensors and other peripherals. The error is logged, but USB usually isn't up yet, so a sketch should check `begin()`'s result and report it. `isPmicRunning()` returns the PMIC's state:
 
 ```c++
 bool isPmicRunning(void) const;
 ```
 
-`Catena5230::ReadVbat()` and `Catena5230::ReadVbus()` read the battery and USB bus voltages via the PMIC member; since `begin()` already failed if the PMIC isn't running, these are only reached when the PMIC is known good.
+`Catena5230::ReadVbat()` and `Catena5230::ReadVbus()` read the battery and USB bus voltages through the PMIC. They return 0.0 if the measurement fails (the driver's `measureX()` functions fail if the PMIC isn't running).
 
 #### Using the PMIC in a sketch
 
@@ -1186,11 +1186,12 @@ void loop_pmic()
     {
     McciCatenaNpm1300::cNPM1300 &pmic = gCatena.getPmic();
 
-    float const vBat = pmic.measureVbat();
-    float const vBus = pmic.measureVbus();
+    float vBat, vBus;
 
-    gCatena.SafePrintf("Vbat:    %d mV\n", (int) (vBat * 1000.0f));
-    gCatena.SafePrintf("Vbus:    %d mV\n", (int) (vBus * 1000.0f));
+    if (pmic.measureVbat(vBat))
+        gCatena.SafePrintf("Vbat:    %d mV\n", (int) (vBat * 1000.0f));
+    if (pmic.measureVbus(vBus))
+        gCatena.SafePrintf("Vbus:    %d mV\n", (int) (vBus * 1000.0f));
 
     // disable Buck 1 (for example, to shed load before a long sleep)
     pmic.setBuck_1(false);
@@ -1540,7 +1541,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
 | [`arduino-lmic`](https://github.com/mcci-catena/arduino-lmic) | 4.0.0 | 3.99.0-3 | Earlier versions will fail to compile due to missing `lmic_pinmap::rxtx_rx_polarity` and `lmic_pinmap::spi_freq` fields. |
 | [`arduino-lorawan`](https://github.com/mcci-catena/arduino-lorawan) | 0.9.1 | 0.9.1-pre1 | Needed for bug fixes in session state save/restore. |
 | [`catena-mcciadk`](https://github.com/mcci-catena/Catena-mcciadk) | 1.1.0 | 0.1.2 | Needed for miscellaneous definitions. With 1.1.0 or later, `system version` shows pre-releases as `X.Y.Z-preN`. |
-| [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) | 1.1.0 | 1.1.0 | Required for Catena 5230. Earlier versions have a `begin()` that can report success when the PMIC never answered, and `measureVbus()` reads the wrong ADC result bits. |
+| [`MCCI-Catena-nPM1300`](https://github.com/mcci-catena/MCCI-Catena-nPM1300) | 1.2.0 | 1.2.0 | Required for Catena 5230. 1.2.0 adds `begin(cNPM1300::Ntc)` and the `bool measureX(float &)` functions this library calls. Earlier versions have a `begin()` that can report success when the PMIC never answered, and `measureVbus()` reads the wrong ADC result bits. |
 
 ## Release History
 

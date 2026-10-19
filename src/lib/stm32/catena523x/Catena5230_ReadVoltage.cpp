@@ -60,11 +60,9 @@ using namespace McciCatenaNpm1300;
 float
 Catena5230::ReadVbat(void) const
 	{
-	// Catena523x::begin() fails outright if the PMIC doesn't start (see
-	// the comment there), so by the time this is called, m_pNpm1300 is
-	// known to be running. measureVbat() can still fail on a given call
-	// (I2C error, or the conversion didn't finish in time); ReadVbat()'s
-	// signature has no way to report that, so log it and return 0.0,
+	// the driver's measureVbat() fails if the PMIC isn't running, or on
+	// an I2C error or a conversion that doesn't finish in time.
+	// ReadVbat() can't report failure, so it logs it and returns 0.0,
 	// an otherwise-impossible battery voltage.
 	float volt;
 	if (! this->m_pNpm1300->measureVbat(volt))
@@ -82,11 +80,9 @@ Catena5230::ReadVbat(void) const
 float
 Catena5230::ReadVbus(void) const
 	{
-	// Catena523x::begin() fails outright if the PMIC doesn't start (see
-	// the comment there), so by the time this is called, m_pNpm1300 is
-	// known to be running. measureVbus() can still fail on a given call
-	// (I2C error, or the conversion didn't finish in time); ReadVbus()'s
-	// signature has no way to report that, so log it and return 0.0,
+	// the driver's measureVbus() fails if the PMIC isn't running, or on
+	// an I2C error or a conversion that doesn't finish in time.
+	// ReadVbus() can't report failure, so it logs it and returns 0.0,
 	// an otherwise-impossible bus voltage.
 	float volt;
 	if (! this->m_pNpm1300->measureVbus(volt))
