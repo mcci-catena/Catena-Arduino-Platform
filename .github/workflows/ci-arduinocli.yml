@@ -102,13 +102,8 @@ jobs:
           repository: mcci-catena/MCCI_FRAM_I2C
           path: deps/MCCI_FRAM_I2C
 
-      # MCCI-Catena-nPM1300 is private, so the workflow token can't check
-      # it out. Only the Catena 5230 needs it, and the released board
-      # package doesn't have the 5230 yet, so the 5230 jobs skip their
-      # builds; the step may fail without failing the job.
       - name: "Get library: MCCI-Catena-nPM1300"
         uses: actions/checkout@v4
-        continue-on-error: true
         with:
           repository: mcci-catena/MCCI-Catena-nPM1300
           path: deps/MCCI-Catena-nPM1300
