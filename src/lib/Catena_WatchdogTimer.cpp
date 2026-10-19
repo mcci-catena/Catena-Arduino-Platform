@@ -13,6 +13,8 @@ Author:
 
 */
 
+#ifdef ARDUINO_ARCH_STM32
+
 #include <Catena_WatchdogTimer.h>
 #include <Catena_Log.h>
 
@@ -124,3 +126,5 @@ void cWatchdogTimer::safeDelay(uint32_t millis)
     delay(millis);
     this->refreshWatchdog();
     }
+
+#endif // ARDUINO_ARCH_STM32
