@@ -51,8 +51,11 @@ Model4916::ReadVbat(void) const
 	}
 
 float
-Model4916::ReadVbus(void) const
+Model4916::ReadVbus(bool *pfOk) const
 	{
+	// no VBUS sense input: the value is not a measurement.
+	if (pfOk != nullptr)
+		*pfOk = false;
 	return 0;
 	}
 

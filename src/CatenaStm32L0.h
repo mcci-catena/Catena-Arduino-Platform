@@ -67,10 +67,13 @@ public:
                 return true;
                 };
 
+        // read an analog channel. On failure, logs it and returns
+        // 0x0FFF; if pfOk isn't null, sets *pfOk to report success.
         uint32_t ReadAnalog(
                         uint32_t Channel,
                         uint32_t ReadCount = 1,
-                        uint32_t Multiplier = 1
+                        uint32_t Multiplier = 1,
+                        bool *pfOk = nullptr
                         ) const;
 
         // get system clock rate in Hz; must be overridden
@@ -78,7 +81,10 @@ public:
 
         // read the current battery voltage, in engineering units
         virtual float ReadVbat(void) const = 0;
-        virtual float ReadVbus(void) const = 0;
+        // read the current bus (USB) voltage, in engineering units. If
+        // pfOk isn't null, sets *pfOk to false if the voltage couldn't be
+        // read (the result is then meaningless), true if it could.
+        virtual float ReadVbus(bool *pfOk = nullptr) const = 0;
 
         virtual void Sleep(uint32_t howLongInSeconds) override;
 

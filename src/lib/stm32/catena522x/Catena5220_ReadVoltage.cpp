@@ -51,9 +51,12 @@ Catena5220::ReadVbat(void) const
 	}
 
 float
-Catena5220::ReadVbus(void) const
+Catena5220::ReadVbus(bool *pfOk) const
 	{
-	// the 5220 has no USB connector and so no VBUS to sense.
+	// the 5220 has no USB connector and so no VBUS to sense: 0.0 is
+	// the right answer.
+	if (pfOk != nullptr)
+		*pfOk = true;
 	return 0.0;
 	}
 

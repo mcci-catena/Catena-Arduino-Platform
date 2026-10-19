@@ -81,9 +81,13 @@ Catena455x::ReadVbat(void) const
 	}
 
 float
-Catena455x::ReadVbus(void) const
+Catena455x::ReadVbus(bool *pfOk) const
 	{
 	float rawVoltage = analogRead(Catena455x::APIN_VBUS_SENSE);
+
+	// analogRead() can't report failure.
+	if (pfOk != nullptr)
+		*pfOk = true;
 	return rawVoltage * 3.3 / 1024;
 	}
 

@@ -84,8 +84,11 @@ Catena480x::ReadVbat(void) const
 	}
 
 float
-Catena480x::ReadVbus(void) const
+Catena480x::ReadVbus(bool *pfOk) const
 	{
+	// the 480x has no VBUS sense input: the value is not a measurement.
+	if (pfOk != nullptr)
+		*pfOk = false;
 	return 0.0;
 	}
 

@@ -51,9 +51,9 @@ Catena4630::ReadVbat(void) const
 	}
 
 float
-Catena4630::ReadVbus(void) const
+Catena4630::ReadVbus(bool *pfOk) const
 	{
-	float volt = this->ReadAnalog(Catena463x::ANALOG_CHANNEL_VBUS, 1, 3);
+	float volt = this->ReadAnalog(Catena463x::ANALOG_CHANNEL_VBUS, 1, 3, pfOk);
 	return volt / 1000;
 	}
 

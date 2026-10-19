@@ -42,7 +42,7 @@ public:
 
 	virtual const char *CatenaName() const override { return "Catena 5220"; };
 	virtual float ReadVbat(void) const override;
-	virtual float ReadVbus(void) const override;
+	virtual float ReadVbus(bool *pfOk = nullptr) const override;
 
 protected:
 	// we are required to provide a table of platforms

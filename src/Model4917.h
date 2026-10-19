@@ -43,7 +43,7 @@ public:
 
     virtual const char *CatenaName() const override { return "Model 4917"; };
     virtual float ReadVbat(void) const override;
-    virtual float ReadVbus(void) const override;
+    virtual float ReadVbus(bool *pfOk = nullptr) const override;
 
     // LoRaWAN binding
     class LoRaWAN /* forward */;
