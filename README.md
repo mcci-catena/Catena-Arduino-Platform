@@ -1555,6 +1555,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - Merged in the `system version` pre-release formatting fix from [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370) (v0.24.2) so this release is sequenced on top of it
   - fix [#368](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/368): add support for Catena 5220
   - fix [#369](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/369): add support for Catena 5230
+  - fix [#376](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/376): `ReadVbus()` takes an optional `bool *pfOk`, set false when the result isn't a measurement; `CatenaStm32L0::ReadAnalog()` takes the same optional argument. A class outside the library that overrides `ReadVbus(void)` must change its signature to match (v0.25.0-pre3)
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
