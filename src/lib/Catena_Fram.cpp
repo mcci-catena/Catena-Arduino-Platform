@@ -73,10 +73,43 @@ McciCatena::cFram::loadCache(
 	void
 	)
         {
-        cFramStorage::Object object;
-        const MCCIADK_GUID_WIRE * const pGuid = &cFramStorage::skFramGuid;
-
 	this->resetCache();
+        this->scanObjects(nullptr);
+        }
+
+/*
+
+Name:	McciCatena::cFram::scanObjects()
+
+Function:
+	Scan the media and fill the caches of the item tables.
+
+Definition:
+	protected: void
+		McciCatena::cFram::scanObjects(
+			cFram::ItemTable *pOnly
+			);
+
+Description:
+	Each object on the media is matched by GUID to a registered item
+	table (or only to pOnly, if not null), and by key to an item of
+	that table. The first object that matches an item, with the item's
+	size and replication, fills the item's cache entry; later ones are
+	reported as duplicates. Objects of an unregistered GUID are
+	skipped: an application that registers its table later finds them
+	then.
+
+Returns:
+	No explicit result.
+
+*/
+
+void
+McciCatena::cFram::scanObjects(
+	ItemTable *pOnly
+	)
+        {
+        cFramStorage::Object object;
 
         if (! this->isReady())
                 {
@@ -89,7 +122,6 @@ McciCatena::cFram::loadCache(
                 }
 
         cFramStorage::Offset offset;
-
         for (offset = 0;
              offset < this->m_endOffset;
              offset += object.nextObjectOffset())
@@ -100,7 +132,7 @@ McciCatena::cFram::loadCache(
                                 gLog.kError,
                                 "%s: read error at offset 0x%x\n",
                                 __func__,
-                                offset
+                                unsigned(offset)
                                 );
                         return;
                         }
@@ -111,37 +143,60 @@ McciCatena::cFram::loadCache(
                                 gLog.kError,
                                 "%s: invalid object at offset 0x%x\n",
                                 __func__,
-                                offset
+                                unsigned(offset)
                                 );
                         continue;
                         }
 
-                const uint8_t uThisKey = object.getKey();
+                // find the table for this object's GUID.
+                ItemTable *pTable = nullptr;
+                for (ItemTable *p = (pOnly != nullptr ? pOnly : this->m_pTables);
+                     p != nullptr;
+                     p = (pOnly != nullptr ? nullptr : p->m_pNext))
+                        {
+                        if (object.matchesGuid(p->getGuid()))
+                                {
+                                pTable = p;
+                                break;
+                                }
+                        }
 
-                // TODO(tmm@mcci.com) handle GUIDs other than skFramGuid
-                if (! (object.matchesGuid(cFramStorage::skFramGuid) &&
-                       uThisKey < cFramStorage::StandardKeys::kMAX))
+                const uint8_t uThisKey = object.getKey();
+                if (pTable == nullptr)
+                        {
+                        // an application's object, table not registered (yet).
+                        gLog.printf(
+                                gLog.kTrace,
+                                "%s: no table for guid at offset 0x%x\n",
+                                __func__,
+                                unsigned(offset)
+                                );
+                        continue;
+                        }
+
+                const int iItem = pTable->findKey(uThisKey);
+                if (iItem < 0)
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: mismatch guid/key at offset 0x%x\n",
+                                "%s: unknown key 0x%x at offset 0x%x\n",
                                 __func__,
-                                offset
+                                uThisKey,
+                                unsigned(offset)
                                 );
                         continue;
                         }
 
                 // make sure things match definition
-                cFramStorage::StandardItem const item =
-                        cFramStorage::vItemDefs[uThisKey];
+                cFramStorage::StandardItem const item = pTable->getItem(iItem);
 
                 if (object.isReplicated() != item.isReplicated())
                         {
                         gLog.printf(
                                 gLog.kError,
-                                "%s: replication mispmatch at offset 0x%x\n",
+                                "%s: replication mismatch at offset 0x%x\n",
                                 __func__,
-                                offset
+                                unsigned(offset)
                                 );
                         continue;
                         }
@@ -152,7 +207,7 @@ McciCatena::cFram::loadCache(
                                 gLog.kError,
                                 "%s: mismatch size at offset 0x%x, got %u, expected %u\n",
                                 __func__,
-                                offset,
+                                unsigned(offset),
                                 object.getDataSize(),
                                 item.getSize()
                                 );
@@ -160,17 +215,16 @@ McciCatena::cFram::loadCache(
                         }
 
                 // take the first one.
-                if (this->m_offsetCache[uThisKey] == cFramStorage::kInvalidOffset)
+                if (pTable->getOffset(iItem) == cFramStorage::kInvalidOffset)
                         {
                         gLog.printf(
                                 gLog.kTrace,
                                 "%s: cache key 0x%x at offset 0x%x\n",
                                 __func__,
                                 uThisKey,
-                                offset
+                                unsigned(offset)
                                 );
-                        this->m_offsetCache[uThisKey] = offset;
-                        this->m_uVerCache[uThisKey] = object.getCurrent();
+                        pTable->setEntry(iItem, offset, object.getCurrent());
                         }
                 else
                         {
@@ -179,20 +233,69 @@ McciCatena::cFram::loadCache(
                                 "%s: key %u at offset 0x%x duplicate of offset 0x%x\n",
                                 __func__,
                                 uThisKey,
-                                offset,
-                                this->m_offsetCache[uThisKey]
+                                unsigned(offset),
+                                unsigned(pTable->getOffset(iItem))
                                 );
                         }
                 }
+
         gLog.printf(
                 gLog.kTrace,
                 "%s: cache loaded through offset 0x%x (end offset 0x%x)\n",
                 __func__,
-                offset,
-                this->m_endOffset
+                unsigned(offset),
+                unsigned(this->m_endOffset)
                 );
         }
-
+
+/*
+
+Name:	McciCatena::cFram::registerItemTable()
+
+Function:
+	Register an application's table of FRAM items.
+
+Definition:
+	public: bool
+		McciCatena::cFram::registerItemTable(
+			cFram::ItemTable &table
+			);
+
+Description:
+	The table joins the FRAM's list of tables. If the store is valid,
+	the store is scanned now for the table's objects; otherwise
+	isValid() scans it when the store becomes valid. Registering a
+	table that is already registered does nothing.
+
+Returns:
+	true.
+
+*/
+
+bool
+McciCatena::cFram::registerItemTable(
+	ItemTable &table
+	)
+	{
+	ItemTable **ppLast = &this->m_pTables;
+
+	for (ItemTable *p = this->m_pTables; p != nullptr; p = p->m_pNext)
+		{
+		if (p == &table)
+			return true;
+		ppLast = &p->m_pNext;
+		}
+
+	table.resetCache();
+	table.m_pNext = nullptr;
+	*ppLast = &table;
+
+	if (this->isReady())
+		this->scanObjects(&table);
+
+	return true;
+	}
+
 /*
 
 Name:	McciCatena::cFram::resetCache()
@@ -219,11 +322,8 @@ McciCatena::cFram::resetCache(
 	void
 	)
 	{
-	for (unsigned i = 0; i < cFramStorage::StandardKeys::kMAX; ++i)
-		{
-		this->m_offsetCache[i] = cFramStorage::kInvalidOffset;
-		this->m_uVerCache[i] = 0;
-		}
+	for (ItemTable *p = this->m_pTables; p != nullptr; p = p->m_pNext)
+		p->resetCache();
 	}
 
 /*
@@ -534,13 +634,37 @@ McciCatena::cFram::writeItemData(
 	size_t nBuffer
 	)
 	{
-	const uint8_t uKey = item.getKey();
-	const cFramStorage::Offset offset = this->m_offsetCache[uKey];
+	return this->writeItemData(this->m_standardTable, item.getKey(), pBuffer, nBuffer);
+	}
+
+bool
+McciCatena::cFram::writeItemData(
+	ItemTable &table,
+	unsigned iItem,
+	const uint8_t *pBuffer,
+	size_t nBuffer
+	)
+	{
 	static const uint8_t uVers[2][3] =
 		{
 		{ 0, 0, 0 },
 		{ 1, 1, 1 },
 		};
+
+	if (iItem >= table.getCount())
+		{
+		gLog.printf(
+			gLog.kBug,
+			"%s: item index(%u) out of range\n",
+			__FUNCTION__,
+			iItem
+			);
+		return false;
+		}
+
+	const cFramStorage::StandardItem item = table.getItem(iItem);
+	const uint8_t uKey = item.getKey();
+	const cFramStorage::Offset offset = table.getOffset(iItem);
 
         if (offset == cFramStorage::kInvalidOffset)
                 {
@@ -560,7 +684,7 @@ McciCatena::cFram::writeItemData(
 			gLog.kBug,
 			"%s: nBuffer(%u) != item.getSize()(%u)\n",
 			__FUNCTION__,
-                        nBuffer,
+                        unsigned(nBuffer),
                         item.getSize()
                         );
 
@@ -578,7 +702,7 @@ McciCatena::cFram::writeItemData(
 			);
 
 	bool fResult;
-	const uint8_t newVer = ! this->m_uVerCache[uKey];
+	const uint8_t newVer = ! table.getVer(iItem);
 
 	fResult = this->write(
 			offset + cFramStorage::dataOffset(
@@ -596,9 +720,9 @@ McciCatena::cFram::writeItemData(
                         "key(0x%x) write new version(%u): base(%u) offset(%u) size(%u)\n",
                         uKey,
                         newVer,
-                        offset,
-                        offset + cFramStorage::Object::offsetOfDiscriminator(),
-                        sizeof(uVers[newVer])
+                        unsigned(offset),
+                        unsigned(offset + cFramStorage::Object::offsetOfDiscriminator()),
+                        unsigned(sizeof(uVers[newVer]))
                         );
 
 		fResult = this->write(
@@ -609,7 +733,7 @@ McciCatena::cFram::writeItemData(
 			);
 
 		if (fResult)
-			this->m_uVerCache[uKey] = newVer;
+			table.setVer(iItem, newVer);
 		}
 
 	return fResult;
@@ -742,8 +866,14 @@ McciCatena::cFram::Cursor::create(
 	cFram * const pFram = this->m_pFram;
 
 	cFramStorage::Object object;
+	const cFramStorage::StandardItem item = this->getItem();
 
-	object.initialize(this->getItem());
+	object.initialize(
+		this->m_pTable->getGuid(),
+		item.getKey(),
+		item.getSize(),
+		item.isReplicated()
+		);
 
 	cFramStorage::Offset offset;
 
@@ -753,7 +883,8 @@ McciCatena::cFram::Cursor::create(
 		{
 		gLog.printf(
 			gLog.kError,
-			"%s: can't allocate 0x%#x bytes\n",
+			"%s: can't allocate %#x bytes\n",
+			__func__,
 			object.getObjectSize()
 			);
 
@@ -783,7 +914,8 @@ McciCatena::cFram::Cursor::create(
 		))
 		{
 		pFram->m_endOffset = offset;
-                pFram->m_offsetCache[this->m_uKey] = objOffset;
+                this->m_pTable->setEntry(this->m_iItem, objOffset, object.getCurrent());
+                this->m_uVer = object.getCurrent();
                 this->m_offset = objOffset;
 		return true;
 		}
@@ -835,23 +967,59 @@ McciCatena::cFram::Cursor::locate(
 		return false;
                 }
 
+	return this->locate(this->m_pFram->m_standardTable, uKey);
+	}
+
+/*
+
+Name:	McciCatena::cFram::Cursor::locate()
+
+Function:
+	Set up a cursor for accessing an item of an item table.
+
+Definition:
+	public: bool
+		McciCatena::cFram::Cursor::locate(
+			cFram::ItemTable &table,
+			uint8_t uKey
+			);
+
+Description:
+	If the FRAM is ready and table has an item with key uKey, the cursor
+	is bound to that item, and located if the item's object exists. If
+	the FRAM isn't ready or the table has no such key, the cursor is
+	left as it was.
+
+Returns:
+	true if cursor is located and ready for I/O.
+
+*/
+
+bool
+McciCatena::cFram::Cursor::locate(
+	ItemTable &table,
+	uint8_t uKey
+	)
+	{
 	// if the FRAM isn't ready, give up.
 	if (! this->m_pFram->isReady())
 		return false;
 
-	this->m_uKey = uKey;
-	this->m_uSize = item.getSize();
-	this->m_offset = this->m_pFram->m_offsetCache[uKey];
+	const int iItem = table.findKey(uKey);
+	if (iItem < 0)
+		return false;
 
-	// load the cache?
+	this->m_pTable = &table;
+	this->m_iItem = uint8_t(iItem);
+	this->m_uKey = uKey;
+	this->m_uSize = table.getItem(iItem).getSize();
+	this->m_offset = table.getOffset(iItem);
+
 	if (this->m_offset == cFramStorage::kInvalidOffset)
-		{
-                return false;
-		}
+		return false;
 
 	// load the cached version toggle
-	this->m_uVer = this->m_pFram->m_uVerCache[uKey];
-
+	this->m_uVer = table.getVer(iItem);
 	return true;
 	}
 
@@ -902,11 +1070,17 @@ McciCatena::cFram::Cursor::put(
 		return false;
                 }
 
-	return this->m_pFram->writeItemData(
-		cFramStorage::vItemDefs[this->m_uKey],
+	if (! this->m_pFram->writeItemData(
+		*this->m_pTable,
+		this->m_iItem,
 		pBuffer,
 		nBuffer
-		);
+		))
+		return false;
+
+	// the write moved to the other replicant; follow it.
+	this->m_uVer = this->m_pTable->getVer(this->m_iItem);
+	return true;
 	}
 
 bool
@@ -917,7 +1091,7 @@ McciCatena::cFram::Cursor::getitem(
         if (! this->isbound())
                 return false;
 
-        item = cFramStorage::vItemDefs[this->m_uKey];
+        item = this->m_pTable->getItem(this->m_iItem);
         return true;
         }
 

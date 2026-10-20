@@ -23,6 +23,8 @@ abstract class cFram {
   +{abstract} size_t read();
   +{abstract} size_t write();
   +{abstract} cFramStorage::Offset getsize();
+  +bool registerItemTable(ItemTable &);
+  +ItemTable &getStandardTable();
   +bool addCommands();
   +{static}cCommandStream::CommandStatus doDump();
   +{static}cCommandStream::CmmandStatus doReset();
@@ -34,7 +36,10 @@ abstract class cFram {
   #cFramStorage::Offset m_offsetCache[]
   #uint8_t m_uVerCache[];
   #cFramStorage::Offset m_endOffset;
+  #ItemTable m_standardTable
+  #ItemTable *m_pTables
   #void loadCache();
+  #void scanObjects(ItemTable *);
   #void resetCache();
   #void setCacheEntry();
   #cFramStorage::Offset allocate();
@@ -51,12 +56,44 @@ class cFram2K {
 
 cFram <|-- cFram2K
 
+class cFramItemTable {
+ +cFramItemTable(guid, pItems, nItems, pOffsetCache, pVerCache);
+ +const GUID &getGuid();
+ +unsigned getCount();
+ +int findKey(uint8_t);
+ +const cFramStorage::StandardItem &getItem(unsigned);
+ +cFramStorage::Offset getOffset(unsigned);
+ +uint8_t getVer(unsigned);
+ +void setEntry(unsigned, Offset, uint8_t);
+ +void resetCache();
+ -const GUID *m_pGuid;
+ -const cFramStorage::StandardItem *m_pItems;
+ -unsigned m_nItems;
+ -cFramStorage::Offset *m_pOffsetCache;
+ -uint8_t *m_pVerCache;
+ -cFramItemTable *m_pNext;
+}
+
+class "cFramAppItemTable<N>" as cFramAppItemTable {
+ +cFramAppItemTable(guid, items[N]);
+ -cFramStorage::Offset m_offsetCache[N];
+ -uint8_t m_verCache[N];
+}
+
+cFramItemTable <|-- cFramAppItemTable
+cFram "1" o-- "1..*" cFramItemTable : m_pTables (standard first)
+class "cFramStorage::StandardItem" as StandardItem {
+}
+cFramItemTable o-- "nItems" StandardItem : m_pItems
+
 class cFram::Cursor {
+ +Cursor(cFram *, ItemTable &, uint8_t key);
  +bool create();
  +bool isbound();
  +bool islocated();
  +bool locate(cFramStorage::StandardItem);
  +bool locate(cFramStorage::StandardKeys);
+ +bool locate(ItemTable &, uint8_t key);
  +bool getitem();
  +size_t getitemsize();
  +bool get(uint8_t *, size_t);
@@ -67,6 +104,8 @@ class cFram::Cursor {
  +size_t formatvalue();
  -cFramStorage::StandardItem getItem();
  -cFram *m_pFram;
+ -ItemTable *m_pTable;
+ -uint8_t m_iItem;
  -uint16_t m_uSize;
  -uint8_t m_uKey;
  -uint8_t m_uVer;
@@ -74,5 +113,6 @@ class cFram::Cursor {
 }
 
 cFram <- cFram::Cursor
+cFram::Cursor --> cFramItemTable : m_pTable
 }
 @enduml

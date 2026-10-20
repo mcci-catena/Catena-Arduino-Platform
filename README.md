@@ -1017,7 +1017,7 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
 1. Determine the GUID and key you want to use. If you are adding the item as part of the Catena library, you can use the GUID `GUID_FRAM_CATENA_V1(WIRE)`, `{1DE7CDCD-0647-4B3C-A18D-8138A3D9613F}`; add the key to `McciCatena::cFramStorage::StandardKeys`, defined in `Catena_FramStorage.h`.
 
-   There is no presentable way to use a non-standard GUID; several changes must be made in `Catena_Fram.cpp` to enable this.
+   An application should not add keys to the library's table; it uses its own GUID and an item table instead (see "Application FRAM items" below).
 
 2. Ultimately, the metadata for your new object is represented by a 32-bit value of type `cFramStorage::StandardItem`. The constructor takes three (optionally four) arguments:
 
@@ -1036,10 +1036,48 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
    - You may also use `gCatena.getFram()->saveField(uKey, (const uint8_t *)&buffer, sizeof(buffer))`.
 
+#### Application FRAM items
+
+An application keeps its own items under its own GUID, so it never collides with the library's keys and isn't limited to `kAppConf`'s 64 bytes.
+
+1. Generate a GUID for the application, and describe its items with `cFramStorage::StandardItem` values (key, size, number or byte string, replicated or not). Keys need not be consecutive; any 8-bit value works, including numbers the standard table uses.
+
+   ```c++
+   static const MCCIADK_GUID_WIRE kMyGuid = MCCIADK_GUID_GEN_INIT(WIRE, /* ... */);
+   static const cFramStorage::StandardItem kMyItems[] =
+       {
+       cFramStorage::StandardItem(0, sizeof(MyParams_t), /* number */ false),
+       cFramStorage::StandardItem(1, sizeof(uint32_t), /* number */ true),
+       };
+   static cFram::AppItemTable<2> gMyTable(kMyGuid, kMyItems);
+   ```
+
+   `cFram::AppItemTable<N>` holds the offset and version caches for its N items. The table must stay in existence while the FRAM is used, so make it static or global.
+
+2. Register the table, before or after the FRAM becomes valid: `gCatena.getFram()->registerItemTable(gMyTable)`. If the store is already valid, registration scans it for the table's objects; otherwise the scan happens when the store is validated.
+
+3. Use a cursor bound to the table and a key, as for standard items:
+
+   ```c++
+   cFram::Cursor cursor(gCatena.getFram(), gMyTable, 0);
+   if (cursor.create())
+       cursor.put((const uint8_t *)&params, sizeof(params));
+   ```
+
+   `create()` appends the object if it doesn't exist yet; `get()` and `put()` take buffers of exactly the item's size. If an item's size changes between firmware versions, the old object no longer matches; `create()` appends a new one.
+
+Application GUIDs in use, so a new application doesn't reuse one:
+
+| GUID | Application | Items |
+|:----:|:------------|:------|
+| `{0E1C5A74-CE73-4D23-A8C5-55D437E76427}` | MCCI Model 494x firmware (4940 family) | key 0: saved parameters, 60 bytes, replicated |
+
+Host tests for the FRAM code are in `test/host` (`make -C test/host`, with `MCCIADK` set to Catena-mcciadk's `src` directory if it isn't a sibling of this library). They run against a RAM-backed mock FRAM.
+
 #### Class hierarchy within the FRAM library
 
 <!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
-[![Image of `cFram` -- see `assets/cfram.plantuml`](http://www.plantuml.com/plantuml/png/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0)](https://www.plantuml.com/plantuml/svg/ZLLXRzem4FsUNs5fqihAK3KcJHDKKoiw9CJGAjZwPPgYmpRKKcmZsw5YZF--ivCGGaEoBpHzztn-xt4Nxgm3urAPH3TNv341vNxElX4XOSt9IXiodj_FegkRI87aTWEKancbOWIEAo3x29RM6Q2Eq0Ii9VIH6oii5jt2QUERx2D2klk2To1RWTT1GfPQumTV2zLvDspY22MSW4JyuIr4mortRSti4xPYhQmv1xQxpDfgmL3OrlV2A3pn44Krxc__zdg4ZWt8YBmAoyDPFXT3QKxYelq6pmr66znLOx0e8NPu8zGaQITPzSM8khF1THxFOF1zjKBLPCsTBMq5QS3OI4i9YjcY2Owg4_H0StpXK80S38x_WaijOVeXbPks8zKJyzFel7aBMpuMF2diEIut2KP1Rjrkm_qka1zVI2qrY4S_xSThc6y29kDL-5eyK1kNZ7Lu605zvhz-UrugbFiS-rBwn4rU63Pqu8fbpu4Kh2GQM3YPYmbW6AjNQ85zLSxaurD_4II9fiSXolo5oPXWA0_WeDYTSYNwKxyKtRDTw9uFNG6KSzPjdQtUFOELIOMB_NijdlH7cCJpIn0Gjh7Sr_wq8Wfd9ZKMNuX7QHIL51VdoxJKgM8L93D_YkLnLANY92e6XlbG_fCwvJjRKj4afY0hmUJOqVoHsIc6vVfzligLigz-x7UoFyXwMrOtgUjGhQmZ3IsGrDG2ZENuQabvHIp-raXm9Twx793NE2dCPZnoBUEDV_28l_N3fsmN5jYzmFBrmE3E45oO0WbgY_KQdin5hpe6MBd33SBVpNy0 "SVG image of cFram hierarchy")
+[![Image of `cFram` -- see `assets/cFram.plantuml`](http://www.plantuml.com/plantuml/png/ZLPjRzem4FxEhx2OLAL0AfL9qqIhIXLTArILJgNhbwgAJ6AejxmfTkWOux_l_9RO4CA-WBbxVBvx_DoP52U4vJWaw24CwHXpacAqwU0vumKEEGfZp1WAlvE2KGPEFkDPWPS4C0ZrDmQtHIjQy1B7Q9vby46MDFLEBzemDAMSufZ-8KU01M647ml6NY1KT1JrH72qFenQPJI2n5OY5b0XWDjEfw7wox--ZyBR0YSTj4UMC2j-3fBIpiJ1ybjgRYcqfJgN1WOf11nEnD51vqT1cxRAeZKxez7ZOW59eoNXhAvALxCKJ1OJJf9dF8-9LwtGYS9P1WWmupYDS14fi1K9Hz4uInBmCfCEuvZJS1jg-un39SbeLFt4l6GeocxA93-snTtnPD-1O97X5Rcb93OyGSfv39oYIxxEeOKIWfwlK2DK9W-57T_UWFmaRKcmaFSh38t49q4c5sCSlfFNDu4hQSg_1i9Llf12EovQ8f0qKci9gYyb2PXz9QwpbmIvN35Xb_N76OxaSRe2HKg8qyVvJn9oPWcWPo6axFVtQTktb1TQtitvupZEmahaYZOfNN7Q3UROz7RTiiDxqRJzdLxjxpP5VwyH-aV5xp-CnvFWzkdw8PWCnq3X-uSyN4wAUfOCxvs4Qc8svf2wRPObZGOe5mOsGAd-pX_hUuTVvgPLbbdAEBhxCRcHZNLNwjdHBrD6boc9HChZh4oLqliW6BIWQNHFrfvMZnN7hTbqgKX3HXSBpmHk9KcjNAmHAxYX1DTdTA0aO5m3fE8Ca9rgav9yYmSXLy53RMufIu0bpG9TSPO4QMLiB55iisv5RjRb2PUvecg_sqnJyfjRGkrAo7MULwZBwLKNOQqOsr6BnhPgtL2HyklqxVHWsku8cRxPUIV1oemGuJ1Ahe-k9MsVhVNUFU-Y3FpTyxEpNdTNwYDKZH3acKa3EYmOFtL8QBmaIOLpQnj8R-S8URYwjQuBbeTBXzE8y1wK1SiAIQbQUggMtW1PprKbFlIBhAK0vJ09ONQOKQ6VvpcqMUHOrBYoRNg07IxsFw7GlsmFUZnhw3sX4cVcQLirrogaLqbweFyeE6xX_Jpqr1UWJcflNd9FjLvB202rXS058_2lfYHEiekiI32lxNvBRvk9LUDazuc5i3GyS6u_K84mflClwfsTGHukh8IxsB50_nkBhClqtONrGFYk33kkA7t_wd0JTRR_0000)](https://www.plantuml.com/plantuml/svg/ZLPjRzem4FxEhx2OLAL0AfL9qqIhIXLTArILJgNhbwgAJ6AejxmfTkWOux_l_9RO4CA-WBbxVBvx_DoP52U4vJWaw24CwHXpacAqwU0vumKEEGfZp1WAlvE2KGPEFkDPWPS4C0ZrDmQtHIjQy1B7Q9vby46MDFLEBzemDAMSufZ-8KU01M647ml6NY1KT1JrH72qFenQPJI2n5OY5b0XWDjEfw7wox--ZyBR0YSTj4UMC2j-3fBIpiJ1ybjgRYcqfJgN1WOf11nEnD51vqT1cxRAeZKxez7ZOW59eoNXhAvALxCKJ1OJJf9dF8-9LwtGYS9P1WWmupYDS14fi1K9Hz4uInBmCfCEuvZJS1jg-un39SbeLFt4l6GeocxA93-snTtnPD-1O97X5Rcb93OyGSfv39oYIxxEeOKIWfwlK2DK9W-57T_UWFmaRKcmaFSh38t49q4c5sCSlfFNDu4hQSg_1i9Llf12EovQ8f0qKci9gYyb2PXz9QwpbmIvN35Xb_N76OxaSRe2HKg8qyVvJn9oPWcWPo6axFVtQTktb1TQtitvupZEmahaYZOfNN7Q3UROz7RTiiDxqRJzdLxjxpP5VwyH-aV5xp-CnvFWzkdw8PWCnq3X-uSyN4wAUfOCxvs4Qc8svf2wRPObZGOe5mOsGAd-pX_hUuTVvgPLbbdAEBhxCRcHZNLNwjdHBrD6boc9HChZh4oLqliW6BIWQNHFrfvMZnN7hTbqgKX3HXSBpmHk9KcjNAmHAxYX1DTdTA0aO5m3fE8Ca9rgav9yYmSXLy53RMufIu0bpG9TSPO4QMLiB55iisv5RjRb2PUvecg_sqnJyfjRGkrAo7MULwZBwLKNOQqOsr6BnhPgtL2HyklqxVHWsku8cRxPUIV1oemGuJ1Ahe-k9MsVhVNUFU-Y3FpTyxEpNdTNwYDKZH3acKa3EYmOFtL8QBmaIOLpQnj8R-S8URYwjQuBbeTBXzE8y1wK1SiAIQbQUggMtW1PprKbFlIBhAK0vJ09ONQOKQ6VvpcqMUHOrBYoRNg07IxsFw7GlsmFUZnhw3sX4cVcQLirrogaLqbweFyeE6xX_Jpqr1UWJcflNd9FjLvB202rXS058_2lfYHEiekiI32lxNvBRvk9LUDazuc5i3GyS6u_K84mflClwfsTGHukh8IxsB50_nkBhClqtONrGFYk33kkA7t_wd0JTRR_0000 "SVG image of cFram hierarchy")
 
 <!-- The following image renders well on GitHub, but doesn't render in the previewer in Visual Studio Code unless you turn on "insecure content". Of course, GitHub rendering is more important, but this is irksome -->
 [![Image of FRAM Storage objects -- see `assets/cframstorage.plantuml`](http://www.plantuml.com/plantuml/png/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00)](https://www.plantuml.com/plantuml/svg/ZLJRJXin47tVhx3sXPjMY29LA5GLRI8GQjDKYU05eMhYdGrkrjx85mga_7jjxoKsMQA-9CgSCpDdpZXpeJH8RNYP7E-HdoK8VJF-JXY71PAYakHo-cMSx1qd0ZYg5L0aOqhP43GA8EiaeIKeHUYb13xJbNHfwuIG8nI6ava6aOFCl-6pSa7zlC8S2sAOqASVVcaoAGg5-jnXQoj4C_fAAw5qbtcjaPD7zpd2GjtTEshosjTsC8Xod8YiwyDXYRTG6jm_yCqwO85wnbxQSAZNGVQxGUPLLHAcVXW-Hnd7fhWg6RM6v4sydk3gvdf43csHAyCQPAF7U37dxqqocVz6ggVmf_Poa-QqMb4kwEkxsYtZp14QiFjzY_Bkz3vGsuwuV-2bzhJrebjQ7RBadKetCay-rgRMyThQ21Fur83rxeE5nBb3Q-fIXLQhk6oSzm3AUihoFipM78660FBrE6ZwW6gpdoER4A-zVPI1VFk0ysrjZwvtNvEUzs64OWk1EH4D9BHw-ouhRywaw1W1uQmUQMYan2r0lGUuhOwOef9n9i3kxwifYkujAokxSMgR4ypKy5fv4Nchr5Psg2LgNribc6RMnxS6-hswa7k3uQ59Jr9oc6MVIReSmrEwwnmCmYEo-tpuOnKtyat-bnt-VJ_zpJAIzg5fajXvBb3azlR-0m00 "SVG image of cFramStorage class hierarchy")
@@ -1556,6 +1594,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#368](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/368): add support for Catena 5220
   - fix [#369](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/369): add support for Catena 5230
   - fix [#376](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/376): `ReadVbus()` takes an optional `bool *pfOk`, set false when the result isn't a measurement; `CatenaStm32L0::ReadAnalog()` takes the same optional argument. A class outside the library that overrides `ReadVbus(void)` must change its signature to match (v0.25.0-pre3)
+  - fix [#379](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/379): applications can register their own FRAM items under their own GUID (`cFram::registerItemTable()`, `cFram::AppItemTable<N>`, `cFram::Cursor(pFram, table, key)`); a cursor's `get()` after `put()` now reads the new value; host tests in `test/host` (v0.25.0-pre4)
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
