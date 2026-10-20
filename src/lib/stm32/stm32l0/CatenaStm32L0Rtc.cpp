@@ -226,7 +226,18 @@ bool CatenaStm32L0Rtc::begin(bool fResetTime)
 			return false;
 			}
 
+		// the backup registers are write-protected unless PWR_CR.DBP
+		// is set, and the BSP's RTC HAL clears DBP at the end of each
+		// call (__HAL_RTC_WRITEPROTECTION_ENABLE()), so set it here and
+		// restore it after.
+		uint32_t const savePwrCr = PWR->CR;
+		uint32_t const saveApb1Enr = RCC->APB1ENR;
+
+		RCC->APB1ENR = saveApb1Enr | RCC_APB1ENR_PWREN;
+		PWR->CR = savePwrCr | PWR_CR_DBP;
 		HAL_RTCEx_BKUPWrite(&this->m_hRtc, RTC_BKP_DR0, 0x32F2);
+		PWR->CR = savePwrCr;
+		RCC->APB1ENR = saveApb1Enr;
 		}
 
 	/* Enable Direct Read of the calendar registers (not through Shadow) */
