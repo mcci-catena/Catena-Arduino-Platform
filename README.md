@@ -1040,7 +1040,7 @@ The header object carries a single 4-byte (`uint32_t`) payload, which is interpr
 
 An application keeps its own items under its own GUID, so it never collides with the library's keys and isn't limited to `kAppConf`'s 64 bytes.
 
-1. Generate a GUID for the application, and describe its items with `cFramStorage::StandardItem` values (key, size, number or byte string, replicated or not). Keys need not be consecutive; any 8-bit value works, including numbers the standard table uses.
+1. Generate a new GUID for the application (with `uuidgen`, for example) and define it in the application's source; the library keeps no list of application GUIDs. Describe its items with `cFramStorage::StandardItem` values (key, size, number or byte string, replicated or not). Keys need not be consecutive; any 8-bit value works, including numbers the standard table uses.
 
    ```c++
    static const MCCIADK_GUID_WIRE kMyGuid = MCCIADK_GUID_GEN_INIT(WIRE, /* ... */);
@@ -1065,12 +1065,6 @@ An application keeps its own items under its own GUID, so it never collides with
    ```
 
    `create()` appends the object if it doesn't exist yet; `get()` and `put()` take buffers of exactly the item's size. If an item's size changes between firmware versions, the old object no longer matches; `create()` appends a new one.
-
-Application GUIDs in use, so a new application doesn't reuse one:
-
-| GUID | Application | Items |
-|:----:|:------------|:------|
-| `{0E1C5A74-CE73-4D23-A8C5-55D437E76427}` | MCCI Model 494x firmware (4940 family) | key 0: saved parameters, 60 bytes, replicated |
 
 Host tests for the FRAM code are in `test/host` (`make -C test/host`, with `MCCIADK` set to Catena-mcciadk's `src` directory if it isn't a sibling of this library). They run against a RAM-backed mock FRAM.
 
@@ -1596,6 +1590,7 @@ This sketch demonstrates the use of the Catena FSM class to implement the `Turns
   - fix [#376](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/376): `ReadVbus()` takes an optional `bool *pfOk`, set false when the result isn't a measurement; `CatenaStm32L0::ReadAnalog()` takes the same optional argument. A class outside the library that overrides `ReadVbus(void)` must change its signature to match (v0.25.0-pre3)
   - fix [#379](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/379): applications can register their own FRAM items under their own GUID (`cFram::registerItemTable()`, `cFram::AppItemTable<N>`, `cFram::Cursor(pFram, table, key)`); a cursor's `get()` after `put()` now reads the new value; host tests in `test/host` (v0.25.0-pre4)
   - fix [#383](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/383): on STM32L0, the RTC keeps its calendar across a reset that doesn't lose power; `CatenaStm32L0Rtc::begin()` set the calendar to 2000-01-01 at every boot because its marker write to backup register DR0 was ignored (v0.25.0-pre5)
+  - fix [#386](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/386): README: remove the table of application GUIDs; an application defines its GUID in its own source
 
 - v0.24.2 (in progress) includes the following changes.
   - fix [#370](https://github.com/mcci-catena/Catena-Arduino-Platform/issues/370): `system version` shows pre-releases as `X.Y.Z-preN`, using `McciAdkLib_FormatVersion()` from Catena-mcciadk v1.1.0 (v0.24.2-pre1)
